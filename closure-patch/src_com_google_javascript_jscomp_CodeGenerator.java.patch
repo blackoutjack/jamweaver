@@ -1,0 +1,29 @@
+--- closure-orig/src/com/google/javascript/jscomp/CodeGenerator.java	2013-08-19 15:26:58.296335367 -0500
++++ closure/src/com/google/javascript/jscomp/CodeGenerator.java	2014-02-20 13:54:59.619537964 -0600
+@@ -308,6 +308,16 @@
+         }
+         break;
+ 
++      // JAM begin
++      case Token.TRANSACTION:
++        add("introspect(");
++        add(first);
++        add(")");
++        addNonEmptyStatement(last, Context.OTHER, false);
++        Preconditions.checkState(childCount == 2);
++        break;
++      // JAM end
++
+       case Token.FUNCTION:
+         if (n.getClass() != Node.class) {
+           throw new Error("Unexpected Node subclass.");
+@@ -334,6 +344,9 @@
+       case Token.SETTER_DEF:
+         Preconditions.checkState(n.getParent().isObjectLit());
+         Preconditions.checkState(childCount == 1);
++        if (!first.isFunction()) {
++          System.err.println("NODE: " + n + "\nFIRST: " + first);
++        }
+         Preconditions.checkState(first.isFunction());
+ 
+         // Get methods are unnamed

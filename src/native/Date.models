@@ -1,0 +1,23 @@
+%%% Stub ... needs to be filled out.
+
+aexe(H,L,'#Date',This,Args,HP,This) :- 
+	always(L),
+	length(Args,0),
+	heapprop(H,This,'@Value','""',HP,_).
+
+aexe(H,L,'#Date',This,Args,HP,This) :- 
+	always(L),
+	length(Args,1),
+	Args=[Arg],
+	heapprop(H,This,'@Value',Arg,HP,_).
+
+aexe(H,_,'#Date#prototype#setSeconds',_,_,H,Ret) :-
+	always(H),
+	% Per http://www.w3schools.com/jsref/jsref_setseconds.asp,
+	% returns a number, representing milliseconds between the date
+	% object and midnight January 1 1970.
+	symbolic(Ret,'Number').
+
+aexe(H,_,'#Date#prototype#toUTCString',This,_,H,Ret) :- 
+	maps(H,This,O),
+	hasprop(O,'@Value',Ret).

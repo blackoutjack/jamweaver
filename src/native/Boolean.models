@@ -1,0 +1,20 @@
+
+aexe(H,_,'#Boolean',This,Args,HP,This) :-
+	length(Args,0),
+	aexe(H,_,'#Boolean',This,'false~&EOL',HP,This).
+
+aexe(H,_,'#Boolean',This,Args,HP,This) :-
+	length(Args,ArgsLen),ArgsLen\=0,
+	Args=[V|_],
+	toboolean(V,B),
+	heapprop(H,This,'@Value',B,HP,_).
+	
+% Boolean.prototype.toString
+aexe(H,L,'#Boolean#prototype#toString',This,_,HP,RetVal) :-
+	hasprop(This,'@Value',Val),
+	tostring(H,L,Val,HP,RetVal).
+
+% Boolean.prototype.valueOf
+aexe(H,_,'#Boolean#prototype#valueOf',This,_,H,RetVal) :-
+	hasprop(This,'@Value',RetVal).
+

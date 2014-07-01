@@ -1,0 +1,31 @@
+
+:- table(ghasprop/3).
+:- table(ihasprop/3).
+:- table(shasprop/3).
+
+:- import length/2 from basics.
+:- import concat_atom/2 from string.
+
+% Symbolic native function predicate
+isnativefun(L) :-
+	is_symbolic(L),
+	unary_fn('IsNativeFun',L,Fn),
+	satisfiable(Fn).
+
+% Native objects that are readonly (and therefore always valid in both
+% symbolic and concrete mode.
+
+% Global object (window)
+
+% window.window
+ghasprop('@Global','"window"','#Global').
+native_hasattr('@Global','"window"','ReadOnly').
+
+% Internal properties of the global object.
+builtin_maps('#Global','@Global').
+ghasprop('@Global','@this','#Global').
+ghasprop('@Global','@Scope','&null').
+
+%%% Need a more principled way of collecting elements.
+builtin_maps('#Elements','@elements').
+

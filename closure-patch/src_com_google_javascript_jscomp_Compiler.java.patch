@@ -1,0 +1,13 @@
+--- closure-orig/src/com/google/javascript/jscomp/Compiler.java	2013-08-19 15:26:58.300335367 -0500
++++ closure/src/com/google/javascript/jscomp/Compiler.java	2013-09-28 17:31:52.722578911 -0500
+@@ -2610,4 +2610,10 @@
+   public AstRoot getOldParseTreeByName(String sourceName) {
+     return null;
+   }
++
++  // JAM begin
++  public static void close() {
++    compilerExecutor.shutdown();
++  }
++  // JAM end
+ }

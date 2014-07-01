@@ -1,0 +1,22 @@
+--- closure-orig/src/com/google/javascript/jscomp/GlobalNamespace.java	2013-08-19 15:26:58.304335367 -0500
++++ closure/src/com/google/javascript/jscomp/GlobalNamespace.java	2013-09-28 18:39:01.950461103 -0500
+@@ -645,6 +645,9 @@
+           case Token.BITNOT:
+           case Token.POS:
+           case Token.NEG:
++          // JAM begin
++          case Token.TRANSACTION:
++          // JAM end
+             break;
+           case Token.CALL:
+             type = n == parent.getFirstChild()
+@@ -713,6 +716,9 @@
+           case Token.BITNOT:
+           case Token.POS:
+           case Token.NEG:
++          // JAM begin
++          case Token.TRANSACTION:
++          // JAM end
+             return Ref.Type.DIRECT_GET;
+           case Token.HOOK:
+             if (anc.getFirstChild() == prev) {

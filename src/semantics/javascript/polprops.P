@@ -1,0 +1,4 @@
+:- export polprops/2.
+:- export polstrs/2.
+polprops(-1,[]).
+polstrs(-1,[]).

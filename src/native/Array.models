@@ -1,0 +1,63 @@
+
+% Array constructor
+%%% Needs review
+aexe(H,L,'#Array',This,Args,HP,This) :-
+	always(L),
+	length(Args,1),
+	Args=[Len],
+	isnum(Len), %%% TODO check that Len is an integer
+	heapprop(H,This,'"length"',Len,H1,_),
+	heapprop(H1,This,'@Class','"Array"',HP,_).
+
+aexe(H,L,'#Array',This,Args,HP,This) :-
+	always(L),
+	length(Args,1),
+	Args=[Val],
+	not isnum(Val),
+	heapprop(H,This,'"length"','1',H1,_),
+	heapprop(H1,This,'@Class','"Array"',H2,_),
+	heapprop(H2,This,'"0"',Val,HP,_).
+
+aexe(H,L,'#Array',This,Args,HP,This) :-
+	always(L),
+	length(Args,Len),
+	Len\=1,
+	heapprop(H,This,'"length"',Len,H1,_),
+	heapprop(H1,This,'@Class','"Array"',H2,_),
+	arraycon_aux(H2,This,0,Args,HP).
+
+arraycon_aux(H,_,_,Args,H) :- length(Args,0).
+
+arraycon_aux(H,This,N,Args,HP) :-
+	not length(Args,0),
+	Args=[X|Args1],
+	inttostr(N,NS),
+	makestr(NS,NSS),
+	heapprop(H,This,NSS,X,H1,_),
+	M is N+1,
+	arraycon_aux(H1,This,M,Args1,HP).
+
+% Array.isArray
+%%% Needs review
+aexe(H,_,'#Array#isArray',_,Args,H,'true') :- 
+	Args=[X|_],
+	maps(H,X,O),
+	hasprop(O,'@Class','"Array"').
+
+aexe(H,_,'#Array#isArray',_,Args,H,'false') :- 
+	Args=[X|_],
+	not maps(H,X,_).
+
+aexe(H,_,'#Array#isArray',_,Args,H,'false') :-
+	Args=[X|_],
+	maps(H,X,O),
+	not hasprop(O,'@Class','"Array"').
+
+% Array.join
+%%% Incomplete
+aexe(H,L,'#Array#join',_,Args,HP,EP) :- 
+	always(Args),
+  %%% Not accurate
+  % new String()
+  nativeconstruct(H,L,'#String',[],HP,_,EP).
+

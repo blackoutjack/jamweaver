@@ -1,0 +1,14 @@
+
+:- import append/3 from basics.
+:- import length/2 from basics.
+:- import concat_atom/2 from string.
+
+% Execution of a symbolic native function.
+aexe(H,L,L1,L2,Args,HP,RV) :-
+	is_symbolic(L1),
+	always(L),
+	always(L2),
+	always(Args),
+	HP=H,
+	symbolic(RV,_).
+

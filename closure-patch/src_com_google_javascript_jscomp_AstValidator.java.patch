@@ -1,0 +1,43 @@
+--- closure-orig/src/com/google/javascript/jscomp/AstValidator.java	2013-08-19 15:26:58.296335367 -0500
++++ closure/src/com/google/javascript/jscomp/AstValidator.java	2014-05-02 21:11:52.065905123 -0500
+@@ -119,6 +119,11 @@
+       case Token.IF:
+         validateIf(n);
+         return;
++      // JAM begin
++      case Token.TRANSACTION:
++        validateTransaction(n);
++        return;
++      // JAM end
+       case Token.VAR:
+         validateVar(n);
+         return;
+@@ -265,6 +270,12 @@
+         validateNew(n);
+         return;
+ 
++      // JAM begin
++      case Token.TRANSACTION:
++        validateTransaction(n);
++        return;
++      // JAM end
++
+       case Token.FUNCTION:
+         validateFunctionExpression(n);
+         return;
+@@ -471,6 +482,15 @@
+     }
+   }
+ 
++  // JAM begin
++  private void validateTransaction(Node n) {
++    validateNodeType(Token.TRANSACTION, n);
++    validateChildCount(n, 2);
++    validateExpression(n.getFirstChild());
++    validateBlock(n.getChildAtIndex(1));
++  }
++  // JAM end
++
+   private void validateExprStmt(Node n) {
+     validateNodeType(Token.EXPR_RESULT, n);
+     validateChildCount(n, 1);

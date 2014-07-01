@@ -1,0 +1,233 @@
+This document is an attempt to comprehensively catalog all possible
+ways that a JavaScript program running in the browser (specifically,
+Firefox 17.0.3esr) can trigger information transmission across the
+network.
+
+The intent is that if the ability to perform all of these actions were
+taken away from the program, then no JavaScript code could exfiltrate
+any information.
+
+Constructor         |Type |Property                    |Description/notes                         |JAM Predicate
+===================================================================================================================================================
+These actions directly generate network messages in certain circumstances (31)
+===================================================================================================================================================
+DocumentFragment    |Call |appendChild                 |In Firefox 17.0.5esr, the DocumentFragment|called(#DocumentFragment#prototype#appendChild)
+                    |Call |insertBefore                |prototype contains these methods, whereas |called(#DocumentFragment#prototype#insertBefore)
+                    |Call |replaceChild                |by version 21, they are gone.             |called(#DocumentFragment#prototype#replaceChild)
+Element             |Call |appendChild                 |These seem to be a different location than|called(#Element#prototype#appendChild)
+                    |     |                            |HTMLDocument versions, but same semantics |                           
+                    |Call |insertBefore                |                                          |called(#Element#prototype#insertBefore)
+                    |Call |replaceChild                |                                          |called(#Element#prototype#replaceChild)
+                    |Call |setAttribute                |Can be made more precise by matching      |called(#Element#prototype#setAttribute)       
+                    |Call |setAttributeNS              |attribute name.                           |called(#Element#prototype#setAttributeNS)
+                    |Call |setAttributeNode            |Deprecated, but still available           |called(#Element#prototype#setAttributeNode)
+                    |Call |setAttributeNodeNs          |Deprecated, but still available           |called(#Element#prototype#setAttributeNodeNS)
+                    |Set  |innerHTML                   |Can produce arbitrary HTML/JS code        |set(`x,"innerHTML") && `x instanceof #HTMLElement
+                    |     |                            |                                          |
+HTMLDocument        |Set  |cookie                      |Sets up communication that occurs on next |set(`x.cookie) && `x instanceof #HTMLDocument
+                    |     |                            |page load.                                |                           
+                    |Call |appendChild                 |Only breaks isolation when inserting      |called(#HTMLDocument#prototype#appendChild)
+                    |     |                            |certain node types: script, img, style,   |                           
+                    |     |                            |etc, so this could be more precise and    |                           
+                    |     |                            |less restrictive.                         |                           
+                    |Call |insertBefore                |Same comment as appendChild.              |called(#HTMLDocument#prototype#insertBefore)
+                    |Call |replaceChild                |Same comment as appendChild.              |called(#HTMLDocument#prototype#replaceChild)
+                    |Call |write                       |Can generate arbitrary code/communication |called(#HTMLDocument#prototype#write)
+                    |Call |writeln                     |Same as write                             |called(#HTMLDocument#prototype#writeln)
+HTMLElement         |Call |setAttribute                |Can be made more precise by matching      |called(#Element#prototype#setAttribute)       
+                    |Call |setAttributeNS              |attribute name.                           |called(#Element#prototype#setAttributeNS)
+                    |Call |setAttributeNode            |Deprecated, but still available           |called(#Element#prototype#setAttributeNode)
+                    |Call |setAttributeNodeNs          |Deprecated, but still available           |called(#Element#prototype#setAttributeNodeNS)
+HTMLImageElement    |Set  |src                         |Triggers retrieval                        |set(`x.src) && `x instanceof #HTMLImageElement
+HTMLFormElement     |Call |submit                      |Malicious code could cause communication  |called(#HTMLFormElement#prototype#submit)
+                    |     |                            |via this call, but unclear if any data can|
+                    |     |                            |be exfiltrated directly with this alone.  |
+HTMLBaseElement     |Set  |href                        |What is this element type?                |set(`x.href) && `x instanceof #HTMLBaseElement
+HTMLInputElement    |Set  |src                         |                                          |set(`x.src) && `x instanceof #HTMLInputElement
+XMLHttpRequest      |Call |send                        |                                          |called(#XMLHttpRequest#prototype#send)
+                    |Call |sendAsBinary                |                                          |called(#XMLHttpRequest#prototype#sendAsBinary)
+WebSocket           |Call |send                        |                                          |called(#WebSocket#prototype#send)
+Window              |Set  |location                    |                                          |set(`x.location) && `x instanceof #Window
+                    |Call |open                        |                                          |called(#Window#prototype#open)
+                    |Call |openDialog                  |                                          |called(#Window#prototype#openDialog)
+                    |Call |postMessage                 |Allows communication across browser tabs  |called(#Window#prototype#postMessage)
+                    |     |                            |                                          |
+                    |     |                            |                                          |
+                    |     |                            |                                          |
+=============================================================================================================================================
+These actions may be used to exfiltrate data indirectly (20)
+=============================================================================================================================================
+HTMLAnchorElement   |Set  |href                        |This would be trickery                    |set(`x.href) && `x instanceof #HTMLAnchorElement
+HTMLFormElement     |Set  |name                        |                                          |
+                    |Set  |action                      |Clearly this is a hazard                  |set(`x.action) && `x instanceof #HTMLFormElement
+HTMLOptionElement   |Set  |defaultSelected             |Altering a value in a form that may be    |set(`x.defaultSelected) 
+                    |     |                            |submitted later by the user can be viewed |  && `x instanceof #HTMLOptionElement
+                    |Set  |selected                    |as a method of communication              |set(`x.selected) && `x instanceof #HTMLOptionElement
+                    |Set  |value                       |                                          |set(`x.value) && `x instanceof #HTMLOptionElement
+                    |Set  |text                        |Is this transmitted on form submission?   |set(`x.text) && `x instanceof #HTMLOptionElement
+HTMLOptionsCollection|    |                            |                                          |
+                    |Set  |selectedIndex               |                                          |set(`x.selectedIndex)
+                    |     |                            |                                          |  && `x instanceof #HTMLOptionsCollection
+                    |Call |add                         |                                          |called(#HTMLOptionsCollection#prototype#add)
+HTMLSelectElement   |Set  |name                        |Review the semantics of these properties  |set(`x.name) && `x instanceof #HTMLSelectElement
+                    |Set  |selectedIndex               |of HTMLSelectElement                      |set(`x.selectedIndex)
+                    |     |                            |                                          |  && `x instanceof #HTMLSelectElement
+                    |Set  |value                       |                                          |set(`x.value) && `x instanceof #HTMLSelectElement
+                    |Call |add                         |                                          |called(#HTMLSelectElement#prototype#add)
+HTMLTextAreaElement |Set  |defaultValue                |                                          |set(`x.defaultValue)
+                    |     |                            |                                          |  && `x instanceof #HTMLTextAreaElement
+                    |     |value                       |                                          |set(`x.value) && `x instanceof #HTMLTextAreaElement
+                    |     |name                        |                                          |set(`x.name) && `x instanceof #HTMLTextAreaElement
+HTMLInputElement    |Set  |checked                     |                                          |set(`x.checked) && `x instanceof #HTMLInputElement
+                    |     |name                        |                                          |set(`x.name) && `x instanceof #HTMLInputElement
+                    |     |type                        |                                          |set(`x.type) && `x instanceof #HTMLInputElement
+                    |     |value                       |                                          |set(`x.value) && `x instanceof #HTMLInputElement
+WebSocket           |Set  |url                         |                                          |set(`x.url) && `x instanceof #WebSocket
+                    |     |                            |                                          |
+=============================================================================================================================================
+Unconfirmed but potentially isolation-breaking actions (78)
+=============================================================================================================================================
+Attr                |Call |appendChild                 |                                          |called(#Attr#prototype#appendChild)
+                    |Call |insertBefore                |                                          |called(#Attr#prototype#insertBefore)
+                    |Call |replaceChild                |                                          |called(#Attr#prototype#replaceChild)
+                    |Set  |nodeValue                   |If reciever.name == "src"; Or do we want  |set(`x.nodeValue) && `x instanceof #Attr
+                    |     |                            |receiever.localName == "src"? Test the    |  && `x.name === "src"
+                    |     |                            |difference between nodeValue and value.   |                           
+                    |Set  |value                       |See notes for nodeValue above.            |set(`x.value) && `x instanceof #Attr
+                    |     |                            |This is read-only in Firefox 17.0.5esr,   |  && `x.name === "src"
+                    |     |                            |but is specified as settable in DOMCore4. |                           
+CharacterData       |Call |appendData                  |Not sure of the semantics of these        |called(#CharacterData#prototype#appendData)
+                    |     |                            |CharacterData methods.                    |                           
+                    |Call |insertData                  |                                          |called(#CharacterData#prototype#appendData)
+                    |Call |replaceData                 |                                          |called(#CharacterData#prototype#appendData)
+Text                |Call |replaceWholeText            |Can this execute code if called within a  |called(#Text#prototype#replaceWholeText)
+                    |     |                            |script element?                           |                           
+                    |Set  |wholeText                   |Same question as above                    |set(`x.wholeText) && `x instanceof #Text
+CSSRule             |Set  |cssText                     |Possibly trigger background image fetch   |set(`x.cssText) && `x instanceof #CSSRule
+CSSStyleSheet       |Call |insertRule                  |Same as above                             |called(#CSSStyleSheet#prototype#insertRule)
+CSSStyleDeclaration |Set  |cssText                     |Same as above                             |set(`x.cssText)
+                    |     |                            |                                          |  && `x instanceof #CSSStyleDeclaration
+                    |Call |setProperty                 |Same as above                             |called(#CSSStyleDeclaration#prototype#setProperty)
+CSSKeyFramesRule    |Call |appendRule                  |                                          |called(#CSSKeyFramesRule#prototype#appendRule)
+CSSGroupingRule     |Call |insertRule                  |                                          |called(#CSSGroupingRule#prototype#insertRule)
+DataTransfer        |Call |addElement                  |                                          |called(#DataTransfer#prototype#addElement)
+                    |Call |setData                     |                                          |called(#DataTransfer#prototype#setData)
+                    |Call |mozSetDataAt                |                                          |called(#DataTransfer#prototype#mozSetDataAt)
+DeviceStorage       |Call |add                         |                                          |called(#DeviceStorage#prototype#add)
+                    |Call |addNamed                    |                                          |called(#DeviceStorage#prototype#addNamed)
+                    |Call |delete                      |                                          |called(#DeviceStorage#prototype#delete)
+                    |Call |getEditable                 |                                          |called(#DeviceStorage#prototype#getEditable)
+HTMLDocument        |Push |scripts                     |Can an item be pushed to execute code?    |set(`x.`y) && `x === `z.scripts
+                    |     |                            |                                          |  && `z instanceof #HTMLDocument
+                    |Push |styleSheets                 |Can an item be pushed to pull in images?  |set(`x.`y) && `x === `z.styleSheets
+                    |     |                            |                                          |  && `z instanceof #HTMLDocument
+                    |Call |enableStyleSheetsForSet     |Does this trigger file retrieval?         |called(
+                    |     |                            |                                          |  #HTMLDocument#prototype#enableStyleSheetsForSet)
+                    |Call |importNode                  |Don't think these make the node active,   |called(#HTMLDocument#prototype#importNode)
+                    |Call |adoptNode                   |but check behavior.                       |called(#HTMLDocument#prototype#adoptNode)
+                    |Call |createProcessingInstruction |Can create XML style/script elements, but |called(
+                    |     |                            |doesn't insert them so probably safe.     |#HTMLDocument#prototype#createProcessingInstruction)
+                    |Call |evaluate                    |Evaluates an XPAth expression. Review the |called(#HTMLDocument#prototype#evaluate)
+                          |                            |semantics of those.                       |
+                    |Call |execCommand                 |Midas (HTML editor) command; probably     |called(#HTMLDocument#prototype#execCommand)
+                          |                            |harmless.                                 |
+                    |Call |load                        |Doesn't seem to exist in Firefox 17.0.5esr|called(#HTMLDocument#prototype#load)
+                    |Call |mozSetImageElement          |Not sure what this does                   |called(#HTMLDocument#prototype#mozSetImageElement)
+Document            |     |                            |By Firefox 21, much of HTMLDocument       |
+                    |     |                            |has moved to Document or Node.            |
+Node                |     |                            |In Firefox 17.0.5esr, all methods are     |
+                    |     |                            |pushed into Element and HTMLDocument.     |
+XULDocument         |Call |loadOverlay                 |Do we need to worry about XULDocuments? If|called(#XULDocument#prototype#loadOverlay)
+                    |     |                            |so, there are a lot more properties to    |
+                    |     |                            |audit.                                    |
+                    |Call |mozSetImageElement          |Such as this one                          |called(#XULDocument#prototype#mozSetImageElement)
+DOMImplementation   |Call |createDocument              |Semantics?                                |called(#DomImplementation#prototype#createDocument)
+                    |Call |createHTMLDocument          |Ditto?                                    |called(
+                    |     |                            |                                          |  #DomImplementation#prototype#createHTMLDocument)
+                    |Call |createDocumentType          |URL can be passed, is it retrieved?       |called(
+                    |     |                            |                                          |  #DomImplementation#prototype#createDocumentType)
+DOMParser           |Call |parseFromString             |Does this activate scripts?               |called(#DOMParser#prototype#parseFromString)
+Element             |Push |attributes                  |Think this is live, so that adding to it  |set(`x.`y) && `x === `z.attributes &&
+                    |     |                            |causes insertion.                         |  `z instanceof #Element
+                    |Push |children                    |Is this live?                             |set(`x.`y) && `x === `z.children &&
+                    |     |                            |                                          |  `z instanceof #Element
+                    |Set  |outerHTML                   |Likely can have same effect as innerHTML  |set(`x.outerHTML) && `x instanceof #HTMLElement
+                    |Set  |tagName                     |Will changing this actually transform the |set(`x.tagName) && `x instanceof #Element
+                    |     |                            |element?                                  |
+                    |Call |insertAdjacentHTML          |Not in Firefox 17.0.3esr                  |
+                    |Set  |nodeValue                   |                                          |
+                    |Call |cloneNode                   |                                          |
+                    |Call |setUserData                 |                                          |
+FormData            |Call |append                      |Is this a way to piggyback on form        |
+                    |     |                            |submissions?                              |
+HTMLAnchorElement   |Set  |search                      |Not sure what this does                   |set(`x.search) && `x instanceof #HTMLAnchorElement
+                    |Set  |tabIndex                    |Questionable, this would be subversive,   |set(`x.tabIndex) && `x instanceof #HTMLAnchorElement
+                    |     |                            |but still depends on the user             |
+                    |Call |focus                       |A way to trick the user                   |
+HTMLMediaElement    |Push |audioTracks                 |Causes retrieval?                         |
+                    |Set  |controller                  |???                                       |
+                    |Set  |src                         |                                          |
+                    |Push |textTracks                  |                                          |
+                    |Push |videoTracks                 |                                          |
+                    |Call |load                        |                                          |
+HTMLTableElement    |Call |createTHead                 |Can these be created with dangerous       |
+                    |Call |createTFoot                 |elements in the innerHTML? And do these   |
+                    |Call |createTCaption              |methods actually activate the HTML?       |
+HTMLTableRowElement |Call |insertCell                  |If the cell contains live content?        |
+HTMLTableSectionElement|  |                            |                                          |
+                    |Push |rows                        |Live?                                     |
+                    |Call |insertRow                   |If the row contains live content?         |
+HTMLTextAreaElement |Set  |inputMode                   |                                          |
+HTMLElement         |Set  |contentEditable             |May open up a can of worms                |
+HTMLFormElement     |Set  |target                      |Not sure if this can cause any harm       |
+HTMLScriptElement   |Set  |textContent                 |Does this trigger execution?              |
+NamedNodeMap        |Call |setNamedItem                |Semantics of these                        |
+                    |     |setNamedItemNS              |                                          |
+ProcessingInstruction|    |                            |                                          |
+                    |Call |insertData                  |                                          |
+                    |Set  |data                        |                                          |
+                    |Call |appendData                  |                                          |
+                    |Call |replaceData                 |                                          |
+                    |Call |insertBefore                |                                          |
+                    |Call |appendChild                 |                                          |
+                    |Call |replaceChild                |                                          |
+Range               |Call |surroundContents            |                                          |
+                    |Call |insertNode                  |                                          |
+                    |Call |createContextualFragment    |                                          |
+                    |Call |setEnd                      |                                          |
+                    |Call |setStart                    |                                          |
+                    |Call |setStartBefore              |                                          |
+                    |Call |setStartAfter               |                                          |
+                    |Call |setEndBefore                |                                          |
+                    |Call |setEndAfter                 |                                          |
+XMLHttpRequest      |Call |setRequestHeader            |                                          |
+                    |Call |open                        |                                          |
+                    |Call |XMLHttpRequest              |                                          |
+WebSocket           |Call |close                       |                                          |
+Worker              |Call |Worker                      |Retrieves script, follows same-origin pol.|
+                    |Set  |postMessage                 |                                          |
+Window              |Call |back                        |                                          |
+                    |Call |disableExternalCapture      |                                          |
+                    |Call |enableExternalCapture       |                                          |
+                    |Call |forward                     |                                          |
+                    |Call |home                        |                                          |
+                    |Call |restore                     |                                          |
+                    |Call |showModalDialog             |                                          |
+                    |     |                            |                                          |
+                    |     |                            |                                          |
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

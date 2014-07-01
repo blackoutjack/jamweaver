@@ -1,0 +1,31 @@
+
+%%% How to model side-effect?
+aexe(H,L,'#XMLHttpRequest',This,_,H,This) :-
+  always(L),always(This).
+
+aexe(H,L,'#XMLHttpRequest#prototype#abort',This,_,H,This) :-
+  always(L),always(This).
+
+aexe(H,L,'#XMLHttpRequest#prototype#getAllResponseHeaders',This,_,H,This) :-
+  always(L),always(This).
+
+aexe(H,L,'#XMLHttpRequest#prototype#getInterface',This,_,H,This) :-
+  always(L),always(This).
+
+aexe(H,L,'#XMLHttpRequest#prototype#getResponseHeader',This,_,H,This) :-
+  always(L),always(This).
+
+aexe(H,L,'#XMLHttpRequest#prototype#open',This,_,H,This) :-
+  always(L),always(This).
+
+aexe(H,L,'#XMLHttpRequest#prototype#overrideMimeType',This,_,H,This) :-
+  always(L),always(This).
+
+aexe(H,L,'#XMLHttpRequest#prototype#send',This,_,H,This) :-
+  always(L),always(This).
+
+aexe(H,L,'#XMLHttpRequest#prototype#sendAsBinary',This,_,H,This) :-
+  always(L),always(This).
+
+aexe(H,L,'#XMLHttpRequest#prototype#setRequestHeader',This,_,H,This) :-
+  always(L),always(This).

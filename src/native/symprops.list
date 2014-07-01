@@ -1,0 +1,52 @@
+% This file lists properties that should be modeled as having symbolic
+% values, even in the initial environment. This goes for values such
+% a document.URL, which depends on the URL of the loaded page.
+%
+% Format:
+% #ObjectLocation propertyName Type
+%
+
+#Global#__proto__ defaultStatus String
+#Global#__proto__ defaultstatus String
+#Global#__proto__ devicePixelRatio Number
+#Global#__proto__ frameElement Object
+#Global#__proto__ innerHeight Number
+#Global#__proto__ innerWidth Number
+#Global#__proto__ length Number
+#Global#__proto__ name String
+#Global#__proto__ opener Object
+#Global#__proto__ outerHeight Number
+#Global#__proto__ outerWidth Number
+#Global#__proto__ pageXOffset Number
+#Global#__proto__ pageYOffset Number
+#Global#__proto__ screenLeft Number
+#Global#__proto__ screenTop Number
+#Global#__proto__ screenX Number
+#Global#__proto__ screenY Number
+#Global#__proto__ scrollX Number
+#Global#__proto__ scrollY Number
+#Global#__proto__ status String
+#Global#__proto__ webkitIntent Object
+
+#HTMLDocument#prototype URL String
+#HTMLDocument#prototype alinkColor String
+#HTMLDocument#prototype attributes Object
+#HTMLDocument#prototype baseURI String
+#HTMLDocument#prototype bgColor String
+#HTMLDocument#prototype characterSet String
+#HTMLDocument#prototype charset String
+#HTMLDocument#prototype compatMode String
+#HTMLDocument#prototype cookie String
+#HTMLDocument#prototype defaultCharset String
+#HTMLDocument#prototype designMode String
+#HTMLDocument#prototype dir String
+#HTMLDocument#prototype doctype Object
+#HTMLDocument#prototype documentURI String
+#HTMLDocument#prototype domain String
+#HTMLDocument#prototype fgColor String
+#HTMLDocument#prototype height Number
+#HTMLDocument#prototype inputEncoding String
+#HTMLDocument#prototype lastModified String
+#HTMLDocument#prototype linkColor String
+
+

@@ -1,0 +1,40 @@
+--- closure-orig/src/com/google/javascript/jscomp/parsing/IRFactory.java	2013-08-19 15:26:58.324335366 -0500
++++ closure/src/com/google/javascript/jscomp/parsing/IRFactory.java	2013-11-20 12:31:40.438257939 -0600
+@@ -65,6 +65,9 @@
+ import com.google.javascript.rhino.head.ast.SwitchCase;
+ import com.google.javascript.rhino.head.ast.SwitchStatement;
+ import com.google.javascript.rhino.head.ast.ThrowStatement;
++// JAM begin
++import com.google.javascript.rhino.head.ast.TransactionStatement;
++// JAM end
+ import com.google.javascript.rhino.head.ast.TryStatement;
+ import com.google.javascript.rhino.head.ast.UnaryExpression;
+ import com.google.javascript.rhino.head.ast.VariableDeclaration;
+@@ -1266,6 +1269,16 @@
+           transformBlock(statementNode.getStatement()));
+     }
+ 
++    // JAM begin
++    @Override
++    Node processTransactionStatement(TransactionStatement statementNode) {
++      Node node = newNode(Token.TRANSACTION);
++      node.addChildToBack(transform(statementNode.getHandler()));
++      node.addChildToBack(transformBlock(statementNode.getBody()));
++      return node;
++    }
++    // JAM end
++
+     @Override
+     Node processIllegalToken(AstNode node) {
+       errorReporter.error(
+@@ -1489,6 +1502,10 @@
+         return Token.CONST;
+       case com.google.javascript.rhino.head.Token.DEBUGGER:
+         return Token.DEBUGGER;
++      // JAM begin
++      case com.google.javascript.rhino.head.Token.TRANSACTION:
++        return Token.TRANSACTION;
++      // JAM end
+     }
+ 
+     // Token without name

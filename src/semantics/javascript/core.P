@@ -1,0 +1,2919 @@
+%
+% core.P
+% author: Rich Joiner <joiner@cs.wisc.edu>
+% 2012-08-04
+%
+% This file contains semantic specifications for JavaScript that are
+% common to both concrete and symbolic mode.
+%
+
+:- table(hasprop/3).
+%:- table(chasprop/3).  %%% This slows it down!
+:- table(getprop/3).
+:- table(maps/3).
+:- table(ecgv/6).
+:- table(aget/5).
+:- table(agetvalue/6).
+:- table(prototype/5).
+:- table(scope/4).
+:- table(isscope/2).
+:- table(type_concrete/2).
+:- table(ref/3).
+:- table(tonumber/5).
+:- table(findscope/4).
+:- table(equals/3).
+:- table(equals/2).
+:- table(notequals/2).
+:- table(restrict_type/3).
+:- table(equal_types/4).
+:- table(ispureval/1).
+:- table(isprimval/1).
+:- table(init_maps/2).
+
+:- import append/3 from basics.
+:- import ith/3 from basics.
+:- import length/2 from basics.
+:- import concat_atom/2 from string.
+
+% Flag to enable assertions
+% To implement an assertion, use the following form.
+% Note: there must be a space/nl between a '->' and a '('.
+% (dbg-> (pred(args)->true;err('message'));true)
+dbg :- true.
+
+% Output an error message and quit.
+err(Msg) :-
+  concat_atom(['Error: ',Msg],ErrMsg),
+  concat_atom([ErrMsg,'\n'],ErrMsgNL),
+  write(ErrMsgNL),
+  halt.
+
+% Retrieve mappings established by heap updates.
+%maps(HP,L,O) :- lookupobj(HP,L,O)->true;init_maps(L,O).
+maps(HP,L,O) :- alloc(_,O,HP,L).
+maps(HP,L,O) :- heapprop(_,L,_,_,HP,O).
+maps(HP,L,O) :- delheapprop(_,L,_,HP,O).
+
+% Traverse further down the update stack.
+maps(HP,L,O) :- alloc(H,_,HP,L1),L1\=L,maps(H,L,O).
+maps(HP,L,O) :- heapprop(H,L1,_,_,HP,_),L\=L1,maps(H,L,O).
+maps(HP,L,O) :- delheapprop(H,L1,_,HP,_),L\=L1,maps(H,L,O).
+
+% Mappings present at environment initialization
+maps(H,L,O) :- H='H',init_maps(L,O).
+
+% Initial mappings for native objects.
+init_maps(L,O) :- builtin_maps(L,O).
+
+% Initial state relating to function declarations
+init_maps(L,O) :- fmaps(L,O).
+
+% Propagate unconstrained objects through heap operations.
+init_maps(L,O) :-
+  initmap(L,O,'test').
+
+% Establish mapping of unmapped values in the initial heap.
+init_maps(L,O) :-
+  not builtin_maps(L,O),
+  not fmaps(L,O),
+  not initmap(L,O,'test'),
+  symbolic(O,'Object'),
+  initmap(L,O,'set').
+
+%%
+% This section is for predicates which identify particular
+% unions of the lowest-level kinds of values.
+% These should only be called after the two value have been
+% converted to the same type (i.e. not to directly evaluate
+% the JavaScript expression "a == b").
+%%
+
+equals(L,R,B) :-
+  L=R,
+  B='true'.
+equals(L,R,B) :- 
+  L\=R,
+  equals(L,R),
+  notequals(L,R),
+  binary_fn('=',L,R,B).
+equals(L,R,B) :-
+  L\=R,
+  % Need to test equals and not notequals here
+  % to account for the case in which contradictory
+  % constraints have been logged.
+  equals(L,R),
+  not notequals(L,R),
+  B='true'.
+equals(L,R,B) :-
+  L\=R,
+  not equals(L,R),
+  notequals(L,R),
+  B='false'.
+
+equals(L,R) :- 
+  (is_symbolic(L)->true;is_symbolic(R)),
+  (L=R->true;
+  binary_fn('=',L,R,F),
+  satisfiable(F)).
+equals(L,R) :-
+  is_concrete(L),
+  is_concrete(R),
+  L=R.
+notequals(L,R) :-
+  (is_symbolic(L)->true;is_symbolic(R)),
+  (L=R->fail;
+  binary_fn('/=',L,R,F),
+  satisfiable(F)).
+notequals(L,R) :-
+  is_concrete(L),
+  is_concrete(R),
+  L\=R.
+
+is_concrete(V) :- not is_symbolic(V).
+
+% Only to be called from equal_types.
+type_equals(L,R) :- 
+  (is_symbolic(L)->true;is_symbolic(R)),
+  (L=R->true;
+  binary_fn('=',L,R,F),
+  satisfiable(F)).
+type_equals(L,R) :-
+  is_concrete(L),
+  is_concrete(R),
+  L=R.
+
+% Test whether two values (potentially) have the same
+% type, and restrict a symbolic type in the case where
+% one value has symbolic type and the other has a
+% concrete type.
+equal_types(V1,V2,RV1,RV2) :-
+  type(V1,T1),type(V2,T2),
+  is_symbolic(T1),is_symbolic(T2),
+  type_equals(T1,T2),
+  % Generate a new symbolic type.
+  symbolic(_,NewTyp),
+  % And restrict both values to have the same type.
+  restrict_type(V1,NewTyp,RV1),
+  restrict_type(V2,NewTyp,RV2).
+
+equal_types(V1,V2,RV1,RV2) :-
+  type(V1,T1),type(V2,T2),
+  is_symbolic(T1),is_concrete(T2),
+  type_equals(T1,T2),
+  restrict_type(V1,T2,RV1),
+  RV2=V2.
+
+equal_types(V1,V2,RV1,RV2) :-
+  type(V1,T1),type(V2,T2),
+  is_concrete(T1),is_symbolic(T2),
+  type_equals(T1,T2),
+  restrict_type(V2,T1,RV2),
+  RV1=V1.
+
+equal_types(V1,V2,RV1,RV2) :-
+  type(V1,T1),type(V2,T2),
+  is_concrete(T1),is_concrete(T2),
+  type_equals(T1,T2),
+  RV1=V1,RV2=V2.
+
+
+% From the input value, which is possibly a symbolic value with symbolic
+% type, generate a new value with a concrete type.
+restrict_type(In,Typ,Out) :-
+  type(In,InTyp),
+  (InTyp=Typ->Out=In;symbolic(Out,Typ)).
+
+% "b" (Booleans)
+isbool('true').
+isbool('false').
+
+isnum(V) :-
+  is_concrete(V),
+  atom(V),
+  name(V,[N|_]),
+  N<58,
+  % Match digit or -.
+  (N>47->true;N=45).
+isnum('&Infinity').
+isnum('&NaN').
+
+isstr(V) :-
+  is_concrete(V),
+  atom(V),
+  % Just check if it starts with a ".
+  name(V,[34|_]).
+
+% If an identifier begins with a %, it's a special
+% wild-card used in the assert/predicate languages.
+is_wild(M) :-
+  makestr(Name,M),
+  name(Name,[96|_]).
+
+is_location(M) :-
+  makestr(Name,M),
+  name(Name,[35|_]).
+
+% "pv" (non-symbolic primitive values)
+isprimval(E) :- isstr(E).
+isprimval(E) :- isnum(E).
+isprimval(E) :- isbool(E).
+isprimval('&null').
+isprimval('&undefined').
+
+maybeprimval(E) :-
+  type(E,T),
+  T\='Object',
+  T\='Reference',
+  T\='Type'.
+
+% "va" (pure values)
+ispureval(E) :- isprimval(E).
+ispureval(E) :- isaddr(E).
+
+% A program is the sequence of its children.
+exp(H,L,E,HP,LP,V) :-
+  is_program(E,CS),
+  % Clear the accumulated metadata. This is needed for counterexample
+  % checking so that the metadata state such as the list of called
+  % functions isn't affected by previous statements in the cex.
+  (is_symbolic_mode->enter_clear_mode;meta_clear),
+  seq(H,L,CS,HP,LP,V),
+  (is_symbolic_mode->leave_clear_mode;true).
+
+seq(H,L,[E],HP,LP,V) :-
+  exp(H,L,E,HP,LP,V).
+seq(H,L,[E|ES],HP,LP,V) :-
+  ES\=[],
+  exp(H,L,E,H1,L1,_),
+  seq(H1,L1,ES,HP,LP,V).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_exprresult(E,E1),
+  exp(H,L,E1,HP,LP,EP).
+
+% Literal values
+exp(H,L,E,H,L,V) :- is_literal(E,V).
+
+% A literal regexp is the same thing as calling
+% the RegExp constructor.
+% exp(H,L,E,HP,LP,V) :-
+%   is_lit_regexp(E,B,F),
+%   EC = jarray(['IdExpr',jnode([name('RegExp')])]),
+%   EB = jarray(['LiteralExpr',jnode([type('string'),value(B)])]),
+%   EF = jarray(['LiteralExpr',jnode([type('string'),value(F)])]),
+%   EP = jarray(['NewExpr',jnode([]),EC,EB,EF]),
+%   exp(H,L,EP,HP,LP,V).
+
+% null => &null
+exp(H,L,'null',H,L,'&null').
+exp(H,L,E,H,L,'&null') :- is_null(E).
+
+% undefined => &undefined
+exp(H,L,'undefined',H,L,'&undefined').
+
+% empty
+exp(H,L,E,H,L,'NONE') :- is_empty(E).
+
+% [S-Var]
+% Variable initialization
+exp(H,L,E,HP,LP,EP) :-
+  is_initializer(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  ecgv(H2,L2,RHS,H3,L3,GRHS),
+  (GRHS='NONE'->HP=H2,LP=L2,EP='NONE';
+  aputvalue(H3,L3,LHS,GRHS,HP,LP,EP)). 
+
+% Variable declaration
+exp(H,L,E,H,L,EP) :-
+  is_vardecl(E,V),
+  is_id(V,_),
+  EP='&undefined'.
+
+% Branch entry
+% Evaluate [#true] and [#false] by checking that the
+% @LastBranch metavariable is compatible with the branch
+% value. If not, this predicate should fail, thereby
+% cutting off an impossible control flow path through
+% the program.
+exp(H,L,E,H,L,EP) :-
+  is_branch(E,E1),
+  maps(H,'#Global',O),
+  hasprop(O,'@LastBranch',R2),
+  (is_concrete(R2)->E1=R2;
+  is_symbolic(R2),
+  (E1='true'->satisfiable(R2);
+  unary_fn('not',R2,R3),satisfiable(R3))),
+  EP=E1.
+
+exp(H,L,E,H,L,E) :-
+  %%% Could have a way to leave and reenter callback mode when a
+  %%% to differentiate the case in which a function is called via a
+  %%% callback directly vs. a call from within a callback. It should
+  %%% currently be sound, however.
+  is_callback_entry(E),
+  enter_callback_mode.
+
+% function entry
+exp(H,L,E,H,L,E) :-
+  is_fnentry(E,E1),
+  % Allow arbitrary calls when in the callback loop.
+  (is_callback_mode->true;
+  current_func(CF),
+  binary_fn('=',E1,CF,R),
+  satisfiable(R)).
+
+% [E-This]
+exp(H,L,E,HP,L,EP) :-
+  is_this(E),
+  scope(H,L,'@this',LN),
+  scope_aux(H,LN,'@this',HP,Scope),
+  newref(Scope,'@this',EP).
+
+% [E-Array]
+exp(H,L,E,HP,LP,EP) :-
+  is_arraylit(E,Args),
+  nativeconstruct(H,L,'#Array',[],H1,L1,ArrPtr),
+  undefpolprops(H1,ArrPtr,H2),
+  aarrayliteral(H2,L1,ArrPtr,0,Args,HP,LP,EP).
+
+% [E-Obj]
+exp(H,L,E,HP,LP,EP) :- 
+  is_objlit(E,Args),
+  nativeconstruct(H,L,'#Object',[],H1,L1,ObjPtr),
+  aaddprops(H1,L1,ObjPtr,Args,HP,LP,EP).
+
+% Regular expression literals
+exp(H,L,E,HP,LP,EP) :- 
+  is_regexp(E,Body,Flags),
+  new_object('"RegExp"','#RegExp#prototype',RegExpObj),
+  alloc(H,RegExpObj,H1,RegExpAddr),
+  (is_literal(Body,BodyVal)->
+  BodyStr=BodyVal;
+  symbolic(BodyStr,'String')),
+  (is_literal(Flags,FlagsVal)->
+  FlagsStr=FlagsVal;
+  symbolic(FlagsStr,'String')),
+  regexpcon_aux(H1,L,RegExpAddr,BodyStr,FlagsStr,HP,EP),
+  LP=L.
+
+regex_tostring(H,RegLoc,RegStr) :-
+  maps(H,RegLoc,RegObj),
+  getprop(RegObj,'@P',P),
+  getprop(RegObj,'@F',F),
+  makestr(PBare,P),
+  makestr(FBare,F),
+  concat_atom(['/',PBare,'/',FBare],RegStr).
+
+% [E-Sel]
+% exp(H,L,E,HP,LP,EP) :- is_dot(E,E1,E2),makestr(E2,M),exp(H,L,E1,H1,L1,R1),ecgv(H1,L1,R1,HP,LP,V1),newref(V1,M,EP).
+% symbolic version
+% exp(H,L,E,HP,LP,EP) :- is_dot(E,E1,E2),makestr(E2,M),exp(H,L,E1,H1,L1,R1),ecgv(H1,L1,R1,HP,LP,V1),is_symbolic(V1),symbolic(EP,_).
+
+% [E-Acc]
+exp(H,L,E,HP,LP,EP) :-
+  is_accessor(E,ObjExp,MembExp),
+  exp(H,L,ObjExp,H1,L1,ObjRef),
+  exp(H1,L1,MembExp,H2,L2,MembRef),
+  ecgv(H2,L2,ObjRef,H3,L3,ObjVal),
+  ecgv(H3,L3,MembRef,H4,L4,MembVal),
+  ecto(H4,L4,ObjVal,H5,L5,ObjPtr),
+  ects(H5,L5,MembVal,HP,LP,MembStr),
+  newref(ObjPtr,MembStr,EP).
+
+% [E-New-constr]
+exp(H,L,E,HP,LP,EP) :- 
+  not is_call_return,
+  is_new(E,ConsId,Args),
+  exp(H,L,ConsId,H1,L1,ConsRef),
+  ecgv(H1,L1,ConsRef,H3,L3,ConsAddr),
+  is_concrete(ConsAddr),
+  type(ConsAddr,T),T='Object',
+  maps(H3,ConsAddr,ConsObj),
+  getprop(ConsObj,'@Construct','true'),
+  exp(H3,L3,Args,H4,L4,ArgsRef),
+  ecgv(H4,L4,ArgsRef,H5,L5,ArgsVal),
+  aconstruct(H5,L5,ConsAddr,ArgsVal,HP,LP,EP).
+  % NONE indicates that we have not yet returned.
+  %(EP='NONE'->LP=L4;LP=L).
+
+% [E-New-Exc-ojb] (sic)
+exp(H,L,E,HP,LP,ErrAddr) :- 
+  not is_call_return,
+  is_new(E,ConsId,_),
+  exp(H,L,ConsId,H1,L1,ConsRef),
+  ecgv(H1,L1,ConsRef,H2,L2,ConsAddr),
+  is_concrete(ConsAddr),
+  type(ConsAddr,T),T\='Object',
+  new_native_error('"Construct receiver not an object"','#TypeError#prototype',Err),
+  alloc(H2,Err,HP,ErrAddr),
+  LP=L2.
+
+%%% Need a [E-New_Exc-ojb] for symbolic?
+
+% [E-New-Exc-constr]
+exp(H,L,E,HP,LP,ErrAddr) :- 
+  not is_call_return,
+  is_new(E,ConsId,_),
+  exp(H,L,ConsId,H1,L1,ConsRef),
+  ecgv(H1,L1,ConsRef,H2,L2,ConsAddr),
+  is_concrete(ConsAddr),
+  type(ConsAddr,T),T='Object',
+  maps(H2,ConsAddr,ConsObj),
+  not getprop(ConsObj,'@Construct','true'),
+  new_native_error('"Construct receiver is not a constructor"','#TypeError#prototype',Err),
+  alloc(H2,Err,HP,ErrAddr),
+  LP=L2.
+
+%%% Need a [E-New_Exc-constr] for symbolic?
+
+% [E-New-constr] symbolic
+exp(H,L,E,HP,LP,EP) :- 
+  not is_call_return,
+  is_new(E,ConsId,Args),
+  exp(H,L,ConsId,H1,L1,ConsRef),
+  ecgv(H1,L1,ConsRef,H2,L2,ConsAddr),
+  is_symbolic(ConsAddr),
+  % Process the arguments.
+  exp(H2,L2,Args,H3,L3,ArgsRef),
+  ecgv(H3,L3,ArgsRef,H4,L4,ArgsVal),
+  type(ConsAddr,T),
+  % If we have a pointer to a constructor, execute it.
+  % Otherwise return a symbolic object.
+  (T='Object',
+  maps(H4,ConsAddr,ConsObj),
+  getprop(ConsObj,'@Construct','true')->
+  aconstruct(H4,L4,ConsAddr,ArgsVal,HP,LP,EP);
+  symbolic_object(H4,EP,H5),
+  heapprop(H5,EP,'"constructor"',ConsAddr,HP,_),
+  LP=L4).
+  % NONE indicates that we have not yet returned.
+  %(EP='NONE'->LP=L4;LP=L).
+
+% [E-Call-Ref]
+exp(H,L,E,HP,LP,EP) :- 
+  not is_call_return,
+  is_call(E,FnExp,ArgsExp),
+  exp(H,L,FnExp,H1,L1,FnRef),
+  type(FnRef,T),T='Reference',
+  ref(FnRef,FnAddr,_),
+  not isactivation(H1,FnAddr),
+  exp(H1,L1,ArgsExp,H2,L2,ArgsRef),
+  ecgv(H2,L2,ArgsRef,H3,L3,ArgsVal),
+  afun(H3,L3,FnAddr,FnRef,ArgsVal,HP,L4,EP),
+  % If this was a call to a user-defined function,
+  % the return value (at this point) will be NONE
+  % and the scope will have changed.
+  (EP='NONE'->LP=L4;LP=L).
+
+% [E-Call-Ref-Act]
+exp(H,L,E,HP,LP,EP) :- 
+  not is_call_return,
+  is_call(E,E1,Args),
+  exp(H,L,E1,H1,L1,ActRef),
+  type(ActRef,T),T='Reference',
+  ref(ActRef,ActVal,_),
+  isactivation(H1,ActVal),
+  is_concrete(ActVal),
+  exp(H1,L1,Args,H2,L2,R2),
+  ecgv(H2,L2,R2,H3,L3,ArgsVal),
+  afun(H3,L3,'#Global',ActRef,ArgsVal,HP,L4,EP),
+  (EP='NONE'->LP=L4;LP=L).
+
+% [E-Call]
+exp(H,L,E,HP,LP,EP) :- 
+  not is_call_return,
+  is_call(E,E1,ARGS),
+  exp(H,L,E1,H1,L1,FnVal),
+  type(FnVal,T),T\='Reference',
+  exp(H1,L1,ARGS,H2,L2,R2),
+  ecgv(H2,L2,R2,H3,L3,ArgsVal),
+  afun(H3,L3,'#Global',FnVal,ArgsVal,HP,L4,EP),
+  % NONE indicates that we have not yet returned.
+  (EP='NONE'->LP=L4;LP=L).
+
+% Call or construct expression that is returning
+exp(H,L,E,HP,L,EP) :- 
+  is_call_return,
+  (is_call(E,E1,_)->true;is_new(E,E1,_)),
+  exp(H,L,E1,H1,L1,R1),
+  type(R1,T),
+  (T='Reference'->ref(R1,LN,_);LN='#Global'),
+  % This must be a user-defined function
+  % that we're returning from.
+  ecgv(H1,L1,R1,H2,_,FunAddr),
+  is_user_fun(FunAddr),
+  maps(H,'#Global',O),
+  hasprop(O,'@ReturnVal',RV),
+  % If the return value is NONE, we are (hopefully)
+  % symbolically executing a call return, such that
+  % the actually return statement is unknown.
+  % Therefore no type can be stipulated either.
+  (RV='NONE'->symbolic(EP,_);EP=RV),
+  heapprop(H2,'#Global','@ReturnVal','NONE',HP,_).
+
+% Return from a call to a user-defined function.
+% The expression passed to E is the same as for the
+% invocation, but the extra 'return' parameter lets
+% us know that we're returning.
+exp(H,L,E,HP,LP,EP,'return') :- 
+  set_call_return,
+  (exp(H,L,E,HP,LP,EP)->
+  unset_call_return;
+  unset_call_return,fail).
+
+% [S-Return]
+exp(H,L,E,HP,LP,EP) :-
+  is_return(E,E1),
+  exp(H,L,E1,H1,L1,R),
+  ecgv(H1,L1,R,H2,L2,V),
+  return(H2,L2,V,HP,LP,EP).
+
+% normal assignment
+exp(H,L,E,HP,LP,EP) :-
+  is_assign(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  assign_aux(H2,L2,LHS,RHS,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_assign_mod(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'%',LHS,RHS,H3,L3,V),
+  assign_aux(H3,L3,LHS,V,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_assign_mul(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'*',LHS,RHS,H3,L3,V),
+  assign_aux(H3,L3,LHS,V,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_assign_div(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'/',LHS,RHS,H3,L3,V),
+  assign_aux(H3,L3,LHS,V,HP,LP,EP).
+
+%%% Strings?
+exp(H,L,E,HP,LP,EP) :-
+  is_assign_add(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'+',LHS,RHS,H3,L3,V),
+  assign_aux(H3,L3,LHS,V,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_assign_sub(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'-',LHS,RHS,H3,L3,V),
+  assign_aux(H3,L3,LHS,V,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_assign_lsh(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  bitop_aux(H2,L2,'<<',LHS,RHS,H3,L3,V),
+  assign_aux(H3,L3,LHS,V,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_assign_rsh(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  bitop_aux(H2,L2,'>>',LHS,RHS,H3,L3,V),
+  assign_aux(H3,L3,LHS,V,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_assign_ursh(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  bitop_aux(H2,L2,'>>>',LHS,RHS,H3,L3,V),
+  assign_aux(H3,L3,LHS,V,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_assign_bitand(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  bitop_aux(H2,L2,'&',LHS,RHS,H3,L3,V),
+  assign_aux(H3,L3,LHS,V,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_assign_bitor(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  bitop_aux(H2,L2,'|',LHS,RHS,H3,L3,V),
+  assign_aux(H3,L3,LHS,V,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_assign_bitxor(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  bitop_aux(H2,L2,'^',LHS,RHS,H3,L3,V),
+  assign_aux(H3,L3,LHS,V,HP,LP,EP).
+
+assign_aux(H,L,LHS,RHS,HP,LP,EP) :-
+  % If the right hand side is a call to a
+  % user-defined function, nothing is assigned
+  % at this point.
+  (RHS='NONE'->LP=L,HP=H,EP='NONE';
+  % Otherwise, assign the return value to
+  % the lefthand side.
+  ecgv(H,L,RHS,H1,L1,GRHS),
+  aputvalue(H1,L1,LHS,GRHS,HP,LP,EP)).
+
+scope_aux(H,LN,Name,HP,Scope) :-
+  null(LN)->
+  (is_symbolic_mode->
+  symbolic_scope(H,Name,Scope,H1),
+  (H\=H1->
+  heapprop(H1,Scope,'@Scope','&null',H2,_),
+  symbolic(V,_),
+  heapprop(H2,Scope,Name,V,HP,_);
+  HP=H);
+  Scope='#Global',HP=H);
+  Scope=LN,HP=H.
+
+/*
+scope_aux(H,LN,Name,HP,Scope) :-
+  null(LN)->
+  (is_symbolic_mode->
+  symbolic_object(H,Scope,H1),
+  heapprop(H1,Scope,'@Scope','&null',H2,_),
+  symbolic(V,_),
+  heapprop(H2,Scope,Name,V,HP,_);
+  Scope='#Global',HP=H);
+  Scope=LN,HP=H.
+*/
+
+% [E-Ide-val]
+exp(H,L,E,HP,LP,EP) :-
+  is_id(E,Name,Typ),
+  % Closure parses undefined as a NAME node.
+  (Name='"undefined"',Typ='Undefined'->EP='&undefined',HP=H;
+  scope(H,L,Name,LN),
+  scope_aux(H,LN,Name,H1,Scope),
+  newref(Scope,Name,EP),
+  ecgv(H1,L,EP,HP,LP,V),
+  type(V,Typ)).
+
+% [E-Ide-val]
+exp(H,L,E,HP,L,EP) :-
+  is_id(E,Name),
+  % Closure parses undefined as a NAME node.
+  (Name='"undefined"'->EP='&undefined',HP=H;
+  scope(H,L,Name,LN),
+  scope_aux(H,LN,Name,HP,Scope),
+  newref(Scope,Name,EP)).
+
+% [P-Return]
+% Conducts the actual return from a user-defined function.
+% That is, it sets the @ReturnVal register and pops a scope.
+return(H,L,E,HP,LP,EP) :-
+  maps(H,L,ActObj),
+  hasprop(ActObj,'@Scope',LP),
+  heapprop(H,'#Global','@ReturnVal',E,HP,_),
+  EP='true'.
+
+% integer constant
+exp(H,L,E,H,L,E) :- isnum(E).
+
+% boolean constant
+exp(H,L,E,H,L,E) :- type(E,T),T='Boolean'.
+
+% string constant
+exp(H,L,E,H,L,E) :- type(E,T),T='String'.
+
+% null constant
+exp(H,L,E,H,L,E) :- null(E).
+
+% Equality
+exp(H,L,E,HP,LP,EP) :-
+  is_eq(E,Left,Right),
+  exp(H,L,Left,H1,L1,LeftRef),
+  ecgv(H1,L1,LeftRef,H2,L2,LeftVal),
+  exp(H2,L2,Right,H3,L3,RightRef),
+  ecgv(H3,L3,RightRef,H4,L4,RightVal),
+  (LeftVal='NONE'->HP=H4,LP=L4,EP='NONE';
+  (RightVal='NONE'->HP=H4,LP=L4,EP='NONE';
+  eqaux(H4,L4,LeftVal,RightVal,HP,EP),LP=L4)).
+
+eqaux(H,L,VA1,VA2,HP,EP) :-
+  is_symbolic(VA1),is_symbolic(VA2),
+  eqaux_dual_symbolic(H,L,VA1,VA2,HP,EP).
+
+eqaux(H,L,VA1,VA2,HP,EP) :-
+  (is_symbolic(VA1),is_concrete(VA2);is_concrete(VA1),is_symbolic(VA2)),
+  eqaux_symbolic(H,L,VA1,VA2,HP,EP).
+
+eqaux(H,L,VA1,VA2,HP,EP) :-
+  is_concrete(VA1),is_concrete(VA2),
+  eqaux_concrete(H,L,VA1,VA2,HP,EP).
+
+eqaux_dual_symbolic(H,_,VA1,VA2,H,EP) :-
+  % Imprecise, but avoids infinite recursion.
+  type(VA1,T1),
+  type(VA2,T2),
+  (equals(T1,T2),equals(VA1,VA2)->CanBeTrue='true';true),
+  ((notequals(T1,T2)->true;notequals(VA1,VA2))->CanBeFalse='true';true),
+  % Set the value based on the flags set, or not set, above.
+  (atom(CanBeTrue),atom(CanBeFalse)->symbolic(EP,'Boolean');true),
+  (atom(CanBeTrue),var(CanBeFalse)->EP='true';true),
+  (var(CanBeTrue),atom(CanBeFalse)->EP='false';true),
+  % This last case shouldn't happen.
+  (var(CanBeTrue),var(CanBeFalse)->fail;true).
+
+% Generates a disjunction of all the ways that two 
+% values could be deemed equal. That is, all 
+% the potential type conversions that may take place.
+% Assumed to be passed at least one symbolic value
+eqaux_symbolic(H,L,VA1,VA2,HP,EP) :-
+  type(VA1,T1),type(VA2,T2),
+  % Corresponds to [E-Eq]
+  (equals(T1,T2)->
+  (is_symbolic(T1),not is_symbolic(T2)->restrict_type(VA1,T2,VA1a),VA2a=VA2;
+  (not is_symbolic(T1),is_symbolic(T2)->restrict_type(VA2,T1,VA2a),VA1a=VA1;
+  VA2a=VA2,VA1a=VA1)),
+  binary_fn('=',VA1a,VA2a,Accum0);Accum0='false'),
+  always(Accum0),
+  % Corresponds to [E-Eq-nu]
+  (equals(T1,'Null'),equals(T2,'Undefined')->Accum1='true';Accum1=Accum0),
+  always(Accum1),
+  % Corresponds to [E-Eq-un]
+  (equals(T1,'Undefined'),equals(T2,'Null')->Accum2='true';Accum2=Accum1),
+  always(Accum2),
+  % Corresponds to [E-Eq-ns]
+  (equals(T1,'Number'),equals(T2,'String'),
+  % According to testing, nothing equals NaN (not even NaN).
+  tonumber(H,L,VA2,H1,VN2a),VN2a\='&NaN',restrict_type(VA1,'Number',VN1a)->
+  binary_fn('=',VN1a,VN2a,Tmp0),binary_fn('or',Accum2,Tmp0,Accum3);
+  H1=H,Accum3=Accum2),
+  always(Accum3),
+  % Corresponds to [E-Eq-sn]
+  (equals(T1,'String'),equals(T2,'Number'),
+  % According to testing, nothing equals NaN (not even NaN).
+  tonumber(H1,L,VA1,H2,VN1b),VN1b\='&NaN',restrict_type(VA2,'Number',VN2b)->
+  binary_fn('=',VN1b,VN2b,Tmp1),binary_fn('or',Accum3,Tmp1,Accum4);
+  H2=H1,Accum4=Accum3),
+  always(Accum4),
+  % Corresponds to [E-Eq-bnb]
+  (equals(T1,'Boolean'),notequals(T2,'Boolean'),
+  tonumber(H2,L,VA1,H3,VN1c)->
+  eqaux(H3,L,VN1c,VA2,H4,Tmp2),binary_fn('or',Accum4,Tmp2,Accum5);
+  H4=H2,Accum5=Accum4),
+  always(Accum5),
+  % Corresponds to [E-Eq-nbb]
+  (notequals(T1,'Boolean'),equals(T2,'Boolean'),
+  tonumber(H4,L,VA2,H5,VN2d)->
+  eqaux(H5,L,VA1,VN2d,H6,Tmp3),binary_fn('or',Accum5,Tmp3,Accum6);
+  H6=H4,Accum6=Accum5),
+  always(Accum6),
+  % Corresponds to [E-Eq-sno]
+  ((equals(T1,'String')->true;equals(T1,'Number')),equals(T2,'Object'),
+  restrict_type(VA2,'Object',VO2),toprimitive(H6,L,VO2,T1,H7,PV2)->
+  eqaux(H7,L,VA1,PV2,H8,Tmp4),binary_fn('or',Accum6,Tmp4,Accum7);
+  H8=H6,Accum7=Accum6),
+  always(Accum7),
+  % Corresponds to [E-Eq-osn]
+  (equals(T1,'Object'),(equals(T2,'String')->true;equals(T2,'Number')),
+  restrict_type(VA1,'Object',VO1),toprimitive(H8,L,VO1,T2,H9,PV1)->
+  eqaux(H9,L,PV1,VA2,H10,Tmp5),binary_fn('or',Accum7,Tmp5,Accum8);
+  H10=H8,Accum8=Accum7),
+  always(Accum8),
+  % Other cases that results in false are not germane because adding
+  % false into a disjunction does nothing.
+  HP=H10,EP=Accum8.  
+
+% [E-Eq]
+% If the types match, do equality comparison.
+% The equals predicate handles the different
+% cases for concrete and symbolic values.
+% It's possible that both equality and non-equality
+% can be satisfiable for symbolic values, so EP
+% may be unified with a symbolic (boolean) value.
+eqaux_concrete(H,_,VA1,VA2,H,EP) :-
+  type(VA1,T1),
+  type(VA2,T2),
+  T1=T2,
+  (VA1=VA2->EP='true';EP='false').
+
+% [E-Eq-nu]
+% Use types to identify null and undefined, rather
+% than the ground values as in Maffeis. This accounts
+% for symbolic values also.
+eqaux_concrete(H,_,VA1,VA2,H,EP) :-
+  type(VA1,T1),T1='Null',
+  type(VA2,T2),T2='Undefined',
+  EP='true'.
+
+% [E-Eq-un]
+eqaux_concrete(H,_,VA1,VA2,H,EP) :-
+  type(VA1,T1),T1='Undefined',
+  type(VA2,T2),T2='Null',
+  EP='true'.
+
+% [E-Eq-ns]
+% Convert a string to a number to
+% facilitate comparison.
+eqaux_concrete(H,L,VA1,VA2,HP,EP) :-
+  type(VA1,T1),T1='Number',
+  type(VA2,T2),T2='String',
+  tonumber(H,L,VA2,H2,VN2),
+  eqaux_concrete(H2,L,VA1,VN2,HP,EP).
+
+% [E-Eq-sn]
+eqaux_concrete(H,L,VA1,VA2,HP,EP) :-
+  type(VA1,T1),T1='String',
+  type(VA2,T2),T2='Number',
+  tonumber(H,L,VA1,H2,VN1),
+  eqaux_concrete(H2,L,VN1,VA2,HP,EP).
+
+% [E-Eq-bnb]
+% Per Maffeis, convert the boolean to a number
+% and then compare.
+eqaux_concrete(H,L,VA1,VA2,HP,EP) :-
+  type(VA1,T1),T1='Boolean',
+  type(VA2,T2),T2\='Boolean',
+  tonumber(H,L,VA1,H2,VN1),
+  eqaux_concrete(H2,L,VN1,VA2,HP,EP).
+
+% [E-Eq-nbb]
+eqaux_concrete(H,L,VA1,VA2,HP,EP) :-
+  type(VA1,T1),T1\='Boolean',
+  type(VA2,T2),T2='Boolean',
+  tonumber(H,L,VA2,H2,VN2),
+  eqaux_concrete(H2,L,VA1,VN2,HP,EP).
+
+% [E-Eq-sno]
+eqaux_concrete(H,L,VA1,VA2,HP,EP) :-
+  type(VA1,T1),(T1='String';T1='Number'),
+  type(VA2,T2),T2='Object',
+  toprimitive(H,L,VA2,T1,H2,PV2),
+  eqaux_concrete(H2,L,VA1,PV2,HP,EP).
+
+% [E-Eq-osn]
+eqaux_concrete(H,L,VA1,VA2,HP,EP) :-
+  type(VA1,T1),T1='Object',
+  type(VA2,T2),(T2='String';T2='Number'),
+  toprimitive(H,L,VA1,T2,H2,PV1),
+  eqaux_concrete(H2,L,PV1,VA2,HP,EP).
+
+% [E-Eq-nnu]
+eqaux_concrete(H,_,VA1,VA2,H,EP) :-
+  type(VA1,T1),T1='Null',
+  type(VA2,T2),T2\='Null',T2\='Undefined',
+  EP='false'.
+
+% [E-Eq-nnso]
+eqaux_concrete(H,_,VA1,VA2,H,EP) :-
+  type(VA1,T1),T1='Number',
+  type(VA2,T2),T2\='Number',T2\='String',T2\='Object',
+  EP='false'.
+
+% [E-Eq-sno] (different from the previous rule by the same name...)
+eqaux_concrete(H,_,VA1,VA2,H,EP) :-
+  type(VA1,T1),T1='String',
+  type(VA2,T2),T2\='String',T2\='Object',
+  EP='false'.
+
+% [E-Eq-unn]
+eqaux_concrete(H,_,VA1,VA2,H,EP) :-
+  type(VA1,T1),T1='Undefined',
+  type(VA2,T2),T2\='Null',T2\='Undefined',
+  EP='false'.
+
+% [E-Eq-onsn]
+eqaux_concrete(H,_,VA1,VA2,H,EP) :-
+  type(VA1,T1),T1='Object',
+  type(VA2,T2),T2\='Object',T2\='String',T2\='Number',
+  EP='false'.
+
+% Not-equality
+exp(H,L,E,HP,LP,EP) :-
+  is_neq(E,NE),
+  exp(H,L,NE,H1,L1,V1),
+  % NE is guaranteed to be an equality, which guarantees a boolean
+  % return value, so there's no need for ectb.
+  ecgv(H1,L1,V1,HP,LP,NV),
+  % 3 cases: true, false, symbolic
+  (NV='true'->EP='false';true),
+  (NV='false'->EP='true';true),
+  (is_symbolic(NV)->unary_fn('not',NV,EP);true).
+
+% Strict equality
+% [E-SEq]
+exp(H,L,E,HP,LP,EP) :-
+  is_stricteq(E,Left,Right),
+  exp(H,L,Left,H1,L1,LeftRef),exp(H1,L1,Right,H2,L2,RightRef),
+  ecgv(H2,L2,LeftRef,H3,L3,LeftVal),ecgv(H3,L3,RightRef,HP,LP,RightVal),
+  % Strict equality requires that types and values match.
+  % The equal_types either returns the original values (if concrete)
+  % or constrains symbolic values to have the same type.
+  (equal_types(LeftVal,RightVal,LeftRestrict,RightRestrict)->
+  (equals(LeftRestrict,RightRestrict,EP)->true;EP='false');
+  EP='false').
+
+% Strict not-equality
+% Handled exactly the same as (non-strict) not-equality.
+exp(H,L,E,HP,LP,EP) :-
+  is_strictne(E,NE),
+  exp(H,L,NE,H1,L1,V1),
+  % NE is guaranteed to be an equality, which guarantees a boolean
+  % return value, so there's no need for ectb.
+  ecgv(H1,L1,V1,HP,LP,NV),
+  % 3 cases: true, false, symbolic
+  (NV='true'->EP='false';true),
+  (NV='false'->EP='true';true),
+  (is_symbolic(NV)->unary_fn('not',NV,EP);true).
+
+% ! operator
+exp(H,L,E,HP,LP,EP) :-
+  is_not(E,E1),
+  exp(H,L,E1,H1,L1,R1),
+  (R1='NONE'->HP=H1,LP=L1,EP='NONE';
+  ecgv(H1,L1,R1,HP,LP,R2),
+  ectb(R2,R3),
+  (is_symbolic(R3)->unary_fn('not',R3,EP);
+  evalunary('!',R3,EP))).
+
+% Unary - operator
+% In Yices, negative ints are represented as (- 0 num).
+exp(H,L,E,HP,LP,EP) :-
+  is_neg(E,E1),
+  exp(H,L,E1,H1,L1,R1),
+  ecgv(H1,L1,R1,HP,LP,R2),
+  (is_symbolic(R2)->binary_fn('-','0',R2,EP);
+  evalunary('-',R2,EP)).
+
+% Unary + operator
+% Effectively converts the operand to a value
+% with type Number. No difference between
+% symbolic/nonsymbolic values.
+exp(H,L,E,HP,LP,EP) :-
+  is_pos(E,E1),
+  exp(H,L,E1,H1,L1,R1),
+  ecgv(H1,L1,R1,H2,L2,R2),
+  ectn(H2,L2,R2,HP,LP,EP).
+
+
+
+exp(H,L,E,HP,LP,EP) :-
+  is_mod(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'%',LHS,RHS,HP,LP,EP).
+
+
+% [E-@L-Or-exit] concrete
+al_or(H,L,B,VA,_,H,L,EP) :-
+  B='true',
+  EP=VA.
+
+% [E-@L-Or-exit] symbolic
+al_or(H,L,B,VA,_,H,L,EP) :-
+  is_symbolic(B),
+  satisfiable(B),
+  EP=VA.
+
+/*
+% Attempt at combining symbolic cases.
+% [E-@L-Or-exit] symbolic
+al_or(H,L,B,VA,_,H,L,EP) :-
+  is_symbolic(B),
+  (satisfiable(B)->CanBeTrue='1';true),
+  (unary_fn('not',B,NB),satisfiable(NB)->CanBeFalse='1';true),
+  % 3 disjoint cases
+  (atom(CanBeTrue),var(CanBeFalse)->EP=VA;true),
+  (var(CanBeTrue),atom(CanBeFalse)->exp(H,L,E,HP,LP,EP);true),
+  (atom(CanBeTrue),atom(CanBeFalse)->symbolic(EP,_),
+  binary_fn('=',VA,EP,E1),binary_fn('and',B,E1,E2),
+  exp(H,L,E,H1,L1,E3),ecgv(H1,L1,E3,HP,LP,E4),
+  binary_fn('=',E4,EP,E5),binary_fn('and',NB,E5,E6),
+  binary_fn('or',E2,E6,E7),constraint(E7).
+*/
+
+% [E-@L-Or] concrete
+al_or(H,L,B,_,E,HP,LP,EP) :-
+  B='false',
+  exp(H,L,E,HP,LP,EP).
+
+% [E-@L-Or] symbolic
+al_or(H,L,B,_,E,HP,LP,EP) :-
+  is_symbolic(B),
+  unary_fn('not',B,NB),
+  satisfiable(NB),
+  exp(H,L,E,HP,LP,EP).
+
+% [E-@L-And-exit] concrete
+al_and(H,L,B,VA,_,H,L,EP) :-
+  B='false',
+  EP=VA.
+
+% [E-@L-And-exit] symbolic
+al_and(H,L,B,VA,_,H,L,EP) :-
+  is_symbolic(B),
+  unary_fn('not',B,NB),
+  satisfiable(NB),
+  EP=VA.
+
+% [E-@L-And] concrete
+al_and(H,L,B,_,E,HP,LP,EP) :-
+  B='true',
+  exp(H,L,E,HP,LP,EP).
+
+% [E-@L-And] symbolic
+al_and(H,L,B,_,E,HP,LP,EP) :-
+  is_symbolic(B),
+  satisfiable(B),
+  exp(H,L,E,HP,LP,EP).
+
+
+% Logical || expression
+exp(H,L,E,HP,LP,EP) :-
+  is_or(E,E1,E2),
+  exp(H,L,E1,H1,L1,R1),
+  (R1='NONE'->HP=H1,LP=L1,EP='NONE';
+  ecgv(H1,L1,R1,H2,L2,V1),
+  ectb(V1,B1),
+  al_or(H2,L2,B1,V1,E2,HP,LP,EP)).
+
+% Logical && expression
+exp(H,L,E,HP,LP,EP) :-
+  is_and(E,E1,E2),
+  exp(H,L,E1,H1,L1,R1),
+  (R1='NONE'->HP=H1,LP=L1,EP='NONE';
+  ecgv(H1,L1,R1,H2,L2,V1),
+  ectb(V1,B1),
+  al_and(H2,L2,B1,V1,E2,HP,LP,EP)).
+
+% binary operators
+exp(H,L,E,HP,LP,EP) :-
+  is_lt(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  %%% There are some crazy rules for comparing different types.
+  %%% It probably won't affect the results here, but could in
+  %%% some contrived situations.
+  binop_aux(H2,L2,'<',LHS,RHS,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_le(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  %%% There are some crazy rules for comparing different types.
+  %%% It probably won't affect the results here, but could in
+  %%% some contrived situations.
+  binop_aux(H2,L2,'<=',LHS,RHS,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_gt(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  %%% There are some crazy rules for comparing different types.
+  %%% It probably won't affect the results here, but could in
+  %%% some contrived situations.
+  binop_aux(H2,L2,'>',LHS,RHS,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_ge(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  %%% There are some crazy rules for comparing different types.
+  %%% It probably won't affect the results here, but could in
+  %%% some contrived situations.
+  binop_aux(H2,L2,'>=',LHS,RHS,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_plus(E,E1,E2),
+  exp(H,L,E1,H1,L1,R1),
+  exp(H1,L1,E2,H2,L2,R2),
+  ecgv(H2,L2,R1,H3,L3,V1),
+  ecgv(H3,L3,R2,H4,L4,V2),
+  (is_concrete(V1),is_concrete(V2)->
+  % Convert objects to strings.
+  (isaddr(V1)->ects(H4,L4,V1,H5,L5,S1);S1=V1,H5=H4,L5=L4),
+  (isaddr(V2)->ects(H5,L5,V2,HP,LP,S2);S2=V2,HP=H5,LP=L5),
+  evalbin('+',S1,S2,EP);
+  %%% Special cases for different types?
+  binary_fn('+',V1,V2,EP),HP=H4,LP=L4).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_minus(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'-',LHS,RHS,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_star(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'*',LHS,RHS,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_divop(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'/',LHS,RHS,HP,LP,EP).
+
+binop_aux(H,L,Op,LHS,RHS,HP,LP,EP) :-
+  ecgv(H,L,LHS,H1,L1,V1),
+  ecgv(H1,L1,RHS,HP,LP,V2),
+  (is_concrete(V1),is_concrete(V2)->
+  evalbin(Op,V1,V2,EP);
+  binary_fn(Op,V1,V2,EP)).
+
+
+%
+% Bitwise operators
+%
+
+exp(H,L,E,HP,LP,EP) :-
+  is_lsh(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  bitop_aux(H2,L2,'<<',LHS,RHS,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_rsh(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  bitop_aux(H2,L2,'>>',LHS,RHS,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_ursh(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  bitop_aux(H2,L2,'>>>',LHS,RHS,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_bitor(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  bitop_aux(H2,L2,'|',LHS,RHS,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_bitand(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  bitop_aux(H2,L2,'&',LHS,RHS,HP,LP,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_bitxor(E,E1,E2),
+  exp(H,L,E1,H1,L1,LHS),
+  exp(H1,L1,E2,H2,L2,RHS),
+  bitop_aux(H2,L2,'^',LHS,RHS,HP,LP,EP).
+
+bitop_aux(H,L,Op,LHS,RHS,HP,LP,EP) :-
+  ecgv(H,L,LHS,H1,L1,V1),
+  ecgv(H1,L1,RHS,HP,LP,V2),
+  (is_concrete(V1),is_concrete(V2)->
+  evalbin(Op,V1,V2,EP);
+  %%% This is conservative, in that we return an
+  %%% unconstrained Number.
+  symbolic(EP,'Number')).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_bitnot(E,E1),
+  exp(H,L,E1,H1,L1,R1),
+  ecgv(H1,L1,R1,HP,LP,V1),
+  (is_concrete(V1)->evalunary('~',V1,EP);
+  %%% This is conservative, in that we return an
+  %%% unconstrained Number.
+  symbolic(EP,'Number')).
+
+% unary operators
+
+% [E-postInc]
+%%% Expressions like "a"++; throw an exception while
+%%% var s = "a"; s++; evaluates to NaN.
+exp(H,L,E,HP,LP,PreNum) :-
+  is_incrpost(E,Id),
+  exp(H,L,Id,H1,L1,Ref),
+  % Get the value and convert to a number.
+  % With postfix operator, return the value prior to changing it.
+  ecgv(H1,L1,Ref,H2,L2,PreVal),
+  ectn(H2,L2,PreVal,H3,L3,PreNum),
+  % Now get the new value and update.
+  (is_symbolic(PreNum)->binary_fn('+',PreNum,'1',PostNum);
+  evalbin('+',PreNum,'1',PostNum)),
+  aputvalue(H3,L3,Ref,PostNum,HP,LP,_).
+
+% [E-postDec]
+exp(H,L,E,HP,LP,PreNum) :-
+  is_decrpost(E,Id),
+  exp(H,L,Id,H1,L1,Ref),
+  % With postfix operator, return the value prior to changing it.
+  ecgv(H1,L1,Ref,H2,L2,PreVal),
+  ectn(H2,L2,PreVal,H3,L3,PreNum),
+  % Now get the new value and update.
+  (is_symbolic(PreNum)->binary_fn('-',PreNum,'1',PostNum);
+  evalbin('-',PreNum,'1',PostNum)),
+  aputvalue(H3,L3,Ref,PostNum,HP,LP,_).
+
+% [E-preInc]
+exp(H,L,E,HP,LP,PostNum) :-
+  is_incr(E,Id),
+  exp(H,L,Id,H1,L1,Ref),
+  % With prefix operator, get the new value and then return.
+  ecgv(H1,L1,Ref,H2,L2,PreVal),
+  ectn(H2,L2,PreVal,H3,L3,PreNum),
+  (is_symbolic(PreNum)->binary_fn('+',PreNum,'1',PostNum);
+  evalbin('+',PreNum,'1',PostNum)),
+  aputvalue(H3,L3,Ref,PostNum,HP,LP,_).
+
+% [E-preDec]
+exp(H,L,E,HP,LP,PostNum) :-
+  is_decr(E,Id),
+  exp(H,L,Id,H1,L1,Ref),
+  ecgv(H1,L1,Ref,H2,L2,PreVal),
+  ectn(H2,L2,PreVal,H3,L3,PreNum),
+  (is_symbolic(PreNum)->binary_fn('-',PreNum,'1',PostNum);
+  evalbin('-',PreNum,'1',PostNum)),
+  aputvalue(H3,L3,Ref,PostNum,HP,LP,_).
+
+% if statements
+exp(H,L,E,HP,LP,EP) :-
+  is_if(E,E1,T,F),
+  always(T),always(F),
+  exp(H,L,E1,H1,L1,R1),
+  (R1='NONE'->HP=H1,LP=L1,EP=R1;
+  ecgv(H1,L1,R1,H2,LP,R2),
+  sctb(R2,EP),
+  updatebranch(H2,EP,H3),
+  updatebranchexpr(H3,E1,HP)).
+
+% ternary conditional statements
+exp(H,L,E,HP,LP,EP) :-
+  is_conditional(E,E1,E2,E3),
+  exp(H,L,E1,H1,L1,R1),
+  (R1='NONE'->HP=H1,LP=L1,EP=R1;
+  ecgv(H1,L1,R1,H2,L2,R2),
+  sctb(R2,BR),
+  % The following allows both paths to execute if BR is symbolic
+  % and unconstrained.
+  (equals(BR,'true'),exp(H2,L2,E2,HP,LP,EP);
+  equals(BR,'false'),exp(H2,L2,E3,HP,LP,EP))).
+
+% while statements
+exp(H,L,E,HP,LP,EP) :-
+  is_while(E,E1,B),
+  always(B),
+  exp(H,L,E1,H1,L1,R1),
+  ecgv(H1,L1,R1,H2,LP,R2),
+  sctb(R2,EP),
+  updatebranch(H2,EP,H3),
+  updatebranchexpr(H3,E1,HP).
+
+% with
+% [S-With-set]
+% exp(H,L,E,HP,LP,EP) :- is_with(E,E1),exp(H,L,E1,H1,L1,R1),ecgv(H1,L1,R1,H2,L2,V1),setscope(L,V1,H,HP,L3,L4),push_scope(L),push_scope(L3),push_scope(L4),LP=V1,EP='true'.
+% [S-With-reset] (leaving a with scope)
+% exp(H,L,E,HP,LP,EP) :- is_with(E,E1),E1='END',popscope(LN2),popscope(LN1),popscope(LO),resetscope(LO,LN1,LN2,H,HP),LP=LO.
+
+% [S-ForVarIn]
+% This case is should be effectively removed by the
+% ExpressionFlattener prior to submission to the 
+% semantics.
+%%% Check that this actually happens.
+
+% [S-ForIn]
+% for-in expects to be annotated with a unique identifier that specifies the "loop instance",
+% i.e. unique per loop entry/exit
+exp(H,L,E,HP,LP,EP) :-
+  is_forin(E,E1,E2,_),
+  % Handle iterator with var keyword or not.
+  (is_vardecl(E1,IterVar)->true;
+  is_id(E1,_),IterVar=E1),
+  exp(H,L,IterVar,H1,L1,IterRef),
+  exp(H1,L1,E2,H2,L2,R2),
+  ecgv(H2,L2,R2,H3,L3,ObjAddr),
+  (is_symbolic_mode->symbolic(V,_),
+  aputvalue(H3,L3,IterRef,V,H4,LP,_);
+  %%% Need a way of enumerating all properties of
+  %%% a concrete object value.
+  symbolic(ID,'String'),
+  not iteratedprop(ID,'&start'),
+  apforin(H3,L3,IterRef,'','&empty',ObjAddr,'&start',ID,H4,LP)),
+  symbolic(B,'Boolean'),
+  updatebranch(H4,B,HP),
+  EP='&undefined'.
+
+% "traditional" for loops
+exp(H,L,E,HP,LP,EP) :-
+  is_for(E,['EMPTY'],E2,['EMPTY'],_),
+  % For empty conditions
+  (E2=['EMPTY']->H2=H,LP=L,R1='true';
+  opt_exp(H,L,E2,H1,L1,BR),
+  ecgv(H1,L1,BR,H2,LP,BR2),
+  sctb(BR2,R1)),
+  updatebranch(H2,R1,H3),
+  updatebranchexpr(H3,E2,HP),
+  EP=R1.
+
+exp(H,L,E,HP,LP,EP) :-
+  %%% Haven't tested this with > 0 cases.
+  is_switch(E,Exp,Cases),
+  exp(H,L,Exp,H1,L1,Val),
+  %%% Need to pass in Val to be compared somehow.
+  always(Val),
+  (Cases=[]->EP='&undefined',HP=H1,LP=L1;
+  seq(H1,L1,Cases,HP,LP,EP)).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_try(E,B1,B2,B3),
+  exp(H,L,B1,H1,L1,_),
+  exp(H1,L1,B2,H2,L2,_),
+  exp(H2,L2,B3,HP,LP,_),
+  EP='&undefined'.
+
+exp(H,L,E,HP,LP,EP) :-
+  is_try(E,B1,B2),
+  exp(H,L,B1,H1,L1,_),
+  exp(H1,L1,B2,HP,LP,_),
+  EP='&undefined'.
+
+exp(H,L,E,HP,LP,EP) :-
+  is_catch(E,_,Block),
+  %%% Really should initialize the exception object.
+  exp(H,L,Block,HP,LP,_),
+  EP='&undefined'.
+
+exp(H,L,E,HP,LP,EP) :-
+  is_throw(E,Exp),
+  %%% Really should alloc an exception object.
+  exp(H,L,Exp,HP,LP,EP).
+
+exp(H,L,E,H,L,'&undefined') :-
+  is_block(E).
+
+% no-ops
+exp(H,L,'continue',H,L,E) :- always(H),always(L),always(E).
+exp(H,L,'break',H,L,E) :- always(H),always(L),always(E).
+exp(H,L,'',H,L,E) :- always(H),always(L),always(E).
+
+% argument list
+exp(H,L,[],H,L,[]).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_list(E),
+  E=[EN|ER],
+  exp(H,L,EN,H1,L1,R1),
+  exp(H1,L1,ER,HP,LP,R2),
+  append([R1],R2,EP).
+
+exp(H,L,E,HP,LP,EP) :-
+  is_list(E),
+  E=[EN],
+  exp(H,L,EN,HP,LP,EP).
+
+% [E-Void]
+exp(H,L,E,H1,L1,'&undefined') :- is_void(E,E1),exp(H,L,E1,H1,L1,VA),ispureval(VA).
+
+% [E-Delete-true]
+exp(H,L,E,H1,L1,'true') :- is_delete(E,E1),exp(H,L,E1,H1,L1,VA),ispureval(VA).
+
+% [E-Delete-false]
+exp(H,L,E,H2,L1,'true') :-
+  is_delete(E,E1),
+  exp(H,L,E1,H1,L1,R),
+  isref(R),ref(R,LO,M),
+  adelete(H1,LO,M,H2,_).
+
+% [I-Delete-empty]
+adelete(H,L,M,H,'true') :-
+  maps(H,L,O),
+  not hasprop(O,M,_).
+
+% [I-Delete-not]
+adelete(H,L,M,H,'false') :-
+  maps(H,L,O),
+  hasattr(O,M,'DontDelete').
+
+% [I-Delete-yes]
+adelete(H,L,M,H,'true') :-
+  maps(H,L,O),
+  not hasattr(O,M,'DontDelete'),
+  not hasprop(O,M,_).
+adelete(H,L,M,H1,'true') :-
+  maps(H,L,O),
+  not hasattr(O,M,'DontDelete'),
+  delheapprop(H,L,M,H1,_).
+
+% [E-Typeof-null]
+exp(H,L,E,H1,L1,'&undefined') :-
+  is_typeof(E,E1),
+  exp(H,L,E1,H1,L1,R),
+  isref(R),
+  ref(R,LR,_),
+  LR='&null'.
+
+% [E-Typeof-reference]
+exp(H,L,E,H2,L2,M) :-
+  is_typeof(E,E1),
+  exp(H,L,E1,H1,L1,R),
+  isref(R),
+  ref(R,LR,_),
+  LR\='&null',
+  atypeof(H1,L1,R,H2,L2,M).
+
+% [E-Typeof]
+exp(H,L,E,H2,L2,M) :-
+  is_typeof(E,E1),
+  exp(H,L,E1,H1,L1,VA),
+  ispureval(VA),
+  atypeof(H1,L1,VA,H2,L2,M).
+
+% [E-@Typeof]
+atypeof(H,L,E,HP,LP,M) :-
+  ecgv(H,L,E,HP,LP,V),
+  gettype(HP,V,M).
+
+% instanceof
+exp(H,L,E,HP,LP,EP) :-
+  is_instanceof(E,E1,E2),
+  exp(H,L,E1,H1,L1,R1),
+  exp(H1,L1,E2,H2,L2,R2),
+  ecgv(H2,L2,R1,H3,L3,V1),
+  ecgv(H3,L3,R2,H4,L4,V2),
+  instof(H4,L4,V1,V2,HP,EP),
+  LP=L4.
+
+% [E-Instof-Exc-obj]
+instof(H,L,_,L1,HP,ErrAddr) :-
+  is_concrete(L1),
+  %%% This should actually check |typeof L1 !== "function"|.
+  type(L1,T),T\='Object',
+  new_native_error('"invalid instanceof operand"','#TypeError#prototype',Err),
+  alloc(H,Err,HP,ErrAddr),
+  always(L).
+
+% [E-Instof-Exc-inst]
+% This rule seems to be unnecessary since @HasInstance
+% is not implemented as a property here, but as the 
+% ahasinstance predicate. It can return the exception
+% that would have been returned by this rule.
+  
+% [E-Instof-HasInst]
+instof(H,L,VA,L1,H,B) :-
+  is_concrete(VA),is_concrete(L1),
+  ispureval(VA),
+  type(L1,T),T='Object',
+  maps(H,L1,_),
+  ahasinstance(H,L1,VA,_,B),
+  isbool(B),
+  always(L).
+  
+% [E-Instof-prot]
+% This rule is subsumed by @HasInstance called from the
+% previous rule, which can return a boolean or an
+% exception.
+
+% [E-Instof] symbolic constructor
+instof(H,L,_,L1,HP,B) :-
+  is_symbolic(L1),
+  %%% Could possibly evaluate to an Error.
+  symbolic(B,'Boolean'),
+  %%% Too conservative
+  always(L),
+  HP=H.
+
+% [E-Instof] symbolic value, concrete constructor
+instof(H,L,V,L1,HP,B) :-
+  is_concrete(L1),is_symbolic(V),
+  % This check precludes the E-Instof-Exc-obj case.
+  type(L1,T),T='Object',
+  binary_fn('instanceof',V,L1,B),
+  always(L),
+  HP=H.
+
+% @HasInstance
+% The inputs to this predicate are guaranteed to 
+% be concrete values, though it's possible the 
+% prototype values returned by hasprop could be
+% symbolic.
+
+% [I-HasInstance],[I-HasInstance-rec]
+ahasinstance(H,L1,VA,HP,B) :-
+  isaddr(VA),
+  maps(H,L1,O),
+  hasprop(O,'"prototype"',L2),
+  type(L2,T),equals(T,'Object'),
+  maps(H,VA,O1),
+  hasprop(O1,'@Prototype',L3),
+  (equals(L3,L2),not notequals(L3,L2)->B='true',HP=H;true),
+  (not equals(L3,L2),notequals(L3,L2)->ahasinstance(H,L1,L3,HP,B);true),
+  (equals(L3,L2),notequals(L3,L2)->symbolic(B,'Boolean'),HP=H;true).
+
+% [I-HasInstance-Exc]
+ahasinstance(H,L1,VA,HP,ErrAddr) :-
+  isaddr(VA),
+  maps(H,L1,O),
+  hasprop(O,'"prototype"',PV),
+  type(PV,T),notequals(T,'Object'),
+  new_native_error('"Expecting a function in instanceof check"','#TypeError#prototype',Err),
+  alloc(H,Err,HP,ErrAddr).
+
+% [I-HasInstance-not]
+ahasinstance(H,_,PV,H,B) :-
+  isprimval(PV),
+  B='false'.
+
+% comma
+exp(H,L,E,HP,LP,EP) :-
+  is_comma(E,E1,E2),
+  exp(H,L,E1,H1,L1,_),
+  exp(H1,L1,E2,HP,LP,EP).
+
+% in
+exp(H,L,E,HP,LP,EP) :-
+  is_in(E,E1,E2),
+  exp(H,L,E1,H1,L1,EP1),
+  exp(H1,L1,E2,H2,L2,EP2),
+  ecgv(H2,L2,EP1,H3,L3,V1),
+  ecgv(H3,L3,EP2,H4,L4,V2),
+  in(H4,L4,V1,V2,HP,LP,EP).
+
+% expression or empty
+opt_exp(H,L,E,HP,LP,EP) :- exp(H,L,E,HP,LP,EP).
+opt_exp(H,L,E,H,L,E) :- is_empty(E).
+
+% [E-In-Exc]
+in(H,L,VA,PV,H,L,'&undefined') :-
+  ispureval(VA),
+  isprimval(PV),
+  type(PV,TPV),TPV\='Object'.
+
+% [E-In]
+%%% Need to allow for symbolic value if
+%%% in symbolic mode.
+in(H,L,M,L1,H,L,'true') :-
+  isstr(M),
+  isaddr(L1),
+  type(L1,T),T='Object',
+  maps(H,L1,O),
+  hasprop(O,M,_).
+in(H,L,M,L1,H,L,'false') :-
+  isstr(M),
+  isaddr(L1),
+  type(L1,T),T='Object',
+  maps(H,L1,O),
+  not hasprop(O,M,_).
+% Symbolic in
+in(H,L,M,L1,H,L,EP) :-
+  (is_symbolic(M)->true;is_symbolic(L1)),
+  symbolic(EP,'Boolean').
+
+isscope(H,L) :- maps(H,L,LObj),isscopeobj(LObj).
+  
+isscopeobj(O) :- O='#Global'->true;getprop(O,'@Scope',_).
+
+% [PasteScope]
+pastescope(H,SS,HP) :-
+  SS=[L1|LR],
+  isnotnull(L1),
+  LR=[L2|_],
+  heapprop(H,L1,'@Scope',L2,H1,_),
+  pastescope(H1,LR,HP).
+
+% [PasteScope-null]
+pastescope(H,SS,HP) :-
+  SS=[L|_],
+  isnull(L),
+  HP=H.
+
+% [PasteScope] symbolic
+pastescope(H,SS,HP) :-
+  SS=[L|_],
+  maybenull(L),
+  HP=H.
+
+% [CopyScope-Null]
+copyscope(H,L,SS) :-
+  isnull(L),
+  always(H),
+  SS=['&null'].
+
+% [CopyScope]
+copyscope(H,L,SS) :-
+  isnotnull(L),
+  maps(H,L,O),
+  hasprop(O,'@Scope',S),
+  copyscope(H,S,Sub),
+  append([L],Sub,SS).
+
+% [CopyScope] symbolic
+copyscope(H,L,SS) :-
+  maybenull(L),
+  always(H),
+  symbolic(S,_),
+  SS=[S].
+
+% auxiliary functions use by the with statement
+% SetScope
+% heapprop(H,L,M,VA,HP,O).
+setscope(L,L1,H,HP,L2,L3) :- L\=L1,findscope(L,L1,H,L3),maps(H,L1,O),hasprop(O,'@Scope',L2),heapprop(H,L3,'@Scope',L2,H2,_),heapprop(H2,L1,'@Scope',L,HP,_).
+setscope(L,L1,H,HP,L2,L3) :- L\=L1,findscope(L,L1,H,L3),null(L3),maps(H,L1,O),hasprop(O,'@Scope',L2),heapprop(H,L1,'@Scope',L,HP,_),L3='&null'.
+setscope(L,L1,H,HP,L2,L3) :- L\=L1,findscope(L,L1,H,L3),null(L3),maps(H,L1,O),not hasprop(O,'@Scope',_),heapprop(H,L1,'@Scope',L,HP,_),L2='&null',L3='&null'.
+setscope(L,L1,H,H,L2,L3) :- L=L1,L2='&null',L3='&null'.
+% FindScope
+findscope(L,L1,H,L2) :- null(L),always(L1),always(H),L2='&null'.
+findscope(L,L1,H,L2) :- maps(H,L,O),hasprop(O,'@Scope',L3),L3\=L1,findscope(L3,L1,H,L2).
+findscope(L,L1,H,L) :- maps(H,L,O),hasprop(O,'@Scope',L1).
+% ResetScope
+resetscope(_,L2,L3,H,H) :- null(L2),null(L3),always(H).
+resetscope(L1,L2,L3,H,HP) :- null(L3),heapprop(H,L1,'@Scope',L2,HP,_).
+resetscope(L1,L2,L3,H,HP) :- notnull(L2),notnull(L3),heapprop(H,L1,'@Scope',L2,H1,_),heapprop(H1,L2,'@Scope',L1,HP,_).
+
+% Update the structure representing JavaScript's arguments[i].
+updateargs(H,[],_,H).
+updateargs(H,Args,Idx,HP) :-
+  is_list(Args),
+  Args=[Arg|Rem],
+  inttostr(Idx,IdxStr),
+  add_arg(IdxStr,Arg),
+  NextIdx is Idx+1,
+  updateargs(H,Rem,NextIdx,HP).
+
+% @pforin
+% This predicate is only used in concrete mode.
+%%% This is incomplete.
+apforin(H,L,Iter,Body,VAE,ObjAddr,M,ID,HP,LP) :-
+  symbolic(V,_),
+  aputvalue(H,L,Iter,V,HP,LP,_),
+  iterateprop(ID,M),
+  always(Body),always(VAE),always(ObjAddr).
+
+% @VarList
+% [S-Var-init]
+avarlist(H,L,Args,HP,LP,EP) :-
+  is_list(Args),
+  Args=[Arg|Rest],
+  Rest\=[],
+  exp(H,L,Arg,H1,L1,_),
+  avarlist(H1,L1,Rest,HP,LP,EP).
+
+% [S-Var-empty]
+avarlist(H,L,Args,HP,LP,EP) :-
+  is_list(Args),
+  Args=[Arg],
+  exp(H,L,Arg,HP,LP,EP).
+
+% @ArrayLiteral
+% [E-AL]
+aarrayliteral(H,L,L1,N,[],HP,LP,L1) :-
+  inttostr(N,Len),
+  aput(H,L,L1,'"length"',Len,HP,LP,_).
+
+% [E-AL-init]
+aarrayliteral(H,L,O,N,Args,HP,LP,EP) :-
+  is_list(Args),
+  Args=[A|AR],
+  inttostr(N,NSTR),
+  makestr(NSTR,NQ),
+  exp(H,L,A,H1,L1,R1),
+  ecgv(H1,L1,R1,H2,L2,V1),
+  aput(H2,L2,O,NQ,V1,H3,L3,_),
+  is(NEXT,N+1),
+  aarrayliteral(H3,L3,O,NEXT,AR,HP,LP,EP).
+
+% @AddProps
+% [E-@AddProps-empty]
+aaddprops(H,L,O,[],H,L,O).
+
+% [E-Obj]
+aaddprops(H,L,O,Args,HP,LP,EP) :-
+  is_list(Args),
+  Args=[A|AR],
+  is_dataprop(A,M,E),
+  makestr(M,QM),
+  exp(H,L,E,H1,L1,R1),
+  ecgv(H1,L1,R1,H2,L2,V1),
+  aput(H2,L2,O,QM,V1,H3,L3,_),
+  aaddprops(H3,L3,O,AR,HP,LP,EP).
+
+% [E-@Fun-Call]
+afun(H,L,L1,L2,Args,HP,LP,EP) :- 
+  ecto(H,L,L1,H7,L7,L1P),
+  ecgv(H7,L7,L2,H3,L3,V1),
+  gettype(H,V1,'"function"'),
+  acall(H3,L3,V1,L1P,Args,HP,LP,EP).
+
+isnative(H,L,L1,L2,HP,LP) :-
+  ecto(H,L,L1,H1,L3,_),
+  ecgv(H1,L3,L2,HP,LP,V1),
+  isnativefun(V1).
+
+%%
+% expression getvalue context - eCgv
+%%
+
+% Special case for NONE value.
+ecgv(H,L,'NONE',H,L,'NONE').
+
+% pure values (primitives and addresses)
+ecgv(H,L,E,H,L,E) :- ispureval(E).
+
+% references
+ecgv(H,L,E,HP,LP,EP) :-
+  (isref(E)->
+  agetvalue(H,L,E,HP,LP,EP);
+  % symbolic values
+  is_symbolic(E),EP=E,HP=H,LP=L).
+
+% arg lists
+ecgv(H,L,[],H,L,[]).
+ecgv(H,L,E,HP,LP,EP) :-
+  is_list(E),
+  E=[EN|ER],
+  ecgv(H,L,EN,H1,L1,R1),
+  ecgv(H1,L1,ER,HP,LP,R2),
+  append([R1],R2,EP).
+
+% now for the statement ToBoolean context - sCtb
+% S-TB
+sctb(V,B) :- V='NONE'->B='NONE';toboolean(V,B).
+
+% type rules
+type_concrete(V,T) :-
+  % A constraint is already present for this case.
+  V='&undefined',T='Undefined'.
+type_concrete(V,T) :-
+  % A constraint is already present for this case.
+  V='&null',T='Null'.
+type_concrete(V,T) :-
+  % A constraint is already present for this case.
+  V='true',T='Boolean'.
+type_concrete(V,T) :-
+  % A constraint is already present for this case.
+  V='false',T='Boolean'.
+type_concrete(V,T) :- V='NONE',T='NONE'.
+type_concrete(V,T) :-
+  isnum(V),T='Number',
+  %%% Is this constraint needed?
+  binary_fn('HasType',V,'Number',IsNum),
+  constraint(IsNum).
+type_concrete(V,T) :-
+  % No need to log type constraint for references
+  % since these shouldn't be used directly in 
+  % Yices queries.
+  isref(V),T='Reference'.
+type_concrete(V,T) :-
+  isstr(V),T='String',
+  binary_fn('HasType',V,'String',IsStr),
+  constraint(IsStr).
+type_concrete(V,T) :-
+  isaddr(V),T='Object',
+  binary_fn('HasType',V,'Object',IsObj),
+  constraint(IsObj).
+type_concrete(V,T) :- 
+  (V='Number';V='Object';V='String';V='Reference';V='Boolean';V='Undefined';V='Null'),
+  T='Type'.
+
+type(V,T) :-
+  is_symbolic(V)->type_symbolic(V,T);type_concrete(V,T).
+
+% TypeConv
+typeconv('Undefined','"undefined"').
+typeconv('Null','"object"').
+typeconv('Boolean','"boolean"').
+typeconv('String','"string"').
+typeconv('Number','"number"').
+
+%%% Change this to isuserfun?
+is_user_fun(L) :-
+  is_concrete(L),
+  not isnativefun(L).
+is_user_fun(L) :-
+  is_symbolic(L),
+  unary_fn('IsNativeFun',L,Fn0),
+  unary_fn('not',Fn0,Fn1),
+  satisfiable(Fn1).
+is_unknown_fun(L) :-
+  is_symbolic(L).
+
+%
+% GetType returns the string representation of 
+% a variable's type when examined with the typeof operator.
+% This is opposed to the internal type returned by
+% the "type" predicate above.
+%
+
+% [T-GetType-prim]
+gettype(_,PV,M) :-
+  isprimval(PV),
+  type(PV,T),
+  typeconv(T,M).
+
+% [T-GetType-obj]
+gettype(_,L,M) :-
+  isaddr(L),
+  %%% Not quite right
+  not isnativefun(L),
+  not is_user_fun(L),
+  M='"object"'.
+
+% [T-GetType-fun (well,sort of...)]
+gettype(H,L,'"function"') :-
+  is_concrete(L),
+  is_user_fun(L),
+  maps(H,L,O),
+  %%% Don't think this is right.
+  getprop(O,'@Call',_).
+
+% [T-GetType-native]
+gettype(_,L,'"function"') :-
+  is_concrete(L),
+  isnativefun(L).
+
+% Symbolic GetType (overapproximates)
+%%% Can possibly be tightened up if need be.
+gettype(_,PV,M) :-
+  is_symbolic(PV),
+  (var(M)->symbolic(M,'String');true).
+
+
+% the rules for @Call
+% TODO: put L2 through eCto at the beginning of acall
+% I-Call
+% L: Scope in which the call occurs
+% L1: Address of target function
+% L2: Object to become the "this" pointer (generally
+%     the same as L1 unless executed through call or
+%     apply).
+%
+% Maffeis:
+% !IsNativeFun(l1)
+% H(l1).@Body = fun([x~]){P}
+% |[va~]| = n
+% L = CopyScope(H,l)
+% new_arguments(n,([va~]),l1) = args
+% alloc(H,args) = H1,l3
+% H1(l1).@FScope = l4:L1
+% H2 = PasteScope(H1,l4:L1)
+% new_activation(l3,l2,l4) = act
+% alloc(H2,act) = H3,l5
+% FP(H3,l5,{DontDelete},([x~]),0,n) = H4
+% VD(H4,l5,{DontDelete},P) = H5
+% FD(H5,l5,{DontDelete},P) = H6
+% -------------------------------------------- [I-Call]
+% H,l,l1.@Call(l2[,va~]) -> H6,l5,@FunExe(L,P)
+  
+% L:  scope from which the call was invoked
+% L1: address of the function being invoked
+% L2: scope passed as the @this object
+% L3: address of the arguments
+% L4: parent scope of the function being invoked
+% L5: address of the new activation record
+% LP: resulting scope after the function is entered
+acall(H,L,L1,L2,ArgsList,HP,LP,EP) :-
+  % This clause is for calls to user-defined functions only.
+  not isnativefun(L1),is_user_fun(L1),
+  % Update the callee meta-variable.
+  add_call(L1),
+  % Update the arguments structure.
+  updateargs(H,ArgsList,0,H1),
+  % Get the length of the arguments list (as int and string).
+  length(ArgsList,ArgsLen),inttostr(ArgsLen,ArgsLenStr),
+  % Save the current activation chain.
+  copyscope(H1,L,ActChain),
+  % Allocate the arguments list.
+  new_arguments(ArgsLenStr,ArgsList,L1,ArgsObj),
+  alloc(H1,ArgsObj,H2,L3),
+  % Get the lexical scope of the function being called.
+  maps(H2,L1,FunObj),
+  hasprop(FunObj,'@FScope',LChain),
+  % Update the heap's scope chain.
+  pastescope(H2,LChain,H3),
+  LChain=[L4|_],
+  % Create the new activation record.
+  new_activation(L3,L2,L4,ActObj),
+  alloc(H3,ActObj,H4,L5),
+  % Initialize the formals of the called function.
+  hasprop(FunObj,'@Formals',Fmls),
+  fp(H4,L5,'DontDelete',Fmls,0,ArgsLen,H5),
+  % Initialize all scope-local variables.
+  hasprop(FunObj,'@Vars',Vars),
+  vd(H5,L5,'DontDelete',Vars,H6),
+  % Initialize locally-declared functions.
+  hasprop(FunObj,'@FuncNames',Funcs),
+  hasprop(FunObj,'@FuncLocs',Locs),
+  fd(H6,L5,'DontDelete',Funcs,Locs,H7),
+  % Append the activation chain to the active scopes.
+  pastescope(H7,ActChain,H8),
+  HP=H8,LP=L5,EP='NONE'.
+
+% I-Call-Native
+acall(H,L,L1,L2,A,HP,L,EP) :-
+  isnativefun(L1),
+  not isvarlen(L1),
+  % Update the called function metavariable.
+  add_call(L1),
+  maps(H,L1,O1),
+  hasprop(O1,'"length"',N),
+  (is_concrete(N)->
+  inttostr(NI,N),
+  % Fill the arguments array with the prescribed number of
+  % &undefined arguments.
+  fpn(A,NI,[],A1);
+  % For symbolic length, just use all args.
+  A1=A),
+  % Update the arguments metavariable.
+  updateargs(H,A1,0,H1),
+  length(A1,I1),inttostr(I1,N1),
+  heapprop(H1,L1,'@Actuals',N1,H2,_),
+  new_arguments(N,A1,L,Args),
+  alloc(H2,Args,H3,L3),
+  (N1=0->LArgs='&null';LArgs=L3),
+  aexe(H3,L,L1,L2,A1,H4,EP),
+  HP=H4.
+
+% I-Call-Native-Var
+acall(H,L,L1,L2,A,HP,L,EP) :-
+  isnativefun(L1),
+  isvarlen(L1),
+  % Update metavariables as soon as possible (at least before aexe) in
+  % case the native function isn't modeled.
+  add_call(L1),
+  updateargs(H,A,0,H1),
+  maps(H1,L1,_),
+  length(A,I1),inttostr(I1,N1),
+  heapprop(H1,L1,'@Actuals',N1,H2,_),
+  aexe(H2,L,L1,L2,A,H3,EP),
+  HP=H3.
+
+% formal parameters for native functions
+
+% H-FPN
+fpn(_,0,A1,A1).
+
+% H-FPN-actual
+fpn(A,N,ACC,A1) :-
+  N>0,
+  A=[AH|AT],
+  M is N-1,
+  append(ACC,[AH],ACC2),
+  fpn(AT,M,ACC2,A1).
+
+% H-FPN-formal
+fpn([],N,ACC,A1) :-
+  N>0,
+  M is N-1,
+  append(ACC,['&undefined'],ACC2),
+  fpn([],M,ACC2,A1).
+
+% Wrapper for aconstruct which prevents meta-data from being
+% accumulated. This should be called when constructing objects from
+% within native function models.
+nativeconstruct(H,L,L1,Args,HP,LP,EP) :- 
+  enter_native_mode,
+  (dbg-> (isnativefun(L1)->true;err('non-native function in nativeconstruct'));true),
+  aconstruct(H,L,L1,Args,HP,LP,EP),
+  leave_native_mode.
+
+% the rules for @Construct
+% I-Construct
+%%% This differs slightly from the Maffeis semantics: there is no guard
+%%% against native functions. Such a check seems to result in inconsistency
+%%% because the prototype of a native function necessarily has type Object.
+aconstruct(H,L,L1,Args,HP,LP,EP) :- 
+  maps(H,L1,O1),
+  hasprop(O1,'"prototype"',L2),
+  type(L2,T),T='Object',
+  new_object('"Object"',L2,NewObj),
+  alloc(H,NewObj,H3,L3),
+  acall(H3,L,L1,L3,Args,H4,_,CR),
+  aconstructcall(H4,L,L3,CR,HP,LP,EP).
+
+% I-Construct-Global
+aconstruct(H,L,L1,Args,HP,LP,EP) :- 
+  maps(H,L1,O1),
+  hasprop(O1,'"prototype"',PV),
+  type(PV,T),T\='Object',
+  new_object('"Object"','#Object#prototype',NO),
+  alloc(H,NO,H2,L2),
+  acall(H2,L,L1,L2,Args,H3,_,CR),
+  aconstructcall(H3,L,L2,CR,HP,LP,EP).
+
+% Get the @Class to assign to objects constructed by this function
+conclass(_,L,'"Object"') :- not isnativeconstr(L).
+conclass(H,L,C) :- isnativeconstr(L),maps(H,L,O),hasprop(O,'@Class',C).
+
+% get the constructor form of a function
+conimpl(_,L,L) :- not isnativeconstr(L).
+conimpl(H,L,C) :- isnativeconstr(L),maps(H,L,O),hasprop(O,'"constructor"',C).
+
+% the rules for @ConstructCall
+% I-CCall-obj
+%%%
+aconstructcall(H,L,L1,L2,H,L,L2) :-
+  type(L2,T),T='Object',
+  always(H),always(L),always(L1).
+aconstructcall(H,L,L1,L2,H,L,L1) :-
+  type(L2,T),T\='Object',
+  always(H),always(L),always(L1).
+
+% the rules for FP
+% H-FP
+fp(H,_,_,[],_,_,H).
+
+% H-FP-actual
+% L: address of the activation record
+% Attr: always {DontDelete} as far as I can tell
+% Args: list of names of formals
+% N1: zero-indexed position of argument to be processed
+% N2: total number of formal arguments
+fp(H,L,Attr,Args,N1,N2,HP) :-
+  N1<N2,
+  Args=[First|Rest],
+  makestr(First,Fstr),
+  maps(H,L,ActObj),
+  hasprop(ActObj,'"arguments"',ArgsAddr),
+  maps(H,ArgsAddr,ArgsObj),
+  inttostr(N1,SN1),
+  makestr(SN1,QN1),
+  hasprop(ArgsObj,QN1,VA),
+  heapprop(H,L,Fstr,VA,H1,_),
+  is(Next,N1+1),
+  fp(H1,L,Attr,Rest,Next,N2,HP).
+
+% H-FP-formal
+fp(H,L,Attr,Args,N1,N2,HP) :-
+  N1>=N2,
+  Args=[First|Rest],
+  makestr(First,Fstr),
+  heapprop(H,L,Fstr,'&undefined',H1,_),
+  is(Next,N1+1),
+  fp(H1,L,Attr,Rest,Next,N2,HP).
+
+%
+% Variable declaration
+%
+
+% [H-VD]
+% Terminal case
+vd(H,_,_,[],H).
+
+% [H-VD-init]
+% Variable initializer
+% Not implemented because initializer assignments are processed through
+% the exp mechanism after declaration is done through [H-VD-var].
+
+% [H-VD-init-ignore]
+% Declaration (without initialization) has no effect if the scope already
+% has a variable of the same name. Maffies seems to suggest that even
+% a second initialization has no effect, but this is belied by testing
+% in d8.
+%%% Not implemented
+
+% [H-VD-var]
+% Variable declaration only, resulting in undefined value.
+vd(H,L,Attr,Vars,HP) :-
+  is_list(Vars),
+  Vars=[First|Rest],
+  makestr(First,Id),
+  % Allow typed variables to carry that type from initialization.
+  % This is safe (if confusing) since Closure tells us that all uses
+  % of this variable have this type.
+  Val='&undefined',
+  heapprop(H,L,Id,Val,H1,_),
+  vd(H1,L,Attr,Rest,HP).
+
+%%% Should only occur in symbolic mode. In concrete mode
+%%% an exception would occur.
+vd(H,_,_,Vars,H) :- is_symbolic(Vars).
+
+%
+% Function declaration
+% 
+
+% [H-FD]
+fd(H,_,_,[],_,H).
+
+% [H-FD-fd]
+% Dynamically allocate locally-scoped functions (possibly
+% shadowing higher-up functions).
+fd(H,L,Attr,Funcs,Locs,HP) :-
+  Funcs=[FirstFunc|OtherFuncs],
+  Locs=[FirstLoc|OtherLocs],
+  makestr(FirstFunc,FirstName),
+  heapprop(H,L,FirstName,FirstLoc,H1,_),
+  fd(H1,L,Attr,OtherFuncs,OtherLocs,HP).
+
+% Properties for new_Object
+chasprop(O,'@Class',M) :- new_object(M,_,O).
+chasprop(O,'@Prototype',L) :- new_object(_,L,O).
+
+% Properties for new_Number
+chasprop(O,'@Class','"Number"') :- new_number(_,O).
+chasprop(O,'@Prototype','#Number#prototype') :- new_number(_,O).
+
+% Properties for new_String
+chasprop(O,'@Class','"String"') :- new_string(_,O).
+chasprop(O,'@Prototype','#String#prototype') :- new_string(_,O).
+
+% Properties for new_Boolean
+chasprop(O,'@Class','"Boolean"') :- new_boolean(_,O).
+chasprop(O,'@Prototype','#Boolean#prototype') :- new_boolean(_,O).
+
+% Properties for new_native_error
+chasprop(O,'@Class','"Error"') :- new_native_error(_,_,O).
+chasprop(O,'@Prototype',L) :- new_native_error(_,L,O).
+chasprop(O,'"message"',M) :- new_native_error(M,_,O).
+chasprop(O,'"constructor"','#Error') :- new_native_error(_,_,O).
+
+% the rule for new_activation
+chasprop(O,'@Class','"Object"') :- new_activation(_,_,_,O).
+chasprop(O,'@Scope',L) :- new_activation(_,_,L,O).
+chasprop(O,'@Prototype','&null') :- new_activation(_,_,_,O).
+chasprop(O,'@IsActivation','true') :- new_activation(_,_,_,O).
+chasprop(O,'"arguments"',L) :- new_activation(L,_,_,O).
+
+% the rule for new_arguments
+chasprop(O,NumStr,V) :-
+  numprop(NumStr),
+  new_arguments(_,Args,_,O),
+  makestr(NS,NumStr),
+  inttostr(N,NS),
+  % The ith function uses 1-based indexing.
+  I is N+1,
+  ith(I,Args,V).
+
+chasprop(O,'@argumentsFlag','true') :- new_arguments(_,_,_,O).
+chasprop(O,'@Prototype','#Object#prototype') :- new_arguments(_,_,_,O).
+chasprop(O,'"callee"',L) :- new_arguments(_,_,L,O).
+chasprop(O,'"length"',N) :- new_arguments(N,_,_,O).
+
+% Get a stored property value, or generate a new symbolic
+% value for the property. The shasprop predicate can be
+% defined for some native objects which have nested
+% property trees.
+hasprop(O,M,V) :-
+  getprop(O,M,V)->true;symbolic(V,_).
+
+% getprop can be called directly (instead of through hasprop) to
+% disallow the generation of new symbolic values. This is needed when
+% looking up members in the prototype or scope chains.
+%
+% Several types of property declarations are evaluated; the ordering
+% ensures that the first answer found is used.
+% ghasprop ("ground"): specifies properties in the initial environment
+%   that can always be counted on because of read-only status. This
+%   predicate is defined in the generated native.P file.
+% ihasprop ("initial"): specifies properties that are set in the
+%   initial environment but may have changed. This can only be assumed
+%   in concrete (counter-example checking) mode because the initial
+%   environment in symbolic (model building) mode is unconstrained with
+%   respect to writable properties. This is also defined in native.P.
+% chasprop ("chained"): provides for property lookup through the
+%   chained heap updates that occur during evaluation.
+% shasprop ("symbolic"): indicates that a property exists in the
+%   initial environment, but the value is unknown, even in concrete
+%   mode. This is the case for native constructs such as
+%   document.cookie or window.location.
+getprop(O,M,V) :-
+  (ghasprop(O,M,Val)->true;
+  %%% Assumes @Prototype (i.e. the __proto__ property) is read-only
+  (M\='@Prototype',ghasprop(O,'@Prototype',PL),init_maps(PL,P),getprop(P,M,Val)->true;
+  (is_concrete_mode,ihasprop(O,M,Val)->true;
+  (chasprop(O,M,Val)->true;
+  shasprop(O,M,Val))))),
+  V=Val.
+
+% @GetValue
+
+% [R-GetValue-ref]
+% [R-GetValue-val]
+% [R-GetValue-Exc]
+% Reference is given with a non-null base
+agetvalue(H,L,E,HP,L,EP) :-
+  type(E,T),
+  (T='Reference'->
+  ref(E,L1,M),
+  (isnull(L1)->
+  new_native_error('"Reference with null base"','#ReferenceError#prototype',Err),
+  alloc(H,Err,HP,EP);
+  % Only call add_read if the receiver is not a scope.
+  (isscope(H,L1)->true;add_read(L1,M)),
+  aget(H,L1,M,EP,HP));
+  % Not a reference.
+  true).
+
+% @Get
+% This uses some extra logic based on the is_symbolic_mode
+% flag so that symbolic values can be returned when evaluating
+% statements in isolation, and the concrete &undefined value
+% can be returned when evaluating the whole program.
+
+getfromanalysis(H,L,M,VA,HP) :-
+  isscope(H,L),
+  % The success of calltarget indicates that a prepass has determined
+  % that the stand-alone id M points to function VA. The receiver must
+  % be a scope for this to be true.
+  calltarget(M,VA)->HP=H;
+  varlookup(M,L),
+  (maps(H,L,O),getprop(O,M,VA)->HP=H;
+  symbolic(VA,_),
+  heapprop(H,L,M,VA,HP,_)).
+
+% This meta-predicate triages various cases that
+% need special handling.
+aget(H,L,M,VA,HP) :-
+  L\='&undefined',
+  (getfromanalysis(H,L,M,VA,HP)->true;
+  (numprop(M), %%% Check for positive int.
+  maps(H,L,Arr),
+  hasprop(Arr,'@Class',Class),Class='"Array"'->
+  aget_array(H,L,M,VA,HP);
+  aget_normal(H,L,M,VA,HP))).
+
+aget(H,L,M,ErrAddr,HP) :-
+  L='&undefined',
+  always(M),
+  new_native_error('"Cannot read property of undefined"','#TypeError#prototype',Err),
+  alloc(H,Err,HP,ErrAddr).
+
+% [I-Get]
+% Prototype is not null
+aget_normal(H,L,M,VA,HP) :-
+  prototype(H,L,M,H1,L1),
+  notnull(L1),
+  maps(H1,L1,O),
+  % If the property can be retrieved (which is possible even
+  % if the object is symbolic), then return the value.
+  % Otherwise, we return a symbolic value in symbolic_mode,
+  % or else a concrete &undefined value.
+  (getprop(O,M,Val)->VA=Val,HP=H1;aget_undefined(H1,L1,M,VA,HP)).
+
+% [I-Get-null]
+% Prototype is null
+aget_normal(H,L,M,VA,HP) :-
+  prototype(H,L,M,H1,L1),
+  null(L1),
+  aget_undefined(H1,L,M,VA,HP).
+
+% Special case for Arrays
+aget_array(H,L,M,VA,HP) :-
+  inttostr(N,M),
+  maps(H,L,O),
+  (getprop(O,M,Val)->VA=Val;
+  (hasprop(O,'"length"',Len),
+  is_concrete(Len)->
+  evalbin('<',N,Len,InBounds),
+  (InBounds='true'->
+  symbolic(VA,_);VA='&undefined');
+  %%% Could get more precise here.
+  symbolic(VA,_))),
+  HP=H.
+
+% Subroutine to triage symbolic vs. concrete return values.
+aget_undefined(H,L,M,VA,HP) :-
+  (is_symbolic_mode->true;
+  (is_symbolic(L)->true;
+  (is_symbolic(M)->true;
+  is_wild(M))))->
+  symbolic(VA,_),heapprop(H,L,M,VA,HP,_);
+  VA='&undefined',HP=H.
+
+% Prototype lookup
+% Given an object and a member name, follow the
+% prototype chain to find the object which defines
+% this member. A null address is returned if no
+% value is found.
+
+% [Prototype-null]
+% The object pointer is (definitely) null.
+prototype(H,L,_,H,LP) :-
+  isnull(L),
+  LP='&null'.
+
+% [Prototype-ref]
+% H(L) has property M.
+prototype(H,L,M,H,L) :-
+  isnotnull(L),
+  maps(H,L,O),
+  getprop(O,M,_).
+
+% [Prototype-lookup]
+% Follow the prototype chain up one level if
+% the member is not found on the current object.
+prototype(H,L,M,HP,LP) :-
+  isnotnull(L),
+  maps(H,L,O),
+  not getprop(O,M,_),
+  (getprop(O,'@Prototype',L1)->
+  (L1=L->symbolic_object(H,LP,H1),
+  heapprop(H1,L,'@Prototype',LP,HP,_);
+  prototype(H,L1,M,HP,LP));
+  symbolic_object(H,LP,H1),
+  heapprop(H1,L,'@Prototype',LP,HP,_)).
+
+% Symbolic prototype lookup.
+prototype(H,L,_,HP,LP) :-
+  maybenull(L),
+  symbolic_object(H,LP,HP).
+
+symbolic_object(H,ObjPtr,HP) :-
+  symbolic(Obj,'Object'),
+  alloc(H,Obj,HP,ObjPtr).
+
+% the rules for Scope
+% Scope-ref
+scope(H,L,M,L) :-
+  notnull(L),
+  maps(H,L,O),
+  getprop(O,M,_).
+
+% Scope-lookup
+scope(H,L,M,LP) :-
+  notnull(L),
+  maps(H,L,O),
+  not getprop(O,M,_),
+  getprop(O,'@Scope',L2),
+  scope(H,L2,M,LP).
+
+% Scope-symbolic
+% If we can't follow the concrete scope
+% chain upwards, survey the user functions
+% to see if any have declared vars of the
+% given name. Loop through the ones that do
+% (hopefully only one, given Closure's renaming
+% pass).
+scope(H,L,M,LP) :-
+  notnull(L),
+  maps(H,L,O),
+  not getprop(O,M,_),
+  not getprop(O,'@Scope',_),
+  (varlookup(M,LP)->true;
+  % If the global scope doesn't explicitly declare a matching variable,
+  % still allow #Global to be returned in concrete mode. For symbolic
+  % mode, we need to return a symbolic scope.
+  not varlookup(M,'#Global'),
+  scope(H,'&null',M,LP)).
+
+% Scope-null
+scope(_,'&null',_,'&null').
+
+% @PutValue
+% the case where the base of v is null
+aputvalue(H,L,V,VA,HP,LP,EP) :-
+  type(V,T),T='Reference',
+  ref(V,LN,M),
+  null(LN),
+  % Don't call add_assign here since #Global is a scope.
+  aput(H,L,'#Global',M,VA,HP,LP,EP).
+
+% the case where the base of v is not null
+aputvalue(H,L,V,VA,HP,LP,EP) :-
+  type(V,T),T='Reference',
+  ref(V,LN,M),
+  notnull(LN),
+  % Only add_assign if the receiver is not a scope.
+  (isscope(H,LN)->true;add_assign(LN,M)),
+  aput(H,L,LN,M,VA,HP,LP,EP).
+
+% the rules for @Put
+% I-Put-create and I-Put-replace
+% this uses an external predicate called heapprop.
+% obligations of this predicate are:
+% 1. creates a new heap variable
+% 2. creates a new object
+% This splits the cases in which the source of the assignment is a
+% function reference and when it's not. This keeps the funfacts.P 
+% and persist.cpp storage consistent.
+aput(H,L,L1,M,VA,HP,L,VA) :-
+  maps(H,L1,O),
+  hasprop(O,'@Class',C),
+  C\='"Array"',
+  heapprop(H,L1,M,VA,HP,_).
+  %(fundef(F,_,_,_,VA,_,_,_)->heapprop(H,L1,M,VA,HP,F);heapprop(H,L1,M,VA,HP,_)),
+
+% I-Put-not
+aput(H,L,L1,M,VA,HP,L,VA) :-
+  % I-CanPut-not
+  prototype(H,L1,M,HP,L2),
+  notnull(L2),
+  maps(H,L2,O),
+  hasattr(O,M,'ReadOnly').
+
+% @Put for Arrays
+% The @Put rules for Arrays are not named.
+% The first rule is covered by our I-Put-not.
+
+% The second and third rules correspond to I-Put-create and I-Put-replace,
+% but include a check that the assigned property is not an index or "length".
+aput(H,L,L1,M,VA,HP,L,VA) :-
+  maps(H,L1,O),
+  hasprop(O,'@Class',C),
+  C='"Array"',
+  M\='"length"',
+  not isarrayindex(M),
+  heapprop(H,L1,M,VA,HP,_).
+
+% The fourth and fifth rules correspond to I-Put-create and I-Put-replace,
+% but for indices less than the current value of "length" (in which case
+% nothing special happens).
+% The sixth and seventh rules correspond to I-Put-create and I-Put-replace
+% but for indices greater than or equal to the current value of "length".
+% All four of these rules are grouped together here.
+aput(H,L,L1,M,VA,HP,L,VA) :-
+  maps(H,L1,O),
+  hasprop(O,'@Class',C),
+  C='"Array"',
+  isarrayindex(M),
+  array_fixlength(H,L1,M,H1),
+  heapprop(H1,L1,M,VA,HP,_).
+
+% TODO require an integer in the right range
+isarrayindex(M) :- makestr(NS,M),isnum(NS).
+
+array_fixlength(H,L1,M,HP) :-
+  maps(H,L1,O),
+  hasprop(O,'"length"',LenS),
+  inttostr(Len,LenS),
+  makestr(NS,M),
+  inttostr(N,NS),
+  array_fixlength_aux(H,L1,Len,N,HP).
+
+array_fixlength_aux(H,_,Len,N,H) :- Len > N.
+array_fixlength_aux(H,L,Len,N,HP) :-
+  N >= Len,
+  M is N + 1,
+  inttostr(M,MS),
+  heapprop(H,L,'"length"',MS,HP,_).
+
+% This rule is for assignment to "length" for arrays, in which case
+% index properties greater than or equal to the new length are
+% implicitly deleted.
+aput(H,L,L1,M,VA,HP,LP,Ret) :-
+  M='"length"',
+  maps(H,L1,O),
+  hasprop(O,'@Class',C),
+  C='"Array"',
+  prototype(H,L1,M,H1,L2),
+  % I-CanPut-null
+  (isnull(L2)->true;
+  maps(H1,L2,O2),
+  % I-CanPut-yes
+  not hasattr(O2,M,'ReadOnly')),
+  %%% Maffeis has some thing about ToUInt32(VA) != ToNumber(VA).
+  aputlen(H1,L,L1,VA,HP,LP,Ret).
+
+% TODO @PutLen throws an error on a non-integral input
+
+aputlen(H,L,L1,VA,HP,L,NS) :-
+  tonumber(H,L,VA,H,NS),inttostr(N,NS),
+  maps(H,L1,O),hasprop(O,'"length"',NSOld),inttostr(NOld,NSOld),
+  heapprop(H,L1,'"length"',NS,H1,_),
+  expunge(N,NOld,H1,L1,HP).
+
+expunge(N,Max,H,_,H) :- N >= Max.
+expunge(N,Max,H,L,HP) :-
+  N < Max,
+  inttostr(N,NS),
+  makestr(NS,NSS),
+  delheapprop(H,L,NSS,H1,_),
+  M is N + 1,
+  expunge(M,Max,H1,L,HP).
+
+% the rules for @CanPut
+% I-CanPut
+acanput(H,L,M,R,HP) :-
+  prototype(H,L,M,HP,L1),
+  % I-CanPut-null
+  (isnull(L1)->R='true';
+  (isnotnull(L1)->
+  maps(H,L1,O),
+  % I-CanPut-not
+  (hasattr(O,M,'ReadOnly')->R='false';
+  % I-CanPut-yes
+  R='true');
+  % I-CanPut-symbolic
+  symbolic(R,'Boolean'))).
+
+% the rules for ToPrimitive
+% [TC-ToPrimitive-obj]
+toprimitive(H,L,L1,PT,HP,PV) :-
+  type(L1,T),equals(T,'Object'),
+  % A symbolic value will almost certainly not have a
+  % concrete valueOf or toString method, so just return
+  % a new value with the prescribed type.
+  (is_symbolic(L1)->restrict_type(L1,PT,PV),HP=H;
+  adefaultvalue(H,L,L1,PT,HP,PV)).
+
+toprimitive(H,_,PV,_,H,PV) :-
+  type(PV,T),
+  % Use not-space-equals here so that values with symbolic type
+  % must go through the other toprimitive clause.
+  not equals(T,'Object').
+
+% @DefaultValue
+% [I-DefaultValue-String-obj]
+adefaultvalue(H,L,L1,PT,HP,EP) :-
+  equals(PT,'String'),
+  aget(H,L1,'"toString"',L2,H1),
+  maps(H1,L2,O),hasprop(O,'@Call',_),
+  acall(H1,L,L2,L1,[],H3,L3,E3),
+  agetdefault(H3,L3,L1,'"valueOf"',E3,HP,_,EP).
+
+% [I-DefaultValue-Number-obj]
+adefaultvalue(H,L,L1,PT,HP,EP) :-
+  equals(PT,'Number'),
+  aget(H,L1,'"valueOf"',L2,H1),
+  maps(H1,L2,O),hasprop(O,'@Call',_),
+  acall(H1,L,L2,L1,[],H3,L3,E3),
+  agetdefault(H3,L3,L1,'"toString"',E3,HP,_,EP).
+
+% [I-DefaultValue-String]
+adefaultvalue(H,L,L1,PT,HP,EP) :-
+  equals(PT,'String'),
+  aget(H,L1,'"toString"',VA,H1),
+  type(VA,T),notequals(T,'Object'),
+  agetdefault(H1,L,L1,'"valueOf"',VA,HP,_,EP).
+
+% [I-DefaultValue-Number]
+adefaultvalue(H,L,L1,PT,HP,EP) :-
+  equals(PT,'Number'),
+  aget(H,L1,'"valueOf"',VA,H1),
+  type(VA,T),notequals(T,'Object'),
+  agetdefault(H1,L,L1,'"toString"',VA,HP,_,EP).
+
+% @GetDefault
+%
+% Either convert the object to a primitive value
+% by using the method name passed by adefaultvalue,
+% or throw an exception if the method doesn't
+% exist or doesn't return a primitive.
+%
+
+% [I-GetDefault-pv]
+% Return a primitive value for itself.
+agetdefault(H,L,_,_,PV,H,L,PV) :- maybeprimval(PV).
+
+% [I-GetDefault-next]
+% Call the prescribed method to get the primitive value.
+% "fail" is passed to the next iteration to prevent
+% further recusion.
+agetdefault(H,L,L1,M,V,HP,LP,EP) :-
+  M\='"fail"',
+  not maybeprimval(V),
+  aget(H,L1,M,L2,H1),
+  maps(H1,L2,O2),
+  getprop(O2,'@Call',_),
+  acall(H1,L,L2,L1,[],H3,L3,E3),
+  agetdefault(H3,L3,L1,'"fail"',E3,HP,LP,EP).
+
+% [I-GetDefault-Exc-fail]
+% If we're on the second level of recusion and haven't
+% gotten a primitive yet, throw an exception. 
+agetdefault(H,L,_,M,V,HP,L,ErrAddr) :-
+  M='"fail"',
+  not maybeprimval(V),
+  new_native_error('"Cannot get default value"','#TypeError#prototype',Err),
+  alloc(H,Err,HP,ErrAddr).
+
+% [I-GetDefault-Exc]
+% The object doesn't have the proper conversion method.
+agetdefault(H,L,L1,M,V,HP,L,ErrAddr) :-
+  not maybeprimval(V),
+  M\='"fail"',
+  aget(H,L1,M,L2,H1),
+  maps(H1,L2,O2),
+  not getprop(O2,'@Call',_),
+  new_native_error('"Cannot get default value"','#TypeError#prototype',Err),
+  alloc(H1,Err,HP,ErrAddr).
+
+% Generate a function asserting equality of various members of the
+% two objects.
+fnextra(H,Addr0,Addr1,HP,Fn) :-
+  get_policy_idx(Idx),
+  polprops(Idx,Props),
+  extraprops(H,Props,Addr0,Addr1,HP,'true',Fn).
+
+extraprops(H,Props,Addr0,Addr1,HP,InFn,OutFn) :-
+  Props=[]->OutFn=InFn,HP=H;
+  Props=[Prop|Rest],
+  propeq(H,Prop,Addr0,Addr1,H1,Fn),
+  extraprops(H1,Rest,Addr0,Addr1,HP,Fn,OutFn).
+
+% Generate an assertion that the specified property of the objects at
+% the two given locations are equal.
+propeq(H,Prop,Addr0,Addr1,HP,Fn) :-
+  maps(H,Addr0,Obj0),
+  (getprop(Obj0,Prop,PropVal0)->H1=H;
+  hasprop(Obj0,Prop,PropVal0),
+  heapprop(H,Addr0,Prop,PropVal0,H1,_)),
+  trinary_fn('HasProp',Addr0,Prop,PropVal0,PropFn0),
+  maps(H1,Addr1,Obj1),
+  (getprop(Obj1,Prop,PropVal1)->H2=H1;
+  hasprop(Obj1,Prop,PropVal1),
+  heapprop(H1,Addr1,Prop,PropVal1,H2,_)),
+  trinary_fn('HasProp',Addr1,Prop,PropVal1,PropFn1),
+  binary_fn('=',PropVal0,PropVal1,MainFn),
+  binary_fn('and',PropFn0,PropFn1,PropFn),
+  binary_fn('and',PropFn,MainFn,Fn),
+  HP=H2.
+
+% Note undefinedness of policy-specific properties. Be sure to call
+% this prior to setting properties that should be defined (e.g. before
+% aaddprops when evaluating an object literal).
+undefpolprops(H,ObjAddr,HP) :-
+  get_policy_idx(Idx),
+  polprops(Idx,Props),
+  undefprops(H,ObjAddr,Props,HP).
+
+% Subroutine of undefpolprops. Can potentially be called independently.
+undefprops(H,ObjAddr,Props,HP) :-
+  Props=[]->HP=H;
+  Props=[Prop|OtherProps],
+  heapprop(H,ObjAddr,Prop,'&undefined',H1,_),
+  undefprops(H1,ObjAddr,OtherProps,HP).
+
+%
+% Conversion to Object
+%
+
+% eCto ("to object" expression context)
+% Maffeis checks for type=Object here, but
+% that seems extraneous since toobject accounts
+% for that.
+ecto(H,L,VA,HP,L,VAP) :- toobject(H,L,VA,HP,VAP).
+
+% [TC-ToObject-obj]
+toobject(H,_,V,H,V) :- type(V,T),T='Object'.
+
+% [TC-ToObject-num]
+toobject(H,_,V,HP,ObjAddr) :-
+  type(V,T),T='Number',
+  new_number(V,Obj),
+  alloc(H,Obj,HP,ObjAddr).
+
+% [TC-ToObject-str]
+toobject(H,_,V,HP,ObjAddr) :-
+  type(V,T),T='String',
+  new_string(V,Obj),
+  alloc(H,Obj,H1,ObjAddr),
+  %%% Check against Maffeis semantics.
+  heapprop(H1,ObjAddr,'@Value',V,HP,_),
+  trinary_fn('HasProp',ObjAddr,'"constructor"','#String',Fn),
+  constraint(Fn).
+
+% [TC-ToObject-bool]
+toobject(H,_,V,HP,ObjAddr) :-
+  type(V,T),T='Boolean',
+  new_boolean(V,Obj),
+  alloc(H,Obj,HP,ObjAddr).
+
+% [TC-ToObject-Exc-null]
+toobject(H,_,V,HP,ErrAddr) :-
+  type(V,T),T='Null',
+  new_native_error('"Cannot read property of null"','#TypeError#prototype',Err),
+  alloc(H,Err,HP,ErrAddr).
+
+% [TC-ToObject-Exc-undef]
+toobject(H,_,V,HP,ErrAddr) :-
+  type(V,T),T='Undefined',
+  new_native_error('"Cannot read property of undefined"','#TypeError#prototype',Err),
+  alloc(H,Err,HP,ErrAddr).
+
+% Symbolic conversion to object.
+toobject(H,_,V,HP,ObjAddr) :-
+  is_symbolic(V),
+  type(V,T),is_symbolic(T),
+  restrict_type(V,'Object',Obj),
+  % If we've previously converted to an object, don't allocate.
+  (alloc(_,Obj,_,ObjAddr)->HP=H;alloc(H,Obj,HP,ObjAddr)).
+
+%
+% Conversion to Boolean
+%
+
+% eCtb / @TB
+ectb(V,B) :- toboolean(V,B).
+
+% the rules for ToBoolean
+% TC-ToBoolean-obj
+toboolean(V,B) :- type(V,T),T='Object',B='true'.
+
+% TC-ToBoolean-num
+toboolean(V,B) :-
+  is_concrete(V),
+  type(V,T),
+  T='Number',
+  (V\='0',V\='-0',V\='&NaN'->B='true';B='false').
+
+toboolean(V,B) :-
+  is_symbolic(V),
+  type(V,T),
+  T='Number',
+  %%% Need to handle -0 and &NaN cases.
+  (notequals(V,'0'),not equals(V,'0')->B='true';true),
+  (equals(V,'0'),not notequals(V,'0')->B='false';true),
+  (var(B)->symbolic(B,'Boolean');true).
+
+% TC-ToBoolean-str
+toboolean(V,B) :-
+  is_concrete(V),
+  type(V,T),
+  T='String',
+  (V='""'->B='false';B='true').
+
+toboolean(V,B) :-
+  is_symbolic(V),
+  type(V,T),
+  T='String',
+  (notequals(V,'""'),not equals(V,'""')->B='true';true),
+  (equals(V,'""'),not notequals(V,'""')->B='false';true),
+  (var(B)->symbolic(B,'Boolean');true).
+
+% TC-ToBoolean-bool
+toboolean(V,V) :- type(V,T),T='Boolean'.
+
+% TC-ToBoolean-null
+toboolean(V,B) :- type(V,T),T='Null',B='false'.
+
+% TC-ToBoolean-undefined
+toboolean(V,B) :- type(V,T),T='Undefined',B='false'.
+
+% Symbolic ToBoolean
+toboolean(V,B) :-
+  is_symbolic(V),
+  type(V,T),
+  is_symbolic(T),
+  restrict_type(V,'Boolean',B).
+
+
+%
+% Conversion to String
+%
+
+% eCts / @TS
+ects(H,L,E,HP,L,EP) :- tostring(H,L,E,HP,EP).
+
+% [TC-ToString-obj]
+tostring(H,L,V,HP,EP) :-
+  type(V,T),T='Object',
+  toprimitive(H,L,V,'String',HP,EP).
+
+% [TC-ToString-num]
+tostring(H,_,V,H,M) :-
+  type(V,T),T='Number',
+  (is_symbolic(V)->
+  restrict_type(V,'String',M),
+  % Assert that the resulting string is numeric.
+  unary_fn('IsNumProp',M,NP),
+  constraint(NP);
+  numberstring(V,M)).
+
+% [TC-ToString-str]
+tostring(H,_,V,H,V) :- type(V,T),T='String'.
+
+% [TC-ToString-bool]
+%%% Symbolic value with type Boolean?
+tostring(H,_,'true',H,'"true"').
+tostring(H,_,'false',H,'"false"').
+
+% [TC-ToString-null]
+tostring(H,_,V,H,'"null"') :- type(V,T),T='Null'.
+
+% [TC-ToString-undef]
+tostring(H,_,V,H,'"undefined"') :- type(V,T),T='Undefined'.
+
+% Symbolic value to String
+tostring(H,_,V,H,EP) :-
+  is_symbolic(V),
+  type(V,T),
+  is_symbolic(T),
+  restrict_type(V,'String',EP).
+
+% numberstring
+numberstring(N,M) :- isnum(N),makestr(N,M).
+
+
+% eCtn / @TN
+ectn(H,L,E,HP,L,EP) :- tonumber(H,L,E,HP,EP).
+
+% [TC-ToNumber-obj]
+tonumber(H,L,V,HP,EP) :-
+  type(V,T),T='Object',
+  toprimitive(H,L,V,'Number',HP,EP).
+
+% [TC-ToNumber-num]
+tonumber(H,_,V,H,V) :- type(V,T),T='Number'.
+
+% [TC-ToNumber-str]
+tonumber(H,_,V,H,N) :-
+  type(V,T),T='String',
+  (is_symbolic(V)->restrict_type(V,'Number',N);
+  stringnumber(V,N)).
+
+% [TC-ToNumber-bool]
+tonumber(H,_,'true',H,'1').
+tonumber(H,_,'false',H,'0').
+tonumber(H,_,V,H,N) :-
+  is_symbolic(V),
+  type(V,T),T='Boolean',
+  %%% Could be more precise: must be 0 or 1.
+  symbolic(N,'Number').
+
+% [TC-ToNumber-null]
+tonumber(H,_,V,H,'0') :- type(V,T),T='Null'.
+
+% [TC-ToNumber-undef]
+tonumber(H,_,V,H,'&NaN') :- type(V,T),T='Undefined'.
+
+% Symbolic value to Number
+tonumber(H,_,V,H,EP) :-
+  is_symbolic(V),
+  type(V,T),
+  is_symbolic(T),
+  restrict_type(V,'Number',EP).
+
+
+chasprop(FO,'@FScope',V) :- fhasprop(FO,'@FScope',V).
+chasprop(FO,'@Prototype',V) :- fhasprop(FO,'@Prototype',V).
+chasprop(FO,'@Class',V) :- fhasprop(FO,'@Class',V).
+chasprop(FO,'@Construct',V) :- fhasprop(FO,'@Construct',V).
+chasprop(FO,'"prototype"',V) :- fhasprop(FO,'"prototype"',V).
+chasprop('@Global',FuncId,FuncLoc) :- fundef(_,_,_,_,FuncLoc,_,_,FuncId)->true;funalias(F,FuncId),fundef(F,_,_,_,FuncLoc,_,_,_).
+chasprop(FO,'@Formals',FM) :- fundef(FO,FM,_,_,_,_,_,_).
+chasprop(FO,'@Vars',FV) :- fundef(FO,_,FV,_,_,_,_,_).
+chasprop(FO,'@Scope',FS) :- fundef(FO,_,_,FS,_,_,_,_).
+chasprop(FO,'@FuncLocs',FL) :- fundef(FO,_,_,_,_,_,FL,_).
+chasprop(FO,'@Call','true') :- fundef(FO,_,_,_,_,_,_,_).
+chasprop(FO,'@FuncNames',FN) :- fundef(FO,_,_,_,_,FN,_,_).
+
+
+chasprop(O,M,VA) :- heapprop(_,_,M,VA,_,O).
+  
+chasprop(O,M,VA) :-
+  M\='@Scope',  % What's this for?
+  heapprop(H,L,S,VS,_,O),
+  is_symbolic(S),
+  M\=S,
+  (equals(S,M),VA=VS;
+  notequals(S,M),
+  maps(H,L,O1),
+  getprop(O1,M,VA)).
+
+chasprop(O,M,VA) :-
+  heapprop(H,L,M1,_,_,O),
+  is_concrete(M1),
+  M1\=M,
+  maps(H,L,O1),
+  getprop(O1,M,VA).
+
+chasprop(O,M,VA) :-
+  delheapprop(H,L,M1,_,O),
+  maps(H,L,Ol),
+  getprop(Ol,M,VA),
+  M1\=M.
+
+hasattr(O,M,AT) :- heapprop(H,L,_,_,_,O),maps(H,L,Ol),hasattr(Ol,M,AT).
+hasattr(O,M,AT) :- delheapprop(H,L,M1,_,O),maps(H,L,Ol),hasattr(Ol,M,AT),M1\=M.
+hasattr(O,M,AT) :- native_hasattr(O,M,AT).
+
+% these rules are affected by newref
+isref(R) :- newref(_,_,R).
+ref(R,LN,M) :- newref(LN,M,R).
+
+% Whether an address is an activation record
+isactivation(H,LN) :-
+  maps(H,LN,O),
+  getprop(O,'@IsActivation',A),
+  equals(A,'true').
+
+% Possible (symbolic) nullness
+notnull(L) :-
+  type(L,T),
+  notequals(T,'Null').
+null(L) :-
+  type(L,T),
+  equals(T,'Null').
+
+% Definite nullness
+isnull(L) :-
+  type(L,T),
+  equals(T,'Null'),
+  not notequals(T,'Null').
+isnotnull(L) :-
+  type(L,T),
+  not equals(T,'Null'),
+  notequals(T,'Null').
+maybenull(L) :-
+  type(L,T),
+  equals(T,'Null'),
+  notequals(T,'Null').
+
+% This rule isn't in the normal operational semantics.
+% It is a special construct for evaluating path formulas.
+% It updates a bit of environment state, @LastBranch, to reflect
+% the result of the last branching condition (if, while, etc.).
+updatebranch(H,B,HP) :- heapprop(H,'#Global','@LastBranch',B,HP,_).
+
+% We don't actually need this information, and we can't store it in C++ without
+% somehow serializing the expression into a string.
+% updatebranchexpr(H,B,HP) :- heapprop(H,'#Global','@LastBranchExpr',B,HP,_).
+updatebranchexpr(H,_,H).
+

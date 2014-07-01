@@ -1,0 +1,1 @@
+0,-1: jam#get(`x,"open") && `x instanceof #XMLHttpRequest

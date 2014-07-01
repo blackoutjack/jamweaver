@@ -1,0 +1,12 @@
+--- closure-orig/src/com/google/javascript/jscomp/TypeCheck.java	2013-08-19 15:26:58.316335366 -0500
++++ closure/src/com/google/javascript/jscomp/TypeCheck.java	2013-09-28 19:04:11.046416981 -0500
+@@ -822,6 +822,9 @@
+       case Token.DO:
+       case Token.IF:
+       case Token.WHILE:
++      // JAM begin
++      case Token.TRANSACTION:
++      // JAM end
+         typeable = false;
+         break;
+ 

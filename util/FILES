@@ -1,0 +1,8 @@
+
+Here's a brief rundown of the important files in JAM util/ directory.
+
+debugger.P: Contains a few modifications to the similarly-named file
+  included with the XSB installation in XSB/syslib. This file can be
+  copied to overwrite the original to provide easier debugging of XSB
+  queries.
+

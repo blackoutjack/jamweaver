@@ -1,0 +1,31 @@
+%
+% symbolic.P
+% author: Rich Joiner <joiner@cs.wisc.edu>
+% 2012-08-04
+%
+% This file encodes the semantics of JavaScript for use in pure
+% symbolic (statement in isolation) mode. It assume an essentially
+% unconstrained heap/scope.
+%
+
+% Environment initialization
+env_init(HP,LP) :-
+  abolish_all_tables,
+  rbb,
+  enter_symbolic_mode,
+
+  % The heap and current scope are unconstrained.
+  H0='H',
+  symbolic(ArgsObj,'Object'),
+  alloc(H0,ArgsObj,H1,ArgsLoc),
+  symbolic(ThisObj,'Object'),
+  alloc(H1,ThisObj,H2,ThisLoc),
+  symbolic(ParentObj,'Object'),
+  alloc(H2,ParentObj,H3,ParentLoc),
+  new_activation(ArgsLoc,ThisLoc,ParentLoc,ActObj),
+  alloc(H3,ActObj,H4,LP),
+  % Indicate that there is no return value.
+  %%% Initialize this in persist.cpp like everything else.
+  heapprop(H4,'#Global','@ReturnVal','NONE',H5,_),
+  HP=H5.
+

@@ -1,0 +1,61 @@
+--- closure-orig/src/com/google/javascript/jscomp/CallGraph.java	2013-08-19 15:26:58.296335367 -0500
++++ closure/src/com/google/javascript/jscomp/CallGraph.java	2013-11-20 12:06:51.678301467 -0600
+@@ -308,6 +308,15 @@
+       for (Definition definition : definitions) {
+         if (definition.isExtern()) {
+           callsite.hasExternTarget = true;
++          // JAM begin
++          Node target = definition.getLValue();
++
++          assert target != null;
++
++          if (computeForwardGraph) {
++            callsite.addPossibleExternTarget(target);
++          }
++          // JAM end
+         } else {
+           Node target = definition.getRValue();
+ 
+@@ -678,6 +687,10 @@
+ 
+     private Collection<Function> possibleTargets;
+ 
++    // JAM begin
++    private Collection<Node> possibleExternTargets;
++    // JAM end
++
+     private Callsite(Node callsiteAstNode) {
+       astNode = callsiteAstNode;
+     }
+@@ -727,6 +740,31 @@
+       possibleTargets.add(target);
+     }
+ 
++    // JAM begin
++    public Collection<Node> getPossibleExternTargets() {
++      if (computeForwardGraph) {
++        if (possibleExternTargets != null) {
++          return possibleExternTargets;
++        } else {
++          return ImmutableList.of();
++        }
++      } else {
++        throw new UnsupportedOperationException("Cannot call " +
++            "getPossibleExternTargets() on a Callsite from a non-forward " +
++            "CallGraph");
++      }
++    }
++
++    private void addPossibleExternTarget(Node target) {
++      Preconditions.checkState(computeForwardGraph);
++
++      if (possibleExternTargets == null) {
++        possibleExternTargets = new LinkedList<Node>();
++      }
++      possibleExternTargets.add(target);
++    }
++    // JAM end
++
+     /**
+      * If true, then DefinitionProvider used in callgraph construction
+      * was unable find all target functions of this callsite.

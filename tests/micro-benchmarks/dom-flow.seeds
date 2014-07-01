@@ -1,0 +1,3 @@
+document === #document
+document.createElement === #HTMLDocument#prototype#createElement
+label.className === ""

@@ -1,0 +1,55 @@
+
+aexe(H,_,'#Number',This,Args,HP,This) :-
+	length(Args,0),
+	aexe(H,_,'#Number',This,'0~&EOL',HP,This).
+
+aexe(H,_,'#Number',This,Args,HP,This) :-
+	length(Args,ArgsLen),ArgsLen\=0,
+	Args=[V|_],
+	tonumber(H,This,V,H1,N),
+	heapprop(H1,This,'@Value',N,HP,_).
+
+aexe(H,L,'#Number#prototype#toExponential',This,Args,HP,RetVal) :-
+	length(Args,0),
+	%%% Use agetdefault to retrieve '0'?
+	aexe(H,L,'#Number_toExponentials',This,'0~&EOL',HP,RetVal).
+
+aexe(H,L,'#Number#prototype#toExponential',This,Args,HP,RetVal) :-
+	length(Args,ArgsLen),ArgsLen\=0,
+	hasprop(This,'@Value',Val),
+	%%% Produce the exponential representation.
+	always(L),
+	HP=H,
+	RetVal=Val.
+
+aexe(H,L,'#Number#prototype#toFixed',This,Args,HP,RetVal) :-
+	length(Args,0),
+	aexe(H,L,'#Number_toFixed',This,'0~&EOL',HP,RetVal).
+
+aexe(H,L,'#Number#prototype#toFixed',This,Args,HP,RetVal) :-
+	length(Args,ArgsLen),ArgsLen\=0,
+	hasprop(This,'@Value',Val),
+	%%% Produce the fixed decimal place representation.
+	always(L),
+	HP=H,
+	RetVal=Val.
+
+aexe(H,L,'#Number#prototype#toPrecision',This,Args,HP,RetVal) :-
+	length(Args,0),
+	aexe(H,L,'#Number#prototype#toPrecision',This,'0~&EOL',HP,RetVal).
+
+aexe(H,L,'#Number#prototype#toPrecision',This,Args,HP,RetVal) :-
+	length(Args,ArgsLen),ArgsLen\=0,
+	hasprop(This,'@Value',Val),
+	%%% Produce the fixed precision representation.
+	always(L),
+	HP=H,
+	RetVal=Val.
+	
+aexe(H,L,'#Number#prototype#toString',This,_,HP,RetVal) :-
+	hasprop(This,'@Value',Val),
+	ects(H,L,Val,HP,_,RetVal).
+
+aexe(H,_,'#Number#prototype#valueOf',This,_,H,RetVal) :-
+	hasprop(This,'@Value',RetVal).
+

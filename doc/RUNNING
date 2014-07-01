@@ -1,0 +1,257 @@
+
+######## JAM setup #########
+
+See the files doc/INSTALL.bash and doc/DEPENDENCIES.mk for setup
+instructions. Particularly important, check that the JAMPKG environment
+variable is pointing to the root directory of the checked-out
+jam-release repository.
+
+You can set up the following aliases in your login script to
+make invoking JAM easier.
+
+alias jam="java -Xms256m -Xmx4096m -jar $JAMPKG/bin/jam.jar"
+alias jamdbg="java -ea -Xms256m -Xmx4096m -jar $JAMPKG/bin/jam.jar -g -b -v 3"
+# %%% The utilities do not currently compile.
+alias jamutil="java -jar $JAMPKG/bin/util.jar"
+
+
+######## Input to the analysis #########
+
+JAM takes as input a JavaScript source file and one or more policy
+specifications. See the file doc/POLICIES for a description of how to
+formulate policies. Requirements on the JavaScript file are described
+here.
+
+JAM is a full program analysis, and currently requires that all
+JavaScript source code is accumulated into one file. This can be done
+simply by concatenating the source code in any files included via
+<script> tags (both inline and targeted by the src attribute), in the
+order they appear in the HTML.
+
+If the application uses event handlers that are applied via HTML tags,
+these should be converted prior to the analysis to become part of the
+script itself. This can be done as follows.
+
+<input type="button" id="inp1" onclick="runSomething()" value="DO" />
+
+...becomes...
+
+document.getElementById("inp1").onclick = runSomething;
+
+...inserted at the bottom of the top-level code of the script. You would
+also remove the onclick attribute from the HTML tag.
+
+We hope to implement an automated preprocessing step a the beginning of
+the JAM analysis that will identify all scripts in an HTML page and make
+these conversion for you, but this is not yet available.
+
+
+######## Running JAM #########
+
+To analyze a JavaScript source file with regard to a JAM policy:
+jam source.js safe.policy
+
+To do the same, and collect debug information:
+jamdbg source.js safe.policy
+
+Multiple policy files can be supplied:
+jam source.js p0.policy p1.policy p2.policy ...
+
+usage: java edu.wisc.cs.jam.JAM SRCFILE [POLFILE+ ...] [--appsuffix VAL] [--bddformat FMTID] [--help] [--retids] [-C] [-F] [-G] [-I] [-L] [-M] [-O] [-P] [-R THREADS] [-S] [-T THREADS] [-U] [-b] [-c] [-d FILE] [-e] [-f] [-g] [-i] [-j] [-k PREDICATES] [-l] [-m] [-n] [-p MAX] [-r] [-s] [-t THREADS] [-v N] [-x] [-y]
+ SRCFILE           : source file
+ POLFILE+          : policy file(s)
+ --appsuffix VAL   : Append this suffix to the application name in output files
+ --bddformat FMTID : 0=sat paths, 1=tree, 2=both (debug)
+ --help            : display this message
+ --retids          : Embed return symbol ids in automata (can be expensive)
+ -C                : Output node count for various artifacts
+ -F                : Forward analysis: add and analyze checks one-by-one
+ -G                : Log semantic queries (subsumed by -g)
+ -I                : Skip the call-site transformation
+ -L                : Only seed predicates locally
+ -M                : Output memory usage information
+ -O                : Skip final optimization of instrumented code
+ -P                : Do intraprocedural analysis only
+ -R THREADS        : Number of threads to spawn for path analyses
+ -S                : Output intermediate source with each new counter-example
+ -T THREADS        : Number of threads to spawn for finding counter-examples
+ -U                : Make no assumptions about the initial environment
+ -b                : Report statements the language model can't evaluate
+ -c                : Use the Cartesian abstraction
+ -d FILE           : Build the program model with predicates found in this file
+ -e                : Suppress time output to stderr and in queries
+ -f                : Do ancillary analysis, but no instrumentation
+ -g                : Output debugging information
+ -i                : Access OpenNWA as a library instead of a separate process
+ -j                : Use the Disjoint abstraction
+ -k PREDICATES     : Maximum predicate cube size
+ -l                : Analyze incrementally over seeded cubes
+ -m                : Stand-alone mode: assume functions will not be called from
+                     outside this program
+ -n                : Don't output final source to STDOUT
+ -p MAX            : Maximum number of learned predicates (-1 = unlimited)
+ -r                : Use bit-vector relations rather than BDDs
+ -s                : Skip the preprocessing step
+ -t THREADS        : Number of threads to spawn for semantic queries
+ -v N              : Amount of information output to STDERR (0-4,default:1)
+ -x                : Don't load standard externs
+ -y                : Skip type inference
+
+######## Running automated tests ########
+
+The tests/ directory contains a framework for running a series of test
+suites. Test cases typically include a .exp.js file containing the 
+expected output, which is compared by the framework against the actual
+output. Running the micro-benchmarks is done with the following command.
+
+$JAMPKG/tests/run.py -m
+
+Larger benchmark tests (which now incorporates the QR Code and Secure
+Note applications) are run with the -b option.
+
+Command line options:
+ -h, --help         show this help message and exit
+ -b, --benchmarks   analyze benchmark applications
+ -m, --micro        analyze microbenchmark applications
+ -i, --interpreter  test semantics as an interpreter (currently unsupported)
+ -g, --debug        generate debug output
+
+
+######## Retrieving native locations ########
+%%% As mentioned above, the utilities don't currently work.
+
+When specifying policies, you will often need to determine the symbolic
+address of a native construct, such as the object referenced (in a clean
+JavaScript environment) by the "document" identifier, or function
+objects such as that referenced by "Node.prototype.replaceChild". (See
+doc/POLICIES for more information.) The jar file found at
+$JAMPKG/util.jar can be used for this purpose. Assuming you've set up
+the jamutil alias as specified above, it can be invoked as follows.
+
+jamutil Node.prototype.replaceChild
+
+It can also handle some more complex expression such as the following
+(which evaluates to the same function address as above). In general the
+utility will attempt to evaluate the given expression and get the value
+it references.
+
+jamutil 'document.getElementById("id").replaceChild'
+
+If a value such as "s0" is returned, this indicates that the native
+environment model does not include the specified object. In this case
+you should contact the UW-Madison team to extend the model.
+
+Multiple arguments can be submitted; each expression will be evaluated
+independently.
+
+This utility is rather new, so you may encounter bugs or think of
+extended features that would be nice. Again, you can let us know.
+
+
+######## Finding counter-examples ########
+
+The bin/ directory includes an executable called nwa, which takes an
+intersected policy/control automaton file as input, and outputs a
+counter-example trace to STDOUT. When invoking JAM with the -g flag,
+these automata are saved in the subdirectory of output/ for that run.
+
+This utility can be run as follows, replacing the argument as necessary.
+$JAMPKG/bin/nwa $JAMPKG/output/snote-0/1/prod.aut
+
+
+######## Interpreting the output ########
+
+The output of the script will be found in the directory
+$JAMPKG/output/[APP]-[RUN]/.  For example, if you're analyzing the
+secure.js script, the first run of JAM will produce files in output in
+$JAMPKG/output/secure-0/. Subsequent runs will generate output in
+$JAMPKG/output/secure-1/, ../secure-2/, and so forth.
+
+The principal files that are generated are [APP]-transformed.js,
+policy.js, and as long as optimization is not disabled (-O),
+[APP]-optimized.js. To run these files in the browser, you would copy
+them to your webserver and create an HTML page with the following script
+tags, in this order.
+
+<html>
+<head>
+[...other header stuff...]
+<script src="policy.js"></script>
+<script src="libTx.js"></script>
+</head>
+<body>
+[...all HTML...]
+<script src="[APP]-optimized.js"></script>
+</body>
+
+The libTx.js file is included with the JAMScript repository, and is a
+library that facilitates the processing of the woven transactional
+enforcement. See that repository (jamscript-release) for further
+documentation. The [APP]-optimized.js file can be renamed if desired.
+
+The security and correct operation of JAM-generated code depends on this
+ordering and on there being no other scripts running on the page. See
+above in "Input to the analysis" for further requirements on the HTML.
+
+
+######## Other output ########
+
+Other files generated by the analysis are described below. These are
+mostly used for internal and debugging purposes, and could change in
+the course of the development of JAM.
+
+funfacts.P: a Datalog (XSB) model of the user-defined functions found
+  in the program
+polprops.P: extra Datalog predicates for tracking particular property
+  names; the existence and content of this file depends on the policy
+typefacts.P: Datalog predicates generated from a type analysis provided
+  by the Closure compiler
+counts.txt: if JAM was run with the -C option, this contains AST node
+  and transaction counts for various phases of the analysis
+[APP]-closure.js: the program immediate after an initial transformation
+  by the Closure compiler
+[APP]-preprocessed.js: a further transformation of the source code prior
+  to policy-weaving
+[APP]-instrumented.js: the source code after policy-weaving but before
+  applying the call-site transformation to protect dynamically-generated
+  code
+instrumented.policy.js: this policy file should be used in conjunction
+  with [APP]-instrumented.js because the normal policy.js file assumes
+  certain results of the call-site transformation
+modular.policy.js: a JavaScript implementation of the full policy that
+  can be used when enclosing the entire program in a transaction; this
+  may be different from policy.js because the weaving analysis can make
+  use of a subset of the policy predicates at each transaction
+
+In debug mode, the following files are also generated. This list is
+probably not complete.
+
+policy.aut: an automaton representation of the compiled policy
+control.aut: an automaton representation of the program's control flow
+out.txt: a log of the STDOUT output generated by the analysis
+err.txt: a log of the STDERR output generated by the analysis
+
+Subdirectories named by incrementing integers will also be generated to
+contain iterative output. The file will contain the information
+collected on the [ITER] iteration (i.e. step in the algorithm).
+
+[ITER]/queries-symbolic: a log of the queries made to the language
+  semantics model in symbolic mode
+[ITER]/queries-concrete: likewise for concrete mode queries
+[ITER]/results-symbolic: a log of the results of the queries found in
+  queries-symbolic; an identifier <[NUM]> helps match queries to results
+[ITER]/results-concrete: likewise for concrete mode results
+[ITER]/raut-[NUM]: an automaton representing the control structure of
+  the program augmented with data relations induced by each statement;
+  this can be fed to the nwa program to test counter-example search (see
+  "Finding counter-examples" above.
+[ITER]/trace-[NUM]: the raw output of the NUM'th counter-example trace
+[ITER]/cex-[NUM]: pretty-printed representation of the NUM'th
+  counter-example trace
+[ITER]/pre-states: the pre-states of the data relations used at this
+  point in the analysis
+[ITER]/post-states: the post-states of the data relations used at this
+  point in the analysis
+[ITER]/tx-[NUM]: a representation of a transactional check that was
+  woven into the source code on this iteration; %%% not useful currently
+

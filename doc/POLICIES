@@ -1,0 +1,176 @@
+
+This document explains the policy specification language, as well as
+the structure of policies files and how they are used by the system.
+
+
+######## Policy structure and semantics ########
+
+A JAM policy is an automaton with JavaScript state predicates labeling 
+the edges. Currently JAM limits support to acyclic policies (save for
+the implicit self-loops on each state) with a single initial state and
+a single final state.
+
+Each edge of a policy automaton specifies a predicate that must evaluate
+to true for that edge to be traversed. During the static analysis
+portion of JAM, the truth values of these predicates are evaluated with
+respect to the abstract (and potentially imprecise) program model; the
+result of this static analysis is a rewritten program with
+instrumentation that tracks the state of the policy automaton with
+regards to the concrete state of the execution.
+
+In either case (static or runtime evaluation), the policy begins in the
+initial state. On the evaluation of each program statement, the policy
+can remain in the same state (thanks to the aforementioned self-loops on
+each state), or if the statement has the ability to transition the
+predicate labeling any out-edge from false to true, proceed to the 
+destination state of that edge. Transitions are non-deterministic, in
+that all policy states that are reachable will be occupied, and can be
+the source of subsequent transitions.
+
+To support policies that specify multiple transitions on the same
+predicate (such as the write-once policy for the Secure Note
+application), policies have the semantics that the state can only
+advance one step along any given path on each program statement.
+
+If the (unique) final state of the policy automaton is reachable
+in the conservative abstract program model, then either the program
+model is refined, or the path(s) leading to potential policy violation
+are instrumented in a manner that prevents the violating traces from
+being realized at runtime.
+
+######## Policy representation #######
+
+JAM policies are specified as a set of policy automaton transitions.
+Each transition is specified on a separate line in one or more policy
+files. The transition specifications are automatically accumulated to
+generate a single policy object. (Duplicate transition specifications
+are ignored.)
+
+For the analysis to be meaningful, the policy must contain one or more
+paths from the initial state to the final state. The initial state is
+represented by the identifier 0, and the final state by -1. Therefore
+the simplest policy is one with a single transition on some predicate
+P, as follows.
+
+0,-1: P
+
+A slightly more complex policy (requiring two steps to get from initial
+to final state) is represented below, with realistic predicates. Notice
+that the intermediate policy state, 1, has one in-edge and one out-edge.
+
+0,1: jam#called(#Document#prototype#getElementById)
+1,-1: jam#set(#document, "cookie")
+
+The formal structure of an edge specification is as follows.
+
+SourceState,DestState: Predicate
+
+SourceState is an integer identifier of the edge's source; DestState is
+likewise for the edge's destination. Predicate is a boolean expression
+that is evaluated across each statement in the program being analyzed.
+If the analysis determines that a statement may flip the truth value of
+the predicate from false to true, then the transition is
+non-deterministically followed for that statement.
+
+The initial state must always be indicated by 0, while the final state
+is always indicated with -1. Intermediate states must be positive
+integers.
+
+Policy specification files may include single-line comments (indicated
+by the first non-whitespace character being a #), and may also include
+blank lines.
+
+
+######## Predicate language ########
+
+JAM officially supports predicates indicating weak equality (==), strict
+equality (===), corresponding inequality (!=, !==), the JavaScript
+instanceof operator, and a set of special extension functions explained
+below. It's best to specify strict equality when possible, as this will
+be more efficient (by avoid the analysis of JavaScript's complicated
+type coersion rules).
+
+JAM also supports arbitrary conjunctions (but not disjunctions) of any
+supported predicates on a given edge. Disjunctions are effectively
+supported via the ability to specify multiple disjoint paths through the
+policy automaton.
+
+Other JavaScript expressions that evaluate to boolean may be tried,
+though you may find support to be sketchy. Please let the UW-Madison
+team know if there are unsupported constructs you'd like to use.
+
+The currently-implemented extension predicates are as follows.
+
+jam#called(#object#location): returns true if the pointed-to native
+  function was invoked by the evaluated statement
+
+jam#set(#object,"member"): returns true if the specified object member was
+  assigned to in the course of evaluation
+
+jam#get(#object,"member"): returns true if the specified object member was
+  retrieved during the course of evaluation
+
+jam#arg(i): retrieves the value of the actual argument(s) at position i of
+  any invoked functions; this can be used in the context
+  "jam#arg(0) === value" to construct a predicate.
+
+jam#type(id,"Type"): returns true if the given variable references a value
+  of type Type (where Type is one of the standard JavaScript types
+  Number, Object, String, Undefined or Null).
+
+jam#stringstartswith(jam#arg(0),"http"): returns true if the value referenced
+  in the first argument is string that begins with the 2nd argument.
+
+jam#stringcontains(jam#arg(0),"script"): returns true if the value referenced
+  in the first argument is string that contains with the 2nd argument.
+
+Predicates may also contain special "wildcard" identifiers beginning
+with the ` (backtick) character. These may be used to construct more
+complex predicates where the identity of an object is immaterial, except
+that it should remain the same across the predicate. The following
+example indicates that the "src" member of any HTMLElement object was
+assigned to.
+
+jam#set(`x,"src") && `x instanceof #HTMLElement
+
+The use of the # character to indicate native objects can be thought of
+as immutable references. If the example above used HTMLElement instead
+of #HTMLElement, then the predicate would be evaluating whether `x is
+an instance of *whatever* value the HTMLElement identifier points to at
+the point in the program being analyzed (since the HTMLElement
+identifier may be overwritten in the course of a program). So the #
+syntax to represent the immutable location of the native object is
+needed for soundness of the analysis.
+
+
+######## Seeding predicates ########
+
+Rather than relying on the predicate-learning functionality of JAM
+(which is admittedly immature at this stage), it's possible to "seed"
+the analysis with predicates that can rule out some counter-examples.
+It's important to note that specifying predicates to track in the
+analysis is not the same as asserting that these predicates are true.
+It simply tells JAM to build the program model with these predicates
+included; this means that the analysis will remain sound even if the
+user specifies an irrelevant predicate or a predicate that may never
+be true. (However, as with policy predicates, it's possible to cause
+an aborted analysis by specifying a syntactically flawed seeded
+predicate.)
+
+Predicates are seeded by providing a seed file as the argument to the -d
+flag when running JAM. The seed file format is as follows. Each line
+of the file (save for #-prefixed comments and blank lines) should be
+either a predicate or a policy edge specification. Including a line with
+an edge specification indicates that the predicates that follow should
+only be applied to the analysis of policy paths that contain that edge.
+For policies with many disjoint paths, this can save a lot of analysis
+time. Any predicates listed after a continuous block of one or more
+edge specification will be applied to analysis of those edges only.
+Predicates listed prior to any edge specifications are applied globally.
+
+The seeded predicates can be of the same form, and using the same JAM
+predicate extensions as the policy language. A new extension function,
+type, was introduced for seeding purposes. See snote/seeds/ in the
+JAMScript repository for example seed files.
+
+

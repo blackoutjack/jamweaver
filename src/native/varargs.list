@@ -1,0 +1,7 @@
+% If a native function location is listed here, it accepts variable-
+% length argument lists. This overrides a "v" attribute in
+% functions.list.
+%
+
+#Object
+#Date

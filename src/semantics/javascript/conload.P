@@ -1,0 +1,11 @@
+:- [persist].
+:- [sentinel].
+:- [sentwrap].
+:- [polprops].
+:- [funfacts].
+:- [ast].
+:- [core].
+:- [pred].
+:- [native].
+:- [nativef].
+:- [concrete].

@@ -1,0 +1,33 @@
+--- closure-orig/src/com/google/javascript/jscomp/parsing/TypeSafeDispatcher.java	2013-08-19 15:26:58.324335366 -0500
++++ closure/src/com/google/javascript/jscomp/parsing/TypeSafeDispatcher.java	2013-11-20 12:32:04.710257229 -0600
+@@ -54,6 +54,9 @@
+ import com.google.javascript.rhino.head.ast.SwitchCase;
+ import com.google.javascript.rhino.head.ast.SwitchStatement;
+ import com.google.javascript.rhino.head.ast.ThrowStatement;
++// JAM begin
++import com.google.javascript.rhino.head.ast.TransactionStatement;
++// JAM end
+ import com.google.javascript.rhino.head.ast.TryStatement;
+ import com.google.javascript.rhino.head.ast.UnaryExpression;
+ import com.google.javascript.rhino.head.ast.VariableDeclaration;
+@@ -114,6 +117,9 @@
+   abstract T processVariableInitializer(VariableInitializer initializerNode);
+   abstract T processWhileLoop(WhileLoop loopNode);
+   abstract T processWithStatement(WithStatement statementNode);
++  // JAM begin
++  abstract T processTransactionStatement(TransactionStatement transactionNode);
++  // JAM end
+ 
+   abstract T processIllegalToken(AstNode node);
+ 
+@@ -280,6 +286,10 @@
+         return processWhileLoop((WhileLoop) node);
+       case Token.WITH:
+         return processWithStatement((WithStatement) node);
++      // JAM begin
++      case Token.TRANSACTION:
++        return processTransactionStatement((TransactionStatement) node);
++      // JAM end
+     }
+     return processIllegalToken(node);
+   }

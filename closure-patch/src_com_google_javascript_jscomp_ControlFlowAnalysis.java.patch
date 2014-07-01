@@ -1,0 +1,31 @@
+--- closure-orig/src/com/google/javascript/jscomp/ControlFlowAnalysis.java	2013-08-19 15:26:58.300335367 -0500
++++ closure/src/com/google/javascript/jscomp/ControlFlowAnalysis.java	2013-08-18 21:34:39.380397003 -0500
+@@ -348,12 +348,28 @@
+         return;
+       case Token.LABEL:
+         return;
++      // JAM begin
++      case Token.TRANSACTION:
++        handleTransaction(n);
++        return;
++      // JAM end
+       default:
+         handleStmt(n);
+         return;
+     }
+   }
+ 
++  // JAM begin
++  private void handleTransaction(Node node) {
++    Node handler = node.getFirstChild();
++    Node body = handler.getNext();
++    createEdge(node, Branch.UNCOND, handler);
++    createEdge(handler, Branch.UNCOND, body);
++    // %%% Also need to model the potential calling of the handler, 
++    // %%% which is somewhat like exceptions.
++  }
++  // JAM end
++
+   private void handleIf(Node node) {
+     Node thenBlock = node.getFirstChild().getNext();
+     Node elseBlock = thenBlock.getNext();

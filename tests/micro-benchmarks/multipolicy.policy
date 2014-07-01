@@ -1,0 +1,6 @@
+0,1: jam#get(#document,"cookie")
+0,1: jam#called(#HTMLDocument#prototype#getElementById)
+1,2: jam#called(#HTMLDocument#prototype#createElement)
+1,-1: jam#set(#document,"cookie")
+1,-1: jam#called(#HTMLDocument#prototype#write)
+2,-1: jam#set(`x,"src") && `x instanceof #HTMLElement

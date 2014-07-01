@@ -1,0 +1,4 @@
+
+aexe(H,_,'#Navigator',This,_,H,This) :- true.
+
+%%% Fill in navigator.constructor.prototype methods.

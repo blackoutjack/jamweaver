@@ -1,0 +1,32 @@
+
+aexe(H,L,'#Document',This,_,H,This) :- always(L),always(This).
+aexe(H,L,'#HTMLDocument',This,_,H,This) :- always(L),always(This).
+
+%%% Incomplete
+aexe(H,L,'#HTMLDocument#prototype#getElementsByTagName',_,Args,HP,EP) :-
+	Args=[Arg|_],
+  ects(H,L,Arg,H1,L1,TagName),
+  always(TagName),
+  % new Array()
+  nativeconstruct(H1,L1,'#Array',[],HP,_,EP).
+
+aexe(H,L,'#HTMLDocument#prototype#getElementById',_,Args,HP,Elt) :-
+	Args=[Arg|_],
+	ects(H,L,Arg,H1,L1,Id),
+	maps(H1,'#Global',G),
+	hasprop(G,'@Elements',Elts),
+	maps(H1,Elts,EltsObj),
+	(getprop(EltsObj,Id,Elt)->HP=H1;
+  % new HTMLElement()
+  nativeconstruct(H1,L1,'#HTMLElement',[],H2,_,Elt),
+	heapprop(H2,Elts,Id,Elt,HP,_)).
+	
+aexe(H,L,'#HTMLDocument#prototype#createElement',_,_,HP,EP) :- 
+  % new HTMLElement()
+  nativeconstruct(H,L,'#HTMLElement',[],HP,_,EP).
+
+%%% Stub
+aexe(H,L,'#HTMLDocument#prototype#write',_,_,HP,_) :-
+	always(L),
+	HP=H.
+

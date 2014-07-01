@@ -1,0 +1,12 @@
+--- closure-orig/src/com/google/javascript/jscomp/CrossModuleCodeMotion.java	2013-08-19 15:26:58.300335367 -0500
++++ closure/src/com/google/javascript/jscomp/CrossModuleCodeMotion.java	2013-09-28 18:49:12.166443262 -0500
+@@ -209,6 +209,9 @@
+         case Token.SWITCH:
+         case Token.WHILE:
+         case Token.FUNCTION:
++        // JAM begin
++        case Token.TRANSACTION:
++        // JAM end
+           return true;
+       }
+     }

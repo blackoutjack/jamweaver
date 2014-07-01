@@ -1,0 +1,442 @@
+%
+% pred.P 
+% author: Rich Joiner (joiner@cs.wisc.edu)
+% date: 2012-02-29
+%
+% Defines wrappers for the JavaScript expression evaluation mechanisms
+% defined in javascript.P, and a few extensions, to define a side-effect-free
+% extended sublanguage that can be used in defining JAM policy predicates.
+%
+
+:- import length/2 from basics.
+
+% Program, i.e. a sequence of statements
+predexp(H,L,E,HP,LP,B) :-
+	is_program(E,CS),
+	predseq(H,L,CS,H1,L1,R),
+  ecgv(H1,L1,R,HP,LP,V),
+  toboolean(V,B).
+
+% Literal values
+predexp(H,L,E,H,L,V) :- is_literal(E,V).
+
+% A sequence consisting of a single statement
+predseq(H,L,[E],P,Q,V) :-
+  predexp(H,L,E,P,Q,V).
+
+% A sequence of more than one statement
+% Should never be invoked since we should alway be dealing with a
+% singleton statement.
+predseq(H,L,[E|ES],P,Q,V) :- 
+	ES\=[],
+	predexp(H,L,E,H1,L1,_),
+	predseq(H1,L1,ES,P,Q,V).
+
+predexp(H,L,E,HP,LP,EP) :-
+  is_exprresult(E,E1),
+  predexp(H,L,E1,HP,LP,EP).
+
+% null
+predexp(H,L,'null',H,L,'&null').
+predexp(H,L,E,H,L,'&null') :- is_null(E).
+
+% undefined
+predexp(H,L,'undefined',H,L,'&undefined').
+
+% this
+predexp(H,L,E,HP,L,EP) :-
+  is_this(E),
+  scope(H,L,'@this',LN),
+  scope_aux(H,LN,'@this',HP,Scope),
+  newref(Scope,'@this',EP).
+
+% Accessor
+predexp(H,L,E,HP,LP,EP) :- 
+	is_accessor(E,ObjExp,MembExp),
+	predexp(H,L,ObjExp,H1,L1,ObjRef),
+	ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+	ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
+	predexp(H3,L3,MembExp,H4,L4,MembRef),
+	ecgv(H4,L4,MembRef,H5,L5,MembVal),
+	ects(H5,L5,MembVal,HP,LP,MembStr),
+  newref(ObjPtr,MembStr,EP).
+
+% instanceof
+predexp(H,L,E,HP,LP,EP) :-
+  is_instanceof(E,E1,E2),
+  predexp(H,L,E1,H1,L1,EP1),
+  predexp(H1,L1,E2,H2,L2,EP2),  
+  ecgv(H2,L2,EP1,H3,L3,V1),
+  ecgv(H3,L3,EP2,H4,L4,V2),
+  instof(H4,L4,V1,V2,HP,EP),
+  LP=L4.
+
+% Id
+predexp(H,L,E,HP,LP,EP) :-
+	is_id(E,Name),
+  % Predicates can incorporate native object locations.
+  (is_location(Name)->makestr(EP,Name),HP=H,LP=L;
+  exp(H,L,E,HP,LP,EP)).
+
+predexp(H,L,E,HP,LP,EP) :-
+	is_id(E,Name,_),
+  % Predicates can incorporate native object locations.
+  (is_location(Name)->makestr(EP,Name),HP=H,LP=L;
+  exp(H,L,['NAME',Name],HP,LP,EP)).
+
+% Special extension functions.
+predexp(H,L,E,HP,LP,EP) :- 
+	is_call(E,Func,Args),
+	length(Args,1),
+	Args=[Arg],
+	is_id(Func,FuncName),
+  % Dispatch based on the extension being called.
+  (FuncName='"jam#called"'->predcall(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#obj"'->predobj(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#str"'->predstr(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#retval"'->predretval(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#arg"'->predarg(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#stringupper"'->predstringupper(H,L,Args,HP,LP,EP);
+  false)))))).
+
+% Special extension functions.
+predexp(H,L,E,HP,LP,EP) :- 
+	is_call(E,Func,Args),
+	length(Args,2),
+	is_id(Func,FuncName),
+  % Dispatch based on the extension being called.
+  (FuncName='"jam#type"'->predtype(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#set"'->predset(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#get"'->predget(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#regextest"'->predregextest(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#stringcontains"'->predstringcontains(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#stringstartswith"'->predstringstartswith(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#getValue"'->predgetval(H,L,Args,HP,LP,EP);
+  false))))))).
+
+% Assert that the return value has a certain value.
+predretval(H,L,ValExp,HP,LP,EP) :-
+  predexp(H,L,ValExp,H1,L1,ValRef),
+  ecgv(H1,L1,ValRef,H2,L2,Val),
+  maps(H2,'#Global',GObj),
+  getprop(GObj,'@ReturnVal',RetVal),
+  equals(Val,RetVal,EP),
+  HP=H2,LP=L2.
+
+% Get the value of the actual argument of recent calls.
+predarg(H,L,IdxExp,HP,LP,EP) :-
+  predexp(H,L,IdxExp,H1,L1,IdxRef),
+  ecgv(H1,L1,IdxRef,H2,L2,IdxVal),
+  get_arg(IdxVal,EP),
+  HP=H2,LP=L2.
+
+% Get the uppercase string value.
+predstringupper(H,L,E,HP,LP,EP) :-
+  predexp(H,L,E,H1,L1,R),
+  ecgv(H1,L1,R,H2,L2,V),
+  ects(H2,L2,V,HP,LP,S),
+  (is_symbolic(S)->symbolic(EP,'String');
+  evaljs(format('String.prototype.toUpperCase.call(~a)',S),EP)).
+
+predstr(H,L,E,HP,LP,EP) :-
+  predexp(H,L,E,H1,L1,StrRef),
+  ecgv(H1,L1,StrRef,H2,L2,StrVal),
+  ects(H2,L2,StrVal,HP,LP,EP).
+
+predobj(H,L,E,HP,LP,EP) :-
+  predexp(H,L,E,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+  ecto(H2,L2,ObjVal,HP,LP,EP).
+
+% Test whether a function could have been called.
+predcall(H,L,E,HP,LP,EP) :-
+  predexp(H,L,E,H1,L1,FunRef),
+  ecgv(H1,L1,FunRef,H2,L2,FunVal),
+  ecto(H2,L2,FunVal,H3,L3,FunPtr),
+  get_next_call(0,CallPtr),
+  binary_fn('=',FunPtr,CallPtr,FunEq),
+  fnextra(H3,FunPtr,CallPtr,H4,ExtraEq),
+  binary_fn('and',FunEq,ExtraEq,EP),
+  HP=H4,LP=L3.
+
+get_next_call(Idx,Fun) :-
+  get_call(Idx,Fun0)->
+  ((NextIdx is Idx + 1,
+  get_next_call(NextIdx,Fun1),
+  Fun=Fun1);
+  Fun=Fun0);
+  fail.
+
+predgetval(H,L,Args,HP,LP,EP) :-
+	length(Args,2),
+  Args=[ObjExp,MembExp],
+	predexp(H,L,ObjExp,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+	ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
+	predexp(H3,L3,MembExp,H4,L4,MembRef),
+  ecgv(H4,L4,MembRef,H5,L5,MembVal),
+  ects(H5,L5,MembVal,H6,L6,MembStr),
+	prototype(H6,ObjPtr,MembStr,H7,ProtPtr),
+	maps(H7,ProtPtr,ProtObj),
+	(getprop(ProtObj,MembStr,EP)->HP=H7,LP=L6;
+	symbolic(EP,_),heapprop(H7,ProtPtr,MembStr,EP,HP,_),LP=L6).
+
+% Test whether an object member has been assigned to.
+predset(H,L,Args,HP,LP,EP) :- 
+	length(Args,2),
+  Args=[ObjExp,MembExp],
+	predexp(H,L,ObjExp,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+  ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
+	predexp(H3,L3,MembExp,H4,L4,MembRef),
+	ecgv(H4,L4,MembRef,H5,L5,MembVal),
+  ects(H5,L5,MembVal,H6,L6,MembStr),
+  get_next_assign(0,AssnPtr,AssnMemb),
+  binary_fn('=',ObjPtr,AssnPtr,ObjEq),
+  binary_fn('=',MembStr,AssnMemb,MembEq),
+  binary_fn('and',ObjEq,MembEq,MainEq),
+  fnextra(H6,ObjPtr,AssnPtr,H7,ExtraEq),
+  binary_fn('and',MainEq,ExtraEq,EP),
+  HP=H7,LP=L6.
+
+get_next_assign(Idx,Obj,Memb) :-
+  get_assign(Idx,Obj0,Memb0)->
+  ((NextIdx is Idx + 1,
+  get_next_assign(NextIdx,Obj1,Memb1),
+  Obj=Obj1,Memb=Memb1);
+  Obj=Obj0,Memb=Memb0);
+  fail.
+
+% Test whether an object member is being read.
+predget(H,L,Args,HP,LP,EP) :- 
+  length(Args,2),
+  Args=[ObjExp,MembExp],
+	predexp(H,L,ObjExp,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+  ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
+	predexp(H3,L3,MembExp,H4,L4,MembRef),
+	ecgv(H4,L4,MembRef,H5,L5,MembVal),
+  ects(H5,L5,MembVal,H6,L6,MembStr),
+  get_next_read(0,ReadPtr,ReadMemb),
+  binary_fn('=',ObjPtr,ReadPtr,ObjEq),
+  binary_fn('=',MembStr,ReadMemb,MembEq),
+  binary_fn('and',ObjEq,MembEq,MainEq),
+  fnextra(H6,ObjPtr,ReadPtr,H7,ExtraEq),
+  binary_fn('and',MainEq,ExtraEq,EP),
+  HP=H7,LP=L6.
+
+get_next_read(Idx,Obj,Memb) :-
+  get_read(Idx,Obj0,Memb0)->
+  ((NextIdx is Idx + 1,
+  get_next_read(NextIdx,Obj1,Memb1),
+  Obj=Obj1,Memb=Memb1);
+  Obj=Obj0,Memb=Memb0);
+  fail.
+
+% Check the type of the referenced value.
+predtype(H,L,Args,HP,LP,EP) :-
+  length(Args,2),
+  Args=[IdExp,TypeExp],
+  predexp(H,L,IdExp,H1,L1,IdRef),
+  ecgv(H1,L1,IdRef,H2,L2,IdVal),
+  type(IdVal,ActualType),
+  predexp(H2,L2,TypeExp,H3,L3,TypeRef),
+	ecgv(H3,L3,TypeRef,HP,LP,TypeStr),
+  % Unwrap the type name.
+  isstr(TypeStr),
+  makestr(CompType,TypeStr),
+  binary_fn('=',ActualType,CompType,EP).
+
+% Check the string containment of arg1 in arg0.
+predstringcontains(H,L,Args,HP,LP,EP) :-
+  length(Args,2),
+  Args=[StrExp,SubExp],
+  predexp(H,L,StrExp,H1,L1,StrRef),
+  ecgv(H1,L1,StrRef,H2,L2,StrVal),
+  type(StrVal,StrType),
+  % Fail if either arg is not a string.
+  (not equals(StrType,'String')->HP=H2,LP=L2,EP='false';
+  predexp(H2,L2,SubExp,H3,L3,SubRef),
+	ecgv(H3,L3,SubRef,H4,L4,SubVal),
+  type(SubVal,SubType),
+  (not equals(SubType,'String')->HP=H4,LP=L4,EP='false';
+  (isstr(StrVal),isstr(SubVal)->evalbin('StringContains',StrVal,SubVal,EP),HP=H4,LP=L4;
+  binary_fn('StringContains',StrVal,SubVal,EP),
+  HP=H4,LP=L4))).
+
+% Check the string prefix of arg1 in arg0.
+predregextest(H,L,Args,HP,LP,EP) :-
+  length(Args,2),
+  Args=[RegExp,ValExp],
+  exp(H,L,RegExp,H1,L1,RegRef),
+  ecgv(H1,L1,RegRef,H2,L2,RegVal),
+  predexp(H2,L2,ValExp,H3,L3,ValRef),
+	ecgv(H3,L3,ValRef,H4,L4,ValVal),
+	ects(H4,L4,ValVal,H5,L5,ValStr),
+  (is_concrete(RegVal),isstr(ValStr)->regex_tostring(H5,RegVal,RegLit),evalbin('RegexTest',RegLit,ValStr,EP),HP=H5,LP=L5;
+  binary_fn('RegexTest',RegVal,ValStr,EP),
+  HP=H5,LP=L5).
+
+% Check the string prefix of arg1 in arg0.
+predstringstartswith(H,L,Args,HP,LP,EP) :-
+  length(Args,2),
+  Args=[StrExp,SubExp],
+  predexp(H,L,StrExp,H1,L1,StrRef),
+  ecgv(H1,L1,StrRef,H2,L2,StrVal),
+  type(StrVal,StrType),
+  % Fail if either arg is not a string.
+  (not equals(StrType,'String')->HP=H2,LP=L2,EP='false';
+  predexp(H2,L2,SubExp,H3,L3,SubRef),
+	ecgv(H3,L3,SubRef,H4,L4,SubVal),
+  type(SubVal,SubType),
+  (not equals(SubType,'String')->HP=H4,LP=L4,EP='false';
+  (isstr(StrVal),isstr(SubVal)->evalbin('StringStartsWith',StrVal,SubVal,EP),HP=H4,LP=L4;
+  binary_fn('StringStartsWith',StrVal,SubVal,EP),
+  HP=H4,LP=L4))).
+
+% Literal types
+predexp(H,L,E,H,L,E) :- isnum(E).
+predexp(H,L,E,H,L,E) :- type(E,T),T='Boolean'.
+predexp(H,L,E,H,L,E) :- type(E,T),T='String'.
+predexp(H,L,E,H,L,E) :- null(E).
+
+% Equality
+predexp(H,L,E,HP,LP,EP) :- 
+	is_eq(E,Left,Right),
+	predexp(H,L,Left,H1,L1,LeftRef),
+	ecgv(H1,L1,LeftRef,H2,L2,LeftVal),
+	predexp(H2,L2,Right,H3,L3,RightRef),
+	ecgv(H3,L3,RightRef,H4,L4,RightVal),
+	eqaux(H4,L4,LeftVal,RightVal,HP,EP),
+	LP=L4.
+
+% Non-equality
+predexp(H,L,E,HP,LP,V) :- 
+	is_neq(E,NE),
+	predexp(H,L,NE,HP,LP,EV),
+	(is_symbolic(EV)->unary_fn('not',EV,V);
+	sctb(EV,B),(B='true',V='false';B='false',V='true')).
+
+% Strict equality with concrete values.
+predexp(H,L,E,HP,LP,EP) :- 
+	is_stricteq(E,Left,Right),
+	predexp(H,L,Left,H1,L1,LeftRef),
+  ecgv(H1,L1,LeftRef,H2,L2,LeftVal),
+	predexp(H2,L2,Right,H3,L3,RightRef),
+  ecgv(H3,L3,RightRef,H4,LP,RightVal),
+  (is_concrete(LeftVal),is_concrete(RightVal)->
+  (LeftVal=RightVal->EP='true';EP='false'),HP=H4;
+  % Add some extra facts that might be needed.
+  ((type(LeftVal,LT),LT='Object'->true;type(RightVal,RT),RT='Object')->
+  fnextra(H4,LeftVal,RightVal,HP,ExtraEq);HP=H4,ExtraEq='true'),
+	binary_fn('=',LeftVal,RightVal,Eq),
+  binary_fn('and',Eq,ExtraEq,EP)).
+
+% Strict non-equality
+predexp(H,L,E,HP,LP,EP) :-
+	is_strictne(E,Eq),
+	predexp(H,L,Eq,H1,L1,EqRef),
+  ecgv(H1,L1,EqRef,HP,LP,EqVal),
+	(EqVal='true'->EP='false';true),
+	(EqVal='false'->EP='true';true),
+	(is_symbolic(EqVal)->unary_fn('not',EqVal,EP);true).
+
+% ! operator
+predexp(H,L,E,HP,LP,EP) :-
+  is_not(E,E1),
+  predexp(H,L,E1,H1,L1,R1),
+  ecgv(H1,L1,R1,HP,LP,R2),
+  ectb(R2,R3),
+  (is_symbolic(R3)->unary_fn('not',R3,EP);
+  evalunary('!',R3,EP)).
+
+% - operator
+predexp(H,L,E,HP,LP,EP) :-
+	is_neg(E,E1),
+	predexp(H,L,E1,H1,L1,R1),
+	ecgv(H1,L1,R1,HP,LP,R2),
+	is_concrete(R2),
+	evalunary('-',R2,EP).
+predexp(H,L,E,HP,LP,EP) :-
+	is_neg(E,E1),
+	exp(H,L,E1,H1,L1,R1),
+	ecgv(H1,L1,R1,HP,LP,R2),
+	is_symbolic(R2),
+	binary_fn('-','0',R2,EP).
+
+% &&
+predexp(H,L,E,P,Q,V) :- 
+	is_and(E,LeftExp,RightExp),
+	predexp(H,L,LeftExp,H1,L1,LeftRef),
+  ecgv(H1,L1,LeftRef,H2,L2,LeftVal),
+	predexp(H2,L2,RightExp,H3,L3,RightRef),
+  ecgv(H3,L3,RightRef,P,Q,RightVal),
+	andaux(LeftVal,RightVal,V).
+
+% Helper function to consolidate "and" logic.
+% Create a symbolic result value for pure symbolic expressions.
+andaux(LeftVal,RightVal,FinalVal) :-
+	is_symbolic(LeftVal),is_symbolic(RightVal),
+	binary_fn('and',LeftVal,RightVal,FinalVal).
+	
+% Dictate false if an operand is a literal false.
+% Doing this in a separate rule with proper guards
+% prevents reinterpretation during backtracking.
+andaux(LeftVal,_,FinalVal) :-
+	LeftVal='false',
+	FinalVal='false'.
+andaux(_,RightVal,FinalVal) :-
+	RightVal='false',
+	FinalVal='false'.
+
+% Also create symbolic functions when only one
+% operand is real-valued.
+andaux(LeftVal,RightVal,FinalVal) :-
+	is_concrete(LeftVal),LeftVal\='false',
+	is_symbolic(RightVal),
+	binary_fn('and',LeftVal,RightVal,FinalVal).
+andaux(LeftVal,RightVal,FinalVal) :-
+	is_symbolic(LeftVal),
+	is_concrete(RightVal),RightVal\='false',
+	binary_fn('and',LeftVal,RightVal,FinalVal).
+
+% Real-valued and, excluding cases containing literal false.
+andaux(LeftVal,RightVal,FinalVal) :-
+	is_concrete(LeftVal),LeftVal\='false',
+	is_concrete(RightVal),RightVal\='false',
+	evalbin('&&',LeftVal,RightVal,FinalVal).
+
+% [E-Typeof-null]
+%exp(H,L,E,H1,L1,'&undefined') :- is_typeof(E,E1),exp(H,L,E1,H1,L1,R),isref(R),ref(R,LR,_),LR = '&null'.
+
+% [E-Typeof-reference]
+%exp(H,L,E,H2,L2,M) :- is_typeof(E,E1),exp(H,L,E1,H1,L1,R),isref(R),ref(R,LR,_),LR\='&null',atypeof(H1,L1,R,H2,L2,M).
+
+% [E-Typeof]
+%exp(H,L,E,H2,L2,M) :- is_typeof(E,E1),exp(H,L,E1,H1,L1,VA),ispureval(VA),atypeof(H1,L1,VA,H2,L2,M).
+
+% [E-@Typeof]
+%atypeof(H,L,E,HP,LP,M) :- ecgv(H,L,E,HP,LP,V),gettype(HP,V,M).
+
+% instanceof
+%exp(H,L,E,HP,LP,EP) :-
+%  is_instanceof(E,E1,E2),
+%  exp(H,L,E1,H1,L1,EP1),exp(H1,L1,E2,H2,L2,EP2),
+%  ecgv(H2,L2,EP1,H3,L3,V1),ecgv(H3,L3,EP2,H4,L4,V2),
+%  instof(H4,L4,V1,V2,HP,LP,EP).
+
+% [E-Instof-Exc-obj]
+%instof(H,L,VA,PV,H,L,'&undefined') :- ispureval(VA),isprimval(PV),type(PV,TPV),TPV\='Object'.
+
+% [E-Instof-Exc-inst]
+% This rule seems to be unnecessary since @HasInstance is not really implemented as a property here, but as the ahasinstance predicate.
+% The assumption is that all things of type Object would have the same @HasInstance implementation, anyway.
+
+% [E-Instof-HasInst]
+%instof(H,L,VA,L1,H,L,B) :- ispureval(VA),isaddr(L1),type(L1,TL1),TL1 = 'Object',maps(H,L1,_),ahasinstance(H,L1,VA,_,B),isbool(B).
+
+% [E-Instof-prot]
+% The rule assumes that @HasInstance can only return a Boolean or throw an exception.
+% We are avoiding exceptions for now, so we simply say that the result is not Boolean, and let @HasInstance do what it wants.
+% instof(H,L,VA,L1,HP,L,X) :- ispureval(VA),isaddr(L1),type(L1,TL1),TL1 = 'Object',maps(H,L1,O),ahasinstance(H,L1,VA,HP,X),not isbool(X).
+

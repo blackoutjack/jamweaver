@@ -1,0 +1,12 @@
+--- closure-orig/src/com/google/javascript/jscomp/AliasStrings.java	2013-08-19 15:26:58.292335367 -0500
++++ closure/src/com/google/javascript/jscomp/AliasStrings.java	2013-09-28 18:44:34.950451368 -0500
+@@ -222,6 +222,9 @@
+         case Token.CATCH:
+         case Token.RETURN:
+         case Token.EXPR_RESULT:
++        // JAM begin
++        case Token.TRANSACTION:
++        // JAM end
+           // early exit - these nodes types can't be within a THROW
+           return false;
+       }

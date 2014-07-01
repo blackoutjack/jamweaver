@@ -1,0 +1,16 @@
+:- export fundef/8.
+:- export varlookup/2.
+:- export funalias/2.
+:- export ihasprop/3.
+:- export fhasprop/3.
+:- export fmaps/2.
+:- export reversescope/2.
+:- export calltarget/2.
+fundef('@Global',[],['a'],'&null','#Global',[],[],'@Global').
+varlookup('NONE','NONE') :- fail.
+funalias('NONE','NONE') :- fail.
+ihasprop('NONE','NONE','NONE') :- fail.
+fhasprop('NONE','NONE','NONE') :- fail.
+fmaps('NONE','NONE') :- fail.
+reversescope('NONE','NONE') :- fail.
+calltarget('NONE','NONE') :- fail.

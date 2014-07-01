@@ -1,0 +1,33 @@
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Native Object Collector</title>
+<script type="text/javascript" src="natives.js"></script>
+<script type="text/javascript">
+function printPropsFromField() {
+  var field = document.getElementById("objfield");
+  var objstr = field.value;
+  var obj;
+  eval("obj = " + objstr);
+
+  var loc = objstr;
+  if (loc.substring(loc.length - 10) == ".prototype") {
+    loc = loc.substring(0, loc.length - 10) + "Prot";
+  }
+  loc = "#" + loc.replace(".","#");
+
+  printPropsFromObject(obj, loc, objstr);
+}
+</script>
+</head>
+<body>
+<h1>JavaScript natives</h1>
+<input type="button" onclick="collectNatives()" value="Print properties for standard objects" />
+<br/>
+<input type="text" id="objfield" value="" size="20" />
+<input type="button" onclick="printPropsFromField()" value="Print properties for object" />
+<script type="text/javascript" >
+document.getElementById("objfield").focus();
+</script>
+</body>
+</html>

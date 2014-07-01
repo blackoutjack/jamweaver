@@ -1,0 +1,66 @@
+===== Java =====
+The Java debugger is jdb. It's a pain to use, but what can you do?
+
+To perform a heap dump, use the jmap utility.
+
+	jmap -dump:live,format=b,file=heap0.bin [PID]
+
+To view the dump, start a webserver with jhat:
+
+	jhat -port 7000 heap0.bin
+
+and load the page with lynx.
+
+	lynx http://localhost:7000
+
+To dump a histogram of the heap, use jhat as follows.
+
+  jmap -histo:live [PID]
+
+To attach to a running JVM, start the Java process to be debugged as
+  follows. (Sorry, no hot-connect without this, I looked.) 
+
+  java -agentlib:jdwp=transport=dt_socket,address=jamconn,server=y,suspend=n -jar bin/jam.jar
+
+Then attach with this command.
+
+  jdb -attach jamconn
+
+
+===== XSB =====
+To enable the full tracing functionality described below, copy
+util/debugger.P into your XSB installation at XSB/syslib/debugger.P.
+
+Also, there's currently an ``init'' predicate in use that disables all
+stdout output, because Yices doesn't have an option to suppress or
+redirect its verbosity. When debugging an XSB query, the ``init''
+predicate should not be used (or it should be temporarily modified to
+skip the redirection). Keep in mind that ``init'' also loads some data
+related to user-defined functions, so disabling the redirect may be
+necessary for some queries.
+
+The ``trace'' and ``notrace'' predicates can be used to start and stop
+production of trace output for a query.
+  trace,
+  do_other_stuff,
+  notrace,
+  etc.
+
+The ``profile_call'' function can surround a query to produce a time
+profile for a query. Import the ``xsb_profiling'' module to use it.
+
+  [xsb_profiling].
+  profile_call(do_other_stuff).
+
+
+===== JavaBDD =====
+
+The format for a BDD representation (as found in output/*/*/raut-*.aut)
+is as follows.
+  @RelId
+  NodeCnt VarCnt
+  VarId0 VarId1 ...
+  NodeNumN VarIdN LowN HighN
+  ...
+
+

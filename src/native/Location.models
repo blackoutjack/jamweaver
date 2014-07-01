@@ -1,0 +1,39 @@
+
+% window.location.constructor
+%%% stub
+aexe(H,L,'#Location',This,Args,HP,This) :-
+	always(H),
+	always(L),
+	always(Args),
+	always(HP).
+
+% location.assign(url)
+%%% stub
+aexe(H,L,'#location#assign',This,Args,HP,V) :-
+	always(H),
+	always(L),
+	always(This),
+	always(Args),
+	always(HP),
+	always(V).
+
+% location.reload()
+%%% stub
+aexe(H,L,'#location#reload',This,Args,HP,V) :-
+	always(H),
+	always(L),
+	always(This),
+	always(Args),
+	always(HP),
+	always(V).
+
+% location.replace(url)
+%%% stub
+aexe(H,L,'#location#replace',This,Args,HP,V) :-
+	always(H),
+	always(L),
+	always(This),
+	always(Args),
+	always(HP),
+	always(V).
+

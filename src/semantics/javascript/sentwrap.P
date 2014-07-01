@@ -1,0 +1,53 @@
+%
+% sentwrap.P
+% author: Rich Joiner <joiner@cs.wisc.edu>
+% 2012-09-21
+%
+% These predicates gather all needed data and submit a sentinel
+% predicate to print data during counter-example checking. These
+% wrappers are needed to minimize the number of local variables in
+% the counter-example queries, too many of which cause XSB to crash.
+%
+
+valuesent(H,L,M,N) :-
+  scope(H,L,M,L0),
+  aget(H,L0,M,V,_),
+  makestr(Id,M),
+  valuesentinel(Id,V,N).
+
+propvaluesent(_,_,_,[],_).
+
+propvaluesent(H,L,Obj,MembList,N) :-
+  scope(H,L,Obj,L0),
+  aget(H,L0,Obj,ObjAddr,H1),
+  makestr(ObjId,Obj),
+  propvaluesub(H1,L0,ObjAddr,ObjId,MembList,N).
+
+propvaluesub(_,_,_,_,[],_).
+
+propvaluesub(H,L,ObjAddr,ObjId,MembList,N) :-
+  MembList=[Memb|MembRest],
+  aget(H,ObjAddr,Memb,MembRef,H0),
+  ecgv(H0,L,MembRef,H1,L1,MembVal),
+  propvaluesentinel(ObjId,Memb,ObjAddr,MembVal,N),
+  propvaluesub(H1,L1,ObjAddr,ObjId,MembRest,N).
+
+constructorsent(H,L,Obj,N) :-
+  scope(H,L,Obj,L0),
+  aget(H,L0,Obj,ObjVal,H1),
+  ecto(H1,L,ObjVal,H2,_,ObjAddr),
+  prototype(H2,ObjAddr,'"constructor"',H3,ProtAddr),
+  aget(H3,ProtAddr,'"constructor"',ConsVal,_),
+  makestr(ObjId,Obj),
+  constructorsentinel(ObjId,ConsVal,N).
+
+returnsent(H,N) :-
+  maps(H,'#Global',Glob),
+  hasprop(Glob,'@ReturnVal',RetVal), 
+  returnsentinel(RetVal,N).
+
+functionentrysent(CallId,N) :-
+  current_func(Func),
+  functionentrysentinel(CallId,Func,N).
+
+

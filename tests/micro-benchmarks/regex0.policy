@@ -1,0 +1,1 @@
+0,-1: jam#called(#HTMLImageElement#prototype#setAttribute) && jam#arg(0) === "src" && jam#regextest(/^\s*(http|ftp)/i,jam#arg(1))

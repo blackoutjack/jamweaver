@@ -1,0 +1,33 @@
+
+% Math is an object, not a function, so there is no constructor model.
+
+%%% Need to implement
+aexe(H,_,'#Math#abs',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#acos',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#asin',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#atan',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#atan2',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#ceil',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#cos',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#exp',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#floor',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#log',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#max',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#min',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#pow',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+
+%%% Constraints: EP >=0, EP < 1
+aexe(H,_,'#Math#random',_,_,H,EP) :- symbolic(EP,'Number').
+
+aexe(H,L,'#Math#round',_,Args,HP,EP) :- 
+	Args=[V|_],
+	tonumber(H,L,V,HP,N),
+	math_round_aux(N,EP).
+
+math_round_aux(N,EP) :- is_symbolic(N),symbolic(EP,'Number').
+math_round_aux('&NaN','&NaN').
+math_round_aux(N,EP) :- EP is round(N).
+
+aexe(H,_,'#Math#sin',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#sqrt',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').
+aexe(H,_,'#Math#tan',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').

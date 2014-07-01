@@ -1,0 +1,6 @@
+
+% Storage constructor
+aexe(H,_,'#Storage',This,_,H,This) :- always(H),always(This),true.
+
+% localStorage.getItem
+aexe(H,_,'#Storage#prototype#getItem',_,_,H,V) :- always(H),symbolic(V,'Object').

@@ -1,0 +1,68 @@
+##### About #####
+
+This repository contains the files constituting the JavaScript Model-
+  Checker, a.k.a. JAM. This project is being built maintained by Rich
+  Joiner (joiner@cs.wisc.edu) at the University of Wisconsin-Madison.
+  The idea was concieved and prototyped by Matt Fredrikson, also of
+  UW-Madison. This work is done under the advisement of Professors
+  Tom Reps and Somesh Jha.
+
+The latest version of the repository can be obtained via SVN from the
+  following address, with the proper credentials.
+
+svn+ssh://velveeta/p/wash/private/implementations/crash/jam-release
+
+##### Getting started #####
+
+For setup issues, review INSTALL.bash and DEPENDENCIES.mk within the
+  doc/ directory. Once things are set up, see doc/RUNNING for running
+  tests, and doc/POLICIES for formulating policies.
+
+The JAM analysis creates JavaScript files instrumented with
+  transaction blocks; to run these programs, you'll need to build a
+  specially modified version of Firefox that supports transactions.
+  The required files and instructions to do that can be obtained via
+  the SVN repository at the following address.
+
+svn+ssh://velveeta/p/wash/private/implementations/crash/jamscript-release
+
+##### Files #####
+
+The directory structure of JAM is briefly described below.
+
+doc/: Documentation for installing and running JAM.
+  DEPENDENCIES.mk: a script to install third-party dependencies
+  RUNNING: instructions for invoking JAM
+  POLICIES: description of policy structure and language
+  TODO: known stuff to be worked on
+  INSTALL.bash: instructions/script for installing from scratch
+
+tests/: Contains various test cases and benchmarks for JAM, as well as
+  scripts for running them automatically. See doc/RUNNING for details.
+
+cache/: This (initially empty) directory will be populated with a XSB
+  query cache, so that subsequent invocations of JAM will avoid calls
+  to XSB that have previously been evaluated. The cache can be cleared
+  by running "make cacheclean".
+
+output/: This directory will contain the output of a JAM analysis. A
+  new subdirectory prefixed with the name of the input JavaScript file
+  will be created for each run. For example, after running JAM on
+  snote.js for the first time, the output can be found in
+  output/snote-0. The subdirectories will contain much more information
+  when running JAM with the -g flag.
+
+bin/: This contains the executable files included with JAM. See
+  doc/RUNNING for more information.
+
+lib/: Contains binaries of the various XSB and C modules used by JAM.
+
+wali/: This directory houses the prebuilt WALi/OpenNWA binaries. Also
+  included is source code for the buddy BDD library. See
+  INSTALL.bash for instuctions on building that piece.
+
+closure-patch/: This directory contains patches for the Google closure
+  tool that enables it to parse and manipulate the transaction
+  enforcement mechanism that is the current target of the analysis.
+
+ 

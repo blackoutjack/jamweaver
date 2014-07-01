@@ -1,0 +1,12 @@
+0,-1: jam#set(`x,"src") && `x instanceof #HTMLElement && `x.src !== "plaintext-test.png"
+0,-1: jam#set(`x,"href") && `x instanceof #HTMLElement
+0,-1: jam#set(`x,"innerHTML")
+0,-1: jam#set(`x,"cookie") && `x instanceof #HTMLDocument
+0,-1: jam#set(`x,"location") && `x instanceof #Window
+0,-1: jam#set(`x,"action") && `x instanceof #HTMLFormElement
+0,-1: jam#called(#XMLHttpRequest#prototype#open)
+0,-1: jam#called(#Window#prototype#open) && jam#arg(0) !== ""
+0,-1: jam#called(#Window#prototype#openDialog)
+0,-1: jam#called(#Window#prototype#postMessage)
+0,-1: jam#called(#WebSocket#prototype#send)
+0,-1: jam#called(#HTMLFormElement#prototype#submit)

@@ -1,0 +1,1 @@
+0,-1: jam#called(#HTMLDocument#prototype#write) && jam#stringcontains(jam#arg(0),"script")

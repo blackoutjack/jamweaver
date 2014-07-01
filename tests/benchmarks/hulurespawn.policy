@@ -1,0 +1,2 @@
+0,1: jam#called(#Storage#prototype#getItem)
+1,-1: jam#set(#document,"cookie")

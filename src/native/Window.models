@@ -1,0 +1,89 @@
+
+% Window constructor
+aexe(H,_,'#Window',This,_,HP,This) :- 
+  symbolic(UV,'String'),
+  heapprop(H,This,'"location"',UV,HP,_).
+
+% window.open
+aexe(H,L,'#Window#prototype#open',_,_,HP,EP) :- 
+  % new Window()
+  nativeconstruct(H,L,'#Window',[],HP,_,EP).
+
+% window.alert
+aexe(H,_,'#Window#prototype#alert',_,_,H,'&undefined').
+  %%% Potentially record that output was triggered.
+
+% window.escape
+% http://www.w3schools.com/jsref/jsref_escape.asp
+aexe(H,_,'#Global#escape',_,_,H,R) :-
+  always(H),
+  symbolic(R,'String').
+
+aexe(H,_,'#Global#unescape',_,_,H,R) :-
+  always(H),
+  symbolic(R,'String').
+  
+aexe(H,_,'#Global#encodeURIComponent',_,_,H,R) :-
+  symbolic(R,'String').
+
+aexe(H,_,'#Global#encodeURI',_,_,H,R) :-
+  symbolic(R,'String').
+  
+aexe(H,_,'#Global#decodeURIComponent',_,_,H,R) :-
+  symbolic(R,'String').
+
+aexe(H,_,'#Global#decodeURI',_,_,H,R) :-
+  symbolic(R,'String').
+  
+aexe(H,_,'#Global#parseInt',_,_,H,R) :-
+  symbolic(R,'Number').
+
+aexe(H,_,'#Global#parseFloat',_,_,H,R) :-
+  symbolic(R,'Number').
+
+%%% Assumes undefined return value (unconfirmed).
+aexe(H,_,'#Window#prototype#focus',_,_,H,'&undefined').
+
+%%% Assumes undefined return value (unconfirmed).
+aexe(H,_,'#Window#prototype#setTimeout',_,_,H,'&undefined').
+
+%%% Assumes undefined return value (unconfirmed).
+aexe(H,_,'#Window#prototype#clearTimeout',_,_,H,'&undefined').
+
+%%% Assumes undefined return value (unconfirmed).
+aexe(H,_,'#Window#prototype#setInterval',_,_,H,'&undefined').
+
+%%% Assumes undefined return value (unconfirmed).
+aexe(H,_,'#Window#prototype#clearInterval',_,_,H,'&undefined').
+
+%%% Assumes undefined return value (unconfirmed).
+aexe(H,_,'#Window#prototype#addEventListener',_,_,H,'&undefined') :-
+  always(H).
+
+% Model of JAM instrumentation
+%%% Model effects
+%aexe(H,_,'#Window#checkState',_,_,H,'&undefined') :-
+%  always(H).
+
+%%% Move these to a separate Global object.
+aexe(H,_,'#Global#isNaN',_,Args,H,EP) :-
+  length(Args,1),
+  Args=[Arg|_],
+  (is_symbolic(Arg)->symbolic(EP,'Boolean');
+  Arg='&NaN'->EP='true';EP='false').
+
+aexe(H,_,'#Global#isFinite',_,Args,H,EP) :-
+  length(Args,1),
+  Args=[Arg|_],
+  (is_symbolic(Arg)->symbolic(EP,'Boolean');
+  Arg='&Infinity'->EP='false';EP='true').
+
+%%% Doesn't model arbitrary heap alterations.
+aexe(H,L,'#Global#eval',_,Args,HP,EP) :-
+  length(Args,1),
+  Args=[Arg|_],
+  ects(H,L,Arg,HP,_,StrArg),
+  %%% evaluate with interpreter?
+  always(StrArg),
+  symbolic(EP,_).
+

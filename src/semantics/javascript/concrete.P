@@ -1,0 +1,39 @@
+%
+% concrete.P
+% author: Rich Joiner <joiner@cs.wisc.edu>
+% 2012-08-04
+%
+% This file specifies the semantics of JavaScript to be used wile in
+% concrete (execution trace) mode. We can make some assumptions (e.g.
+% a non-symbolic heap) that we can't when in pure symbolic mode.
+%
+
+% Environment initialization
+env_init(HP,LP) :-
+  abolish_all_tables,
+	rbb,
+  enter_concrete_mode,
+
+	H0='H',
+  InitStack=['#Global','&null'],
+
+  %%% Replace @ReturnVal eventually
+	heapprop(H0,'#Global','@ReturnVal','NONE',H1,_),
+
+	% Enter the #Global function.
+	new_arguments('0',[],'#Global',ArgsObj),
+	alloc(H1,ArgsObj,H2,ArgsAddr),
+	% Create the new activation record.
+	new_activation(ArgsAddr,'#Global','&null',Act),
+	alloc(H2,Act,H3,_),
+	% Initialize all scope-local variables.
+	hasprop('@Global','@Vars',Vars),
+	vd(H3,'#Global','DontDelete',Vars,H4),
+	% Initialize locally-declared functions.
+	hasprop('@Global','@FuncNames',Funcs),
+	hasprop('@Global','@FuncLocs',FuncLocs),
+	fd(H4,'#Global','DontDelete',Funcs,FuncLocs,H5),
+
+	pastescope(H5,InitStack,H6),
+	HP=H6,LP='#Global'.
+

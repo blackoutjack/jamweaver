@@ -1,0 +1,10 @@
+:- [persist].
+:- [polprops].
+:- [funfacts].
+:- [ast].
+:- [core].
+:- [assrt].
+:- [pred].
+:- [native].
+:- [nativef].
+:- [symbolic].

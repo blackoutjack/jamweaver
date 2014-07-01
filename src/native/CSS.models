@@ -1,0 +1,3 @@
+
+%%% Stub
+aexe(H,L,'#CSSStyleDeclaration',This,_,H,This) :- always(L),always(This).

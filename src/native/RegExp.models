@@ -1,0 +1,86 @@
+
+aexe(H,L,'#RegExp',This,Args,HP,Ret) :-
+	Args=[P|Args1],Args1=[F|_],
+	regexpcon_aux(H,L,This,P,F,HP,Ret).
+
+regexpcon_aux(H,L,This,P,F,HP,Ret) :-
+	is_concrete(F),
+	(F='&undefined'->F2='""';F2=F),
+	regexpcon_flags(F2,BG,BI,BM,_),
+	heapprop(H,This,'"source"',P,H1,_),
+	heapprop(H1,This,'"global"',BG,H2,_),
+	heapprop(H2,This,'"ignoreCase"',BI,H3,_),
+	heapprop(H3,This,'"multiLine"',BM,H4,_),
+	heapprop(H4,This,'"lastIndex"','0',H5,_),
+	heapprop(H5,This,'@Match',P,H6,_),
+	heapprop(H6,This,'@P',P,H7,_),
+	heapprop(H7,This,'@F',F,HP,_),
+	always(L),
+	Ret=This.
+
+regexpcon_aux(H,L,This,P,F,HP,Ret) :-
+	is_symbolic(F),
+	symbolic(BG,'Boolean'),
+	symbolic(BI,'Boolean'),
+	symbolic(BM,'Boolean'),
+	heapprop(H,This,'"source"',P,H1,_),
+	heapprop(H1,This,'"global"',BG,H2,_),
+	heapprop(H2,This,'"ignoreCase"',BI,H3,_),
+	heapprop(H3,This,'"multiLine"',BM,H4,_),
+	heapprop(H4,This,'"lastIndex"','0',H5,_),
+	heapprop(H5,This,'@Match',P,H6,_),
+	heapprop(H6,This,'@P',P,H7,_),
+	heapprop(H7,This,'@F',F,HP,_),
+	always(L),
+	Ret=This.
+	
+regexpcon_flags(F,G,I,M,X) :- 
+	unmakestr(F,F2),
+	atom_codes(F2,F3),
+	regexpcon_flags(F3,'false','false','false',G,I,M,X),
+	!.
+
+% g=103,i=105,m=109
+
+regexpcon_flags([],G,I,M,G,I,M,valid) :- !.
+
+regexpcon_flags([103 | F],'false',I,M,GP,IP,MP,X) :- 
+	regexpcon_flags(F,'true',I,M,GP,IP,MP,X),
+	!.
+
+regexpcon_flags([105 | F],G,'false',M,GP,IP,MP,X) :- 
+	regexpcon_flags(F,G,'true',M,GP,IP,MP,X),
+	!.
+
+regexpcon_flags([109 | F],G,I,'false',GP,IP,MP,X) :- 
+	regexpcon_flags(F,G,I,'true',GP,IP,MP,X),
+	!.
+
+regexpcon_flags(_,_,_,_,_,_,_,invalid).
+
+% RegExp.prototype.test
+aexe(H,L,'#RegExp#prototype#test',This,Args,HP,Ret) :-
+	always(L),
+	Args=[X|_],
+	maps(H,This,O),
+	hasprop(O,'@P',P),
+	hasprop(O,'@F',F),
+  always(P),always(F),always(X),
+	symbolic(Ret,'Boolean'),
+	HP=H.
+
+% RegExp.prototype.exec
+aexe(H,_,'#RegExp#prototype#exec',This,Args,HP,Ret) :-
+	Args=[X|_],
+	maps(H,This,O),
+	hasprop(O,'@P',P),
+	hasprop(O,'@F',F),
+  always(P),always(F),always(X),
+	% Can return a string or null.
+	symbolic(Ret,_),
+	HP=H.
+
+%%% Add toString implementation
+%aexe(H,_,'#RegExp#prototype#toString',This,Arg,HP,Ret) :-
+
+

@@ -1,0 +1,15 @@
+
+%%% Incomplete
+aexe(H,_,'#TypeError',This,Args,HP,This) :-
+	length(Args,0),
+	aexe(H,_,'#TypeError',This,'""~&EOL',HP,This).
+
+aexe(H,L,'#TypeError',This,Args,HP,This) :-
+	length(Args,ArgsLen),ArgsLen\=0,
+	Args=[V|_],
+	ects(H,L,V,H1,_,M),
+	heapprop(H1,This,'"message"',M,HP,_).
+	
+aexe(H,L,'#TypeError#prototype#toString',This,_,HP,RetVal) :-
+	hasprop(This,'"message"',Val),
+	ects(H,L,Val,HP,_,RetVal).

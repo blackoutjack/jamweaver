@@ -1,0 +1,2 @@
+0,1: setCookieSentinel === true
+1,-1: jam#set(#document,"cookie")

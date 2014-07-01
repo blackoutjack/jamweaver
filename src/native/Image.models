@@ -1,0 +1,4 @@
+
+aexe(H,L,'#Image',This,Args,H,This) :-
+	always(L),always(Args).
+

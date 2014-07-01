@@ -1,0 +1,55 @@
+This file describes the benchmark applications that have been subjected
+to the JAM analysis.
+
+Application        AST Nodes   Policy
+==========================================
+Picture Puzzle        159787   Prevent an attempt to install a handler
+                               to capture the user’s keystrokes
+SMS2                  111584   Prevent outgoing network communication
+Color Picker           53667   Allow modifications of innerHTML property
+                               only for whitelisted <div>s
+QRCode                 27032   Prevent outgoing network communication
+Google Analytics       20308   Disallow calls to document.write and
+                               document.createElement
+GoogieSpell            16023   Prevent an XMLHttpRequest after domain
+                               cookies have been read or if the target
+                               URL of XMLHttpRequest is not whitelisted
+Midori                 14803   Prevent modifications to the cookie after
+                               a marked location in the code
+GreyBox                13849   Allow the creation of <iframe>s only to
+                               whitelisted URLs
+MWWidgets              11073   Disallow modification and snooping of the
+                               contents of sensitive areas of the page
+Piwik                  10909   Modification of the cookie is not allowed
+                               after accessing the DOM
+SecureNote             10059   Disallow modification and snooping of the
+                               contents of sensitive areas of the page
+JavaScipt Menu          8965   Don't allow network communication via
+                               XMLHttpRequest or domain cookies
+ImageLoader             2436   
+PlusOne                 1868   Disallow calls to document.write and
+                               document.createElement
+SecureNoteMini          1375   Disallow modification and snooping of the
+                               contents of sensitive areas of the page
+Beacon                  1111   Modification of the cookie is not allowed
+                               after accessing the DOM
+Hulu Respawn            1105   Prevent writing to the cookie after
+                               accessing local storage
+JSBeautifier             677   Disallow writes to the "src" property of
+                               DOM elements after reading contents of a
+                               particular section of the page
+UserPrefs                608   Disallow use of eval and the appendChild
+                               method of DOM elements
+Flickr                   560   Only allow calls to window.open when the
+                               argument points to "flickr.com"
+DoubleClick              396   Prevent code from triggering navigation
+JSSec                    291   Allow writes to CSS only if the modified
+                               property is "display"
+JSSec (seeded)           291   Allow writes to CSS only if the modified
+                               property is "display"
+SquirrelMail (seeded)    251   Disallow modification of "src" property
+                               of HTML elements
+SquirrelMail             238   Disallow modification of "src" property
+                               of HTML elements
+
+

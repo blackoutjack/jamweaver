@@ -1,0 +1,70 @@
+
+Here's a brief rundown of the important files in JAM src/ directory.
+
+edu/: Contains the edu.wisc.cs.jam package implementing the high level
+  JAM algorithm.
+
+com/: Contains a few Java files that need to live in the 
+  com.google.javascript.jscomp package in order to access package-
+  private features of Closure.
+
+semantics/: This directory houses semantics modelling files.
+
+MANIFEST.MF, MANIFEST-UTIL.MF: Specifies build information for jam.jar
+  and util.jar, respectively.
+
+nwa.cpp, nwa.h: Provides the libnwa.so library as a JNI interface
+  between JAM and OpenNWA/WALi.
+
+nwaexe.cpp: A small wrapper enabling invocation of libnwa.so from the
+  command line. Prints the counterexample trace or "no counterexamples"
+  to STDOUT.
+      
+
+The following files are found within semantics/javascript/.
+
+conload.P: Loads the XSB modules needed for concrete JavaScript
+  evaluation, most often used for counter-example trace validation.
+
+symload.P: Likewise, but for symbolic evaluation of JavaScript
+  statements in isolation.
+
+core.P: Contains the primary Datalog encoding of JavaScript
+  operational semantics.
+
+concrete.P: Implements certain predicates specific to concrete
+  evaluation.
+
+symbolic.P: Likewise for symbolic evaluation.
+
+ast.P: Routines for parsing and accessing the parse tree of JavaScript
+  programs from an XSB program.
+
+assrt.P: Defines predicates used to assert assumed predicates during
+  symbolic evaluation.
+
+pred.P: Defines XSB predicates used to determine satisfiability of post-
+  state during semantic evaluation.
+
+funfacts.P: Baseline function information for programs that contain no
+  user-defined functions. This is typically overridden by a program-
+  specific version constructed during analysis.
+
+persist.cpp, persist.H: Contains various XSB predicates written in C. This
+  allows easier storage of complex data structures and some persistent
+  state between queries.
+
+sentinel.cpp, sentinel.H: XSB predicates that output various values to
+  STDOUT during counter-example checking, so that relevant predicates
+  can be learned for invalid counter-examples.
+
+externs.js: Used to append JAM-specific JavaScript extension functions
+  to Closure's standard list of native functions. 
+
+native/: Contains models of native functions (DOM, et. al.) and a
+  representation of the initial JavaScript environment as found in the
+  Chrome browser. 
+
+jquery/: Similar to native/, this directory contains models of JQuery
+  methods. This implementation is immature and untested.
+

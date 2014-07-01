@@ -1,0 +1,224 @@
+
+aexe(H,_,'#String',This,Args,HP,This) :- 
+	length(Args,0),
+	heapprop(H,This,'@Value','""',HP,_).
+
+aexe(H,_,'#String',This,Args,HP,This) :- 
+	length(Args,ArgsLen),ArgsLen\=0,
+	Args=[X|_],
+	is_concrete(X),
+	type(X,'String'),
+	heapprop(H,This,'@Value',X,HP,_).
+
+aexe(H,L,'#String',This,Args,HP,This) :-
+	length(Args,ArgsLen),ArgsLen\=0,
+	Args=[X|_],
+	is_concrete(X),
+	not type(X,'String'),
+	ects(H,L,X,H2,_,XP),
+	heapprop(H2,This,'@Value',XP,HP,_).
+	
+aexe(H,_,'#String',This,Args,HP,This) :- 
+	length(Args,ArgsLen),ArgsLen\=0,
+	Args=[X|_],
+	is_symbolic(X),
+	heapprop(H,This,'@Value',X,HP,_).
+
+aexe(H,_,'#String#prototype#toString',This,_,H,Ret) :- 
+	maps(H,This,O),
+	hasprop(O,'@Value',Ret).
+
+%%% TODO throw
+aexe(H,_,'#String#prototype#valueOf',This,_,H,'&undefined') :- 
+	type(This,T),
+	T\='String',
+	maps(H,This,O),
+	hasprop(O,'@Class',C),
+	C\='"String"'.
+
+aexe(H,_,'#String#prototype#valueOf',This,_,H,This) :- 
+	type(This,'String')->true;
+	maps(H,This,O),
+	hasprop(O,'@Class',C),
+	%%% Test for constructor instead of class?
+	C='"String"'.
+
+aexe(H,L,'#String#prototype#charAt',This,Args,HP,Ret) :-
+	Args=[Pos|_],
+	ects(H,L,This,H1,L1,SQuoted),
+	%%% TODO should use tointeger
+	tonumber(H1,L1,Pos,HP,Position),
+	makestr(S,SQuoted),
+	inttostr(PosInt,Position),
+	PosEnd is PosInt + 1,
+	substring(S,PosInt,PosEnd,RetUnquoted),
+	makestr(RetUnquoted,Ret).
+
+aexe(H,L,'#String#prototype#concat',This,Args,HP,Ret) :-
+	append(This,Args,Strs),
+	concat_aux(H,L,Strs,HP,RetList),
+	concat_atom(RetList,RetUnq),
+	makestr(RetUnq,Ret).
+
+concat_aux(H,_,Strs,H,'') :- length(Strs,0).
+
+concat_aux(H,L,Strs,HP,[Str2 | Ret]) :-
+	Strs=[Str|Strs1],
+	ects(H,L,Str,H1,L1,Str1),
+	makestr(Str2,Str1),
+	concat_aux(H1,L1,Strs1,HP,Ret).
+
+aexe(H,L,'#String#prototype#indexOf',This,Args,HP,Ret) :-
+	% First argument is required.
+	Args=[Search|Args1],
+	% Second is optional.
+	(Args1=[]->
+	Start='0';
+	Args1=[Start|_]),
+	ects(H,L,This,H1,L1,SQuo),
+	ects(H1,L1,Search,H2,L2,QQuo),
+	% TODO should use tointeger
+	tonumber_eol(H2,L2,Start,HP,'0',Pos),
+	% If the @Value and the search term are concrete,
+	% we can actually return a value. Otherwise, return
+	% symbolic integer.
+	(makestr(S,SQuo),makestr(Q,QQuo)->
+	inttostr(PosInt,Pos),
+	substring(S,PosInt,-1,SPos),
+	indexof_aux(SPos,Q,forward,PosInt,Ret);
+	symbolic(Ret,'Number')).
+
+/*
+% Two arguments
+aexe(H,L,'#String#indexOf',This,Args,HP,Ret) :-
+	Args=[X|Args1],
+	Args1=[Y|_],
+	ects(H,L,This,H1,L1,SQuo),
+	ects(H1,L1,X,H2,L2,QQuo),
+	% TODO should use tointeger
+	tonumber_eol(H2,L2,Y,HP,'0',Pos),
+	makestr(S,SQuo),
+	makestr(Q,QQuo),
+	inttostr(PosInt,Pos),
+	substring(S,PosInt,-1,SPos),
+	indexof_aux(SPos,Q,forward,PosInt,Ret).
+*/
+	
+
+aexe(H,L,'#String#prototype#lastIndexOf',This,Args,HP,Ret) :-
+	Args=[X|Args1],
+	Args1=[Y|_],
+	ects(H,L,This,H1,L1,SQuo),
+	ects(H1,L1,X,H2,L2,QQuo),
+						% TODO should use tointeger
+	tonumber_eol(H2,L2,Y,HP,'-1',Pos),
+	makestr(S,SQuo),
+	makestr(Q,QQuo),
+	inttostr(PosInt,Pos),
+	lastindexof_aux(S,PosInt,SPos),
+	indexof_aux(SPos,Q,reverse,0,Ret).
+
+lastindexof_aux(S,-1,S).
+lastindexof_aux(S,Pos,SPos) :- PosP is Pos+1,substring(S,0,PosP,SPos).
+
+tonumber_eol(H,_,'&EOL',H,EN,EN).
+tonumber_eol(H,L,V,HP,_,N) :- V\='&EOL',tonumber(H,L,V,HP,N).
+
+indexof_aux(S,Q,Dir,_,'-1') :- not str_match(Q,S,Dir,_,_).
+indexof_aux(S,Q,Dir,Off,Ret) :- 
+	str_match(Q,S,Dir,RetInt,_),
+	RetOff is RetInt+Off,
+	inttostr(RetOff,Ret).
+
+aexe(H,L,'#String#prototype#slice',This,Args,HP,Ret) :-
+	Args=[Arg0|Args1],
+	Args1=[Arg1|_],
+	ects(H,L,This,H1,L1,Str),
+	makestr(StrUnq,Str),
+	str_length(StrUnq,Len),
+						% TODO use tointeger
+	tonumber(H1,L1,Arg0,H2,Start),
+	substring_end(H2,L1,Arg1,Len,HP,End),
+	inttostr(StartInt,Start),
+	inttostr(EndInt,End),
+	slice_aux(StartInt,Len,From),
+	slice_aux(EndInt,Len,To),
+	SpanN = To - From,
+	max(SpanN,0,Span),
+	RealEnd = From + Span,
+	substring(StrUnq,From,RealEnd,RetUnq),
+	makestr(RetUnq,Ret).
+
+slice_aux(Pos,Len,Ret) :- 0 > Pos,PosLen = Pos + Len,max(PosLen,0,Ret).
+slice_aux(Pos,Len,Ret) :- Pos >= 0,min(Pos,Len,Ret).
+
+aexe(H,L,'#String#prototype#substring',This,Args,HP,Ret) :-
+	Args=[Arg0|Args1],
+	Args1=[Arg1|_],
+	is_concrete(Arg0),
+	is_concrete(Arg1),
+	is_concrete(This),
+	ects(H,L,This,H1,L1,Str),
+	makestr(StrUnq,Str),
+	str_length(StrUnq,Len),
+						% TODO use tointeger
+	tonumber(H1,L1,Arg0,H2,Start),
+	substring_end(H2,L1,Arg1,Len,HP,End),
+	inttostr(StartInt,Start),
+	inttostr(EndInt,End),
+	clamp(StartInt,0,Len,StartClamp),
+	clamp(EndInt,0,Len,EndClamp),
+	min(StartClamp,EndClamp,From),
+	max(StartClamp,EndClamp,To),
+	substring(StrUnq,From,To,RetUnq),
+	makestr(RetUnq,Ret).
+
+aexe(H,_,'#String#prototype#substring',This,Args,HP,Ret) :-
+	Args=[Arg0|Args1],
+	Args1=[Arg1|_],
+	((is_symbolic(Arg0);is_symbolic(Arg1);is_symbolic(This))),
+	% Via testing in d8, return value has type string, not object.
+	symbolic(Ret,'String'),HP=H.
+
+substring_end(H,_,'&undefined',Len,H,Len).
+substring_end(H,L,V,_,HP,Ret) :- V\='&undefined',tonumber(H,L,V,HP,Ret).
+
+clamp(N,Min,Max,Ret) :- max(N,Min,T),min(T,Max,Ret).
+
+min(M,N,M) :- N >= M.
+min(M,N,N) :- M > N.
+
+max(M,N,M) :- M >= N.
+max(M,N,N) :- N > M.
+
+aexe(H,_,'#String#prototype#trim',This,_,HP,Ret) :-
+	always(This),
+	H=HP,symbolic(Ret,'String').
+
+aexe(H,_,'#String#prototype#replace',This,_,HP,Ret) :-
+	always(This),
+	H=HP,symbolic(Ret,'String').
+
+% http://www.w3schools.com/jsref/jsref_match.asp
+aexe(H,L,'#String#prototype#match',This,Args,HP,Ret) :-
+	always(L),
+  always(Args),
+  always(This),
+	HP=H,
+	% Either returns an array or null.
+	symbolic(Ret,_).
+
+aexe(H,L,'#String#prototype#toUpperCase',This,Args,HP,Ret) :-
+  % Arguments are ignored.
+  always(Args),
+	ects(H,L,This,HP,_,S),
+  (is_symbolic(S)->symbolic(Ret,'String');
+  evaljs(format('String.prototype.toUpperCase.call(~a)',S),Ret)).
+
+aexe(H,L,'#String#prototype#toLowerCase',This,Args,HP,Ret) :-
+  % Arguments are ignored.
+  always(Args),
+	ects(H,L,This,HP,_,S),
+  (is_symbolic(S)->symbolic(Ret,'String');
+  evaljs(format('String.prototype.toLowerCase.call(~a)',S),Ret)).
+

@@ -1,0 +1,1 @@
+0,-1: jam#called(#String#prototype#indexOf) && jam#type(jam#arg(0),"String")

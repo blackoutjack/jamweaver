@@ -1,0 +1,11 @@
+
+% Function constructor
+aexe(H,L,'#Function',This,Args,H,This) :-
+  %%% Really need to add clauses to funfacts.P somehow.
+	always(L),
+	length(Args,Len),
+  %%% The last argument is the function body, and any preceding
+  %%% arguments name the new function's arguments.
+	%Args=[Body],
+  always(Len).
+

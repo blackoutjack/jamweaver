@@ -1,0 +1,72 @@
+0,1: jam#get(`x,"getElementById") && `x instanceof #HTMLDocument
+0,1: jam#get(`x,"getElementsByTagName") && `x instanceof #HTMLDocument
+1,-1: jam#set(#document,"cookie")
+0,-1: jam#get(`x,"cookie") && `x instanceof #HTMLDocument
+0,2: jam#getValue(#location,"href") === "http://localhost/"
+2,-1: jam#getValue(#location,"href") !== "http://localhost/"
+0,-1: jam#called(#HTMLDocument#prototype#write) && jam#arg(0) !== undefined
+0,3: jam#called(#Storage#prototype#getItem)
+3,-1: jam#set(#document,"cookie")
+0,4: jam#called(#HTMLDocument#prototype#getElementById) && jam#arg(0) === "content"
+4,-1: jam#set(`x,"src") && `x instanceof #HTMLElement
+0,-1: jam#set(`x,`y) && `x instanceof #CSSStyleDeclaration && `y !== "display"
+0,5: jam#setCookieSentinel === true
+5,-1: jam#set(#document,"cookie")
+0,-1: jam#set(`x,"textContent") && `x.className === "destructive-read read-only"
+0,-1: jam#get(`x,"textContent") && `x.className === "write-only non-editable"
+0,6: jam#get(`x,"textContent") && `x.className === "destructive-read read-only"
+6,-1: jam#get(`x,"textContent") && `x.className === "destructive-read read-only"
+0,7: jam#set(`x,"textContent") && `x.className === "write-only non-editable"
+7,-1: jam#set(`x,"textContent") && `x.className === "write-only non-editable"
+0,8: x === 2000000
+8,-1: x === 2000000
+0,-1: x === 2 && y === 3
+0,9: jam#get(`x,"eval") && `x instanceof #Window
+9,10: jam#get(#document, "write")
+10,11: jam#get(`x, "switch")
+11,12: jam#set(`x,"innerHTML")
+12,13: jam#get(#document, "write")
+13,14: jam#get(`x, "switch")
+14,15: jam#set(`x,"innerHTML")
+15,16: jam#get(#document, "write")
+16,17: jam#get(`x, "switch")
+17,18: jam#set(`x,"innerHTML")
+18,19: jam#get(#document, "write")
+19,20: jam#get(`x, "switch")
+20,21: jam#set(`x,"innerHTML")
+21,22: jam#get(#document, "write")
+22,23: jam#get(`x, "switch")
+23,24: jam#set(`x,"innerHTML")
+24,25: jam#get(#document, "write")
+25,26: jam#get(`x, "switch")
+26,27: jam#set(`x,"innerHTML")
+27,28: jam#get(#document, "write")
+28,29: jam#get(`x, "switch")
+29,30: jam#set(`x,"innerHTML")
+30,-1: jam#set(#document,"cookie")
+0,31: jam#set(`x,"location") && `x instanceof #Window
+31,-1: jam#set(#document,"cookie")
+0,32: jam#set(`x,"href") && `x instanceof #HTMLElement
+32,-1: jam#set(#document,"cookie")
+0,33: jam#set(`x,"cookie") && `x instanceof #HTMLDocument
+33,-1: jam#set(#document,"cookie")
+0,34: jam#set(`x,"action") && `x instanceof #HTMLFormElement
+34,-1: jam#set(#document,"cookie")
+0,35: jam#get(`x,"open") && `x instanceof #XMLHttpRequest
+35,-1: jam#set(#document,"cookie")
+0,36: jam#get(`x,"openDialog") && `x instanceof #Window
+36,-1: jam#set(#document,"cookie")
+0,37: jam#get(`x,"postMessage") && `x instanceof #Window
+37,-1: jam#set(#document,"cookie")
+0,38: jam#get(`x,"send") && `x instanceof #WebSocket
+38,-1: jam#set(#document,"cookie")
+0,39: jam#get(`x,"submit") && `x instanceof #HTMLFormElement
+39,-1: jam#set(#document,"cookie")
+0,40: jam#get(`x,"appendChild") && `x instanceof #HTMLElement
+40,-1: jam#set(#document,"cookie")
+0,41: jam#set(`x,"src") && `x instanceof #HTMLElement
+41,-1: jam#set(#document,"cookie")
+0,42: jam#called(#HTMLDocument#prototype#write) && jam#stringcontains(jam#arg(0),"script")
+42,-1: jam#set(#document,"cookie")
+0,43: jam#called(#HTMLDocument#prototype#createElement) && jam#arg(0) === "script"
+43,-1: jam#set(#document,"cookie")

@@ -1,0 +1,148 @@
+
+:- import length/2 from basics.
+:- import concat_atom/2 from string.
+
+%%
+% Parsing
+%%
+
+%%
+% General AST accessors
+%%
+
+% N is a nullary AST node with tag T.
+ast_nullary(N,T) :- N=[T],atom(T).
+
+% N is a unary AST node with tag T and child N.
+ast_unary(N,T,C) :- N=[T,C],atom(T).
+% N is a unary AST node with tag T, child N and type Typ.
+ast_unary(N,T,C,Typ) :- N=[T,C,Typ],atom(T).
+
+% N is a binary AST node with tag T, left L, and right R.
+ast_binary(N,T,L,R) :- N=[T,L,R],atom(T).
+
+% N is a trinary AST node with tag T and children L, M, and R.
+ast_trinary(N,T,L,M,R) :- N=[T,L,M,R],atom(T).
+
+ast_quad(N,T,E1,E2,E3,E4) :- N=[T,E1,E2,E3,E4],atom(T).
+
+% N is an AST with tag T and list of children L.
+ast_list(N,T,L) :- N=[T|L],atom(T).
+
+%%
+% Specific AST accessors
+%%
+
+is_empty(N) :- ast_nullary(N,'EMPTY').
+
+is_dataprop(N,M,V) :- ast_binary(N,'STRING_KEY',M,V).
+
+is_comma(N,L,R) :- ast_binary(N,'COMMA',L,R).
+
+is_assign(N,L,R) :- ast_binary(N,'ASSIGN',L,R).
+is_assign_sub(N,L,R) :- ast_binary(N,'ASSIGN_SUB',L,R).
+is_assign_div(N,L,R) :- ast_binary(N,'ASSIGN_DIV',L,R).
+is_assign_mul(N,L,R) :- ast_binary(N,'ASSIGN_MUL',L,R).
+is_assign_mod(N,L,R) :- ast_binary(N,'ASSIGN_MOD',L,R).
+is_assign_add(N,L,R) :- ast_binary(N,'ASSIGN_ADD',L,R).
+is_assign_bitor(N,L,R) :- ast_binary(N,'ASSIGN_BITOR',L,R).
+is_assign_bitxor(N,L,R) :- ast_binary(N,'ASSIGN_BITXOR',L,R).
+is_assign_bitand(N,L,R) :- ast_binary(N,'ASSIGN_BITAND',L,R).
+is_assign_lsh(N,L,R) :- ast_binary(N,'ASSIGN_LSH',L,R).
+is_assign_rsh(N,L,R) :- ast_binary(N,'ASSIGN_RSH',L,R).
+is_assign_ursh(N,L,R) :- ast_binary(N,'ASSIGN_URSH',L,R).
+
+is_id(N,I) :- ast_unary(N,'NAME',I).
+is_id(N,I,Typ) :- ast_unary(N,'NAME',I,Typ).
+is_regexp(N,P,F) :- ast_binary(N,'REGEXP',P,F).
+is_regexp(N,P,F) :- ast_unary(N,'REGEXP',P),F=['STRING','""'].
+
+is_this(N) :- ast_nullary(N,'THIS').
+is_null(N) :- ast_nullary(N,'NULL').
+
+is_accessor(N,L,R) :- ast_binary(N,'GETPROP',L,R).
+is_accessor(N,L,R) :- ast_binary(N,'GETELEM',L,R).
+
+is_call(N,F,A) :- ast_list(N,'CALL',[F|A]).
+
+is_new(N,F,A) :- ast_list(N,'NEW',[F|A]).
+
+% Return undefined if there's no return argument.
+is_return(N,V) :- ast_unary(N,'RETURN',V).
+is_return(N,'undefined') :- ast_nullary(N,'RETURN').
+
+is_objlit(N,A) :- ast_list(N,'OBJECTLIT',A).
+is_arraylit(N,A) :- ast_list(N,'ARRAYLIT',A).
+
+is_exprresult(N,E) :- ast_unary(N,'EXPR_RESULT',E).
+
+is_void(N,E) :- ast_unary(N,'VOID',E).
+is_delete(N,X) :- ast_unary(N,'DELPROP',X).
+is_typeof(N,X) :- ast_unary(N,'TYPEOF',X).
+is_incr(N,E) :- ast_unary(N,'INC',E).
+is_decr(N,E) :- ast_unary(N,'DEC',E).
+is_incrpost(N,E) :- ast_unary(N,'POSTINC',E).
+is_decrpost(N,E) :- ast_unary(N,'POSTDEC',E).
+is_instanceof(N,L,R) :- ast_binary(N,'INSTANCEOF',L,R).
+is_in(N,L,R) :- ast_binary(N,'IN',L,R).
+
+is_vardecl(N,Id) :- ast_unary(N,'VAR',Id),Id=['NAME',_].
+is_initializer(N,Id,V) :- ast_unary(N,'VAR',['NAME',I,V]),Id=['NAME',I].
+
+is_if(N,C,T,F) :- ast_trinary(N,'IF',C,T,F).
+is_if(N,C,T,F) :- ast_binary(N,'IF',C,T),F=['EMPTY'].
+is_conditional(N,C,T,F) :- ast_trinary(N,'HOOK',C,T,F).
+is_while(N,C,B) :- ast_binary(N,'WHILE',C,B).
+is_while(N,C,B) :- ast_unary(N,'WHILE',C),B=['EMPTY'].
+is_forin(N,V,O,B) :- ast_trinary(N,'FOR',V,O,B).
+is_for(N,A,B,C,D) :- ast_quad(N,'FOR',A,B,C,D).
+is_with(N,V,B) :- ast_binary(N,'WITH',V,B).
+%%% Haven't tested this with non-empty cases.
+is_switch(N,C,Cases) :- ast_list(N,'SWITCH',[C|Cases]).
+is_try(N,B1,B2,B3) :- ast_trinary(N,'TRY',B1,B2,B3).
+is_try(N,B1,B2) :- ast_binary(N,'TRY',B1,B2).
+is_catch(N,Ex,Bl) :- ast_binary(N,'CATCH',Ex,Bl).
+is_throw(N,Ex) :- ast_unary(N,'THROW',Ex).
+%%% Case with children?
+is_block(N) :- ast_nullary(N,'BLOCK').
+
+is_eq(N,L,R) :- ast_binary(N,'EQ',L,R).
+is_stricteq(N,L,R) :- ast_binary(N,'SHEQ',L,R).
+is_neq(N,E) :- ast_binary(N,'NE',L,R),E=['EQ',L,R].
+is_strictne(N,E) :- ast_binary(N,'SHNE',L,R),E=['SHEQ',L,R].
+
+is_relop(N,L,R,OP) :- ast_binary(N,OP,L,R),op_is_rel(OP).
+is_lt(N,L,R) :- ast_binary(N,'LT',L,R).
+is_le(N,L,R) :- ast_binary(N,'LE',L,R).
+is_gt(N,L,R) :- ast_binary(N,'GT',L,R).
+is_ge(N,L,R) :- ast_binary(N,'GE',L,R).
+
+is_lsh(N,L,R) :- ast_binary(N,'LSH',L,R).
+is_rsh(N,L,R) :- ast_binary(N,'RSH',L,R).
+is_ursh(N,L,R) :- ast_binary(N,'URSH',L,R).
+
+is_not(N,E) :- ast_unary(N,'NOT',E).
+is_neg(N,E) :- ast_unary(N,'NEG',E).
+is_pos(N, E) :- ast_unary(N,'POS',E).
+
+is_plus(N,L,R) :- ast_binary(N,'ADD',L,R).
+is_minus(N,L,R) :- ast_binary(N,'SUB',L,R).
+is_star(N,L,R) :- ast_binary(N,'MUL',L,R).
+is_divop(N,L,R) :- ast_binary(N,'DIV',L,R).
+is_mod(N,L,R) :- ast_binary(N,'MOD',L,R).
+
+is_bitnot(N,E) :- ast_unary(N,'BITNOT',E).
+is_bitor(N,L,R) :- ast_binary(N,'BITOR',L,R).
+is_bitand(N,L,R) :- ast_binary(N,'BITAND',L,R).
+is_bitxor(N,L,R) :- ast_binary(N,'BITXOR',L,R).
+
+is_or(N,L,R) :- ast_binary(N,'OR',L,R).
+is_and(N,L,R) :- ast_binary(N,'AND',L,R).
+
+is_literal(N,V) :- ast_unary(N,'STRING',V).
+is_literal(N,V) :- ast_unary(N,'NUMBER',V).
+is_literal(N,'true') :- ast_nullary(N,'TRUE').
+is_literal(N,'false') :- ast_nullary(N,'FALSE').
+
+is_program(N,CS) :- ast_list(N,'SCRIPT',CS).
+

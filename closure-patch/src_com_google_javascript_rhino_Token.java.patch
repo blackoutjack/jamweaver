@@ -1,0 +1,22 @@
+--- closure-orig/src/com/google/javascript/rhino/Token.java	2013-08-19 15:26:58.328335366 -0500
++++ closure/src/com/google/javascript/rhino/Token.java	2013-11-20 12:26:15.234267448 -0600
+@@ -145,6 +145,9 @@
+         LABEL          = 126, // label
+         EXPR_RESULT    = 130, // expression statement in scripts
+         SCRIPT         = 132, // top-level node for entire script
++        // JAM begin
++        TRANSACTION    = 140, // transaction keyword
++        // JAM end
+ 
+         GETTER_DEF     = 147,
+         SETTER_DEF     = 148,
+@@ -281,6 +284,9 @@
+           case LB:              return "LB";
+           case LC:              return "LC";
+           case COLON:           return "COLON";
++          // JAM begin
++          case TRANSACTION:     return "TRANSACTION";
++          // JAM end
+         }
+ 
+         // Token without name

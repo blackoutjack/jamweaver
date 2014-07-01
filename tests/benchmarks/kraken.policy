@@ -1,0 +1,16 @@
+# 0,-1: jam#set(`x,"src") && `x instanceof #HTMLElement && `x.src !== "plaintext-test.png"
+# 0,-1: jam#set(`x,"href") && `x instanceof #HTMLElement
+# 0,-1: jam#set(`x,"innerHTML")
+# 0,-1: jam#set(`x,"cookie") && `x instanceof #HTMLDocument
+# 0,-1: jam#set(`x,"location") && `x instanceof #Window
+# 0,-1: jam#set(`x,"action") && `x instanceof #HTMLFormElement
+# 0,-1: jam#get(`x,"write") && `x instanceof #HTMLDocument
+# 0,-1: jam#get(`x,"writeln") && `x instanceof #HTMLDocument
+0,-1: jam#get(`x,"open") && `x instanceof #XMLHttpRequest
+# 0,-1: jam#get(`x,"open") && `x instanceof #Window
+# 0,-1: jam#get(`x,"openDialog") && `x instanceof #Window
+# 0,-1: jam#get(`x,"postMessage") && `x instanceof #Window
+# 0,-1: jam#get(`x,"send") && `x instanceof #WebSocket
+# 0,-1: jam#get(`x,"submit") && `x instanceof #HTMLFormElement
+# What about creating an <input> element with type="submit", associating
+# it with a form (via appendChild?) and calling form.click()?

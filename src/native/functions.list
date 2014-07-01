@@ -1,0 +1,2984 @@
+% This file contains the addresses of native functions that have
+% standard properties. They only differ in terms of their body, which
+% is modeled in the .n.P files.
+
+
+% Object#prototype methods
+#Object "Object" 1 c
+#Object#prototype#__defineGetter__ "__defineGetter__" 2
+#Object#prototype#__defineSetter__ "__defineSetter__" 2
+#Object#prototype#__lookupGetter__ "__lookupGetter__" 1
+#Object#prototype#__lookupSetter__ "__lookupSetter__" 1
+#Object#prototype#hasOwnProperty "hasOwnProperty" 1
+#Object#prototype#isPrototypeOf "isPrototypeOf" 1
+#Object#prototype#propertyIsEnumerable "propertyIsEnumerable" 1
+#Object#prototype#toLocaleString "toLocaleString" 0
+#Object#prototype#toSource "toSource" 0
+#Object#prototype#toString "toString" 0
+#Object#prototype#unwatch "unwatch" 1
+#Object#prototype#valueOf "valueOf" 0
+#Object#prototype#watch "watch" 2
+
+
+% Object methods
+#Function#prototype "" 0
+#Object#create "create" 2
+#Object#defineProperties "defineProperties" 2
+#Object#defineProperty "defineProperty" 3
+#Object#freeze "freeze" 1
+#Object#getOwnPropertyDescriptor "getOwnPropertyDescriptor" 2
+#Object#getOwnPropertyNames "getOwnPropertyNames" 1
+#Object#getPrototypeOf "getPrototypeOf" 1
+#Object#isExtensible "isExtensible" 1
+#Object#isFrozen "isFrozen" 1
+#Object#isSealed "isSealed" 1
+#Object#keys "keys" 1
+#Object#preventExtensions "preventExtensions" 1
+#Object#seal "seal" 1
+
+
+% Function#prototype methods
+#Function "Function" 1 c
+#Function#prototype#apply "apply" 2
+#Function#prototype#bind "bind" 1
+#Function#prototype#call "call" 1
+#Function#prototype#isGenerator "isGenerator" 0
+#Function#prototype#toSource "toSource" 0
+#Function#prototype#toString "toString" 0
+
+
+% Function methods
+#Function#prototype "" 0
+#Function#prototype "" 0
+
+
+% Window#prototype methods
+#Window#prototype#QueryInterface "QueryInterface" 1 c
+#Window#prototype#__defineGetter__ "__defineGetter__" 2
+#Window#prototype#__defineSetter__ "__defineSetter__" 2
+#Window#prototype#__lookupGetter__ "__lookupGetter__" 1
+#Window#prototype#__lookupSetter__ "__lookupSetter__" 1
+#Window#prototype#addEventListener "addEventListener" 4
+#Window#prototype#alert "alert" 1
+#Window#prototype#atob "atob" 1
+#Window#prototype#back "back" 0
+#Window#prototype#blur "blur" 0
+#Window#prototype#btoa "btoa" 1
+#Window#prototype#captureEvents "captureEvents" 1
+#Window#prototype#clearInterval "clearInterval" 1
+#Window#prototype#clearTimeout "clearTimeout" 1
+#Window#prototype#close "close" 0
+#Window#prototype#confirm "confirm" 1
+#Window#prototype#disableExternalCapture "disableExternalCapture" 0
+#Window#prototype#dispatchEvent "dispatchEvent" 1
+#Window#prototype#dump "dump" 1
+#Window#prototype#enableExternalCapture "enableExternalCapture" 0
+#Window#prototype#find "find" 7
+#Window#prototype#focus "focus" 0
+#Window#prototype#forward "forward" 0
+#Window#prototype#getComputedStyle "getComputedStyle" 2
+#Window#prototype#getSelection "getSelection" 0
+#Window#prototype#home "home" 0
+#Window#prototype#matchMedia "matchMedia" 1
+#Window#prototype#moveBy "moveBy" 2
+#Window#prototype#moveTo "moveTo" 2
+#Window#prototype#mozCancelAnimationFrame "mozCancelAnimationFrame" 1
+#Window#prototype#mozCancelRequestAnimationFrame "mozCancelRequestAnimationFrame" 1
+#Window#prototype#mozRequestAnimationFrame "mozRequestAnimationFrame" 1
+#Window#prototype#open "open" 3
+#Window#prototype#openDialog "openDialog" 3
+#Window#prototype#postMessage "postMessage" 2
+#Window#prototype#print "print" 0
+#Window#prototype#prompt "prompt" 2
+#Window#prototype#releaseEvents "releaseEvents" 1
+#Window#prototype#removeEventListener "removeEventListener" 3
+#Window#prototype#resizeBy "resizeBy" 2
+#Window#prototype#resizeTo "resizeTo" 2
+#Window#prototype#routeEvent "routeEvent" 1
+#Window#prototype#scroll "scroll" 2
+#Window#prototype#scrollBy "scrollBy" 2
+#Window#prototype#scrollByLines "scrollByLines" 1
+#Window#prototype#scrollByPages "scrollByPages" 1
+#Window#prototype#scrollTo "scrollTo" 2
+#Window#prototype#setInterval "setInterval" 0
+#Window#prototype#setResizable "setResizable" 1
+#Window#prototype#setTimeout "setTimeout" 0
+#Window#prototype#showModalDialog "showModalDialog" 3
+#Window#prototype#sizeToContent "sizeToContent" 0
+#Window#prototype#stop "stop" 0
+#Window#prototype#updateCommands "updateCommands" 1
+
+
+% Global methods
+#Array "Array" 1 c
+#ArrayBuffer "ArrayBuffer" 1 c
+#Attr "Attr" 0 c
+#Blob "Blob" 0 c
+#Boolean "Boolean" 1 c
+#CSSCharsetRule "CSSCharsetRule" 0 c
+#CSSFontFaceRule "CSSFontFaceRule" 0 c
+#CSSImportRule "CSSImportRule" 0 c
+#CSSMediaRule "CSSMediaRule" 0 c
+#CSSPrimitiveValue "CSSPrimitiveValue" 0 c
+#CSSRule "CSSRule" 0 c
+#CSSRuleList "CSSRuleList" 0 c
+#CSSStyleDeclaration "CSSStyleDeclaration" 0 c
+#CSSStyleRule "CSSStyleRule" 0 c
+#CSSStyleSheet "CSSStyleSheet" 0 c
+#CSSValue "CSSValue" 0 c
+#CSSValueList "CSSValueList" 0 c
+#CanvasGradient "CanvasGradient" 0 c
+#CanvasRenderingContext2D "CanvasRenderingContext2D" 0 c
+#ClientRectList "ClientRectList" 0 c
+#CustomEvent "CustomEvent" 0 c
+#DOMException "DOMException" 0 c
+#DOMImplementation "DOMImplementation" 0 c
+#DOMParser "DOMParser" 0 c
+#DOMStringList "DOMStringList" 0 c
+#DOMTokenList "DOMTokenList" 0 c
+#Global#DataView "DataView" 3 c
+#Date "Date" 7 c
+#Document "Document" 0 c
+#DocumentFragment "DocumentFragment" 0 c
+#DocumentType "DocumentType" 0 c
+#Element "Element" 0 c
+#Error "Error" 1 c
+#Global#EvalError "EvalError" 1 c
+#Event "Event" 0 c
+#EventTarget "EventTarget" 0 c
+#File "File" 0 c
+#FileList "FileList" 0 c
+#FileReader "FileReader" 0 c
+#Float32Array "Float32Array" 3 c
+#Float64Array "Float64Array" 3 c
+#FormData "FormData" 0 c
+#Function "Function" 1 c
+#HTMLAnchorElement "HTMLAnchorElement" 0 c
+#HTMLAudioElement "HTMLAudioElement" 0 c
+#HTMLBRElement "HTMLBRElement" 0 c
+#HTMLButtonElement "HTMLButtonElement" 0 c
+#HTMLCanvasElement "HTMLCanvasElement" 0 c
+#HTMLCollection "HTMLCollection" 0 c
+#HTMLDocument "HTMLDocument" 0 c
+#HTMLElement "HTMLElement" 0 c
+#HTMLFormElement "HTMLFormElement" 0 c
+#HTMLFrameElement "HTMLFrameElement" 0 c
+#HTMLHtmlElement "HTMLHtmlElement" 0 c
+#HTMLIFrameElement "HTMLIFrameElement" 0 c
+#HTMLImageElement "HTMLImageElement" 0 c
+#HTMLInputElement "HTMLInputElement" 0 c
+#HTMLLIElement "HTMLLIElement" 0 c
+#HTMLLinkElement "HTMLLinkElement" 0 c
+#HTMLMediaElement "HTMLMediaElement" 0 c
+#HTMLOptionElement "HTMLOptionElement" 0 c
+#HTMLOptionsCollection "HTMLOptionsCollection" 0 c
+#HTMLParamElement "HTMLParamElement" 0 c
+#HTMLScriptElement "HTMLScriptElement" 0 c
+#HTMLSelectElement "HTMLSelectElement" 0 c
+#HTMLSourceElement "HTMLSourceElement" 0 c
+#HTMLTextAreaElement "HTMLTextAreaElement" 0 c
+#HTMLVideoElement "HTMLVideoElement" 0 c
+#History "History" 0 c
+#IDBDatabase "IDBDatabase" 0 c
+#IDBFactory "IDBFactory" 0 c
+#IDBIndex "IDBIndex" 0 c
+#IDBObjectStore "IDBObjectStore" 0 c
+#IDBRequest "IDBRequest" 0 c
+#IDBTransaction "IDBTransaction" 0 c
+#Image "Image" 0 c
+#Int16Array "Int16Array" 3 c
+#Int32Array "Int32Array" 3 c
+#Int8Array "Int8Array" 3 c
+#Global#InternalError "InternalError" 1 c
+#Global#Iterator "Iterator" 2 c
+#Location "Location" 0 c
+#Global#Map "Map" 1 c
+#MediaList "MediaList" 0 c
+#MediaQueryList "MediaQueryList" 0 c
+#MimeTypeArray "MimeTypeArray" 0 c
+#Global#MouseEvent "MouseEvent" 0 c
+#NamedNodeMap "NamedNodeMap" 0 c
+#Navigator "Navigator" 0 c
+#Node "Node" 0 c
+#NodeList "NodeList" 0 c
+#Number "Number" 1 c
+#Object "Object" 1 c
+#Global#ParallelArray "ParallelArray" 0 c
+#Global#Parser "Parser" 0 c
+#Performance "Performance" 0 c
+#PluginArray "PluginArray" 0 c
+#Global#ProgressEvent "ProgressEvent" 0 c
+#Range "Range" 0 c
+#Global#RangeError "RangeError" 1 c
+#ReferenceError "ReferenceError" 1 c
+#RegExp "RegExp" 2 c
+#Screen "Screen" 0 c
+#Selection "Selection" 0 c
+#Global#Serializer "Serializer" 0 c
+#Global#Set "Set" 1 c
+#Storage "Storage" 0 c
+#String "String" 1 c
+#Global#StyleSheet "StyleSheet" 0 c
+#StyleSheetList "StyleSheetList" 0 c
+#SyntaxError "SyntaxError" 1 c
+#Global#Tx "Tx" 0 c
+#TypeError "TypeError" 1 c
+#Global#UIEvent "UIEvent" 0 c
+#Global#URIError "URIError" 1 c
+#Uint16Array "Uint16Array" 3 c
+#Uint32Array "Uint32Array" 3 c
+#Uint8Array "Uint8Array" 3 c
+#Uint8ClampedArray "Uint8ClampedArray" 3 c
+#Global#WeakMap "WeakMap" 0 c
+#WebGLRenderingContext "WebGLRenderingContext" 0 c
+#WebSocket "WebSocket" 0 c
+#Window "Window" 0 c
+#Worker "Worker" 0 c
+#Global#WorkerErrorEvent "WorkerErrorEvent" 0 c
+#Global#WorkerEvent "WorkerEvent" 0 c
+#Global#WorkerMessageEvent "WorkerMessageEvent" 0 c
+#XMLHttpRequest "XMLHttpRequest" 1 c
+#XMLHttpRequestEventTarget "XMLHttpRequestEventTarget" 0 c
+#XMLSerializer "XMLSerializer" 0 c
+#Global#XPCNativeWrapper "XPCNativeWrapper" 1 c
+#Global#decodeURI "decodeURI" 1
+#Global#decodeURIComponent "decodeURIComponent" 1
+#Global#encodeURI "encodeURI" 1
+#Global#encodeURIComponent "encodeURIComponent" 1
+#Global#escape "escape" 1
+#Global#eval "eval" 1
+#Global#getInterface "getInterface" 1
+#Global#isFinite "isFinite" 1
+#Global#isNaN "isNaN" 1
+#Global#parseFloat "parseFloat" 1
+#Global#parseInt "parseInt" 2
+#Global#unescape "unescape" 1
+#Global#uneval "uneval" 1
+
+
+% Array methods
+#Function#prototype "" 0
+#Array#concat "concat" 2
+#Array#every "every" 2
+#Array#filter "filter" 2
+#Array#forEach "forEach" 2
+#Array#indexOf "indexOf" 2
+#Array#isArray "isArray" 1
+#Array#join "join" 2
+#Array#lastIndexOf "lastIndexOf" 2
+#Array#map "map" 2
+#Array#pop "pop" 1
+#Array#push "push" 2
+#Array#reduce "reduce" 2
+#Array#reduceRight "reduceRight" 2
+#Array#reverse "reverse" 1
+#Array#shift "shift" 1
+#Array#slice "slice" 3
+#Array#some "some" 2
+#Array#sort "sort" 2
+#Array#splice "splice" 3
+#Array#unshift "unshift" 2
+
+
+% RegExp methods
+#Function#prototype "" 0
+
+
+% HTMLCollection methods
+#HTMLCollection#__proto__ "__proto__" 0
+
+
+% NodeList methods
+#NodeList#__proto__ "__proto__" 0
+
+
+% Event methods
+#FormData#__proto__ "__proto__" 0
+
+
+% Boolean methods
+#Function#prototype "" 0
+
+
+% String methods
+#Function#prototype "" 0
+#String#charAt "charAt" 2
+#String#charCodeAt "charCodeAt" 2
+#String#concat "concat" 2
+#String#endsWith "endsWith" 2
+#String#fromCharCode "fromCharCode" 1
+#String#indexOf "indexOf" 2
+#String#lastIndexOf "lastIndexOf" 2
+#String#localeCompare "localeCompare" 2
+#String#match "match" 2
+#String#quote "quote" 1
+#String#replace "replace" 3
+#String#search "search" 2
+#String#slice "slice" 3
+#String#split "split" 3
+#String#startsWith "startsWith" 2
+#String#substr "substr" 3
+#String#substring "substring" 3
+#String#toLocaleLowerCase "toLocaleLowerCase" 1
+#String#toLocaleUpperCase "toLocaleUpperCase" 1
+#String#toLowerCase "toLowerCase" 1
+#String#toUpperCase "toUpperCase" 1
+#String#trim "trim" 1
+#String#trimLeft "trimLeft" 1
+#String#trimRight "trimRight" 1
+
+
+% Number methods
+#Function#prototype "" 0
+#Number#isFinite "isFinite" 1
+#Number#isInteger "isInteger" 1
+#Number#isNaN "isNaN" 1
+#Number#toInteger "toInteger" 1
+
+
+% Math methods
+#Math#abs "abs" 1
+#Math#acos "acos" 1
+#Math#asin "asin" 1
+#Math#atan "atan" 1
+#Math#atan2 "atan2" 2
+#Math#ceil "ceil" 1
+#Math#cos "cos" 1
+#Math#exp "exp" 1
+#Math#floor "floor" 1
+#Math#log "log" 1
+#Math#max "max" 2
+#Math#min "min" 2
+#Math#pow "pow" 2
+#Math#random "random" 0
+#Math#round "round" 1
+#Math#sin "sin" 1
+#Math#sqrt "sqrt" 1
+#Math#tan "tan" 1
+#Math#toSource "toSource" 0
+
+
+% Error methods
+#Function#prototype "" 0
+
+
+% ReferenceError methods
+#Function#prototype "" 0
+
+
+% SyntaxError methods
+#Function#prototype "" 0
+
+
+% TypeError methods
+#Function#prototype "" 0
+
+
+% EventTarget methods
+#Function#prototype "" 0
+#EventTarget#toString "toString" 0
+
+
+% HTMLObjectElement methods
+#HTMLObjectElement#prototype "undefined" 0
+
+
+% FormData methods
+#FormData#__proto__ "__proto__" 0
+
+
+% Date methods
+#Function#prototype "" 0
+#Date#UTC "UTC" 7 c
+#Date#now "now" 0
+#Date#parse "parse" 1
+
+
+% Image methods
+#FormData#__proto__ "__proto__" 0
+
+
+% Int8Array methods
+#Function#prototype "" 0
+#Int8Array#set "set" 3
+#Int8Array#subarray "subarray" 3
+
+
+% Uint8Array methods
+#Function#prototype "" 0
+#Uint8Array#set "set" 3
+#Uint8Array#subarray "subarray" 3
+
+
+% Int16Array methods
+#Function#prototype "" 0
+#Int16Array#set "set" 3
+#Int16Array#subarray "subarray" 3
+
+
+% Uint16Array methods
+#Function#prototype "" 0
+#Uint16Array#set "set" 3
+#Uint16Array#subarray "subarray" 3
+
+
+% Int32Array methods
+#Function#prototype "" 0
+#Int32Array#set "set" 3
+#Int32Array#subarray "subarray" 3
+
+
+% Uint32Array methods
+#Function#prototype "" 0
+#Uint32Array#set "set" 3
+#Uint32Array#subarray "subarray" 3
+
+
+% Float32Array methods
+#Function#prototype "" 0
+#Float32Array#set "set" 3
+#Float32Array#subarray "subarray" 3
+
+
+% Float64Array methods
+#Function#prototype "" 0
+#Float64Array#set "set" 3
+#Float64Array#subarray "subarray" 3
+
+
+% Uint8ClampedArray methods
+#Function#prototype "" 0
+#Uint8ClampedArray#set "set" 3
+#Uint8ClampedArray#subarray "subarray" 3
+
+
+% ArrayBuffer methods
+#Function#prototype "" 0
+#ArrayBuffer#slice "slice" 3
+
+
+% CSSStyleDeclaration methods
+#Function#prototype "" 0
+
+
+% XMLHttpRequest methods
+#Function#prototype "" 0
+
+
+% WebSocket methods
+#FormData#__proto__ "__proto__" 0
+
+
+% JSON methods
+#JSON#parse "parse" 2
+#JSON#stringify "stringify" 3
+#JSON#toSource "toSource" 0
+
+
+% Blob methods
+#FormData#__proto__ "__proto__" 0
+
+
+% FileReader methods
+#FormData#__proto__ "__proto__" 0
+
+
+% Worker methods
+#Function#prototype "" 0
+
+
+% console methods
+#console#__noSuchMethod__ "__noSuchMethod__" 0
+#console#debug "debug" 0
+#console#dir "dir" 0
+#console#error "error" 0
+#console#group "group" 0
+#console#groupCollapsed "groupCollapsed" 0
+#console#groupEnd "groupEnd" 0
+#console#info "info" 0
+#console#log "log" 0
+#console#profile "profile" 0
+#console#profileEnd "profileEnd" 0
+#console#time "time" 0
+#console#timeEnd "timeEnd" 0
+#console#trace "trace" 0
+#console#warn "warn" 0
+
+
+% File methods
+#FormData#__proto__ "__proto__" 0
+
+
+% Performance methods
+#Function#prototype "" 0
+
+
+% DOMParser methods
+#FormData#__proto__ "__proto__" 0
+
+
+% WebGLRenderingContext methods
+#Function#prototype "" 0
+
+
+% XMLSerializer methods
+#FormData#__proto__ "__proto__" 0
+
+
+% CustomEvent methods
+#FormData#__proto__ "__proto__" 0
+
+
+% Boolean#prototype methods
+#Boolean "Boolean" 1 c
+#Boolean#prototype#toSource "toSource" 0
+#Boolean#prototype#toString "toString" 0
+#Boolean#prototype#valueOf "valueOf" 0
+
+
+% String#prototype methods
+#String "String" 1 c
+#String#prototype#anchor "anchor" 1
+#String#prototype#big "big" 0
+#String#prototype#blink "blink" 0
+#String#prototype#bold "bold" 0
+#String#prototype#charAt "charAt" 1
+#String#prototype#charCodeAt "charCodeAt" 1
+#String#prototype#concat "concat" 1
+#String#prototype#endsWith "endsWith" 1
+#String#prototype#fixed "fixed" 0
+#String#prototype#fontcolor "fontcolor" 1
+#String#prototype#fontsize "fontsize" 1
+#String#prototype#indexOf "indexOf" 1
+#String#prototype#italics "italics" 0
+#String#prototype#iterator "iterator" 0
+#String#prototype#lastIndexOf "lastIndexOf" 1
+#String#prototype#link "link" 1
+#String#prototype#localeCompare "localeCompare" 1
+#String#prototype#match "match" 1
+#String#prototype#quote "quote" 0
+#String#prototype#replace "replace" 2
+#String#prototype#search "search" 1
+#String#prototype#slice "slice" 2
+#String#prototype#small "small" 0
+#String#prototype#split "split" 2
+#String#prototype#startsWith "startsWith" 1
+#String#prototype#strike "strike" 0
+#String#prototype#sub "sub" 0
+#String#prototype#substr "substr" 2
+#String#prototype#substring "substring" 2
+#String#prototype#sup "sup" 0
+#String#prototype#toLocaleLowerCase "toLocaleLowerCase" 0
+#String#prototype#toLocaleUpperCase "toLocaleUpperCase" 0
+#String#prototype#toLowerCase "toLowerCase" 0
+#String#prototype#toSource "toSource" 0
+#String#prototype#toString "toString" 0
+#String#prototype#toUpperCase "toUpperCase" 0
+#String#prototype#trim "trim" 0
+#String#prototype#trimLeft "trimLeft" 0
+#String#prototype#trimRight "trimRight" 0
+#String#prototype#valueOf "valueOf" 0
+
+
+% Number#prototype methods
+#Number "Number" 1 c
+#Number#prototype#toExponential "toExponential" 1
+#Number#prototype#toFixed "toFixed" 1
+#Number#prototype#toLocaleString "toLocaleString" 0
+#Number#prototype#toPrecision "toPrecision" 1
+#Number#prototype#toSource "toSource" 0
+#Number#prototype#toString "toString" 1
+#Number#prototype#valueOf "valueOf" 0
+
+
+% Array#prototype methods
+#Array "Array" 1 c
+#Array#prototype#concat "concat" 1
+#Array#prototype#every "every" 1
+#Array#prototype#filter "filter" 1
+#Array#prototype#forEach "forEach" 1
+#Array#prototype#indexOf "indexOf" 1
+#Array#prototype#iterator "iterator" 0
+#Array#prototype#join "join" 1
+#Array#prototype#lastIndexOf "lastIndexOf" 1
+#Array#prototype#map "map" 1
+#Array#prototype#pop "pop" 0
+#Array#prototype#push "push" 1
+#Array#prototype#reduce "reduce" 1
+#Array#prototype#reduceRight "reduceRight" 1
+#Array#prototype#reverse "reverse" 0
+#Array#prototype#shift "shift" 0
+#Array#prototype#slice "slice" 2
+#Array#prototype#some "some" 1
+#Array#prototype#sort "sort" 1
+#Array#prototype#splice "splice" 2
+#Array#prototype#toLocaleString "toLocaleString" 0
+#Array#prototype#toSource "toSource" 0
+#Array#prototype#toString "toString" 0
+#Array#prototype#unshift "unshift" 1
+
+
+% Error#prototype methods
+#Error "Error" 1 c
+#Error#prototype#toSource "toSource" 0
+#Error#prototype#toString "toString" 0
+
+
+% TypeError#prototype methods
+#TypeError "TypeError" 1 c
+
+
+% ReferenceError#prototype methods
+#ReferenceError "ReferenceError" 1 c
+
+
+% SyntaxError#prototype methods
+#SyntaxError "SyntaxError" 1 c
+
+
+% History#prototype methods
+#History#prototype#QueryInterface "QueryInterface" 1 c
+#History#prototype#back "back" 0
+#History#prototype#forward "forward" 0
+#History#prototype#go "go" 1
+#History#prototype#item "item" 1
+#History#prototype#pushState "pushState" 3
+#History#prototype#replaceState "replaceState" 3
+
+
+% Navigator#prototype methods
+#Navigator#prototype#QueryInterface "QueryInterface" 1 c
+#Navigator#prototype#addIdleObserver "addIdleObserver" 1
+#Navigator#prototype#getDeviceStorage "getDeviceStorage" 1
+#Navigator#prototype#javaEnabled "javaEnabled" 0
+#Navigator#prototype#mozGetUserMedia "mozGetUserMedia" 3
+#Navigator#prototype#mozIsLocallyAvailable "mozIsLocallyAvailable" 2
+#Navigator#prototype#registerContentHandler "registerContentHandler" 3
+#Navigator#prototype#registerProtocolHandler "registerProtocolHandler" 3
+#Navigator#prototype#removeIdleObserver "removeIdleObserver" 1
+#Navigator#prototype#requestWakeLock "requestWakeLock" 1
+#Navigator#prototype#taintEnabled "taintEnabled" 0
+#Navigator#prototype#vibrate "vibrate" 1
+
+
+% Screen#prototype methods
+#Screen#prototype#QueryInterface "QueryInterface" 1 c
+#Screen#prototype#__defineGetter__ "__defineGetter__" 2
+#Screen#prototype#__defineSetter__ "__defineSetter__" 2
+#Screen#prototype#__lookupGetter__ "__lookupGetter__" 1
+#Screen#prototype#__lookupSetter__ "__lookupSetter__" 1
+#Screen#prototype#addEventListener "addEventListener" 4
+#Screen#prototype#dispatchEvent "dispatchEvent" 1
+#Screen#prototype#mozLockOrientation "mozLockOrientation" 1
+#Screen#prototype#mozUnlockOrientation "mozUnlockOrientation" 0
+#Screen#prototype#removeEventListener "removeEventListener" 3
+
+
+% Screen#prototype#__proto__ methods
+#Screen#prototype#__proto__#QueryInterface "QueryInterface" 1 c
+#Screen#prototype#__proto__#addEventListener "addEventListener" 4
+#EventTarget "constructor" 0
+#Screen#prototype#__proto__#dispatchEvent "dispatchEvent" 1
+#Screen#prototype#__proto__#removeEventListener "removeEventListener" 3
+
+
+% Storage#prototype methods
+#Storage#prototype#__defineGetter__ "__defineGetter__" 2
+#Storage#prototype#__defineSetter__ "__defineSetter__" 2
+#Storage#prototype#__lookupGetter__ "__lookupGetter__" 1
+#Storage#prototype#__lookupSetter__ "__lookupSetter__" 1
+#Storage#prototype#clear "clear" 0
+#Storage#prototype#getItem "getItem" 1
+#Storage#prototype#key "key" 1
+#Storage#prototype#removeItem "removeItem" 1
+#Storage#prototype#setItem "setItem" 2
+
+
+% Location#prototype methods
+#Location#prototype#QueryInterface "QueryInterface" 1 c
+#Location#prototype#assign "assign" 1
+#Location#prototype#reload "reload" 1
+#Location#prototype#replace "replace" 1
+#Location#prototype#toString "toString" 0
+
+
+% NodeList#prototype methods
+#NodeList "constructor" 0
+#NodeList#prototype#item "item" 1
+#NodeList#prototype#iterator "iterator" 0
+
+
+% Attr#prototype methods
+#Attr#prototype#QueryInterface "QueryInterface" 1 c
+#Attr#prototype#__defineGetter__ "__defineGetter__" 2
+#Attr#prototype#__defineSetter__ "__defineSetter__" 2
+#Attr#prototype#__lookupGetter__ "__lookupGetter__" 1
+#Attr#prototype#__lookupSetter__ "__lookupSetter__" 1
+#Attr#prototype#addEventListener "addEventListener" 4
+#Attr#prototype#appendChild "appendChild" 1
+#Attr#prototype#cloneNode "cloneNode" 1
+#Attr#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#Attr#prototype#contains "contains" 1
+#Attr#prototype#dispatchEvent "dispatchEvent" 1
+#Attr#prototype#getUserData "getUserData" 1
+#Attr#prototype#hasAttributes "hasAttributes" 0
+#Attr#prototype#hasChildNodes "hasChildNodes" 0
+#Attr#prototype#insertBefore "insertBefore" 2
+#Attr#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#Attr#prototype#isEqualNode "isEqualNode" 1
+#Attr#prototype#isSupported "isSupported" 2
+#Attr#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#Attr#prototype#lookupPrefix "lookupPrefix" 1
+#Attr#prototype#normalize "normalize" 0
+#Attr#prototype#removeChild "removeChild" 1
+#Attr#prototype#removeEventListener "removeEventListener" 3
+#Attr#prototype#replaceChild "replaceChild" 2
+#Attr#prototype#setUserData "setUserData" 3
+
+
+% Element#prototype methods
+#Element#prototype#QueryInterface "QueryInterface" 1 c
+#Element#prototype#__defineGetter__ "__defineGetter__" 2
+#Element#prototype#__defineSetter__ "__defineSetter__" 2
+#Element#prototype#__lookupGetter__ "__lookupGetter__" 1
+#Element#prototype#__lookupSetter__ "__lookupSetter__" 1
+#Element#prototype#addEventListener "addEventListener" 4
+#Element#prototype#appendChild "appendChild" 1
+#Element#prototype#cloneNode "cloneNode" 1
+#Element#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#Element#prototype#contains "contains" 1
+#Element#prototype#dispatchEvent "dispatchEvent" 1
+#Element#prototype#getAttribute "getAttribute" 1
+#Element#prototype#getAttributeNS "getAttributeNS" 2
+#Element#prototype#getAttributeNode "getAttributeNode" 1
+#Element#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#Element#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#Element#prototype#getClientRects "getClientRects" 0
+#Element#prototype#getElementsByClassName "getElementsByClassName" 1
+#Element#prototype#getElementsByTagName "getElementsByTagName" 1
+#Element#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#Element#prototype#getUserData "getUserData" 1
+#Element#prototype#hasAttribute "hasAttribute" 1
+#Element#prototype#hasAttributeNS "hasAttributeNS" 2
+#Element#prototype#hasAttributes "hasAttributes" 0
+#Element#prototype#hasChildNodes "hasChildNodes" 0
+#Element#prototype#insertBefore "insertBefore" 2
+#Element#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#Element#prototype#isEqualNode "isEqualNode" 1
+#Element#prototype#isSupported "isSupported" 2
+#Element#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#Element#prototype#lookupPrefix "lookupPrefix" 1
+#Element#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#Element#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#Element#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#Element#prototype#normalize "normalize" 0
+#Element#prototype#querySelector "querySelector" 1
+#Element#prototype#querySelectorAll "querySelectorAll" 1
+#Element#prototype#releaseCapture "releaseCapture" 0
+#Element#prototype#removeAttribute "removeAttribute" 1
+#Element#prototype#removeAttributeNS "removeAttributeNS" 2
+#Element#prototype#removeAttributeNode "removeAttributeNode" 1
+#Element#prototype#removeChild "removeChild" 1
+#Element#prototype#removeEventListener "removeEventListener" 3
+#Element#prototype#replaceChild "replaceChild" 2
+#Element#prototype#setAttribute "setAttribute" 2
+#Element#prototype#setAttributeNS "setAttributeNS" 3
+#Element#prototype#setAttributeNode "setAttributeNode" 1
+#Element#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#Element#prototype#setCapture "setCapture" 1
+#Element#prototype#setUserData "setUserData" 3
+
+
+% HTMLElement#prototype methods
+#HTMLElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLElement#prototype#addEventListener "addEventListener" 4
+#HTMLElement#prototype#appendChild "appendChild" 1
+#HTMLElement#prototype#blur "blur" 0
+#HTMLElement#prototype#click "click" 0
+#HTMLElement#prototype#cloneNode "cloneNode" 1
+#HTMLElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLElement#prototype#contains "contains" 1
+#HTMLElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLElement#prototype#focus "focus" 0
+#HTMLElement#prototype#getAttribute "getAttribute" 1
+#HTMLElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLElement#prototype#getClientRects "getClientRects" 0
+#HTMLElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLElement#prototype#getUserData "getUserData" 1
+#HTMLElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLElement#prototype#insertBefore "insertBefore" 2
+#HTMLElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLElement#prototype#isSupported "isSupported" 2
+#HTMLElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLElement#prototype#normalize "normalize" 0
+#HTMLElement#prototype#querySelector "querySelector" 1
+#HTMLElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLElement#prototype#removeChild "removeChild" 1
+#HTMLElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLElement#prototype#replaceChild "replaceChild" 2
+#HTMLElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLElement#prototype#setAttribute "setAttribute" 2
+#HTMLElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLElement#prototype#setCapture "setCapture" 1
+#HTMLElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLAnchorElement#prototype methods
+#HTMLAnchorElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLAnchorElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLAnchorElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLAnchorElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLAnchorElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLAnchorElement#prototype#addEventListener "addEventListener" 4
+#HTMLAnchorElement#prototype#appendChild "appendChild" 1
+#HTMLAnchorElement#prototype#blur "blur" 0
+#HTMLAnchorElement#prototype#click "click" 0
+#HTMLAnchorElement#prototype#cloneNode "cloneNode" 1
+#HTMLAnchorElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLAnchorElement#prototype#contains "contains" 1
+#HTMLAnchorElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLAnchorElement#prototype#focus "focus" 0
+#HTMLAnchorElement#prototype#getAttribute "getAttribute" 1
+#HTMLAnchorElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLAnchorElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLAnchorElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLAnchorElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLAnchorElement#prototype#getClientRects "getClientRects" 0
+#HTMLAnchorElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLAnchorElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLAnchorElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLAnchorElement#prototype#getUserData "getUserData" 1
+#HTMLAnchorElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLAnchorElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLAnchorElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLAnchorElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLAnchorElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLAnchorElement#prototype#insertBefore "insertBefore" 2
+#HTMLAnchorElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLAnchorElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLAnchorElement#prototype#isSupported "isSupported" 2
+#HTMLAnchorElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLAnchorElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLAnchorElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLAnchorElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLAnchorElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLAnchorElement#prototype#normalize "normalize" 0
+#HTMLAnchorElement#prototype#querySelector "querySelector" 1
+#HTMLAnchorElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLAnchorElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLAnchorElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLAnchorElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLAnchorElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLAnchorElement#prototype#removeChild "removeChild" 1
+#HTMLAnchorElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLAnchorElement#prototype#replaceChild "replaceChild" 2
+#HTMLAnchorElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLAnchorElement#prototype#setAttribute "setAttribute" 2
+#HTMLAnchorElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLAnchorElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLAnchorElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLAnchorElement#prototype#setCapture "setCapture" 1
+#HTMLAnchorElement#prototype#setUserData "setUserData" 3
+#HTMLAnchorElement#prototype#toString "toString" 0
+
+
+% HTMLAudioElement#prototype methods
+#HTMLAudioElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLAudioElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLAudioElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLAudioElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLAudioElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLAudioElement#prototype#addEventListener "addEventListener" 4
+#HTMLAudioElement#prototype#appendChild "appendChild" 1
+#HTMLAudioElement#prototype#blur "blur" 0
+#HTMLAudioElement#prototype#canPlayType "canPlayType" 1
+#HTMLAudioElement#prototype#click "click" 0
+#HTMLAudioElement#prototype#cloneNode "cloneNode" 1
+#HTMLAudioElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLAudioElement#prototype#contains "contains" 1
+#HTMLAudioElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLAudioElement#prototype#focus "focus" 0
+#HTMLAudioElement#prototype#getAttribute "getAttribute" 1
+#HTMLAudioElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLAudioElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLAudioElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLAudioElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLAudioElement#prototype#getClientRects "getClientRects" 0
+#HTMLAudioElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLAudioElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLAudioElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLAudioElement#prototype#getUserData "getUserData" 1
+#HTMLAudioElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLAudioElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLAudioElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLAudioElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLAudioElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLAudioElement#prototype#insertBefore "insertBefore" 2
+#HTMLAudioElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLAudioElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLAudioElement#prototype#isSupported "isSupported" 2
+#HTMLAudioElement#prototype#load "load" 0
+#HTMLAudioElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLAudioElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLAudioElement#prototype#mozCaptureStream "mozCaptureStream" 0
+#HTMLAudioElement#prototype#mozCaptureStreamUntilEnded "mozCaptureStreamUntilEnded" 0
+#HTMLAudioElement#prototype#mozCurrentSampleOffset "mozCurrentSampleOffset" 0
+#HTMLAudioElement#prototype#mozGetMetadata "mozGetMetadata" 0
+#HTMLAudioElement#prototype#mozLoadFrom "mozLoadFrom" 1
+#HTMLAudioElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLAudioElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLAudioElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLAudioElement#prototype#mozSetup "mozSetup" 2
+#HTMLAudioElement#prototype#mozWriteAudio "mozWriteAudio" 1
+#HTMLAudioElement#prototype#normalize "normalize" 0
+#HTMLAudioElement#prototype#pause "pause" 0
+#HTMLAudioElement#prototype#play "play" 0
+#HTMLAudioElement#prototype#querySelector "querySelector" 1
+#HTMLAudioElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLAudioElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLAudioElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLAudioElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLAudioElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLAudioElement#prototype#removeChild "removeChild" 1
+#HTMLAudioElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLAudioElement#prototype#replaceChild "replaceChild" 2
+#HTMLAudioElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLAudioElement#prototype#setAttribute "setAttribute" 2
+#HTMLAudioElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLAudioElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLAudioElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLAudioElement#prototype#setCapture "setCapture" 1
+#HTMLAudioElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLBRElement#prototype methods
+#HTMLBRElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLBRElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLBRElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLBRElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLBRElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLBRElement#prototype#addEventListener "addEventListener" 4
+#HTMLBRElement#prototype#appendChild "appendChild" 1
+#HTMLBRElement#prototype#blur "blur" 0
+#HTMLBRElement#prototype#click "click" 0
+#HTMLBRElement#prototype#cloneNode "cloneNode" 1
+#HTMLBRElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLBRElement#prototype#contains "contains" 1
+#HTMLBRElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLBRElement#prototype#focus "focus" 0
+#HTMLBRElement#prototype#getAttribute "getAttribute" 1
+#HTMLBRElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLBRElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLBRElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLBRElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLBRElement#prototype#getClientRects "getClientRects" 0
+#HTMLBRElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLBRElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLBRElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLBRElement#prototype#getUserData "getUserData" 1
+#HTMLBRElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLBRElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLBRElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLBRElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLBRElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLBRElement#prototype#insertBefore "insertBefore" 2
+#HTMLBRElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLBRElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLBRElement#prototype#isSupported "isSupported" 2
+#HTMLBRElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLBRElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLBRElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLBRElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLBRElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLBRElement#prototype#normalize "normalize" 0
+#HTMLBRElement#prototype#querySelector "querySelector" 1
+#HTMLBRElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLBRElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLBRElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLBRElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLBRElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLBRElement#prototype#removeChild "removeChild" 1
+#HTMLBRElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLBRElement#prototype#replaceChild "replaceChild" 2
+#HTMLBRElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLBRElement#prototype#setAttribute "setAttribute" 2
+#HTMLBRElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLBRElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLBRElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLBRElement#prototype#setCapture "setCapture" 1
+#HTMLBRElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLButtonElement#prototype methods
+#HTMLButtonElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLButtonElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLButtonElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLButtonElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLButtonElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLButtonElement#prototype#addEventListener "addEventListener" 4
+#HTMLButtonElement#prototype#appendChild "appendChild" 1
+#HTMLButtonElement#prototype#blur "blur" 0
+#HTMLButtonElement#prototype#checkValidity "checkValidity" 0
+#HTMLButtonElement#prototype#click "click" 0
+#HTMLButtonElement#prototype#cloneNode "cloneNode" 1
+#HTMLButtonElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLButtonElement#prototype#contains "contains" 1
+#HTMLButtonElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLButtonElement#prototype#focus "focus" 0
+#HTMLButtonElement#prototype#getAttribute "getAttribute" 1
+#HTMLButtonElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLButtonElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLButtonElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLButtonElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLButtonElement#prototype#getClientRects "getClientRects" 0
+#HTMLButtonElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLButtonElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLButtonElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLButtonElement#prototype#getUserData "getUserData" 1
+#HTMLButtonElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLButtonElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLButtonElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLButtonElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLButtonElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLButtonElement#prototype#insertBefore "insertBefore" 2
+#HTMLButtonElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLButtonElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLButtonElement#prototype#isSupported "isSupported" 2
+#HTMLButtonElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLButtonElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLButtonElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLButtonElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLButtonElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLButtonElement#prototype#normalize "normalize" 0
+#HTMLButtonElement#prototype#querySelector "querySelector" 1
+#HTMLButtonElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLButtonElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLButtonElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLButtonElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLButtonElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLButtonElement#prototype#removeChild "removeChild" 1
+#HTMLButtonElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLButtonElement#prototype#replaceChild "replaceChild" 2
+#HTMLButtonElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLButtonElement#prototype#setAttribute "setAttribute" 2
+#HTMLButtonElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLButtonElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLButtonElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLButtonElement#prototype#setCapture "setCapture" 1
+#HTMLButtonElement#prototype#setCustomValidity "setCustomValidity" 1
+#HTMLButtonElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLCanvasElement#prototype methods
+#HTMLCanvasElement#prototype#MozGetIPCContext "MozGetIPCContext" 1 c
+#HTMLCanvasElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLCanvasElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLCanvasElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLCanvasElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLCanvasElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLCanvasElement#prototype#addEventListener "addEventListener" 4
+#HTMLCanvasElement#prototype#appendChild "appendChild" 1
+#HTMLCanvasElement#prototype#blur "blur" 0
+#HTMLCanvasElement#prototype#click "click" 0
+#HTMLCanvasElement#prototype#cloneNode "cloneNode" 1
+#HTMLCanvasElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLCanvasElement#prototype#contains "contains" 1
+#HTMLCanvasElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLCanvasElement#prototype#focus "focus" 0
+#HTMLCanvasElement#prototype#getAttribute "getAttribute" 1
+#HTMLCanvasElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLCanvasElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLCanvasElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLCanvasElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLCanvasElement#prototype#getClientRects "getClientRects" 0
+#HTMLCanvasElement#prototype#getContext "getContext" 2
+#HTMLCanvasElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLCanvasElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLCanvasElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLCanvasElement#prototype#getUserData "getUserData" 1
+#HTMLCanvasElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLCanvasElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLCanvasElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLCanvasElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLCanvasElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLCanvasElement#prototype#insertBefore "insertBefore" 2
+#HTMLCanvasElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLCanvasElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLCanvasElement#prototype#isSupported "isSupported" 2
+#HTMLCanvasElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLCanvasElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLCanvasElement#prototype#mozFetchAsStream "mozFetchAsStream" 2
+#HTMLCanvasElement#prototype#mozGetAsFile "mozGetAsFile" 2
+#HTMLCanvasElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLCanvasElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLCanvasElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLCanvasElement#prototype#normalize "normalize" 0
+#HTMLCanvasElement#prototype#querySelector "querySelector" 1
+#HTMLCanvasElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLCanvasElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLCanvasElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLCanvasElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLCanvasElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLCanvasElement#prototype#removeChild "removeChild" 1
+#HTMLCanvasElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLCanvasElement#prototype#replaceChild "replaceChild" 2
+#HTMLCanvasElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLCanvasElement#prototype#setAttribute "setAttribute" 2
+#HTMLCanvasElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLCanvasElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLCanvasElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLCanvasElement#prototype#setCapture "setCapture" 1
+#HTMLCanvasElement#prototype#setUserData "setUserData" 3
+#HTMLCanvasElement#prototype#toDataURL "toDataURL" 2
+
+
+% HTMLFormElement#prototype methods
+#HTMLFormElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLFormElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLFormElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLFormElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLFormElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLFormElement#prototype#addEventListener "addEventListener" 4
+#HTMLFormElement#prototype#appendChild "appendChild" 1
+#HTMLFormElement#prototype#blur "blur" 0
+#HTMLFormElement#prototype#checkValidity "checkValidity" 0
+#HTMLFormElement#prototype#click "click" 0
+#HTMLFormElement#prototype#cloneNode "cloneNode" 1
+#HTMLFormElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLFormElement#prototype#contains "contains" 1
+#HTMLFormElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLFormElement#prototype#focus "focus" 0
+#HTMLFormElement#prototype#getAttribute "getAttribute" 1
+#HTMLFormElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLFormElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLFormElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLFormElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLFormElement#prototype#getClientRects "getClientRects" 0
+#HTMLFormElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLFormElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLFormElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLFormElement#prototype#getUserData "getUserData" 1
+#HTMLFormElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLFormElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLFormElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLFormElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLFormElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLFormElement#prototype#insertBefore "insertBefore" 2
+#HTMLFormElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLFormElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLFormElement#prototype#isSupported "isSupported" 2
+#HTMLFormElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLFormElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLFormElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLFormElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLFormElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLFormElement#prototype#normalize "normalize" 0
+#HTMLFormElement#prototype#querySelector "querySelector" 1
+#HTMLFormElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLFormElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLFormElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLFormElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLFormElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLFormElement#prototype#removeChild "removeChild" 1
+#HTMLFormElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLFormElement#prototype#replaceChild "replaceChild" 2
+#HTMLFormElement#prototype#reset "reset" 0
+#HTMLFormElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLFormElement#prototype#setAttribute "setAttribute" 2
+#HTMLFormElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLFormElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLFormElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLFormElement#prototype#setCapture "setCapture" 1
+#HTMLFormElement#prototype#setUserData "setUserData" 3
+#HTMLFormElement#prototype#submit "submit" 0
+
+
+% HTMLFrameElement#prototype methods
+#HTMLFrameElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLFrameElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLFrameElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLFrameElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLFrameElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLFrameElement#prototype#addEventListener "addEventListener" 4
+#HTMLFrameElement#prototype#appendChild "appendChild" 1
+#HTMLFrameElement#prototype#blur "blur" 0
+#HTMLFrameElement#prototype#click "click" 0
+#HTMLFrameElement#prototype#cloneNode "cloneNode" 1
+#HTMLFrameElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLFrameElement#prototype#contains "contains" 1
+#HTMLFrameElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLFrameElement#prototype#focus "focus" 0
+#HTMLFrameElement#prototype#getAttribute "getAttribute" 1
+#HTMLFrameElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLFrameElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLFrameElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLFrameElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLFrameElement#prototype#getClientRects "getClientRects" 0
+#HTMLFrameElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLFrameElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLFrameElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLFrameElement#prototype#getUserData "getUserData" 1
+#HTMLFrameElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLFrameElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLFrameElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLFrameElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLFrameElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLFrameElement#prototype#insertBefore "insertBefore" 2
+#HTMLFrameElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLFrameElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLFrameElement#prototype#isSupported "isSupported" 2
+#HTMLFrameElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLFrameElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLFrameElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLFrameElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLFrameElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLFrameElement#prototype#normalize "normalize" 0
+#HTMLFrameElement#prototype#querySelector "querySelector" 1
+#HTMLFrameElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLFrameElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLFrameElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLFrameElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLFrameElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLFrameElement#prototype#removeChild "removeChild" 1
+#HTMLFrameElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLFrameElement#prototype#replaceChild "replaceChild" 2
+#HTMLFrameElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLFrameElement#prototype#setAttribute "setAttribute" 2
+#HTMLFrameElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLFrameElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLFrameElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLFrameElement#prototype#setCapture "setCapture" 1
+#HTMLFrameElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLHtmlElement#prototype methods
+#HTMLHtmlElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLHtmlElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLHtmlElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLHtmlElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLHtmlElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLHtmlElement#prototype#addEventListener "addEventListener" 4
+#HTMLHtmlElement#prototype#appendChild "appendChild" 1
+#HTMLHtmlElement#prototype#blur "blur" 0
+#HTMLHtmlElement#prototype#click "click" 0
+#HTMLHtmlElement#prototype#cloneNode "cloneNode" 1
+#HTMLHtmlElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLHtmlElement#prototype#contains "contains" 1
+#HTMLHtmlElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLHtmlElement#prototype#focus "focus" 0
+#HTMLHtmlElement#prototype#getAttribute "getAttribute" 1
+#HTMLHtmlElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLHtmlElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLHtmlElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLHtmlElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLHtmlElement#prototype#getClientRects "getClientRects" 0
+#HTMLHtmlElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLHtmlElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLHtmlElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLHtmlElement#prototype#getUserData "getUserData" 1
+#HTMLHtmlElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLHtmlElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLHtmlElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLHtmlElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLHtmlElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLHtmlElement#prototype#insertBefore "insertBefore" 2
+#HTMLHtmlElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLHtmlElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLHtmlElement#prototype#isSupported "isSupported" 2
+#HTMLHtmlElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLHtmlElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLHtmlElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLHtmlElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLHtmlElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLHtmlElement#prototype#normalize "normalize" 0
+#HTMLHtmlElement#prototype#querySelector "querySelector" 1
+#HTMLHtmlElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLHtmlElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLHtmlElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLHtmlElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLHtmlElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLHtmlElement#prototype#removeChild "removeChild" 1
+#HTMLHtmlElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLHtmlElement#prototype#replaceChild "replaceChild" 2
+#HTMLHtmlElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLHtmlElement#prototype#setAttribute "setAttribute" 2
+#HTMLHtmlElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLHtmlElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLHtmlElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLHtmlElement#prototype#setCapture "setCapture" 1
+#HTMLHtmlElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLIFrameElement#prototype methods
+#HTMLIFrameElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLIFrameElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLIFrameElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLIFrameElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLIFrameElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLIFrameElement#prototype#addEventListener "addEventListener" 4
+#HTMLIFrameElement#prototype#appendChild "appendChild" 1
+#HTMLIFrameElement#prototype#blur "blur" 0
+#HTMLIFrameElement#prototype#click "click" 0
+#HTMLIFrameElement#prototype#cloneNode "cloneNode" 1
+#HTMLIFrameElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLIFrameElement#prototype#contains "contains" 1
+#HTMLIFrameElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLIFrameElement#prototype#focus "focus" 0
+#HTMLIFrameElement#prototype#getAttribute "getAttribute" 1
+#HTMLIFrameElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLIFrameElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLIFrameElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLIFrameElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLIFrameElement#prototype#getClientRects "getClientRects" 0
+#HTMLIFrameElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLIFrameElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLIFrameElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLIFrameElement#prototype#getSVGDocument "getSVGDocument" 0
+#HTMLIFrameElement#prototype#getUserData "getUserData" 1
+#HTMLIFrameElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLIFrameElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLIFrameElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLIFrameElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLIFrameElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLIFrameElement#prototype#insertBefore "insertBefore" 2
+#HTMLIFrameElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLIFrameElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLIFrameElement#prototype#isSupported "isSupported" 2
+#HTMLIFrameElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLIFrameElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLIFrameElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLIFrameElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLIFrameElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLIFrameElement#prototype#normalize "normalize" 0
+#HTMLIFrameElement#prototype#querySelector "querySelector" 1
+#HTMLIFrameElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLIFrameElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLIFrameElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLIFrameElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLIFrameElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLIFrameElement#prototype#removeChild "removeChild" 1
+#HTMLIFrameElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLIFrameElement#prototype#replaceChild "replaceChild" 2
+#HTMLIFrameElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLIFrameElement#prototype#setAttribute "setAttribute" 2
+#HTMLIFrameElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLIFrameElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLIFrameElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLIFrameElement#prototype#setCapture "setCapture" 1
+#HTMLIFrameElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLInputElement#prototype methods
+#HTMLInputElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLInputElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLInputElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLInputElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLInputElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLInputElement#prototype#addEventListener "addEventListener" 4
+#HTMLInputElement#prototype#appendChild "appendChild" 1
+#HTMLInputElement#prototype#blur "blur" 0
+#HTMLInputElement#prototype#checkValidity "checkValidity" 0
+#HTMLInputElement#prototype#click "click" 0
+#HTMLInputElement#prototype#cloneNode "cloneNode" 1
+#HTMLInputElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLInputElement#prototype#contains "contains" 1
+#HTMLInputElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLInputElement#prototype#focus "focus" 0
+#HTMLInputElement#prototype#getAttribute "getAttribute" 1
+#HTMLInputElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLInputElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLInputElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLInputElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLInputElement#prototype#getClientRects "getClientRects" 0
+#HTMLInputElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLInputElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLInputElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLInputElement#prototype#getUserData "getUserData" 1
+#HTMLInputElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLInputElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLInputElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLInputElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLInputElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLInputElement#prototype#insertBefore "insertBefore" 2
+#HTMLInputElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLInputElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLInputElement#prototype#isSupported "isSupported" 2
+#HTMLInputElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLInputElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLInputElement#prototype#mozGetFileNameArray "mozGetFileNameArray" 1
+#HTMLInputElement#prototype#mozIsTextField "mozIsTextField" 1
+#HTMLInputElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLInputElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLInputElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLInputElement#prototype#mozSetFileNameArray "mozSetFileNameArray" 2
+#HTMLInputElement#prototype#normalize "normalize" 0
+#HTMLInputElement#prototype#querySelector "querySelector" 1
+#HTMLInputElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLInputElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLInputElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLInputElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLInputElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLInputElement#prototype#removeChild "removeChild" 1
+#HTMLInputElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLInputElement#prototype#replaceChild "replaceChild" 2
+#HTMLInputElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLInputElement#prototype#select "select" 0
+#HTMLInputElement#prototype#setAttribute "setAttribute" 2
+#HTMLInputElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLInputElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLInputElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLInputElement#prototype#setCapture "setCapture" 1
+#HTMLInputElement#prototype#setCustomValidity "setCustomValidity" 1
+#HTMLInputElement#prototype#setSelectionRange "setSelectionRange" 3
+#HTMLInputElement#prototype#setUserData "setUserData" 3
+#HTMLInputElement#prototype#stepDown "stepDown" 1
+#HTMLInputElement#prototype#stepUp "stepUp" 1
+
+
+% HTMLImageElement#prototype methods
+#HTMLImageElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLImageElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLImageElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLImageElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLImageElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLImageElement#prototype#addEventListener "addEventListener" 4
+#HTMLImageElement#prototype#appendChild "appendChild" 1
+#HTMLImageElement#prototype#blur "blur" 0
+#HTMLImageElement#prototype#click "click" 0
+#HTMLImageElement#prototype#cloneNode "cloneNode" 1
+#HTMLImageElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLImageElement#prototype#contains "contains" 1
+#HTMLImageElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLImageElement#prototype#focus "focus" 0
+#HTMLImageElement#prototype#getAttribute "getAttribute" 1
+#HTMLImageElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLImageElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLImageElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLImageElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLImageElement#prototype#getClientRects "getClientRects" 0
+#HTMLImageElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLImageElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLImageElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLImageElement#prototype#getUserData "getUserData" 1
+#HTMLImageElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLImageElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLImageElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLImageElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLImageElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLImageElement#prototype#insertBefore "insertBefore" 2
+#HTMLImageElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLImageElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLImageElement#prototype#isSupported "isSupported" 2
+#HTMLImageElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLImageElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLImageElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLImageElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLImageElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLImageElement#prototype#normalize "normalize" 0
+#HTMLImageElement#prototype#querySelector "querySelector" 1
+#HTMLImageElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLImageElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLImageElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLImageElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLImageElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLImageElement#prototype#removeChild "removeChild" 1
+#HTMLImageElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLImageElement#prototype#replaceChild "replaceChild" 2
+#HTMLImageElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLImageElement#prototype#setAttribute "setAttribute" 2
+#HTMLImageElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLImageElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLImageElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLImageElement#prototype#setCapture "setCapture" 1
+#HTMLImageElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLLIElement#prototype methods
+#HTMLLIElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLLIElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLLIElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLLIElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLLIElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLLIElement#prototype#addEventListener "addEventListener" 4
+#HTMLLIElement#prototype#appendChild "appendChild" 1
+#HTMLLIElement#prototype#blur "blur" 0
+#HTMLLIElement#prototype#click "click" 0
+#HTMLLIElement#prototype#cloneNode "cloneNode" 1
+#HTMLLIElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLLIElement#prototype#contains "contains" 1
+#HTMLLIElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLLIElement#prototype#focus "focus" 0
+#HTMLLIElement#prototype#getAttribute "getAttribute" 1
+#HTMLLIElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLLIElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLLIElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLLIElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLLIElement#prototype#getClientRects "getClientRects" 0
+#HTMLLIElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLLIElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLLIElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLLIElement#prototype#getUserData "getUserData" 1
+#HTMLLIElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLLIElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLLIElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLLIElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLLIElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLLIElement#prototype#insertBefore "insertBefore" 2
+#HTMLLIElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLLIElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLLIElement#prototype#isSupported "isSupported" 2
+#HTMLLIElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLLIElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLLIElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLLIElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLLIElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLLIElement#prototype#normalize "normalize" 0
+#HTMLLIElement#prototype#querySelector "querySelector" 1
+#HTMLLIElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLLIElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLLIElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLLIElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLLIElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLLIElement#prototype#removeChild "removeChild" 1
+#HTMLLIElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLLIElement#prototype#replaceChild "replaceChild" 2
+#HTMLLIElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLLIElement#prototype#setAttribute "setAttribute" 2
+#HTMLLIElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLLIElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLLIElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLLIElement#prototype#setCapture "setCapture" 1
+#HTMLLIElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLLinkElement#prototype methods
+#HTMLLinkElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLLinkElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLLinkElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLLinkElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLLinkElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLLinkElement#prototype#addEventListener "addEventListener" 4
+#HTMLLinkElement#prototype#appendChild "appendChild" 1
+#HTMLLinkElement#prototype#blur "blur" 0
+#HTMLLinkElement#prototype#click "click" 0
+#HTMLLinkElement#prototype#cloneNode "cloneNode" 1
+#HTMLLinkElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLLinkElement#prototype#contains "contains" 1
+#HTMLLinkElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLLinkElement#prototype#focus "focus" 0
+#HTMLLinkElement#prototype#getAttribute "getAttribute" 1
+#HTMLLinkElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLLinkElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLLinkElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLLinkElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLLinkElement#prototype#getClientRects "getClientRects" 0
+#HTMLLinkElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLLinkElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLLinkElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLLinkElement#prototype#getUserData "getUserData" 1
+#HTMLLinkElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLLinkElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLLinkElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLLinkElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLLinkElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLLinkElement#prototype#insertBefore "insertBefore" 2
+#HTMLLinkElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLLinkElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLLinkElement#prototype#isSupported "isSupported" 2
+#HTMLLinkElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLLinkElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLLinkElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLLinkElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLLinkElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLLinkElement#prototype#normalize "normalize" 0
+#HTMLLinkElement#prototype#querySelector "querySelector" 1
+#HTMLLinkElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLLinkElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLLinkElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLLinkElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLLinkElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLLinkElement#prototype#removeChild "removeChild" 1
+#HTMLLinkElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLLinkElement#prototype#replaceChild "replaceChild" 2
+#HTMLLinkElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLLinkElement#prototype#setAttribute "setAttribute" 2
+#HTMLLinkElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLLinkElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLLinkElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLLinkElement#prototype#setCapture "setCapture" 1
+#HTMLLinkElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLObjectElement#prototype methods
+#HTMLObjectElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLObjectElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLObjectElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLObjectElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLObjectElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLObjectElement#prototype#addEventListener "addEventListener" 4
+#HTMLObjectElement#prototype#appendChild "appendChild" 1
+#HTMLObjectElement#prototype#blur "blur" 0
+#HTMLObjectElement#prototype#checkValidity "checkValidity" 0
+#HTMLObjectElement#prototype#click "click" 0
+#HTMLObjectElement#prototype#cloneNode "cloneNode" 1
+#HTMLObjectElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLObjectElement#prototype#contains "contains" 1
+#HTMLObjectElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLObjectElement#prototype#focus "focus" 0
+#HTMLObjectElement#prototype#getAttribute "getAttribute" 1
+#HTMLObjectElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLObjectElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLObjectElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLObjectElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLObjectElement#prototype#getClientRects "getClientRects" 0
+#HTMLObjectElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLObjectElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLObjectElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLObjectElement#prototype#getSVGDocument "getSVGDocument" 0
+#HTMLObjectElement#prototype#getUserData "getUserData" 1
+#HTMLObjectElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLObjectElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLObjectElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLObjectElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLObjectElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLObjectElement#prototype#insertBefore "insertBefore" 2
+#HTMLObjectElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLObjectElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLObjectElement#prototype#isSupported "isSupported" 2
+#HTMLObjectElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLObjectElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLObjectElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLObjectElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLObjectElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLObjectElement#prototype#normalize "normalize" 0
+#HTMLObjectElement#prototype#querySelector "querySelector" 1
+#HTMLObjectElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLObjectElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLObjectElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLObjectElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLObjectElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLObjectElement#prototype#removeChild "removeChild" 1
+#HTMLObjectElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLObjectElement#prototype#replaceChild "replaceChild" 2
+#HTMLObjectElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLObjectElement#prototype#setAttribute "setAttribute" 2
+#HTMLObjectElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLObjectElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLObjectElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLObjectElement#prototype#setCapture "setCapture" 1
+#HTMLObjectElement#prototype#setCustomValidity "setCustomValidity" 1
+#HTMLObjectElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLOptionElement#prototype methods
+#HTMLOptionElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLOptionElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLOptionElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLOptionElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLOptionElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLOptionElement#prototype#addEventListener "addEventListener" 4
+#HTMLOptionElement#prototype#appendChild "appendChild" 1
+#HTMLOptionElement#prototype#blur "blur" 0
+#HTMLOptionElement#prototype#click "click" 0
+#HTMLOptionElement#prototype#cloneNode "cloneNode" 1
+#HTMLOptionElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLOptionElement#prototype#contains "contains" 1
+#HTMLOptionElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLOptionElement#prototype#focus "focus" 0
+#HTMLOptionElement#prototype#getAttribute "getAttribute" 1
+#HTMLOptionElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLOptionElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLOptionElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLOptionElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLOptionElement#prototype#getClientRects "getClientRects" 0
+#HTMLOptionElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLOptionElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLOptionElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLOptionElement#prototype#getUserData "getUserData" 1
+#HTMLOptionElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLOptionElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLOptionElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLOptionElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLOptionElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLOptionElement#prototype#insertBefore "insertBefore" 2
+#HTMLOptionElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLOptionElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLOptionElement#prototype#isSupported "isSupported" 2
+#HTMLOptionElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLOptionElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLOptionElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLOptionElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLOptionElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLOptionElement#prototype#normalize "normalize" 0
+#HTMLOptionElement#prototype#querySelector "querySelector" 1
+#HTMLOptionElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLOptionElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLOptionElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLOptionElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLOptionElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLOptionElement#prototype#removeChild "removeChild" 1
+#HTMLOptionElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLOptionElement#prototype#replaceChild "replaceChild" 2
+#HTMLOptionElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLOptionElement#prototype#setAttribute "setAttribute" 2
+#HTMLOptionElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLOptionElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLOptionElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLOptionElement#prototype#setCapture "setCapture" 1
+#HTMLOptionElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLParamElement#prototype methods
+#HTMLParamElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLParamElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLParamElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLParamElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLParamElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLParamElement#prototype#addEventListener "addEventListener" 4
+#HTMLParamElement#prototype#appendChild "appendChild" 1
+#HTMLParamElement#prototype#blur "blur" 0
+#HTMLParamElement#prototype#click "click" 0
+#HTMLParamElement#prototype#cloneNode "cloneNode" 1
+#HTMLParamElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLParamElement#prototype#contains "contains" 1
+#HTMLParamElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLParamElement#prototype#focus "focus" 0
+#HTMLParamElement#prototype#getAttribute "getAttribute" 1
+#HTMLParamElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLParamElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLParamElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLParamElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLParamElement#prototype#getClientRects "getClientRects" 0
+#HTMLParamElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLParamElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLParamElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLParamElement#prototype#getUserData "getUserData" 1
+#HTMLParamElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLParamElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLParamElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLParamElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLParamElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLParamElement#prototype#insertBefore "insertBefore" 2
+#HTMLParamElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLParamElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLParamElement#prototype#isSupported "isSupported" 2
+#HTMLParamElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLParamElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLParamElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLParamElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLParamElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLParamElement#prototype#normalize "normalize" 0
+#HTMLParamElement#prototype#querySelector "querySelector" 1
+#HTMLParamElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLParamElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLParamElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLParamElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLParamElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLParamElement#prototype#removeChild "removeChild" 1
+#HTMLParamElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLParamElement#prototype#replaceChild "replaceChild" 2
+#HTMLParamElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLParamElement#prototype#setAttribute "setAttribute" 2
+#HTMLParamElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLParamElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLParamElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLParamElement#prototype#setCapture "setCapture" 1
+#HTMLParamElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLScriptElement#prototype methods
+#HTMLScriptElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLScriptElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLScriptElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLScriptElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLScriptElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLScriptElement#prototype#addEventListener "addEventListener" 4
+#HTMLScriptElement#prototype#appendChild "appendChild" 1
+#HTMLScriptElement#prototype#blur "blur" 0
+#HTMLScriptElement#prototype#click "click" 0
+#HTMLScriptElement#prototype#cloneNode "cloneNode" 1
+#HTMLScriptElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLScriptElement#prototype#contains "contains" 1
+#HTMLScriptElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLScriptElement#prototype#focus "focus" 0
+#HTMLScriptElement#prototype#getAttribute "getAttribute" 1
+#HTMLScriptElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLScriptElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLScriptElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLScriptElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLScriptElement#prototype#getClientRects "getClientRects" 0
+#HTMLScriptElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLScriptElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLScriptElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLScriptElement#prototype#getUserData "getUserData" 1
+#HTMLScriptElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLScriptElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLScriptElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLScriptElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLScriptElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLScriptElement#prototype#insertBefore "insertBefore" 2
+#HTMLScriptElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLScriptElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLScriptElement#prototype#isSupported "isSupported" 2
+#HTMLScriptElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLScriptElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLScriptElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLScriptElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLScriptElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLScriptElement#prototype#normalize "normalize" 0
+#HTMLScriptElement#prototype#querySelector "querySelector" 1
+#HTMLScriptElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLScriptElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLScriptElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLScriptElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLScriptElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLScriptElement#prototype#removeChild "removeChild" 1
+#HTMLScriptElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLScriptElement#prototype#replaceChild "replaceChild" 2
+#HTMLScriptElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLScriptElement#prototype#setAttribute "setAttribute" 2
+#HTMLScriptElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLScriptElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLScriptElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLScriptElement#prototype#setCapture "setCapture" 1
+#HTMLScriptElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLSelectElement#prototype methods
+#HTMLSelectElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLSelectElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLSelectElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLSelectElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLSelectElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLSelectElement#prototype#add "add" 2
+#HTMLSelectElement#prototype#addEventListener "addEventListener" 4
+#HTMLSelectElement#prototype#appendChild "appendChild" 1
+#HTMLSelectElement#prototype#blur "blur" 0
+#HTMLSelectElement#prototype#checkValidity "checkValidity" 0
+#HTMLSelectElement#prototype#click "click" 0
+#HTMLSelectElement#prototype#cloneNode "cloneNode" 1
+#HTMLSelectElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLSelectElement#prototype#contains "contains" 1
+#HTMLSelectElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLSelectElement#prototype#focus "focus" 0
+#HTMLSelectElement#prototype#getAttribute "getAttribute" 1
+#HTMLSelectElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLSelectElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLSelectElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLSelectElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLSelectElement#prototype#getClientRects "getClientRects" 0
+#HTMLSelectElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLSelectElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLSelectElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLSelectElement#prototype#getUserData "getUserData" 1
+#HTMLSelectElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLSelectElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLSelectElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLSelectElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLSelectElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLSelectElement#prototype#insertBefore "insertBefore" 2
+#HTMLSelectElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLSelectElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLSelectElement#prototype#isSupported "isSupported" 2
+#HTMLSelectElement#prototype#item "item" 1
+#HTMLSelectElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLSelectElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLSelectElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLSelectElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLSelectElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLSelectElement#prototype#namedItem "namedItem" 1
+#HTMLSelectElement#prototype#normalize "normalize" 0
+#HTMLSelectElement#prototype#querySelector "querySelector" 1
+#HTMLSelectElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLSelectElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLSelectElement#prototype#remove "remove" 1
+#HTMLSelectElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLSelectElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLSelectElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLSelectElement#prototype#removeChild "removeChild" 1
+#HTMLSelectElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLSelectElement#prototype#replaceChild "replaceChild" 2
+#HTMLSelectElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLSelectElement#prototype#setAttribute "setAttribute" 2
+#HTMLSelectElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLSelectElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLSelectElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLSelectElement#prototype#setCapture "setCapture" 1
+#HTMLSelectElement#prototype#setCustomValidity "setCustomValidity" 1
+#HTMLSelectElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLSourceElement#prototype methods
+#HTMLSourceElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLSourceElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLSourceElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLSourceElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLSourceElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLSourceElement#prototype#addEventListener "addEventListener" 4
+#HTMLSourceElement#prototype#appendChild "appendChild" 1
+#HTMLSourceElement#prototype#blur "blur" 0
+#HTMLSourceElement#prototype#click "click" 0
+#HTMLSourceElement#prototype#cloneNode "cloneNode" 1
+#HTMLSourceElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLSourceElement#prototype#contains "contains" 1
+#HTMLSourceElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLSourceElement#prototype#focus "focus" 0
+#HTMLSourceElement#prototype#getAttribute "getAttribute" 1
+#HTMLSourceElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLSourceElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLSourceElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLSourceElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLSourceElement#prototype#getClientRects "getClientRects" 0
+#HTMLSourceElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLSourceElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLSourceElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLSourceElement#prototype#getUserData "getUserData" 1
+#HTMLSourceElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLSourceElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLSourceElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLSourceElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLSourceElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLSourceElement#prototype#insertBefore "insertBefore" 2
+#HTMLSourceElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLSourceElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLSourceElement#prototype#isSupported "isSupported" 2
+#HTMLSourceElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLSourceElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLSourceElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLSourceElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLSourceElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLSourceElement#prototype#normalize "normalize" 0
+#HTMLSourceElement#prototype#querySelector "querySelector" 1
+#HTMLSourceElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLSourceElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLSourceElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLSourceElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLSourceElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLSourceElement#prototype#removeChild "removeChild" 1
+#HTMLSourceElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLSourceElement#prototype#replaceChild "replaceChild" 2
+#HTMLSourceElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLSourceElement#prototype#setAttribute "setAttribute" 2
+#HTMLSourceElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLSourceElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLSourceElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLSourceElement#prototype#setCapture "setCapture" 1
+#HTMLSourceElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLTextAreaElement#prototype methods
+#HTMLTextAreaElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLTextAreaElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLTextAreaElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLTextAreaElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLTextAreaElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLTextAreaElement#prototype#addEventListener "addEventListener" 4
+#HTMLTextAreaElement#prototype#appendChild "appendChild" 1
+#HTMLTextAreaElement#prototype#blur "blur" 0
+#HTMLTextAreaElement#prototype#checkValidity "checkValidity" 0
+#HTMLTextAreaElement#prototype#click "click" 0
+#HTMLTextAreaElement#prototype#cloneNode "cloneNode" 1
+#HTMLTextAreaElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLTextAreaElement#prototype#contains "contains" 1
+#HTMLTextAreaElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLTextAreaElement#prototype#focus "focus" 0
+#HTMLTextAreaElement#prototype#getAttribute "getAttribute" 1
+#HTMLTextAreaElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLTextAreaElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLTextAreaElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLTextAreaElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLTextAreaElement#prototype#getClientRects "getClientRects" 0
+#HTMLTextAreaElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLTextAreaElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLTextAreaElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLTextAreaElement#prototype#getUserData "getUserData" 1
+#HTMLTextAreaElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLTextAreaElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLTextAreaElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLTextAreaElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLTextAreaElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLTextAreaElement#prototype#insertBefore "insertBefore" 2
+#HTMLTextAreaElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLTextAreaElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLTextAreaElement#prototype#isSupported "isSupported" 2
+#HTMLTextAreaElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLTextAreaElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLTextAreaElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLTextAreaElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLTextAreaElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLTextAreaElement#prototype#normalize "normalize" 0
+#HTMLTextAreaElement#prototype#querySelector "querySelector" 1
+#HTMLTextAreaElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLTextAreaElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLTextAreaElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLTextAreaElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLTextAreaElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLTextAreaElement#prototype#removeChild "removeChild" 1
+#HTMLTextAreaElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLTextAreaElement#prototype#replaceChild "replaceChild" 2
+#HTMLTextAreaElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLTextAreaElement#prototype#select "select" 0
+#HTMLTextAreaElement#prototype#setAttribute "setAttribute" 2
+#HTMLTextAreaElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLTextAreaElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLTextAreaElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLTextAreaElement#prototype#setCapture "setCapture" 1
+#HTMLTextAreaElement#prototype#setCustomValidity "setCustomValidity" 1
+#HTMLTextAreaElement#prototype#setSelectionRange "setSelectionRange" 3
+#HTMLTextAreaElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLVideoElement#prototype methods
+#HTMLVideoElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLVideoElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLVideoElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLVideoElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLVideoElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLVideoElement#prototype#addEventListener "addEventListener" 4
+#HTMLVideoElement#prototype#appendChild "appendChild" 1
+#HTMLVideoElement#prototype#blur "blur" 0
+#HTMLVideoElement#prototype#canPlayType "canPlayType" 1
+#HTMLVideoElement#prototype#click "click" 0
+#HTMLVideoElement#prototype#cloneNode "cloneNode" 1
+#HTMLVideoElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLVideoElement#prototype#contains "contains" 1
+#HTMLVideoElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLVideoElement#prototype#focus "focus" 0
+#HTMLVideoElement#prototype#getAttribute "getAttribute" 1
+#HTMLVideoElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLVideoElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLVideoElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLVideoElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLVideoElement#prototype#getClientRects "getClientRects" 0
+#HTMLVideoElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLVideoElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLVideoElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLVideoElement#prototype#getUserData "getUserData" 1
+#HTMLVideoElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLVideoElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLVideoElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLVideoElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLVideoElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLVideoElement#prototype#insertBefore "insertBefore" 2
+#HTMLVideoElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLVideoElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLVideoElement#prototype#isSupported "isSupported" 2
+#HTMLVideoElement#prototype#load "load" 0
+#HTMLVideoElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLVideoElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLVideoElement#prototype#mozCaptureStream "mozCaptureStream" 0
+#HTMLVideoElement#prototype#mozCaptureStreamUntilEnded "mozCaptureStreamUntilEnded" 0
+#HTMLVideoElement#prototype#mozGetMetadata "mozGetMetadata" 0
+#HTMLVideoElement#prototype#mozLoadFrom "mozLoadFrom" 1
+#HTMLVideoElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLVideoElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLVideoElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLVideoElement#prototype#normalize "normalize" 0
+#HTMLVideoElement#prototype#pause "pause" 0
+#HTMLVideoElement#prototype#play "play" 0
+#HTMLVideoElement#prototype#querySelector "querySelector" 1
+#HTMLVideoElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLVideoElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLVideoElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLVideoElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLVideoElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLVideoElement#prototype#removeChild "removeChild" 1
+#HTMLVideoElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLVideoElement#prototype#replaceChild "replaceChild" 2
+#HTMLVideoElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLVideoElement#prototype#setAttribute "setAttribute" 2
+#HTMLVideoElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLVideoElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLVideoElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLVideoElement#prototype#setCapture "setCapture" 1
+#HTMLVideoElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLDocument#prototype methods
+#HTMLDocument#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLDocument#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLDocument#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLDocument#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLDocument#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLDocument#prototype#addBinding "addBinding" 2
+#HTMLDocument#prototype#addEventListener "addEventListener" 4
+#HTMLDocument#prototype#adoptNode "adoptNode" 1
+#HTMLDocument#prototype#appendChild "appendChild" 1
+#HTMLDocument#prototype#captureEvents "captureEvents" 1
+#HTMLDocument#prototype#clear "clear" 0
+#HTMLDocument#prototype#cloneNode "cloneNode" 1
+#HTMLDocument#prototype#close "close" 0
+#HTMLDocument#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLDocument#prototype#contains "contains" 1
+#HTMLDocument#prototype#createAttribute "createAttribute" 1
+#HTMLDocument#prototype#createAttributeNS "createAttributeNS" 2
+#HTMLDocument#prototype#createCDATASection "createCDATASection" 1
+#HTMLDocument#prototype#createComment "createComment" 1
+#HTMLDocument#prototype#createDocumentFragment "createDocumentFragment" 0
+#HTMLDocument#prototype#createElement "createElement" 1
+#HTMLDocument#prototype#createElementNS "createElementNS" 2
+#HTMLDocument#prototype#createEvent "createEvent" 1
+#HTMLDocument#prototype#createExpression "createExpression" 2
+#HTMLDocument#prototype#createNSResolver "createNSResolver" 1
+#HTMLDocument#prototype#createNodeIterator "createNodeIterator" 3
+#HTMLDocument#prototype#createProcessingInstruction "createProcessingInstruction" 2
+#HTMLDocument#prototype#createRange "createRange" 0
+#HTMLDocument#prototype#createTextNode "createTextNode" 1
+#HTMLDocument#prototype#createTreeWalker "createTreeWalker" 3
+#HTMLDocument#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLDocument#prototype#elementFromPoint "elementFromPoint" 2
+#HTMLDocument#prototype#enableStyleSheetsForSet "enableStyleSheetsForSet" 1
+#HTMLDocument#prototype#evaluate "evaluate" 5
+#HTMLDocument#prototype#execCommand "execCommand" 3
+#HTMLDocument#prototype#getAnonymousElementByAttribute "getAnonymousElementByAttribute" 3
+#HTMLDocument#prototype#getAnonymousNodes "getAnonymousNodes" 1
+#HTMLDocument#prototype#getBindingParent "getBindingParent" 1
+#HTMLDocument#prototype#getElementById "getElementById" 1
+#HTMLDocument#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLDocument#prototype#getElementsByName "getElementsByName" 1
+#HTMLDocument#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLDocument#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLDocument#prototype#getItems "getItems" 1
+#HTMLDocument#prototype#getSelection "getSelection" 0
+#HTMLDocument#prototype#getUserData "getUserData" 1
+#HTMLDocument#prototype#hasAttributes "hasAttributes" 0
+#HTMLDocument#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLDocument#prototype#hasFocus "hasFocus" 0
+#HTMLDocument#prototype#importNode "importNode" 2
+#HTMLDocument#prototype#insertBefore "insertBefore" 2
+#HTMLDocument#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLDocument#prototype#isEqualNode "isEqualNode" 1
+#HTMLDocument#prototype#isSupported "isSupported" 2
+#HTMLDocument#prototype#loadBindingDocument "loadBindingDocument" 1
+#HTMLDocument#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLDocument#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLDocument#prototype#mozCancelFullScreen "mozCancelFullScreen" 0
+#HTMLDocument#prototype#mozExitPointerLock "mozExitPointerLock" 0
+#HTMLDocument#prototype#mozSetImageElement "mozSetImageElement" 2
+#HTMLDocument#prototype#normalize "normalize" 0
+#HTMLDocument#prototype#open "open" 3
+#HTMLDocument#prototype#queryCommandEnabled "queryCommandEnabled" 1
+#HTMLDocument#prototype#queryCommandIndeterm "queryCommandIndeterm" 1
+#HTMLDocument#prototype#queryCommandState "queryCommandState" 1
+#HTMLDocument#prototype#queryCommandSupported "queryCommandSupported" 1
+#HTMLDocument#prototype#queryCommandValue "queryCommandValue" 1
+#HTMLDocument#prototype#querySelector "querySelector" 1
+#HTMLDocument#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLDocument#prototype#releaseCapture "releaseCapture" 0
+#HTMLDocument#prototype#releaseEvents "releaseEvents" 1
+#HTMLDocument#prototype#removeBinding "removeBinding" 2
+#HTMLDocument#prototype#removeChild "removeChild" 1
+#HTMLDocument#prototype#removeEventListener "removeEventListener" 3
+#HTMLDocument#prototype#replaceChild "replaceChild" 2
+#HTMLDocument#prototype#routeEvent "routeEvent" 1
+#HTMLDocument#prototype#setUserData "setUserData" 3
+#HTMLDocument#prototype#write "write" 1
+#HTMLDocument#prototype#writeln "writeln" 1
+
+
+% DocumentFragment#prototype methods
+#DocumentFragment#prototype#QueryInterface "QueryInterface" 1 c
+#DocumentFragment#prototype#__defineGetter__ "__defineGetter__" 2
+#DocumentFragment#prototype#__defineSetter__ "__defineSetter__" 2
+#DocumentFragment#prototype#__lookupGetter__ "__lookupGetter__" 1
+#DocumentFragment#prototype#__lookupSetter__ "__lookupSetter__" 1
+#DocumentFragment#prototype#addEventListener "addEventListener" 4
+#DocumentFragment#prototype#appendChild "appendChild" 1
+#DocumentFragment#prototype#cloneNode "cloneNode" 1
+#DocumentFragment#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#DocumentFragment#prototype#contains "contains" 1
+#DocumentFragment#prototype#dispatchEvent "dispatchEvent" 1
+#DocumentFragment#prototype#getUserData "getUserData" 1
+#DocumentFragment#prototype#hasAttributes "hasAttributes" 0
+#DocumentFragment#prototype#hasChildNodes "hasChildNodes" 0
+#DocumentFragment#prototype#insertBefore "insertBefore" 2
+#DocumentFragment#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#DocumentFragment#prototype#isEqualNode "isEqualNode" 1
+#DocumentFragment#prototype#isSupported "isSupported" 2
+#DocumentFragment#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#DocumentFragment#prototype#lookupPrefix "lookupPrefix" 1
+#DocumentFragment#prototype#normalize "normalize" 0
+#DocumentFragment#prototype#querySelector "querySelector" 1
+#DocumentFragment#prototype#querySelectorAll "querySelectorAll" 1
+#DocumentFragment#prototype#removeChild "removeChild" 1
+#DocumentFragment#prototype#removeEventListener "removeEventListener" 3
+#DocumentFragment#prototype#replaceChild "replaceChild" 2
+#DocumentFragment#prototype#setUserData "setUserData" 3
+
+
+% DocumentType#prototype methods
+#DocumentType#prototype#QueryInterface "QueryInterface" 1 c
+#DocumentType#prototype#__defineGetter__ "__defineGetter__" 2
+#DocumentType#prototype#__defineSetter__ "__defineSetter__" 2
+#DocumentType#prototype#__lookupGetter__ "__lookupGetter__" 1
+#DocumentType#prototype#__lookupSetter__ "__lookupSetter__" 1
+#DocumentType#prototype#addEventListener "addEventListener" 4
+#DocumentType#prototype#appendChild "appendChild" 1
+#DocumentType#prototype#cloneNode "cloneNode" 1
+#DocumentType#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#DocumentType#prototype#contains "contains" 1
+#DocumentType#prototype#dispatchEvent "dispatchEvent" 1
+#DocumentType#prototype#getUserData "getUserData" 1
+#DocumentType#prototype#hasAttributes "hasAttributes" 0
+#DocumentType#prototype#hasChildNodes "hasChildNodes" 0
+#DocumentType#prototype#insertBefore "insertBefore" 2
+#DocumentType#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#DocumentType#prototype#isEqualNode "isEqualNode" 1
+#DocumentType#prototype#isSupported "isSupported" 2
+#DocumentType#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#DocumentType#prototype#lookupPrefix "lookupPrefix" 1
+#DocumentType#prototype#normalize "normalize" 0
+#DocumentType#prototype#removeChild "removeChild" 1
+#DocumentType#prototype#removeEventListener "removeEventListener" 3
+#DocumentType#prototype#replaceChild "replaceChild" 2
+#DocumentType#prototype#setUserData "setUserData" 3
+
+
+% FormData#prototype methods
+#FormData#prototype#QueryInterface "QueryInterface" 1 c
+#FormData#prototype#append "append" 2
+
+
+% RegExp#prototype methods
+#RegExp "RegExp" 2 c
+#RegExp#prototype#compile "compile" 2
+#RegExp#prototype#exec "exec" 1
+#RegExp#prototype#test "test" 1
+#RegExp#prototype#toSource "toSource" 0
+#RegExp#prototype#toString "toString" 0
+
+
+% Date#prototype methods
+#Date "Date" 7 c
+#Date#prototype#getDate "getDate" 0
+#Date#prototype#getDay "getDay" 0
+#Date#prototype#getFullYear "getFullYear" 0
+#Date#prototype#getHours "getHours" 0
+#Date#prototype#getMilliseconds "getMilliseconds" 0
+#Date#prototype#getMinutes "getMinutes" 0
+#Date#prototype#getMonth "getMonth" 0
+#Date#prototype#getSeconds "getSeconds" 0
+#Date#prototype#getTime "getTime" 0
+#Date#prototype#getTimezoneOffset "getTimezoneOffset" 0
+#Date#prototype#getUTCDate "getUTCDate" 0
+#Date#prototype#getUTCDay "getUTCDay" 0
+#Date#prototype#getUTCFullYear "getUTCFullYear" 0
+#Date#prototype#getUTCHours "getUTCHours" 0
+#Date#prototype#getUTCMilliseconds "getUTCMilliseconds" 0
+#Date#prototype#getUTCMinutes "getUTCMinutes" 0
+#Date#prototype#getUTCMonth "getUTCMonth" 0
+#Date#prototype#getUTCSeconds "getUTCSeconds" 0
+#Date#prototype#getYear "getYear" 0
+#Date#prototype#setDate "setDate" 1
+#Date#prototype#setFullYear "setFullYear" 3
+#Date#prototype#setHours "setHours" 4
+#Date#prototype#setMilliseconds "setMilliseconds" 1
+#Date#prototype#setMinutes "setMinutes" 3
+#Date#prototype#setMonth "setMonth" 2
+#Date#prototype#setSeconds "setSeconds" 2
+#Date#prototype#setTime "setTime" 1
+#Date#prototype#setUTCDate "setUTCDate" 1
+#Date#prototype#setUTCFullYear "setUTCFullYear" 3
+#Date#prototype#setUTCHours "setUTCHours" 4
+#Date#prototype#setUTCMilliseconds "setUTCMilliseconds" 1
+#Date#prototype#setUTCMinutes "setUTCMinutes" 3
+#Date#prototype#setUTCMonth "setUTCMonth" 2
+#Date#prototype#setUTCSeconds "setUTCSeconds" 2
+#Date#prototype#setYear "setYear" 1
+#Date#prototype#toDateString "toDateString" 0
+#Date#prototype#toISOString "toISOString" 0
+#Date#prototype#toJSON "toJSON" 1
+#Date#prototype#toLocaleDateString "toLocaleDateString" 0
+#Date#prototype#toLocaleFormat "toLocaleFormat" 0
+#Date#prototype#toLocaleString "toLocaleString" 0
+#Date#prototype#toLocaleTimeString "toLocaleTimeString" 0
+#Date#prototype#toSource "toSource" 0
+#Date#prototype#toString "toString" 0
+#Date#prototype#toTimeString "toTimeString" 0
+#Date#prototype#toUTCString "toUTCString" 0
+#Date#prototype#toUTCString "toUTCString" 0
+#Date#prototype#valueOf "valueOf" 0
+
+
+% Int8Array#prototype methods
+#Int8Array "Int8Array" 3 c
+#Int8Array#prototype#iterator "iterator" 0
+#Int8Array#prototype#set "set" 2
+#Int8Array#prototype#subarray "subarray" 2
+
+
+% Int16Array#prototype methods
+#Int16Array "Int16Array" 3 c
+#Int16Array#prototype#iterator "iterator" 0
+#Int16Array#prototype#set "set" 2
+#Int16Array#prototype#subarray "subarray" 2
+
+
+% Int32Array#prototype methods
+#Int32Array "Int32Array" 3 c
+#Int32Array#prototype#iterator "iterator" 0
+#Int32Array#prototype#set "set" 2
+#Int32Array#prototype#subarray "subarray" 2
+
+
+% Uint8Array#prototype methods
+#Uint8Array "Uint8Array" 3 c
+#Uint8Array#prototype#iterator "iterator" 0
+#Uint8Array#prototype#set "set" 2
+#Uint8Array#prototype#subarray "subarray" 2
+
+
+% Uint8ClampedArray#prototype methods
+#Uint8ClampedArray "Uint8ClampedArray" 3 c
+#Uint8ClampedArray#prototype#iterator "iterator" 0
+#Uint8ClampedArray#prototype#set "set" 2
+#Uint8ClampedArray#prototype#subarray "subarray" 2
+
+
+% Uint16Array#prototype methods
+#Uint16Array "Uint16Array" 3 c
+#Uint16Array#prototype#iterator "iterator" 0
+#Uint16Array#prototype#set "set" 2
+#Uint16Array#prototype#subarray "subarray" 2
+
+
+% Uint32Array#prototype methods
+#Uint32Array "Uint32Array" 3 c
+#Uint32Array#prototype#iterator "iterator" 0
+#Uint32Array#prototype#set "set" 2
+#Uint32Array#prototype#subarray "subarray" 2
+
+
+% Float32Array#prototype methods
+#Float32Array "Float32Array" 3 c
+#Float32Array#prototype#iterator "iterator" 0
+#Float32Array#prototype#set "set" 2
+#Float32Array#prototype#subarray "subarray" 2
+
+
+% Float64Array#prototype methods
+#Float64Array "Float64Array" 3 c
+#Float64Array#prototype#iterator "iterator" 0
+#Float64Array#prototype#set "set" 2
+#Float64Array#prototype#subarray "subarray" 2
+
+
+% CSSStyleRule#prototype methods
+#CSSStyleRule#prototype#QueryInterface "QueryInterface" 1 c
+
+
+% CSSMediaRule#prototype methods
+#CSSMediaRule#prototype#QueryInterface "QueryInterface" 1 c
+#CSSMediaRule#prototype#deleteRule "deleteRule" 1
+#CSSMediaRule#prototype#insertRule "insertRule" 2
+
+
+% CSSCharsetRule#prototype methods
+#CSSCharsetRule#prototype#QueryInterface "QueryInterface" 1 c
+
+
+% CSSFontFaceRule#prototype methods
+#CSSFontFaceRule#prototype#QueryInterface "QueryInterface" 1 c
+
+
+% CSSImportRule#prototype methods
+#CSSImportRule#prototype#QueryInterface "QueryInterface" 1 c
+
+
+% CSSRuleList#prototype methods
+#CSSRuleList#prototype#QueryInterface "QueryInterface" 1 c
+#CSSRuleList#prototype#item "item" 1
+
+
+% CSSStyleDeclaration#prototype methods
+#CSSStyleDeclaration "CSSStyleDeclaration" 0 c
+#CSSStyleDeclaration#prototype#QueryInterface "QueryInterface" 1 c
+#CSSStyleDeclaration#prototype#getPropertyCSSValue "getPropertyCSSValue" 1
+#CSSStyleDeclaration#prototype#getPropertyPriority "getPropertyPriority" 1
+#CSSStyleDeclaration#prototype#getPropertyValue "getPropertyValue" 1
+#CSSStyleDeclaration#prototype#item "item" 1
+#CSSStyleDeclaration#prototype#iterator "iterator" 0
+#CSSStyleDeclaration#prototype#removeProperty "removeProperty" 1
+#CSSStyleDeclaration#prototype#setProperty "setProperty" 3
+
+
+% CSSStyleSheet#prototype methods
+#CSSStyleSheet#prototype#QueryInterface "QueryInterface" 1 c
+#CSSStyleSheet#prototype#deleteRule "deleteRule" 1
+#CSSStyleSheet#prototype#insertRule "insertRule" 2
+
+
+% CSSValueList#prototype methods
+#CSSValueList#prototype#QueryInterface "QueryInterface" 1 c
+#CSSValueList#prototype#item "item" 1
+
+
+% XMLHttpRequest#prototype methods
+#XMLHttpRequest "XMLHttpRequest" 1 c
+#XMLHttpRequest#prototype#abort "abort" 0
+#XMLHttpRequest#prototype#getAllResponseHeaders "getAllResponseHeaders" 0
+#XMLHttpRequest#prototype#getInterface "getInterface" 1
+#XMLHttpRequest#prototype#getResponseHeader "getResponseHeader" 1
+#XMLHttpRequest#prototype#open "open" 5
+#XMLHttpRequest#prototype#overrideMimeType "overrideMimeType" 1
+#XMLHttpRequest#prototype#send "send" 1
+#XMLHttpRequest#prototype#sendAsBinary "sendAsBinary" 1
+#XMLHttpRequest#prototype#setRequestHeader "setRequestHeader" 2
+
+
+% WebSocket#prototype methods
+#WebSocket#prototype#QueryInterface "QueryInterface" 1 c
+#WebSocket#prototype#__defineGetter__ "__defineGetter__" 2
+#WebSocket#prototype#__defineSetter__ "__defineSetter__" 2
+#WebSocket#prototype#__lookupGetter__ "__lookupGetter__" 1
+#WebSocket#prototype#__lookupSetter__ "__lookupSetter__" 1
+#WebSocket#prototype#addEventListener "addEventListener" 4
+#WebSocket#prototype#close "close" 2
+#WebSocket#prototype#dispatchEvent "dispatchEvent" 1
+#WebSocket#prototype#removeEventListener "removeEventListener" 3
+#WebSocket#prototype#send "send" 1
+
+
+% Event#prototype methods
+#Event#prototype#QueryInterface "QueryInterface" 1 c
+#Event#prototype#__defineGetter__ "__defineGetter__" 2
+#Event#prototype#__defineSetter__ "__defineSetter__" 2
+#Event#prototype#__lookupGetter__ "__lookupGetter__" 1
+#Event#prototype#__lookupSetter__ "__lookupSetter__" 1
+#Event#prototype#getPreventDefault "getPreventDefault" 0
+#Event#prototype#initEvent "initEvent" 3
+#Event#prototype#preventBubble "preventBubble" 0
+#Event#prototype#preventCapture "preventCapture" 0
+#Event#prototype#preventDefault "preventDefault" 0
+#Event#prototype#stopImmediatePropagation "stopImmediatePropagation" 0
+#Event#prototype#stopPropagation "stopPropagation" 0
+
+
+% Blob#prototype methods
+#Blob#prototype#QueryInterface "QueryInterface" 1 c
+#Blob#prototype#mozSlice "mozSlice" 3
+#Blob#prototype#slice "slice" 3
+
+
+% ArrayBuffer#prototype methods
+#ArrayBuffer "ArrayBuffer" 1 c
+#ArrayBuffer#prototype#slice "slice" 2
+
+
+% FileReader#prototype methods
+#FileReader#prototype#QueryInterface "QueryInterface" 1 c
+#FileReader#prototype#__defineGetter__ "__defineGetter__" 2
+#FileReader#prototype#__defineSetter__ "__defineSetter__" 2
+#FileReader#prototype#__lookupGetter__ "__lookupGetter__" 1
+#FileReader#prototype#__lookupSetter__ "__lookupSetter__" 1
+#FileReader#prototype#abort "abort" 0
+#FileReader#prototype#addEventListener "addEventListener" 4
+#FileReader#prototype#dispatchEvent "dispatchEvent" 1
+#FileReader#prototype#getInterface "getInterface" 1
+#FileReader#prototype#readAsArrayBuffer "readAsArrayBuffer" 1
+#FileReader#prototype#readAsBinaryString "readAsBinaryString" 1
+#FileReader#prototype#readAsDataURL "readAsDataURL" 1
+#FileReader#prototype#readAsText "readAsText" 2
+#FileReader#prototype#removeEventListener "removeEventListener" 3
+
+
+% CanvasRenderingContext2D#prototype methods
+#CanvasRenderingContext2D#prototype#QueryInterface "QueryInterface" 1 c
+#CanvasRenderingContext2D#prototype#__defineGetter__ "__defineGetter__" 2
+#CanvasRenderingContext2D#prototype#__defineSetter__ "__defineSetter__" 2
+#CanvasRenderingContext2D#prototype#__lookupGetter__ "__lookupGetter__" 1
+#CanvasRenderingContext2D#prototype#__lookupSetter__ "__lookupSetter__" 1
+#CanvasRenderingContext2D#prototype#arc "arc" 6
+#CanvasRenderingContext2D#prototype#arcTo "arcTo" 5
+#CanvasRenderingContext2D#prototype#asyncDrawXULElement "asyncDrawXULElement" 7
+#CanvasRenderingContext2D#prototype#beginPath "beginPath" 0
+#CanvasRenderingContext2D#prototype#bezierCurveTo "bezierCurveTo" 6
+#CanvasRenderingContext2D#prototype#clearRect "clearRect" 4
+#CanvasRenderingContext2D#prototype#clip "clip" 0
+#CanvasRenderingContext2D#prototype#closePath "closePath" 0
+#CanvasRenderingContext2D#prototype#createImageData "createImageData" 2
+#CanvasRenderingContext2D#prototype#createLinearGradient "createLinearGradient" 4
+#CanvasRenderingContext2D#prototype#createPattern "createPattern" 2
+#CanvasRenderingContext2D#prototype#createRadialGradient "createRadialGradient" 6
+#CanvasRenderingContext2D#prototype#drawImage "drawImage" 9
+#CanvasRenderingContext2D#prototype#drawWindow "drawWindow" 7
+#CanvasRenderingContext2D#prototype#fill "fill" 0
+#CanvasRenderingContext2D#prototype#fillRect "fillRect" 4
+#CanvasRenderingContext2D#prototype#fillText "fillText" 4
+#CanvasRenderingContext2D#prototype#getImageData "getImageData" 4
+#CanvasRenderingContext2D#prototype#isPointInPath "isPointInPath" 2
+#CanvasRenderingContext2D#prototype#lineTo "lineTo" 2
+#CanvasRenderingContext2D#prototype#measureText "measureText" 1
+#CanvasRenderingContext2D#prototype#moveTo "moveTo" 2
+#CanvasRenderingContext2D#prototype#putImageData "putImageData" 7
+#CanvasRenderingContext2D#prototype#quadraticCurveTo "quadraticCurveTo" 4
+#CanvasRenderingContext2D#prototype#rect "rect" 4
+#CanvasRenderingContext2D#prototype#restore "restore" 0
+#CanvasRenderingContext2D#prototype#rotate "rotate" 1
+#CanvasRenderingContext2D#prototype#save "save" 0
+#CanvasRenderingContext2D#prototype#scale "scale" 2
+#CanvasRenderingContext2D#prototype#setTransform "setTransform" 6
+#CanvasRenderingContext2D#prototype#stroke "stroke" 0
+#CanvasRenderingContext2D#prototype#strokeRect "strokeRect" 4
+#CanvasRenderingContext2D#prototype#strokeText "strokeText" 4
+#CanvasRenderingContext2D#prototype#transform "transform" 6
+#CanvasRenderingContext2D#prototype#translate "translate" 2
+
+
+% Worker#prototype methods
+#Worker "Worker" 0 c
+#Worker#prototype#postMessage "postMessage" 1
+#Worker#prototype#terminate "terminate" 0
+
+
+% Range#prototype methods
+#Range#prototype#QueryInterface "QueryInterface" 1 c
+#Range#prototype#__defineGetter__ "__defineGetter__" 2
+#Range#prototype#__defineSetter__ "__defineSetter__" 2
+#Range#prototype#__lookupGetter__ "__lookupGetter__" 1
+#Range#prototype#__lookupSetter__ "__lookupSetter__" 1
+#Range#prototype#cloneContents "cloneContents" 0
+#Range#prototype#cloneRange "cloneRange" 0
+#Range#prototype#collapse "collapse" 1
+#Range#prototype#compareBoundaryPoints "compareBoundaryPoints" 2
+#Range#prototype#comparePoint "comparePoint" 2
+#Range#prototype#createContextualFragment "createContextualFragment" 1
+#Range#prototype#deleteContents "deleteContents" 0
+#Range#prototype#detach "detach" 0
+#Range#prototype#extractContents "extractContents" 0
+#Range#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#Range#prototype#getClientRects "getClientRects" 0
+#Range#prototype#insertNode "insertNode" 1
+#Range#prototype#intersectsNode "intersectsNode" 1
+#Range#prototype#isPointInRange "isPointInRange" 2
+#Range#prototype#selectNode "selectNode" 1
+#Range#prototype#selectNodeContents "selectNodeContents" 1
+#Range#prototype#setEnd "setEnd" 2
+#Range#prototype#setEndAfter "setEndAfter" 1
+#Range#prototype#setEndBefore "setEndBefore" 1
+#Range#prototype#setStart "setStart" 2
+#Range#prototype#setStartAfter "setStartAfter" 1
+#Range#prototype#setStartBefore "setStartBefore" 1
+#Range#prototype#surroundContents "surroundContents" 1
+#Range#prototype#toString "toString" 0
+
+
+% Selection#prototype methods
+#Selection#prototype#QueryInterface "QueryInterface" 1 c
+#Selection#prototype#addRange "addRange" 1
+#Selection#prototype#collapse "collapse" 2
+#Selection#prototype#collapseToEnd "collapseToEnd" 0
+#Selection#prototype#collapseToStart "collapseToStart" 0
+#Selection#prototype#containsNode "containsNode" 2
+#Selection#prototype#deleteFromDocument "deleteFromDocument" 0
+#Selection#prototype#extend "extend" 2
+#Selection#prototype#getRangeAt "getRangeAt" 1
+#Selection#prototype#modify "modify" 3
+#Selection#prototype#removeAllRanges "removeAllRanges" 0
+#Selection#prototype#removeRange "removeRange" 1
+#Selection#prototype#selectAllChildren "selectAllChildren" 1
+#Selection#prototype#selectionLanguageChange "selectionLanguageChange" 1
+#Selection#prototype#toString "toString" 0
+
+
+% IDBFactory#prototype methods
+#IDBFactory#prototype#QueryInterface "QueryInterface" 1 c
+#IDBFactory#prototype#cmp "cmp" 2
+#IDBFactory#prototype#deleteDatabase "deleteDatabase" 1
+#IDBFactory#prototype#open "open" 2
+
+
+% DOMTokenList#prototype methods
+#DOMTokenList#prototype#add "add" 1
+#DOMTokenList "constructor" 0
+#DOMTokenList#prototype#contains "contains" 1
+#DOMTokenList#prototype#item "item" 1
+#DOMTokenList#prototype#iterator "iterator" 0
+#DOMTokenList#prototype#remove "remove" 1
+#DOMTokenList#prototype#toString "toString" 0
+#DOMTokenList#prototype#toggle "toggle" 1
+
+
+% IDBRequest#prototype methods
+#IDBRequest#prototype#QueryInterface "QueryInterface" 1 c
+#IDBRequest#prototype#__defineGetter__ "__defineGetter__" 2
+#IDBRequest#prototype#__defineSetter__ "__defineSetter__" 2
+#IDBRequest#prototype#__lookupGetter__ "__lookupGetter__" 1
+#IDBRequest#prototype#__lookupSetter__ "__lookupSetter__" 1
+#IDBRequest#prototype#addEventListener "addEventListener" 4
+#IDBRequest#prototype#dispatchEvent "dispatchEvent" 1
+#IDBRequest#prototype#removeEventListener "removeEventListener" 3
+
+
+% IDBDatabase#prototype methods
+#IDBDatabase#prototype#QueryInterface "QueryInterface" 1 c
+#IDBDatabase#prototype#__defineGetter__ "__defineGetter__" 2
+#IDBDatabase#prototype#__defineSetter__ "__defineSetter__" 2
+#IDBDatabase#prototype#__lookupGetter__ "__lookupGetter__" 1
+#IDBDatabase#prototype#__lookupSetter__ "__lookupSetter__" 1
+#IDBDatabase#prototype#addEventListener "addEventListener" 4
+#IDBDatabase#prototype#close "close" 0
+#IDBDatabase#prototype#createObjectStore "createObjectStore" 2
+#IDBDatabase#prototype#deleteObjectStore "deleteObjectStore" 1
+#IDBDatabase#prototype#dispatchEvent "dispatchEvent" 1
+#IDBDatabase#prototype#mozCreateFileHandle "mozCreateFileHandle" 2
+#IDBDatabase#prototype#removeEventListener "removeEventListener" 3
+#IDBDatabase#prototype#transaction "transaction" 2
+
+
+% IDBObjectStore#prototype methods
+#IDBObjectStore#prototype#QueryInterface "QueryInterface" 1 c
+#IDBObjectStore#prototype#__defineGetter__ "__defineGetter__" 2
+#IDBObjectStore#prototype#__defineSetter__ "__defineSetter__" 2
+#IDBObjectStore#prototype#__lookupGetter__ "__lookupGetter__" 1
+#IDBObjectStore#prototype#__lookupSetter__ "__lookupSetter__" 1
+#IDBObjectStore#prototype#add "add" 2
+#IDBObjectStore#prototype#clear "clear" 0
+#IDBObjectStore#prototype#count "count" 1
+#IDBObjectStore#prototype#createIndex "createIndex" 3
+#IDBObjectStore#prototype#delete "delete" 1
+#IDBObjectStore#prototype#deleteIndex "deleteIndex" 1
+#IDBObjectStore#prototype#get "get" 1
+#IDBObjectStore#prototype#index "index" 1
+#IDBObjectStore#prototype#mozGetAll "mozGetAll" 2
+#IDBObjectStore#prototype#openCursor "openCursor" 2
+#IDBObjectStore#prototype#put "put" 2
+
+
+% IDBIndex#prototype methods
+#IDBIndex#prototype#QueryInterface "QueryInterface" 1 c
+#IDBIndex#prototype#__defineGetter__ "__defineGetter__" 2
+#IDBIndex#prototype#__defineSetter__ "__defineSetter__" 2
+#IDBIndex#prototype#__lookupGetter__ "__lookupGetter__" 1
+#IDBIndex#prototype#__lookupSetter__ "__lookupSetter__" 1
+#IDBIndex#prototype#count "count" 1
+#IDBIndex#prototype#get "get" 1
+#IDBIndex#prototype#getKey "getKey" 1
+#IDBIndex#prototype#mozGetAll "mozGetAll" 2
+#IDBIndex#prototype#mozGetAllKeys "mozGetAllKeys" 2
+#IDBIndex#prototype#openCursor "openCursor" 2
+#IDBIndex#prototype#openKeyCursor "openKeyCursor" 2
+
+
+% File#prototype methods
+#File#prototype#QueryInterface "QueryInterface" 1 c
+#File#prototype#mozSlice "mozSlice" 3
+#File#prototype#slice "slice" 3
+
+
+% Performance#prototype methods
+#Performance "Performance" 0 c
+#Performance#prototype#QueryInterface "QueryInterface" 1 c
+#Performance#prototype#now "now" 0
+
+
+% MediaQueryList#prototype methods
+#MediaQueryList#prototype#QueryInterface "QueryInterface" 1 c
+#MediaQueryList#prototype#addListener "addListener" 1
+#MediaQueryList#prototype#removeListener "removeListener" 1
+
+
+% FileList#prototype methods
+#FileList "constructor" 0
+#FileList#prototype#item "item" 1
+#FileList#prototype#iterator "iterator" 0
+
+
+% ClientRectList#prototype methods
+#ClientRectList "constructor" 0
+#ClientRectList#prototype#item "item" 1
+#ClientRectList#prototype#iterator "iterator" 0
+
+
+% MediaList#prototype methods
+#MediaList#prototype#QueryInterface "QueryInterface" 1 c
+#MediaList#prototype#appendMedium "appendMedium" 1
+#MediaList#prototype#deleteMedium "deleteMedium" 1
+#MediaList#prototype#item "item" 1
+
+
+% StyleSheetList#prototype methods
+#StyleSheetList#prototype#QueryInterface "QueryInterface" 1 c
+#StyleSheetList#prototype#item "item" 1
+
+
+% MimeTypeArray#prototype methods
+#MimeTypeArray#prototype#QueryInterface "QueryInterface" 1 c
+#MimeTypeArray#prototype#item "item" 1
+#MimeTypeArray#prototype#namedItem "namedItem" 1
+
+
+% PluginArray#prototype methods
+#PluginArray#prototype#QueryInterface "QueryInterface" 1 c
+#PluginArray#prototype#item "item" 1
+#PluginArray#prototype#namedItem "namedItem" 1
+#PluginArray#prototype#refresh "refresh" 1
+
+
+% DOMStringList#prototype methods
+#DOMStringList#prototype#QueryInterface "QueryInterface" 1 c
+#DOMStringList#prototype#__defineGetter__ "__defineGetter__" 2
+#DOMStringList#prototype#__defineSetter__ "__defineSetter__" 2
+#DOMStringList#prototype#__lookupGetter__ "__lookupGetter__" 1
+#DOMStringList#prototype#__lookupSetter__ "__lookupSetter__" 1
+#DOMStringList#prototype#contains "contains" 1
+#DOMStringList#prototype#item "item" 1
+
+
+% HTMLCollection#prototype methods
+#HTMLCollection "constructor" 0
+#HTMLCollection#prototype#item "item" 1
+#HTMLCollection#prototype#iterator "iterator" 0
+#HTMLCollection#prototype#namedItem "namedItem" 1
+
+
+% HTMLOptionsCollection#prototype methods
+#HTMLOptionsCollection#prototype#add "add" 2
+#HTMLOptionsCollection "constructor" 0
+#HTMLOptionsCollection#prototype#item "item" 1
+#HTMLOptionsCollection#prototype#iterator "iterator" 0
+#HTMLOptionsCollection#prototype#namedItem "namedItem" 1
+#HTMLOptionsCollection#prototype#remove "remove" 1
+
+
+% NamedNodeMap#prototype methods
+#NamedNodeMap#prototype#QueryInterface "QueryInterface" 1 c
+#NamedNodeMap#prototype#__defineGetter__ "__defineGetter__" 2
+#NamedNodeMap#prototype#__defineSetter__ "__defineSetter__" 2
+#NamedNodeMap#prototype#__lookupGetter__ "__lookupGetter__" 1
+#NamedNodeMap#prototype#__lookupSetter__ "__lookupSetter__" 1
+#NamedNodeMap#prototype#getNamedItem "getNamedItem" 1
+#NamedNodeMap#prototype#getNamedItemNS "getNamedItemNS" 2
+#NamedNodeMap#prototype#item "item" 1
+#NamedNodeMap#prototype#removeNamedItem "removeNamedItem" 1
+#NamedNodeMap#prototype#removeNamedItemNS "removeNamedItemNS" 2
+#NamedNodeMap#prototype#setNamedItem "setNamedItem" 1
+#NamedNodeMap#prototype#setNamedItemNS "setNamedItemNS" 1
+
+
+% DOMParser#prototype methods
+#DOMParser#prototype#QueryInterface "QueryInterface" 1 c
+#DOMParser#prototype#init "init" 3
+#DOMParser#prototype#parseFromBuffer "parseFromBuffer" 3
+#DOMParser#prototype#parseFromStream "parseFromStream" 4
+#DOMParser#prototype#parseFromString "parseFromString" 2
+
+
+% WebGLRenderingContext#prototype methods
+#WebGLRenderingContext#prototype#QueryInterface "QueryInterface" 1 c
+#WebGLRenderingContext "WebGLRenderingContext" 0 c
+#WebGLRenderingContext#prototype#activeTexture "activeTexture" 1
+#WebGLRenderingContext#prototype#attachShader "attachShader" 2
+#WebGLRenderingContext#prototype#bindAttribLocation "bindAttribLocation" 3
+#WebGLRenderingContext#prototype#bindBuffer "bindBuffer" 2
+#WebGLRenderingContext#prototype#bindFramebuffer "bindFramebuffer" 2
+#WebGLRenderingContext#prototype#bindRenderbuffer "bindRenderbuffer" 2
+#WebGLRenderingContext#prototype#bindTexture "bindTexture" 2
+#WebGLRenderingContext#prototype#blendColor "blendColor" 4
+#WebGLRenderingContext#prototype#blendEquation "blendEquation" 1
+#WebGLRenderingContext#prototype#blendEquationSeparate "blendEquationSeparate" 2
+#WebGLRenderingContext#prototype#blendFunc "blendFunc" 2
+#WebGLRenderingContext#prototype#blendFuncSeparate "blendFuncSeparate" 4
+#WebGLRenderingContext#prototype#bufferData "bufferData" 3
+#WebGLRenderingContext#prototype#bufferSubData "bufferSubData" 3
+#WebGLRenderingContext#prototype#checkFramebufferStatus "checkFramebufferStatus" 1
+#WebGLRenderingContext#prototype#clear "clear" 1
+#WebGLRenderingContext#prototype#clearColor "clearColor" 4
+#WebGLRenderingContext#prototype#clearDepth "clearDepth" 1
+#WebGLRenderingContext#prototype#clearStencil "clearStencil" 1
+#WebGLRenderingContext#prototype#colorMask "colorMask" 4
+#WebGLRenderingContext#prototype#compileShader "compileShader" 1
+#WebGLRenderingContext#prototype#compressedTexImage2D "compressedTexImage2D" 7
+#WebGLRenderingContext#prototype#compressedTexSubImage2D "compressedTexSubImage2D" 8
+#WebGLRenderingContext#prototype#copyTexImage2D "copyTexImage2D" 8
+#WebGLRenderingContext#prototype#copyTexSubImage2D "copyTexSubImage2D" 8
+#WebGLRenderingContext#prototype#createBuffer "createBuffer" 0
+#WebGLRenderingContext#prototype#createFramebuffer "createFramebuffer" 0
+#WebGLRenderingContext#prototype#createProgram "createProgram" 0
+#WebGLRenderingContext#prototype#createRenderbuffer "createRenderbuffer" 0
+#WebGLRenderingContext#prototype#createShader "createShader" 1
+#WebGLRenderingContext#prototype#createTexture "createTexture" 0
+#WebGLRenderingContext#prototype#cullFace "cullFace" 1
+#WebGLRenderingContext#prototype#deleteBuffer "deleteBuffer" 1
+#WebGLRenderingContext#prototype#deleteFramebuffer "deleteFramebuffer" 1
+#WebGLRenderingContext#prototype#deleteProgram "deleteProgram" 1
+#WebGLRenderingContext#prototype#deleteRenderbuffer "deleteRenderbuffer" 1
+#WebGLRenderingContext#prototype#deleteShader "deleteShader" 1
+#WebGLRenderingContext#prototype#deleteTexture "deleteTexture" 1
+#WebGLRenderingContext#prototype#depthFunc "depthFunc" 1
+#WebGLRenderingContext#prototype#depthMask "depthMask" 1
+#WebGLRenderingContext#prototype#depthRange "depthRange" 2
+#WebGLRenderingContext#prototype#detachShader "detachShader" 2
+#WebGLRenderingContext#prototype#disable "disable" 1
+#WebGLRenderingContext#prototype#disableVertexAttribArray "disableVertexAttribArray" 1
+#WebGLRenderingContext#prototype#drawArrays "drawArrays" 3
+#WebGLRenderingContext#prototype#drawElements "drawElements" 4
+#WebGLRenderingContext#prototype#enable "enable" 1
+#WebGLRenderingContext#prototype#enableVertexAttribArray "enableVertexAttribArray" 1
+#WebGLRenderingContext#prototype#finish "finish" 0
+#WebGLRenderingContext#prototype#flush "flush" 0
+#WebGLRenderingContext#prototype#framebufferRenderbuffer "framebufferRenderbuffer" 4
+#WebGLRenderingContext#prototype#framebufferTexture2D "framebufferTexture2D" 5
+#WebGLRenderingContext#prototype#frontFace "frontFace" 1
+#WebGLRenderingContext#prototype#generateMipmap "generateMipmap" 1
+#WebGLRenderingContext#prototype#getActiveAttrib "getActiveAttrib" 2
+#WebGLRenderingContext#prototype#getActiveUniform "getActiveUniform" 2
+#WebGLRenderingContext#prototype#getAttachedShaders "getAttachedShaders" 1
+#WebGLRenderingContext#prototype#getAttribLocation "getAttribLocation" 2
+#WebGLRenderingContext#prototype#getBufferParameter "getBufferParameter" 2
+#WebGLRenderingContext#prototype#getContextAttributes "getContextAttributes" 0
+#WebGLRenderingContext#prototype#getError "getError" 0
+#WebGLRenderingContext#prototype#getExtension "getExtension" 1
+#WebGLRenderingContext#prototype#getFramebufferAttachmentParameter "getFramebufferAttachmentParameter" 3
+#WebGLRenderingContext#prototype#getParameter "getParameter" 1
+#WebGLRenderingContext#prototype#getProgramInfoLog "getProgramInfoLog" 1
+#WebGLRenderingContext#prototype#getProgramParameter "getProgramParameter" 2
+#WebGLRenderingContext#prototype#getRenderbufferParameter "getRenderbufferParameter" 2
+#WebGLRenderingContext#prototype#getShaderInfoLog "getShaderInfoLog" 1
+#WebGLRenderingContext#prototype#getShaderParameter "getShaderParameter" 2
+#WebGLRenderingContext#prototype#getShaderPrecisionFormat "getShaderPrecisionFormat" 2
+#WebGLRenderingContext#prototype#getShaderSource "getShaderSource" 1
+#WebGLRenderingContext#prototype#getSupportedExtensions "getSupportedExtensions" 0
+#WebGLRenderingContext#prototype#getTexParameter "getTexParameter" 2
+#WebGLRenderingContext#prototype#getUniform "getUniform" 2
+#WebGLRenderingContext#prototype#getUniformLocation "getUniformLocation" 2
+#WebGLRenderingContext#prototype#getVertexAttrib "getVertexAttrib" 2
+#WebGLRenderingContext#prototype#getVertexAttribOffset "getVertexAttribOffset" 2
+#WebGLRenderingContext#prototype#hint "hint" 2
+#WebGLRenderingContext#prototype#isBuffer "isBuffer" 1
+#WebGLRenderingContext#prototype#isContextLost "isContextLost" 0
+#WebGLRenderingContext#prototype#isEnabled "isEnabled" 1
+#WebGLRenderingContext#prototype#isFramebuffer "isFramebuffer" 1
+#WebGLRenderingContext#prototype#isProgram "isProgram" 1
+#WebGLRenderingContext#prototype#isRenderbuffer "isRenderbuffer" 1
+#WebGLRenderingContext#prototype#isShader "isShader" 1
+#WebGLRenderingContext#prototype#isTexture "isTexture" 1
+#WebGLRenderingContext#prototype#lineWidth "lineWidth" 1
+#WebGLRenderingContext#prototype#linkProgram "linkProgram" 1
+#WebGLRenderingContext#prototype#pixelStorei "pixelStorei" 2
+#WebGLRenderingContext#prototype#polygonOffset "polygonOffset" 2
+#WebGLRenderingContext#prototype#readPixels "readPixels" 7
+#WebGLRenderingContext#prototype#renderbufferStorage "renderbufferStorage" 4
+#WebGLRenderingContext#prototype#sampleCoverage "sampleCoverage" 2
+#WebGLRenderingContext#prototype#scissor "scissor" 4
+#WebGLRenderingContext#prototype#shaderSource "shaderSource" 2
+#WebGLRenderingContext#prototype#stencilFunc "stencilFunc" 3
+#WebGLRenderingContext#prototype#stencilFuncSeparate "stencilFuncSeparate" 4
+#WebGLRenderingContext#prototype#stencilMask "stencilMask" 1
+#WebGLRenderingContext#prototype#stencilMaskSeparate "stencilMaskSeparate" 2
+#WebGLRenderingContext#prototype#stencilOp "stencilOp" 3
+#WebGLRenderingContext#prototype#stencilOpSeparate "stencilOpSeparate" 4
+#WebGLRenderingContext#prototype#texImage2D "texImage2D" 9
+#WebGLRenderingContext#prototype#texParameterf "texParameterf" 3
+#WebGLRenderingContext#prototype#texParameteri "texParameteri" 3
+#WebGLRenderingContext#prototype#texSubImage2D "texSubImage2D" 9
+#WebGLRenderingContext#prototype#uniform1f "uniform1f" 2
+#WebGLRenderingContext#prototype#uniform1fv "uniform1fv" 2
+#WebGLRenderingContext#prototype#uniform1i "uniform1i" 2
+#WebGLRenderingContext#prototype#uniform1iv "uniform1iv" 2
+#WebGLRenderingContext#prototype#uniform2f "uniform2f" 3
+#WebGLRenderingContext#prototype#uniform2fv "uniform2fv" 2
+#WebGLRenderingContext#prototype#uniform2i "uniform2i" 3
+#WebGLRenderingContext#prototype#uniform2iv "uniform2iv" 2
+#WebGLRenderingContext#prototype#uniform3f "uniform3f" 4
+#WebGLRenderingContext#prototype#uniform3fv "uniform3fv" 2
+#WebGLRenderingContext#prototype#uniform3i "uniform3i" 4
+#WebGLRenderingContext#prototype#uniform3iv "uniform3iv" 2
+#WebGLRenderingContext#prototype#uniform4f "uniform4f" 5
+#WebGLRenderingContext#prototype#uniform4fv "uniform4fv" 2
+#WebGLRenderingContext#prototype#uniform4i "uniform4i" 5
+#WebGLRenderingContext#prototype#uniform4iv "uniform4iv" 2
+#WebGLRenderingContext#prototype#uniformMatrix2fv "uniformMatrix2fv" 3
+#WebGLRenderingContext#prototype#uniformMatrix3fv "uniformMatrix3fv" 3
+#WebGLRenderingContext#prototype#uniformMatrix4fv "uniformMatrix4fv" 3
+#WebGLRenderingContext#prototype#useProgram "useProgram" 1
+#WebGLRenderingContext#prototype#validateProgram "validateProgram" 1
+#WebGLRenderingContext#prototype#vertexAttrib1f "vertexAttrib1f" 2
+#WebGLRenderingContext#prototype#vertexAttrib1fv "vertexAttrib1fv" 2
+#WebGLRenderingContext#prototype#vertexAttrib2f "vertexAttrib2f" 3
+#WebGLRenderingContext#prototype#vertexAttrib2fv "vertexAttrib2fv" 2
+#WebGLRenderingContext#prototype#vertexAttrib3f "vertexAttrib3f" 4
+#WebGLRenderingContext#prototype#vertexAttrib3fv "vertexAttrib3fv" 2
+#WebGLRenderingContext#prototype#vertexAttrib4f "vertexAttrib4f" 5
+#WebGLRenderingContext#prototype#vertexAttrib4fv "vertexAttrib4fv" 2
+#WebGLRenderingContext#prototype#vertexAttribPointer "vertexAttribPointer" 6
+#WebGLRenderingContext#prototype#viewport "viewport" 4
+
+
+% XMLSerializer#prototype methods
+#XMLSerializer#prototype#QueryInterface "QueryInterface" 1 c
+#XMLSerializer#prototype#serializeToStream "serializeToStream" 3
+#XMLSerializer#prototype#serializeToString "serializeToString" 1
+
+
+% CanvasGradient#prototype methods
+#CanvasGradient#prototype#QueryInterface "QueryInterface" 1 c
+#CanvasGradient#prototype#addColorStop "addColorStop" 2
+
+
+% IDBTransaction#prototype methods
+#IDBTransaction#prototype#QueryInterface "QueryInterface" 1 c
+#IDBTransaction#prototype#__defineGetter__ "__defineGetter__" 2
+#IDBTransaction#prototype#__defineSetter__ "__defineSetter__" 2
+#IDBTransaction#prototype#__lookupGetter__ "__lookupGetter__" 1
+#IDBTransaction#prototype#__lookupSetter__ "__lookupSetter__" 1
+#IDBTransaction#prototype#abort "abort" 0
+#IDBTransaction#prototype#addEventListener "addEventListener" 4
+#IDBTransaction#prototype#dispatchEvent "dispatchEvent" 1
+#IDBTransaction#prototype#objectStore "objectStore" 1
+#IDBTransaction#prototype#removeEventListener "removeEventListener" 3
+
+
+% CustomEvent#prototype methods
+#CustomEvent#prototype#QueryInterface "QueryInterface" 1 c
+#CustomEvent#prototype#__defineGetter__ "__defineGetter__" 2
+#CustomEvent#prototype#__defineSetter__ "__defineSetter__" 2
+#CustomEvent#prototype#__lookupGetter__ "__lookupGetter__" 1
+#CustomEvent#prototype#__lookupSetter__ "__lookupSetter__" 1
+#CustomEvent#prototype#getPreventDefault "getPreventDefault" 0
+#CustomEvent#prototype#initCustomEvent "initCustomEvent" 4
+#CustomEvent#prototype#initEvent "initEvent" 3
+#CustomEvent#prototype#preventBubble "preventBubble" 0
+#CustomEvent#prototype#preventCapture "preventCapture" 0
+#CustomEvent#prototype#preventDefault "preventDefault" 0
+#CustomEvent#prototype#stopImmediatePropagation "stopImmediatePropagation" 0
+#CustomEvent#prototype#stopPropagation "stopPropagation" 0
+
+
+% DOMException#prototype methods
+#DOMException#prototype#QueryInterface "QueryInterface" 1 c
+#DOMException#prototype#toString "toString" 0
+
+
+% DOMImplementation#prototype methods
+#DOMImplementation#prototype#QueryInterface "QueryInterface" 1 c
+#DOMImplementation#prototype#createDocument "createDocument" 3
+#DOMImplementation#prototype#createDocumentType "createDocumentType" 3
+#DOMImplementation#prototype#createHTMLDocument "createHTMLDocument" 1
+#DOMImplementation#prototype#hasFeature "hasFeature" 2
+
+

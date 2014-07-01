@@ -1,0 +1,407 @@
+%
+% assrt.P 
+% author: Rich Joiner (joiner@cs.wisc.edu)
+% date: 2012-04-04
+%
+% Predicates defined here evaluate JavaScript conditions as assertions.
+% Constraints are generated and applied to assert that the given condition
+% is true.
+%
+% This module is named assrt because "assert" is a Prolog keyword. 
+%
+
+:- import length/2 from basics.
+
+% Program, i.e. a sequence of statements
+assertexp(H,L,E,HP,LP,B) :-
+	is_program(E,CS),
+	assertseq(H,L,CS,H1,L1,R),
+  ecgv(H1,L1,R,HP,LP,V),
+  toboolean(V,B).
+
+assertseq(H,L,[E],HP,LP,V) :-
+	assertexp(H,L,E,HP,LP,V).
+
+%%% Should never be invoked since we should be dealing with singleton statement
+assertseq(H,L,[E|ES],HP,LP,V) :- 
+	ES\=[],
+	assertexp(H,L,E,H1,L1,V),
+	assertseq(H1,L1,ES,HP,LP,V).
+
+assertexp(H,L,E,HP,LP,EP) :-
+  is_exprresult(E,E1),
+  assertexp(H,L,E1,HP,LP,EP).
+
+% Literal values
+assertexp(H,L,E,H,L,V) :- is_literal(E,V),assertexp(H,L,V,H,L,V).
+
+% null
+assertexp(H,L,'null',H,L,'&null').
+assertexp(H,L,E,H,L,'&null') :- is_null(E).
+
+% undefined
+assertexp(H,L,'undefined',H,L,'&undefined').
+
+% this
+assertexp(H,L,E,HP,L,EP) :-
+  is_this(E),
+  scope(H,L,'@this',LN),
+  scope_aux(H,LN,'@this',HP,Scope),
+  newref(Scope,'@this',EP).
+
+% Accessor
+assertexp(H,L,E,HP,LP,EP) :- 
+	is_accessor(E,ObjExp,MembExp),
+	assertexp(H,L,ObjExp,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+	ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
+	assertexp(H3,L3,MembExp,H4,L4,MembRef),
+  ecgv(H4,L4,MembRef,H5,L5,MembVal),
+  ects(H5,L5,MembVal,HP,LP,MembStr),
+  newref(ObjPtr,MembStr,EP).
+
+/*
+	prototype(H6,ObjPtr,MembStr,H7,ProtPtr),
+	maps(H7,ProtPtr,ProtObj),
+	(getprop(ProtObj,MembStr,EP)->HP=H7,LP=L6;
+	symbolic(EP,_),heapprop(H7,ProtPtr,MembStr,EP,HP,_),LP=L6).
+*/
+
+% instanceof
+assertexp(H,L,E,HP,LP,EP) :-
+  is_instanceof(E,E1,E2),
+  assertexp(H,L,E1,H1,L1,EP1),
+  assertexp(H1,L1,E2,H2,L2,EP2),  
+  ecgv(H2,L2,EP1,H3,L3,V1),
+  ecgv(H3,L3,EP2,H4,L4,V2),
+  instof(H4,L4,V1,V2,HP,EP),
+  LP=L4.
+
+% Id
+assertexp(H,L,E,HP,LP,EP) :-
+	is_id(E,Name),
+  % Predicates can incorporate native object locations.
+  (is_location(Name)->makestr(EP,Name),HP=H,LP=L;
+  exp(H,L,E,HP,LP,EP)).
+
+assertexp(H,L,E,HP,LP,EP) :-
+	is_id(E,Name,_),
+  % Predicates can incorporate native object locations.
+  (is_location(Name)->makestr(EP,Name),HP=H,LP=L;
+  exp(H,L,['NAME',Name],HP,LP,EP)).
+
+% Special predicate extensions
+assertexp(H,L,E,HP,LP,EP) :- 
+	is_call(E,Func,Args),
+	length(Args,1),
+  Args=[Arg],
+	is_id(Func,FuncName),
+  % Dispatch based on the extension being called.
+  (FuncName='"jam#called"'->assertcall(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#obj"'->assertobj(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#str"'->assertstr(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#retval"'->assertretval(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#arg"'->assertarg(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#stringupper"'->assertstringupper(H,L,Args,HP,LP,EP);
+  false)))))).
+
+% Special predicate extensions
+assertexp(H,L,E,HP,LP,EP) :- 
+	is_call(E,Func,Args),
+	length(Args,2),
+	is_id(Func,FuncName),
+  % Dispatch based on the extension being called.
+  (FuncName='"jam#type"'->asserttype(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#set"'->assertset(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#get"'->assertget(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#regextest"'->assertregextest(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#stringcontains"'->assertstringcontains(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#stringstartswith"'->assertstringstartswith(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#getValue"'->assertgetval(H,L,Args,HP,LP,EP);
+  false))))))).
+
+% Assert that the return value has a certain value.
+assertretval(H,L,ValExp,HP,LP,EP) :-
+  assertexp(H,L,ValExp,H1,L1,ValRef),
+  ecgv(H1,L1,ValRef,H2,L2,Val),
+  symbolic(Sym,_),
+  heapprop(H2,'#Global','@ReturnVal',Sym,H3,_),
+  binary_fn('=',Val,Sym,EP),
+  HP=H3,LP=L2.
+
+% Assert that the specified value of the most recently called function.
+assertarg(H,L,IdxExp,HP,LP,EP) :-
+  assertexp(H,L,IdxExp,H1,L1,IdxRef),
+  ecgv(H1,L1,IdxRef,H2,L2,IdxVal),
+  symbolic(EP,_),
+  add_arg(IdxVal,EP),
+  HP=H2,LP=L2.
+
+% Get the uppercase string value.
+assertstringupper(H,L,E,HP,LP,EP) :-
+  assertexp(H,L,E,H1,L1,R),
+  ecgv(H1,L1,R,H2,L2,V),
+  ects(H2,L2,V,HP,LP,S),
+  %%% Could assert a functional relation.
+  (is_symbolic(S)->symbolic(EP,'String');
+  evaljs(format('String.prototype.toUpperCase.call(~a)',S),EP)).
+
+assertstr(H,L,E,HP,LP,EP) :-
+  assertexp(H,L,E,H1,L1,StrRef),
+  ecgv(H1,L1,StrRef,H2,L2,StrVal),
+  ects(H2,L2,StrVal,HP,LP,EP).
+
+assertobj(H,L,E,HP,LP,EP) :-
+  assertexp(H,L,E,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+  ecto(H2,L2,ObjVal,HP,LP,EP).
+
+% Get the function address represented by the expression, and 
+% assert that it has been invoked.
+assertcall(H,L,E,HP,LP,EP) :-
+  assertexp(H,L,E,H1,L1,FunRef),
+  ecgv(H1,L1,FunRef,H2,L2,FunVal),
+  ecto(H2,L2,FunVal,H3,L3,FunPtr),
+  symbolic(CallFun,'Object'),
+  add_call(CallFun),
+  % Add some extra facts that might be needed.
+  fnextra(H3,FunPtr,CallFun,H4,ExtraEq),
+  binary_fn('=',FunPtr,CallFun,FunEq),
+  binary_fn('and',FunEq,ExtraEq,EP),
+	HP=H4,LP=L3.
+  
+% Assert that an object member is being assigned to.
+assertset(H,L,Args,HP,LP,EP) :- 
+  length(Args,2),
+  Args=[ObjExp,MembExp],
+	assertexp(H,L,ObjExp,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+  ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
+	assertexp(H3,L3,MembExp,H4,L4,MembRef),
+	ecgv(H4,L4,MembRef,H5,L5,MembVal),
+  ects(H5,L5,MembVal,H6,L6,MembStr),
+  symbolic(AssnObj,'Object'),
+  symbolic(AssnMemb,'String'),
+  add_assign(AssnObj,AssnMemb),
+  % Add some extra facts that might be needed.
+  fnextra(H6,ObjPtr,AssnObj,H7,ExtraEq),
+	binary_fn('=',ObjPtr,AssnObj,ObjEq),
+	binary_fn('=',MembStr,AssnMemb,MembEq),
+	binary_fn('and',ObjEq,MembEq,MainEq),
+  binary_fn('and',MainEq,ExtraEq,EP),
+	HP=H7,LP=L6.
+
+% Assert that an object member is being assigned to.
+assertget(H,L,Args,HP,LP,EP) :- 
+  length(Args,2),
+  Args=[ObjExp,MembExp],
+  % Get the object pointer.
+	assertexp(H,L,ObjExp,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+  ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
+  % Get the member string.
+	assertexp(H3,L3,MembExp,H4,L4,MembRef),
+	ecgv(H4,L4,MembRef,H5,L5,MembVal),
+  ects(H5,L5,MembVal,H6,L6,MembStr),
+  % Generate a symbolic obj/memb pair to assert as being read.
+  symbolic(ReadObj,'Object'),
+  symbolic(ReadMemb,'String'),
+  add_read(ReadObj,ReadMemb),
+  % Add some extra facts that might be needed.
+  fnextra(H6,ObjPtr,ReadObj,H7,ExtraEq),
+  % Generate a conjunction asserting equality of the symbolic values
+  % to the corresponding arguments.
+	binary_fn('=',ObjPtr,ReadObj,ObjEq),
+	binary_fn('=',MembStr,ReadMemb,MembEq),
+	binary_fn('and',ObjEq,MembEq,MainEq),
+  binary_fn('and',MainEq,ExtraEq,EP),
+	HP=H7,LP=L6.
+
+asserttype(H,L,Args,HP,LP,EP) :-
+  length(Args,2),
+  Args=[IdExp,TypeExp],
+	assertexp(H,L,IdExp,H1,L1,IdRef),
+  % IdVal should almost always be symbolic at this point in the query.
+  ecgv(H1,L1,IdRef,H2,L2,IdVal),
+  % Likewise, this will probably be a symbolic type.
+  type(IdVal,ActualType),
+  assertexp(H2,L2,TypeExp,H3,L3,TypeRef),
+	ecgv(H3,L3,TypeRef,HP,LP,TypeStr),
+  % Unwrap the type name.
+  isstr(TypeStr),
+  makestr(CompType,TypeStr),
+  binary_fn('=',ActualType,CompType,EP).
+
+assertgetval(H,L,Args,HP,LP,EP) :-
+  length(Args,2),
+  Args=[ObjExp,MembExp],
+	assertexp(H,L,ObjExp,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+	ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
+	assertexp(H3,L3,MembExp,H4,L4,MembRef),
+  ecgv(H4,L4,MembRef,H5,L5,MembVal),
+  ects(H5,L5,MembVal,H6,L6,MembStr),
+	prototype(H6,ObjPtr,MembStr,H7,ProtPtr),
+	maps(H7,ProtPtr,ProtObj),
+	(getprop(ProtObj,MembStr,EP)->HP=H7,LP=L6;
+	symbolic(EP,_),heapprop(H7,ProtPtr,MembStr,EP,HP,_),LP=L6).
+
+% Check the string containment of arg1 in arg0.
+assertstringcontains(H,L,Args,HP,LP,EP) :-
+  length(Args,2),
+  Args=[StrExp,SubExp],
+  assertexp(H,L,StrExp,H1,L1,StrRef),
+  ecgv(H1,L1,StrRef,H2,L2,StrVal),
+  type(StrVal,StrType),
+  % Fail if either arg is cannot be a string.
+  (not equals(StrType,'String')->HP=H2,LP=L2,EP='false';
+  assertexp(H2,L2,SubExp,H3,L3,SubRef),
+	ecgv(H3,L3,SubRef,H4,L4,SubVal),
+  type(SubVal,SubType),
+  (not equals(SubType,'String')->HP=H4,LP=L4,EP='false';
+  % No case for concrete values, since that would be pointless.
+  binary_fn('StringContains',StrVal,SubVal,EP),
+  HP=H4,LP=L4)).
+
+% Check if regex arg0 matches value arg1.
+assertregextest(H,L,Args,HP,LP,EP) :-
+  length(Args,2),
+  Args=[RegExp,ValExp],
+  exp(H,L,RegExp,H1,L1,RegRef),
+  ecgv(H1,L1,RegRef,H2,L2,RegVal),
+  assertexp(H2,L2,ValExp,H3,L3,ValRef),
+	ecgv(H3,L3,ValRef,H4,L4,ValVal),
+  % The tested value is coerced to a string.
+  ects(H4,L4,ValVal,H5,L5,ValStr),
+  % No case for concrete values, since that would be pointless.
+  binary_fn('RegexTest',RegVal,ValStr,EP),
+  HP=H5,LP=L5.
+
+% Check the string prefix of arg1 in arg0.
+assertstringstartswith(H,L,Args,HP,LP,EP) :-
+  length(Args,2),
+  Args=[StrExp,SubExp],
+  assertexp(H,L,StrExp,H1,L1,StrRef),
+  ecgv(H1,L1,StrRef,H2,L2,StrVal),
+  type(StrVal,StrType),
+  % Fail if either arg is cannot be a string.
+  (not equals(StrType,'String')->HP=H2,LP=L2,EP='false';
+  assertexp(H2,L2,SubExp,H3,L3,SubRef),
+	ecgv(H3,L3,SubRef,H4,L4,SubVal),
+  type(SubVal,SubType),
+  (not equals(SubType,'String')->HP=H4,LP=L4,EP='false';
+  % No case for concrete values, since that would be pointless.
+  binary_fn('StringStartsWith',StrVal,SubVal,EP),
+  HP=H4,LP=L4)).
+
+% Literal types
+% Capture some type-related attributes of 
+% primitive values in the form of constraints.
+assertexp(H,L,E,H,L,E) :-
+	isnum(E),
+	binary_fn('HasType',E,'Number',IsNum),
+	constraint(IsNum).
+assertexp(H,L,E,H,L,E) :-
+	isbool(E),
+	binary_fn('HasType',E,'Boolean',IsBool),
+	constraint(IsBool).
+assertexp(H,L,E,H,L,E) :-
+	isstr(E),
+	binary_fn('HasType',E,'String',IsStr),
+	constraint(IsStr).
+assertexp(H,L,E,H,L,E) :-
+	null(E),
+	binary_fn('HasType',E,'Null',IsNull),
+	constraint(IsNull).
+
+% Equality
+assertexp(H,L,E,HP,LP,EP) :- 
+	is_eq(E,Left,Right),
+	assertexp(H,L,Left,H1,L1,LeftRef),
+	ecgv(H1,L1,LeftRef,H2,L2,LeftVal),
+	assertexp(H2,L2,Right,H3,L3,RightRef),
+	ecgv(H3,L3,RightRef,H4,L4,RightVal),
+	eqaux(H4,L4,LeftVal,RightVal,HP,EP),
+	LP=L4.
+
+% Non-equality
+assertexp(H,L,E,HP,LP,V) :- 
+	is_neq(E,NE),
+	assertexp(H,L,NE,HP,LP,NV),
+	unary_fn('not',NV,V).
+
+% Strict equality
+assertexp(H,L,E,HP,LP,EP) :- 
+	is_stricteq(E,Left,Right),
+	assertexp(H,L,Left,H1,L1,LeftRef),
+  ecgv(H1,L1,LeftRef,H2,L2,LeftVal),
+	assertexp(H2,L2,Right,H3,L3,RightRef),
+  ecgv(H3,L3,RightRef,H4,LP,RightVal),
+  % Add some extra facts that might be needed.
+  ((type(LeftVal,LT),LT='Object'->true;type(RightVal,RT),RT='Object')->
+  fnextra(H4,LeftVal,RightVal,HP,ExtraEq);HP=H4,ExtraEq='true'),
+	binary_fn('=',LeftVal,RightVal,Eq),
+  binary_fn('and',Eq,ExtraEq,EP).
+
+% Strict non-equality
+assertexp(H,L,E,HP,LP,V) :-
+	is_strictne(E,NE),
+	assertexp(H,L,NE,H1,L1,EV),ecgv(H1,L1,EV,HP,LP,NV),
+	unary_fn('not',NV,V).
+
+% ! operator
+assertexp(H,L,E,HP,LP,EP) :-
+  is_not(E,E1),
+  assertexp(H,L,E1,H1,L1,R1),
+  ecgv(H1,L1,R1,HP,LP,R2),
+  ectb(R2,R3),
+  (is_symbolic(R3)->unary_fn('not',R3,EP);
+  evalunary('!',R3,EP)).
+
+% - operator
+assertexp(H,L,E,HP,LP,EP) :-
+	is_neg(E,E1),
+	assertexp(H,L,E1,H1,L1,R1),
+	ecgv(H1,L1,R1,HP,LP,R2),
+	is_concrete(R2),
+	evalunary('-',R2,EP).
+assertexp(H,L,E,HP,LP,EP) :-
+	is_neg(E,E1),
+	exp(H,L,E1,H1,L1,R1),
+	ecgv(H1,L1,R1,HP,LP,R2),
+	is_symbolic(R2),
+	binary_fn('-','0',R2,EP).
+
+% &&
+assertexp(H,L,E,P,Q,V) :- 
+	is_and(E,LeftExp,RightExp),
+	assertexp(H,L,LeftExp,H1,L1,LeftVal),
+	assertexp(H1,L1,RightExp,P,Q,RightVal),
+	binary_fn('and',LeftVal,RightVal,V).
+
+% [E-Typeof-null]
+%exp(H,L,E,H1,L1,'&undefined') :- is_typeof(E,E1),exp(H,L,E1,H1,L1,R),isref(R),ref(R,LR,_),LR = '&null'.
+
+% [E-Typeof-reference]
+%exp(H,L,E,H2,L2,M) :- is_typeof(E,E1),exp(H,L,E1,H1,L1,R),isref(R),ref(R,LR,_),LR\='&null',atypeof(H1,L1,R,H2,L2,M).
+
+% [E-Typeof]
+%exp(H,L,E,H2,L2,M) :- is_typeof(E,E1),exp(H,L,E1,H1,L1,VA),ispureval(VA),atypeof(H1,L1,VA,H2,L2,M).
+
+% [E-@Typeof]
+%atypeof(H,L,E,HP,LP,M) :- ecgv(H,L,E,HP,LP,V),gettype(HP,V,M).
+
+% [E-Instof-Exc-obj]
+%instof(H,L,VA,PV,H,L,'&undefined') :- ispureval(VA),isprimval(PV),type(PV,TPV),TPV\='Object'.
+
+% [E-Instof-Exc-inst]
+% This rule seems to be unnecessary since @HasInstance is not really implemented as a property here, but as the ahasinstance predicate.
+% The assumption is that all things of type Object would have the same @HasInstance implementation, anyway.
+
+% [E-Instof-HasInst]
+%instof(H,L,VA,L1,H,L,B) :- ispureval(VA),isaddr(L1),type(L1,TL1),TL1 = 'Object',maps(H,L1,_),ahasinstance(H,L1,VA,_,B),isbool(B).
+
+% [E-Instof-prot]
+% The rule assumes that @HasInstance can only return a Boolean or throw an exception.
+% We are avoiding exceptions for now, so we simply say that the result is not Boolean, and let @HasInstance do what it wants.
+% instof(H,L,VA,L1,HP,L,X) :- ispureval(VA),isaddr(L1),type(L1,TL1),TL1 = 'Object',maps(H,L1,O),ahasinstance(H,L1,VA,HP,X),not isbool(X).

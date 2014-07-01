@@ -1,0 +1,79 @@
+
+% Object constructor
+aexe(H,_,'#Object',This,Args,H,This) :-
+	length(Args,0).
+
+aexe(H,_,'#Object',This,Args,H,This) :-
+	Args=[X|_],
+	type(X,'Object').
+	%%% Copy or alias?
+
+aexe(H,L,'#Object',_,Args,HP,Ret) :- 
+	Args=[X|_],
+	type(X,T),
+	% Since T isn't used further down,
+	% it's safe to just check for one
+	% of these types.
+	(equals(T,'Number')->true;
+	(equals(T,'String')->true;
+	equals(T,'Boolean'))),
+	toobject(H,L,X,HP,Ret).
+
+aexe(H,_,'#Object',This,Args,H,This) :- 
+	Args=[X|_],
+	type(X,T),
+	(equals(X,'Null')->true;equals(T,'Undefined')).
+
+% Object.getPrototypeOf
+% TODO throw
+aexe(H,_,'#Object#getPrototypeOf',_,Args,H,'&undefined') :- 
+	Args=[X|_],
+	not type(X,'Object').
+
+aexe(H,_,'#Object#getPrototypeOf',_,Args,H,P) :- 
+	Args=[X|_],
+	type(X,'Object'),
+	maps(H,X,O),
+	hasprop(O,'@Prototype',P).
+
+% Object.prototype.toString
+aexe(H,L,'#Object#prototype#toString',This,_,HP,V) :-
+	toobject(H,L,This,HP,L1),
+	maps(HP,L1,O),
+	hasprop(O,'@Class',Class),
+	unmakestr(Class,V0),
+	concat_atom(['[object ',V0,']'],V1),
+	makestr(V1,V).
+
+unmakestr(X,Y) :- 
+	atom_codes(X,NX),
+	NX=[34|NXP],
+	unmakestr_aux(NXP,NY),
+	atom_codes(Y,NY).
+
+unmakestr_aux([34],[]).
+unmakestr_aux([H|T],[H|TP]) :- unmakestr_aux(T,TP).
+
+% Object.prototype.valueOf
+% TODO host objects
+aexe(H,L,'#Object#prototype#valueOf',This,_,HP,V) :- toobject(H,L,This,HP,V).
+
+% Object.prototype.isPrototypeOf
+aexe(H,_,'#Object#prototype#isPrototypeOf',_,Args,H,'false') :-
+	Args=[X|_],
+	not type(X,'Object').
+
+aexe(H,L,'#Object#prototype#isPrototypeOf',This,Args,HP,P) :-
+	Args=[V|_],
+	toobject(H,L,This,HP,L1),
+	maps(HP,V,OV),
+	hasprop(OV,'@Prototype',OVP),
+	isprotof_aux(HP,L1,OVP,P).
+
+isprotof_aux(_,_,'&null','false').
+isprotof_aux(_,L1,L1,'true').
+isprotof_aux(H,L1,V,P) :- 
+	maps(H,V,O),
+	hasprop(O,'@Prototype',V1),
+	isprotof_aux(H,L1,V1,P).
+

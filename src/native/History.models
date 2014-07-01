@@ -1,0 +1,19 @@
+
+% window.history.constructor
+aexe(H,_,'#History',This,_,H,This) :- always(H),always(This).
+
+%%% How to model these, since they'll destroy the whole execution
+%%% context if successful.
+
+% window.history.back
+aexe(H,_,'#History#prototype#back',_,_,H,V) :- always(H),V='&undefined'.
+
+% window.history.forward
+aexe(H,_,'#History#prototype#forward',_,_,H,V) :- always(H),V='&undefined'.
+
+% window.history.go
+aexe(H,L,'#History#prototype#go',_,Args,HP,V) :-
+	Args=[Arg|_],
+	ectn(H,L,Arg,HP,_,ArgN),
+	always(ArgN),
+	V='&undefined'.

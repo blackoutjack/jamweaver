@@ -1,0 +1,59 @@
+--- closure-orig/lib/rhino/src/org/mozilla/javascript/TokenStream.java	2013-08-19 15:26:58.280335368 -0500
++++ closure/lib/rhino/src/org/mozilla/javascript/TokenStream.java	2014-01-22 21:41:41.456405910 -0600
+@@ -144,6 +144,9 @@
+             Id_throws        = Token.RESERVED,  // ES3 only
+             Id_transient     = Token.RESERVED,  // ES3 only
+             Id_try           = Token.TRY,
++            // JAM begin
++            Id_transaction   = Token.TRANSACTION,
++            // JAM end
+             Id_volatile      = Token.RESERVED;  // ES3 only
+ 
+         int id;
+@@ -239,10 +242,17 @@
+                 else if (c=='p') { X="protected";id=Id_protected; }
+                 else if (c=='t') { X="transient";id=Id_transient; }
+                 break L;
+-            case 10: c=s.charAt(1);
+-                if (c=='m') { X="implements";id=Id_implements; }
+-                else if (c=='n') { X="instanceof";id=Id_instanceof; }
++            //case 10: c=s.charAt(1);
++            //    if (c=='m') { X="implements";id=Id_implements; }
++            //    else if (c=='n') { X="instanceof";id=Id_instanceof; }
++            //    break L;
++            // JAM begin
++            case 10: c=s.charAt(2);
++                if (c=='p') { X="implements";id=Id_implements; }
++                else if (c=='s') { X="instanceof";id=Id_instanceof; }
++                else if (c=='t') { X="introspect";id=Id_transaction; }
+                 break L;
++            // JAM end
+             case 12: X="synchronized";id=Id_synchronized; break L;
+             }
+             if (X!=null && X!=s && !X.equals(s)) id = 0;
+@@ -317,6 +327,13 @@
+                 }
+             } else {
+                 identifierStart = Character.isJavaIdentifierStart((char)c);
++                // JAM begin
++                // Allow # characters denoting native locations and
++                // ` characters denoting wild cards.
++                if (!identifierStart && (c == '#' || c == '`')) {
++                  identifierStart = true;
++                }
++                // JAM end
+                 if (identifierStart) {
+                     stringBufferTop = 0;
+                     addToString(c);
+@@ -358,6 +375,11 @@
+                                 return Token.ERROR;
+                             }
+                         } else {
++                            // JAM begin
++                            // Allow # characters within identifiers.
++                            if (c == '#') {
++                            } else
++                            // JAM end
+                             if (c == EOF_CHAR || c == BYTE_ORDER_MARK
+                                 || !Character.isJavaIdentifierPart((char)c))
+                             {

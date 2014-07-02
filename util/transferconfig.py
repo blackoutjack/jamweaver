@@ -114,7 +114,7 @@ jsqrcodeClosureSpec = {
 }
 jsqrcodeProcessedSpec = {
   'beginafter': 'function v144() {',
-  'endbefore': ['if(v238) {', 'if(v241) {'],
+  'endbefore': ['if(v239) {', 'if(v242) {'],
   'matchall': False,
   'indent': 4
 }

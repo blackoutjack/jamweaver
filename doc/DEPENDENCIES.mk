@@ -109,7 +109,7 @@ wali:
 	# The following uses SSH, requiring a public key setup.
 	git clone git@github.com:WaliDev/WALi-OpenNWA.git wali
 	# This is to fix a conflict in defines.
-	sed -i 's/\'BOOST_NO_DEFAULTED_FUNCTIONS\'/#\'BOOST_NO_DEFAULTED_FUNCTIONS\'/' wali/SConstruct
+	sed -i "s/'BOOST_NO_DEFAULTED_FUNCTIONS'/#'BOOST_NO_DEFAULTED_FUNCTIONS'/" wali/SConstruct
 	scons -C wali
 	scons -C wali addons
 

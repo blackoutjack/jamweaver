@@ -104,10 +104,12 @@ gperftools:
 	mv gperftools-2.1.tar.gz packages
 
 # Install this if you have the development package.
-wali: boost
-	git clone git://github.com/WaliDev/WALi-OpenNWA.git wali
-	# Use the following for SSH.
-	#git clone git@github.com:WaliDev/WALi-OpenNWA.git
+wali:
+	if [ ! -d "$(JAMPKG)/boost" ]; then echo "Please build boost first."; exit 1; fi;
+	# The following uses SSH, requiring a public key setup.
+	git clone git@github.com:WaliDev/WALi-OpenNWA.git wali
+	# This is to fix a conflict in defines.
+	sed -i 's/\'BOOST_NO_DEFAULTED_FUNCTIONS\'/#\'BOOST_NO_DEFAULTED_FUNCTIONS\'/' wali/SConstruct
 	scons -C wali
 	scons -C wali addons
 

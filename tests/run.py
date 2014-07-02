@@ -17,17 +17,17 @@ from util import get_base
 from util import get_exp_path
 from util import overwrite_expected
 
-SKIP = True
+#SKIP = True
 def load_testcases(from_dir, default_policy=None):
   cases = []
   paths = load_sources(from_dir, '.js', '.exp.js')
   for flpath in paths:
     base = get_base(flpath)
 
-    global SKIP
-    if base.startswith("sms2-"):
-      SKIP = False
-    if SKIP: continue
+    #global SKIP
+    #if base.startswith("sms2-"):
+    #  SKIP = False
+    #if SKIP: continue
     #if base != "sunspider": continue
 
     # Find any applicable policy files.

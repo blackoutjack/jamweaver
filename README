@@ -1,68 +1,86 @@
 ##### About #####
 
 This repository contains the files constituting the JavaScript Model-
-  Checker, a.k.a. JAM. This project is being built maintained by Rich
-  Joiner (joiner@cs.wisc.edu) at the University of Wisconsin-Madison.
-  The idea was concieved and prototyped by Matt Fredrikson, also of
-  UW-Madison. This work is done under the advisement of Professors
-  Tom Reps and Somesh Jha.
+Checker, a.k.a. JAM. This project is being built and maintained by Rich
+Joiner (joiner@cs.wisc.edu) at the University of Wisconsin-Madison.
+The idea was concieved and prototyped by Matt Fredrikson, also of
+UW-Madison. This work is done under the advisement of Professors
+Tom Reps and Somesh Jha.
 
-The latest version of the repository can be obtained via SVN from the
-  following address, with the proper credentials.
+The latest version of the repository can be obtained via the Git
+repository hosted at the following address.
 
-svn+ssh://velveeta/p/wash/private/implementations/crash/jam-release
+https://github.com/blackoutjack/jamweaver
 
 ##### Getting started #####
 
-For setup issues, review INSTALL.bash and DEPENDENCIES.mk within the
-  doc/ directory. Once things are set up, see doc/RUNNING for running
-  tests, and doc/POLICIES for formulating policies.
+As of yet, the dependencies and build scripts are specific to the Ubuntu
+Linux platform. The system has been developed on Ubuntu 12.04 with Linux
+kernel 3.2.0-65-generic, though other versions of this OS will likely
+work fine.
 
-The JAM analysis creates JavaScript files instrumented with
-  transaction blocks; to run these programs, you'll need to build a
-  specially modified version of Firefox that supports transactions.
-  The required files and instructions to do that can be obtained via
-  the SVN repository at the following address.
+For dependency installation, review INSTALL.bash and DEPENDENCIES.mk in
+the doc/ directory. INSTALL.bash handles environmental setup (installing
+packages with apt-get and setting the JAMPKG environment variable,
+e.g.). Then DEPENDENCIES.mk can be invoked as a makefile to download and
+install 3rd-party resources. (This currently needs to be done from the
+$JAMPKG directory.)
 
-svn+ssh://velveeta/p/wash/private/implementations/crash/jamscript-release
+Once the environment and dependencies are in place, you can build the
+system by invoking ``make'' (within $JAMPKG). See doc/RUNNING for
+running the included tests, and doc/POLICIES for formulating policies.
+
+The JAM analysis creates JavaScript files instrumented with transaction
+blocks; to run these programs, you'll need to build a specially modified
+version of Firefox that supports transactions. The required files and
+instructions to do that can be obtained via the Git repository hosted at
+the following address.
+
+https://github.com/blackoutjack/jamscript
+
+There is also a suite of pre-woven applications (the output of the
+weaver) that can be obtained from here.
+
+https://github.com/blackoutjack/jamtests
 
 ##### Files #####
 
 The directory structure of JAM is briefly described below.
 
 doc/: Documentation for installing and running JAM.
+  INSTALL.bash: instructions/script for environment setup
   DEPENDENCIES.mk: a script to install third-party dependencies
   RUNNING: instructions for invoking JAM
   POLICIES: description of policy structure and language
-  TODO: known stuff to be worked on
-  INSTALL.bash: instructions/script for installing from scratch
 
 tests/: Contains various test cases and benchmarks for JAM, as well as
   scripts for running them automatically. See doc/RUNNING for details.
 
+util/: Some ancillary scripts, mostly for generating collecting and
+  analyzing results and performance statistics.
+
 cache/: This (initially empty) directory will be populated with a XSB
   query cache, so that subsequent invocations of JAM will avoid calls
   to XSB that have previously been evaluated. The cache can be cleared
-  by running "make cacheclean".
+  by running ``make cacheclean.''
 
 output/: This directory will contain the output of a JAM analysis. A
   new subdirectory prefixed with the name of the input JavaScript file
   will be created for each run. For example, after running JAM on
   snote.js for the first time, the output can be found in
   output/snote-0. The subdirectories will contain much more information
-  when running JAM with the -g flag.
+  when running JAM with the -g (debug) flag.
 
-bin/: This contains the executable files included with JAM. See
-  doc/RUNNING for more information.
+bin/: Contains the executable files for running the JAM analysis. (These
+  are created by ``make.'') See doc/RUNNING for more information.
 
-lib/: Contains binaries of the various XSB and C modules used by JAM.
-
-wali/: This directory houses the prebuilt WALi/OpenNWA binaries. Also
-  included is source code for the buddy BDD library. See
-  INSTALL.bash for instuctions on building that piece.
+lib/: Contains binaries of the various XSB and C modules (also created
+  by ``make'') used by JAM.
 
 closure-patch/: This directory contains patches for the Google closure
-  tool that enables it to parse and manipulate the transaction
-  enforcement mechanism that is the current target of the analysis.
+  tool that enables it to parse and manipulate the transactional
+  instrumentation that is woven by the analysis. These patches are
+  automatically applied when ``make -f doc/DEPENDENCIES.mk closure'' is
+  invoked.
 
  

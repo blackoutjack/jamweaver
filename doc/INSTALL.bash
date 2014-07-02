@@ -13,13 +13,9 @@
 
 # Set the following environment variables in your login script.
 export JAMPKG=${JAMPKG-$PWD/jam}
-
-# This is just used when accessing the SVN repository.
-SVNUSERNAME=joiner
  
 
 # Install some baseline apps.
-sudo apt-get -y install subversion
 sudo apt-get -y install vim
 sudo apt-get -y install emacs23-nox
 sudo apt-get -y install lynx
@@ -63,13 +59,13 @@ sudo apt-get -y install libunwind7-dev
 # Choose version 7 of Java; you will be presented with a list of
 # options; choose openjdk 7.
 sudo update-alternatives --config javac
-sudo update-alternatives --config javac
+sudo update-alternatives --config java
 
 # Get the JAM release binaries.
 JAMPARENT=${JAMPKG%/*}
 cd $JAMPARENT
-svn co svn+ssh://$SVNUSERNAME@velveeta.cs.wisc.edu/p/wash/private/implementations/crash/jam-release jam
-cd jam
+git clone git@github.com:blackoutjack/jamweave.git $JAMPKG
+cd $JAMPKG
 
 # Set up some environment variables and aliases.
 cat >> ~/.bashrc.local <<EOF

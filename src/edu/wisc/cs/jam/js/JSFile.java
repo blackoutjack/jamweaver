@@ -77,8 +77,8 @@ public class JSFile implements edu.wisc.cs.jam.SourceFile {
         // Disable loading of natives for testing/profiling purposes.
         externList = new ArrayList<com.google.javascript.jscomp.SourceFile>();
       }
-      com.google.javascript.jscomp.SourceFile externFile = com.google.javascript.jscomp.SourceFile.fromFile(JAMConfig.EXTERN_FILE);
-      externList.add(externFile);
+      //com.google.javascript.jscomp.SourceFile externFile = com.google.javascript.jscomp.SourceFile.fromFile(JAMConfig.EXTERN_FILE);
+      //externList.add(externFile);
     } catch (IOException ex) {
       System.err.println("Error loading externs: " + ex.getMessage());
     }

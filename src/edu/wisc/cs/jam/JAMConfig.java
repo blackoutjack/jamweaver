@@ -15,7 +15,7 @@ public class JAMConfig {
   public static final String INTROSPECTOR_LIST = "introspectors";
 
 	// File containing the instrumentation function declaration.
-	public static final String EXTERN_FILE = JAMPKG + "/lib/externs.js";
+	//public static final String EXTERN_FILE = JAMPKG + "/lib/externs.js";
 
   public static final String INFO_FILENAME = "info.txt";
 

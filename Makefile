@@ -103,7 +103,7 @@ NATIVE_DEFN=$(wildcard $(NATIVE_DIR)/*.models)
 NATIVE_IN=generate.py base.P all.props fbase.P functions.list types.list varargs.list symprops.list base.yic 
 NATIVE_DEP=$(NATIVE_IN:%=$(NATIVE_DIR)/%) $(NATIVE_DEFN)
 
-all: jam semantics nwa $(BINDIR)/externs.zip
+all: jam semantics nwa $(BINDIR)/externs.zip jamutil
 
 jam:
 	mkdir -p $(BINDIR)

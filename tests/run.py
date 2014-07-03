@@ -230,7 +230,7 @@ def main():
   parser = OptionParser(usage="%prog")
   parser.add_option('-b', '--benchmarks', action='store_true', default=False, dest='benchmarks', help='analyze benchmark applications')
   parser.add_option('-m', '--micro', action='store_true', default=False, dest='micro', help='analyze microbenchmark applications')
-  parser.add_option('-i', '--interpreter', action='store_true', default=False, dest='interpreter', help='test semantics as an interpreter (currently unsupported)')
+  #parser.add_option('-i', '--interpreter', action='store_true', default=False, dest='interpreter', help='test semantics as an interpreter (currently unsupported)')
   parser.add_option('-e', '--overwrite', action='store_true', default=False, dest='overwrite', help='overwrite expected output')
   #parser.add_option('-s', '--semantics', action='store_true', default=False, dest='semantics', help='test semantics')
   parser.add_option('-g', '--debug', action='store_true', default=False, dest='debug', help='generate debug output')
@@ -244,9 +244,9 @@ def main():
   if opts.benchmarks or opts.micro or opts.interpreter:
     allmods = False
 
-  if opts.interpreter:
-    print >> sys.stderr, "Interpreter tests are currently out-of-order."
-    #run_interpreter_tests(opts.debug)
+  #if opts.interpreter:
+  #  print >> sys.stderr, "Interpreter tests are currently out-of-order."
+  #  run_interpreter_tests(opts.debug)
   if allmods or opts.micro:
     run_microbenchmarks(opts.debug, opts.overwrite)
   if allmods or opts.benchmarks:

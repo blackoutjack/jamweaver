@@ -1,0 +1,133 @@
+
+##### Overview #####
+
+This file describes the various utilities that were developed to analyze
+output from the JAM policy weaver and JAMScript browser. The figures
+mentioned here reference the paper ``Efficient Runtime Enforcement
+Techniques for Policy Weaving'' by Joiner et al.
+
+##### Application information #####
+
+Figure 8 is a table containing the name and size (in AST nodes) of each
+benchmark application, along with a description of the policy, number
+of transactions woven and number of callsites indirected. The body of
+this table is created by the script found at util/generate_tables.py.
+This script scans the output/ directory and loads the information for
+columns 2, 4 and 5 from the info.txt file. (Column 3, the policy
+description, is hard-coded.) To recreate the entire table, the full
+benchmark suite must be run to accumulate the info.txt files.
+
+The script to generate the tables is run as follows. (The
+transferconfig.py file is used for esoteric reasons.)
+
+./util/generate_tables.py util/transferconfig.py
+
+To generate a human-readable table (rather than LaTeX format), use the
+-f option.
+
+./util/generate_tables.py util/transferconfig.py -f human
+
+##### Policy translation #####
+
+The table in Figure 11 contains a comparison of the size of the input
+policy (specified declaratively in a specialized dialect of JavaScript)
+to the size of the generated policy file (in standard executable
+JavaScript). The number of AST nodes is reported. As with the
+application information described above, this table is created by
+util/generate_tables.py from the info.txt files found in the output/
+directory after the benchmark suite is run. (The same command shown
+above is used.)
+
+##### Performance #####
+
+Figures 9 and 10 are log-log scatterplots comparing the in-browser
+execution time of programs protected with a combination of transactions
+and callsite indirection to that of i) programs protected with
+whole-program transactions and ii) unprotected programs. 
+
+Several steps are needed to generate these plots. The first two steps
+are obviated because pre-woven results are already available in the
+jamtests repository.
+
+1) Run the JAM weaver over the benchmark test suite.
+
+./tests/run.py -b
+
+2) Collect the results, insert profiling instrumentation, and transfer
+them to the jamtests repository. (Some modifications may be needed to
+transferconfig.py.)
+
+./util/transfer_results.py -f util/transferconfig.py
+
+3) Open the JAMScript-enhanced browser, with all output redirected to
+a file.
+
+./jamscript/mozilla-esr17/obj-release/browser/dist/bin/firefox &> perf.txt
+
+4) Run the automated test suite by accessing the URL below. By default,
+4 variants of each application are loaded:
+  optimized.js: This primes the browser by loading static files, etc.
+  original.js: The unprotected application
+  transformed.js: The woven, "fine-grained," output of the JAM weaver
+  original.modular.js: The program with a "coarse-grained" transaction
+See README in the jamtests repository for more information on the
+automated browser tests.
+
+http://jamscript/bench/?auto=1&autowait=5000
+
+5) Let the tests run overnight to collect at least 4 or 5 readings for
+each application variant.
+
+6) Run the process_results.py script with the file containing the
+performance statistics as input. Configuration in util/resultsconfig.py
+is loaded automatically; that file may need to be altered to match
+your setup.
+
+./util/process_results.py perf.txt
+
+As data is loaded, this script will look for and print certain outliers.
+The plots are generated as the following files.
+
+  Figure 9: overheadratiobyoriginal-log.pdf
+  Figure 10: wovenbyoriginal-log.pdf
+
+The data reported in the paper is printed at the end. The provenance of
+these numbers is shown below.
+
+  ``We measured an overall 25% speed-up for program actions instrumented
+  with fine-grained transactions versus coarse-grained transactions when
+  summarized by the geometric mean.''
+  == 1 - GEOMETRIC MEAN (all, fine-grained / coarse-grained)
+
+  ``This breaks into a 12% speed-up for page-load actions, which
+  includes the time taken to load the JavaScript policy object and the
+  JAMScript library,''
+  == 1 - GEOMETRIC MEAN (load, fine-grained / coarse-grained)
+
+  ``and a 37% speed-up for other program actions.''
+  == 1 - GEOMETRIC MEAN (other, fine-grained / coarse-grained)
+
+  ``When summarized by the geometric mean, the measured execution
+  time for actions other than the initial page load protected by fine-
+  grained transactions is 166% of the time for the unprotected pro-
+  gram.''
+  == 100 * GEOMETRIC MEAN (other, fine-grained / unprotected)
+
+  ``This number can be compared to 265% for coarse-grained
+  transactions.''
+  == 100 * GEOMETRIC MEAN (other, coarse-grained / unprotected)
+  
+  ``Loading the page took 35.6 times longer for the instrumented
+  programs (both fine-grained and coarse-grained), which must load the
+  policy object and JAMScript library prior to the program itself.''
+  == GEOMETRIC MEAN (load, fine-grained / unprotected)
+  == GEOMETRIC MEAN (load, coarse-grained / unprotected)
+
+  ``However, the absolute time represented by this slow-
+  down ranges from 6.7ms to 33.5ms, which is negligible to human
+  perception.''
+  == MIN INIT TIME and MAX INIT TIME
+
+
+
+

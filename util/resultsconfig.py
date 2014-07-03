@@ -12,6 +12,7 @@ from util import load_sources
 VARIANTS = ['original', 'original.modular', 'transformed']
 VARIANT_DISPLAY = ['unprotected', 'coarse-grained', 'fine-grained']
 RESULTS_SOURCE = os.path.join(PERFDIR, 'times');
+#TEST_DIR = 'jamscript/tests/apps/'
 TEST_DIR = 'jamscript/tests/browser/bench/'
 PROFILE_MARKER = "<<<<< Profile: "
 PROFILE_MARKER_TAIL = " >>>>>"

@@ -1,3 +1,4 @@
+// http://www.gnucitizen.org/blog/javascript-port-scanner/
 var AttackAPI = {
   version: '0.1',
   author: 'Petko Petkov (architect)',

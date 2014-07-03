@@ -13,10 +13,20 @@ import filecmp
 import operator
 import math
 
-DISABLED = ['sms2', 'sms2-template', 'txjs', 'kraken-results', 'jssec', 'jssec-bad', 'jsbeautifier', 'jsqrcode-mal', 'snote-mini']
+DISABLED = [
+  'sms2', 'sms2-template', 'txjs', 'kraken-results', 'jssec',
+  'jssec-bad', 'jsbeautifier', 'jsqrcode-mal', 'snote-mini',
+  'kraken-mega', 'kraken-mega2', 'sunspider-mega', 'sunspider-mega2',
+  'jsbench-yahoo-safari-urem', 'jsbench-yahoo-firefox-urem',
+  'jsbench-yahoo-chrome-urem', 'jsbench-twitter-chrome-urem',
+  'octane-pdf', 'octane-zlib', 'octane-zlib-eval', 'octane-eb',
+  'octane-gb', 'octane-mandreel', 'octane-codeload',
+  'octane-typescript', 'octane', 'googlemaps', 'jsqrcode-get',
+]
 
 POLDESCS = {
   'squirrelmail': 'disallow access to src property',
+  'squirrelmail-bad': 'disallow access to src property',
   'doubleclick-loader': 'prevent navigation',
   'userprefs': 'disallow appendChild and eval',
   'sunspider': 'disallow XMLHttpRequest.open',
@@ -38,6 +48,12 @@ POLDESCS = {
   'adsense': 'isolate document from cookie',
   'flickr': 'prevent external pop-up creation',
   'puzzle': 'prevent creation of script elements',
+  'jswidgets-menu': 'prevent creation of script elements',
+  'portscanner': 'disallow setting src property',
+  'jsbench-google-chrome-urem': 'disallow XMLHttpRequest.open',
+  'jsbench-amazon-chrome-urem': 'disallow XMLHttpRequest.open',
+  'jsbench-facebook-chrome-urem': 'disallow XMLHttpRequest.open',
+  'phylojive': 'isolate document from cookie',
 }
 
 def geomeanPercent(vals):
@@ -53,6 +69,12 @@ def geomean(vals):
   return math.exp(tot / len(vals))
 
 def printTableRows(valsToPrint, sortRow, showSort=True, dec=1):
+  if FORMAT == "latex":
+    printLaTeXTableRows(valsToPrint, sortRow, showSort, dec)
+  else:
+    printHumanTableRows(valsToPrint, sortRow, showSort, dec)
+
+def printLaTeXTableRows(valsToPrint, sortRow, showSort=True, dec=1):
   # Output the rest in order of source lines.
   for vals in sorted(valsToPrint.values(), key=operator.itemgetter(sortRow)):
     # Remove the sorting column if specified to do so.
@@ -72,6 +94,49 @@ def printTableRows(valsToPrint, sortRow, showSort=True, dec=1):
         print str(val),
     print '\\\\'
 
+def printHumanTableRows(valsToPrint, sortRow, showSort=True, dec=1):
+  # Output a table header.
+  #hdrs = valsToPrint.keys()
+  #lens = []
+  #for hdr in hdrs:
+  #  lens.append(len(hdr))
+
+  lens = []
+  rows = []
+  # Output the rest in order of source lines.
+  sortedVals = sorted(valsToPrint.values(), key=operator.itemgetter(sortRow))
+  for vals in sortedVals:
+    # Remove the sorting column if specified to do so.
+    if not showSort: del vals[sortRow]
+    # Collect one row of the table.
+    row = []
+
+    i = 0
+    for val in vals:
+      # Initialize the max length array.
+      if len(lens) < i + 1:
+        lens.append(0)
+        
+      if type(val) is float:
+        fmt = "%." + str(dec) + "f"
+        disp = fmt % val
+      else:
+        disp = str(val)
+      l = len(disp)
+      if l > lens[i]:
+        lens[i] = l
+      row.append(disp)
+      i += 1
+    rows.append(row)
+  
+  rowfmt = ""
+  for l in lens:
+    rowfmt += "%-" + str(l) + "s "
+
+  #print rowfmt % tuple(hdrs)
+  for r in rows:
+    print rowfmt % tuple(r)
+
 def collect_results(results, srcdir, bases):
   # Assumes that directories within |srcdir| are of the form "app-iter",
   # where "iter" is a label to separate the results of multiple analyses
@@ -81,10 +146,10 @@ def collect_results(results, srcdir, bases):
 
   resultsdirs = cfg.sort_dirs(bases, resultsdirs)
   for app, dirlist in resultsdirs.iteritems():
-    if app == "jsqrcode-get":
-      continue
     if app == 'jsqrcode-call':
-      app = 'jsqrcode'
+      appkey = 'jsqrcode'
+    else:
+      appkey = app
 
     info = None
     for dirinfo in dirlist:
@@ -96,14 +161,14 @@ def collect_results(results, srcdir, bases):
       continue
     cntfile = os.path.join(srcdir, info['dir'], 'info.txt')
     if not os.path.isfile(cntfile):
-      cfg.warn("No count file found for app: %s %s" % (app, cntfile))
+      cfg.warn("No info file found for app: %s %s" % (app, cntfile))
       continue
       
-    if app in results:
-      cntinfo = results[app]
+    if appkey in results:
+      cntinfo = results[appkey]
     else:
       cntinfo = {}
-      results[app] = cntinfo
+      results[appkey] = cntinfo
 
     cntfl = open(cntfile, 'r')
     cnttxt = cntfl.readlines()
@@ -119,12 +184,15 @@ def generate_info_table(results):
   vals = {}
   sms2origtot = 0.0
   sms2txtot = 0.0
+  sms2indtot = 0.0
   sms2cnt = 0
-  for app, cnts in results.iteritems():
-    if app == "jsqrcode-get":
+  for appkey, cnts in results.iteritems():
+    if appkey in DISABLED:
       continue
-    if app in DISABLED:
-      continue
+    if appkey == 'jsqrcode':
+      app = 'jsqrcode-call'
+    else:
+      app = appkey
 
     origkey = app + ".original.js"
     if origkey not in cnts:
@@ -134,22 +202,28 @@ def generate_info_table(results):
 
     txkey = "transactions"
     if txkey not in cnts:
-      cfg.warn("Transaction count for original program not found: %s, %s" % (app, txkey))
+      cfg.warn("Transaction count not found: %s, %s" % (app, txkey))
       continue
     txcnt = int(cnts[txkey])
 
-    if app in POLDESCS:
-      poldesc = POLDESCS[app]
-    else:
-      print >> sys.stderr, "No description for policy: %s" % app
-      poldesc = ''
+    indkey = "dynamic-callsites-indirected"
+    if indkey not in cnts:
+      cfg.warn("Indirection count not found: %s, %s" % (app, indkey))
+      continue
+    indcnt = int(cnts[indkey])
 
-    if app.startswith("sms2-"):
+    if appkey.startswith("sms2-"):
       sms2origtot += origcnt
       sms2txtot += txcnt
+      sms2indtot += indcnt
       sms2cnt += 1
     else:
-      vals[app] = (app, origcnt, poldesc, txcnt)
+      if appkey in POLDESCS:
+        poldesc = POLDESCS[appkey]
+      else:
+        print >> sys.stderr, "No description for policy: %s" % appkey
+        poldesc = ''
+      vals[appkey] = (appkey, origcnt, poldesc, txcnt, indcnt)
 
   if sms2cnt > 0:
     if 'sms2-*' in POLDESCS:
@@ -157,7 +231,7 @@ def generate_info_table(results):
     else:
       print >> sys.stderr, "No description for policy: %s" % 'sms2-*'
       poldesc = ''
-    vals["sms2-*"] = ("sms2-*", sms2origtot / sms2cnt, poldesc, sms2txtot / sms2cnt)
+    vals["sms2-*"] = ("sms2-*", sms2origtot / sms2cnt, poldesc, sms2txtot / sms2cnt, sms2indtot / sms2cnt)
 
   print "Original program node count"
   printTableRows(vals, 1, True)
@@ -179,8 +253,8 @@ def generate_policy_table(results):
     basekey = "modular.policy.js"
     if basekey not in cnts:
       cfg.warn("Node count for base policy not found: %s, %s" % (app, basekey))
-    if app in DISABLED:
       continue
+    if app in DISABLED:
       continue
     basecnt = int(cnts[basekey])
 
@@ -223,6 +297,7 @@ def generate_tables(vals):
 def main():
   parser = OptionParser(usage="%prog config.py")
   parser.add_option('-v', '--verbose', action='store_true', default=False, dest='verbose', help='generate verbose output')
+  parser.add_option('-f', '--format', action='store', default='latex', dest='format', help='output format', metavar='latex|human (default:latex)')
 
   opts, args = parser.parse_args()
 
@@ -240,6 +315,8 @@ def main():
 
   global VERBOSE
   VERBOSE = opts.verbose
+  global FORMAT
+  FORMAT = opts.format.lower()
 
   results = {}
   for destdir, props in cfg.TARGETDIRS.iteritems():

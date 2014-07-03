@@ -1,21 +1,20 @@
 
-######## JAM setup #########
+##### JAM setup #####
 
 See the files doc/INSTALL.bash and doc/DEPENDENCIES.mk for setup
 instructions. Particularly important, check that the JAMPKG environment
 variable is pointing to the root directory of the checked-out
-jam-release repository.
+jamweaver repository.
 
 You can set up the following aliases in your login script to
 make invoking JAM easier.
 
 alias jam="java -Xms256m -Xmx4096m -jar $JAMPKG/bin/jam.jar"
-alias jamdbg="java -ea -Xms256m -Xmx4096m -jar $JAMPKG/bin/jam.jar -g -b -v 3"
-# %%% The utilities do not currently compile.
+alias jamdbg="java -ea -Xms256m -Xmx4096m -Xdebug -agentlib:jdwp=transport=dt_socket,address=localhost:9009,server=y,suspend=n -jar \$JAMPKG/bin/jam.jar -g -b -v 3"
 alias jamutil="java -jar $JAMPKG/bin/util.jar"
 
 
-######## Input to the analysis #########
+##### Input to the analysis #####
 
 JAM takes as input a JavaScript source file and one or more policy
 specifications. See the file doc/POLICIES for a description of how to
@@ -23,10 +22,10 @@ formulate policies. Requirements on the JavaScript file are described
 here.
 
 JAM is a full program analysis, and currently requires that all
-JavaScript source code is accumulated into one file. This can be done
-simply by concatenating the source code in any files included via
-<script> tags (both inline and targeted by the src attribute), in the
-order they appear in the HTML.
+JavaScript source code is accumulated into one file. This can often
+be done by simply concatenating the source code in any files included
+via <script> tags (both inline and targeted by the src attribute), in
+the order they appear in the HTML.
 
 If the application uses event handlers that are applied via HTML tags,
 these should be converted prior to the analysis to become part of the
@@ -38,15 +37,15 @@ script itself. This can be done as follows.
 
 document.getElementById("inp1").onclick = runSomething;
 
-...inserted at the bottom of the top-level code of the script. You would
+...appended to the end of the top-level code of the script. You would
 also remove the onclick attribute from the HTML tag.
 
-We hope to implement an automated preprocessing step a the beginning of
+We hope to implement an automated preprocessing step at the beginning of
 the JAM analysis that will identify all scripts in an HTML page and make
 these conversion for you, but this is not yet available.
 
 
-######## Running JAM #########
+##### Running JAM #####
 
 To analyze a JavaScript source file with regard to a JAM policy:
 jam source.js safe.policy
@@ -57,109 +56,75 @@ jamdbg source.js safe.policy
 Multiple policy files can be supplied:
 jam source.js p0.policy p1.policy p2.policy ...
 
-usage: java edu.wisc.cs.jam.JAM SRCFILE [POLFILE+ ...] [--appsuffix VAL] [--bddformat FMTID] [--help] [--retids] [-C] [-F] [-G] [-I] [-L] [-M] [-O] [-P] [-R THREADS] [-S] [-T THREADS] [-U] [-b] [-c] [-d FILE] [-e] [-f] [-g] [-i] [-j] [-k PREDICATES] [-l] [-m] [-n] [-p MAX] [-r] [-s] [-t THREADS] [-v N] [-x] [-y]
- SRCFILE           : source file
- POLFILE+          : policy file(s)
- --appsuffix VAL   : Append this suffix to the application name in output files
- --bddformat FMTID : 0=sat paths, 1=tree, 2=both (debug)
- --help            : display this message
- --retids          : Embed return symbol ids in automata (can be expensive)
- -C                : Output node count for various artifacts
- -F                : Forward analysis: add and analyze checks one-by-one
- -G                : Log semantic queries (subsumed by -g)
- -I                : Skip the call-site transformation
- -L                : Only seed predicates locally
- -M                : Output memory usage information
- -O                : Skip final optimization of instrumented code
- -P                : Do intraprocedural analysis only
- -R THREADS        : Number of threads to spawn for path analyses
- -S                : Output intermediate source with each new counter-example
- -T THREADS        : Number of threads to spawn for finding counter-examples
- -U                : Make no assumptions about the initial environment
- -b                : Report statements the language model can't evaluate
- -c                : Use the Cartesian abstraction
- -d FILE           : Build the program model with predicates found in this file
- -e                : Suppress time output to stderr and in queries
- -f                : Do ancillary analysis, but no instrumentation
- -g                : Output debugging information
- -i                : Access OpenNWA as a library instead of a separate process
- -j                : Use the Disjoint abstraction
- -k PREDICATES     : Maximum predicate cube size
- -l                : Analyze incrementally over seeded cubes
- -m                : Stand-alone mode: assume functions will not be called from
-                     outside this program
- -n                : Don't output final source to STDOUT
- -p MAX            : Maximum number of learned predicates (-1 = unlimited)
- -r                : Use bit-vector relations rather than BDDs
- -s                : Skip the preprocessing step
- -t THREADS        : Number of threads to spawn for semantic queries
- -v N              : Amount of information output to STDERR (0-4,default:1)
- -x                : Don't load standard externs
- -y                : Skip type inference
+usage: java edu.wisc.cs.jam.JAM SRCFILE [POLFILE+ ...] [--appsuffix VAL] [--bddformat FMTID] [--help] [--noindirect] [--querytimeout SECONDS] [--retids] [-C] [-F] [-G] [-I] [-L] [-M] [-O] [-P] [-R THREADS] [-S] [-T THREADS] [-U] [-b] [-c] [-d FILE] [-e] [-f] [-g] [-i] [-j] [-k PREDICATES] [-l] [-m] [-n] [-p MAX] [-r] [-s] [-t THREADS] [-v N] [-x] [-y]
+ SRCFILE                : source file
+ POLFILE+               : policy file(s)
+ --appsuffix VAL        : Append this suffix to the application name in output
+                          files
+ --bddformat FMTID      : 0=sat paths, 1=tree, 2=both (debug)
+ --help                 : display this message
+ --noindirect           : Use direct introspection rather than indirection
+ --querytimeout SECONDS : Timeout (s) for semantics queries
+ --retids               : Embed return symbol ids in automata (can be expensive)
+ -C                     : Output node count for various artifacts
+ -F                     : Forward analysis: add and analyze checks one-by-one
+ -G                     : Log semantic queries (subsumed by -g)
+ -I                     : Skip the call-site transformation
+ -L                     : Only seed predicates locally
+ -M                     : Output memory usage information
+ -O                     : Skip final optimization of instrumented code
+ -P                     : Do intraprocedural analysis only
+ -R THREADS             : Number of threads to spawn for path analyses
+ -S                     : Output intermediate source with each new counter-examp
+                          le
+ -T THREADS             : Number of threads to spawn for finding counter-example
+                          s
+ -U                     : Make no assumptions about the initial environment
+ -b                     : Report statements the language model can't evaluate
+ -c                     : Use the Cartesian abstraction
+ -d FILE                : Build the program model with predicates found in this
+                          file
+ -e                     : Suppress time output to stderr and in queries
+ -f                     : Do ancillary analysis, but no instrumentation
+ -g                     : Output debugging information
+ -i                     : Access OpenNWA as a library instead of a separate
+                          process
+ -j                     : Use the Disjoint abstraction
+ -k PREDICATES          : Maximum predicate cube size
+ -l                     : Analyze incrementally over seeded cubes
+ -m                     : Stand-alone mode: assume functions will not be called
+                          from outside this program
+ -n                     : Don't output final source to STDOUT
+ -p MAX                 : Maximum number of learned predicates (-1 = unlimited)
+ -r                     : Output .dot files for BDDs
+ -s                     : Skip the preprocessing step
+ -t THREADS             : Number of threads to spawn for semantic queries
+ -v N                   : Amount of information output to STDERR (0-4,default:1)
+ -x                     : Don't load standard externs
+ -y                     : Skip type inference
 
-######## Running automated tests ########
+##### Running test suites #####
 
 The tests/ directory contains a framework for running a series of test
 suites. Test cases typically include a .exp.js file containing the 
 expected output, which is compared by the framework against the actual
-output. Running the micro-benchmarks is done with the following command.
+output. Running the microbenchmarks is done with the following command.
+The microbenchmark suite typically takes around 0.75 hours to complete.
 
 $JAMPKG/tests/run.py -m
 
-Larger benchmark tests (which now incorporates the QR Code and Secure
-Note applications) are run with the -b option.
+Larger benchmark tests are run with the -b option. The entire benchmark
+suite typically takes 2-4 days to complete, depending on the resources
+allotted to the JAM process.
 
 Command line options:
- -h, --help         show this help message and exit
- -b, --benchmarks   analyze benchmark applications
- -m, --micro        analyze microbenchmark applications
- -i, --interpreter  test semantics as an interpreter (currently unsupported)
- -g, --debug        generate debug output
+  -h, --help         show this help message and exit
+  -b, --benchmarks   analyze benchmark applications
+  -m, --micro        analyze microbenchmark applications
+  -e, --overwrite    overwrite expected output
+  -g, --debug        generate debug output
 
-
-######## Retrieving native locations ########
-%%% As mentioned above, the utilities don't currently work.
-
-When specifying policies, you will often need to determine the symbolic
-address of a native construct, such as the object referenced (in a clean
-JavaScript environment) by the "document" identifier, or function
-objects such as that referenced by "Node.prototype.replaceChild". (See
-doc/POLICIES for more information.) The jar file found at
-$JAMPKG/util.jar can be used for this purpose. Assuming you've set up
-the jamutil alias as specified above, it can be invoked as follows.
-
-jamutil Node.prototype.replaceChild
-
-It can also handle some more complex expression such as the following
-(which evaluates to the same function address as above). In general the
-utility will attempt to evaluate the given expression and get the value
-it references.
-
-jamutil 'document.getElementById("id").replaceChild'
-
-If a value such as "s0" is returned, this indicates that the native
-environment model does not include the specified object. In this case
-you should contact the UW-Madison team to extend the model.
-
-Multiple arguments can be submitted; each expression will be evaluated
-independently.
-
-This utility is rather new, so you may encounter bugs or think of
-extended features that would be nice. Again, you can let us know.
-
-
-######## Finding counter-examples ########
-
-The bin/ directory includes an executable called nwa, which takes an
-intersected policy/control automaton file as input, and outputs a
-counter-example trace to STDOUT. When invoking JAM with the -g flag,
-these automata are saved in the subdirectory of output/ for that run.
-
-This utility can be run as follows, replacing the argument as necessary.
-$JAMPKG/bin/nwa $JAMPKG/output/snote-0/1/prod.aut
-
-
-######## Interpreting the output ########
+##### Interpreting the output #####
 
 The output of the script will be found in the directory
 $JAMPKG/output/[APP]-[RUN]/.  For example, if you're analyzing the
@@ -193,8 +158,7 @@ The security and correct operation of JAM-generated code depends on this
 ordering and on there being no other scripts running on the page. See
 above in "Input to the analysis" for further requirements on the HTML.
 
-
-######## Other output ########
+##### Other output #####
 
 Other files generated by the analysis are described below. These are
 mostly used for internal and debugging purposes, and could change in
@@ -204,10 +168,9 @@ funfacts.P: a Datalog (XSB) model of the user-defined functions found
   in the program
 polprops.P: extra Datalog predicates for tracking particular property
   names; the existence and content of this file depends on the policy
-typefacts.P: Datalog predicates generated from a type analysis provided
-  by the Closure compiler
-counts.txt: if JAM was run with the -C option, this contains AST node
-  and transaction counts for various phases of the analysis
+info.txt: if JAM was run with the -C option, this contains various
+  information about objects created during the analysis, e.g. AST node
+  and transaction counts
 [APP]-closure.js: the program immediate after an initial transformation
   by the Closure compiler
 [APP]-preprocessed.js: a further transformation of the source code prior
@@ -254,4 +217,64 @@ collected on the [ITER] iteration (i.e. step in the algorithm).
   point in the analysis
 [ITER]/tx-[NUM]: a representation of a transactional check that was
   woven into the source code on this iteration; %%% not useful currently
+
+##### Utilities #####
+
+The jar file found at $JAMPKG/bin/util.jar can be used for various
+purposes. This utility is built by the default target in Makefile, or
+directly by "make jamutil". This section also include instructions for
+other useful debugging procedures.
+
+* Retrieving native locations
+
+When specifying policies, you will often need to determine the symbolic
+address of a native construct, such as the object referenced (in a clean
+JavaScript environment) by the "document" identifier, or function
+objects such as that referenced by "Node.prototype.replaceChild". (See
+doc/POLICIES for more information.) This functionality can be invoked as
+follows.
+
+jamutil native Element.prototype.replaceChild
+
+It can also handle some more complex expression such as the following
+(which evaluates to the same function address as above). In general the
+utility will attempt to evaluate the given expression and get the value
+it references.
+
+jamutil native 'document.getElementById("id").replaceChild'
+
+If a value such as "s0" is returned, this indicates that the native
+environment model does not include the specified object. In this case
+you should contact the UW-Madison team to extend the model.
+
+Multiple arguments can be submitted; each expression will be evaluated
+independently.
+
+* Printing ASTs
+
+The abstract syntax tree for a JavaScript program can be displayed
+as with the following example.
+
+jamutil ast source.js
+
+To input a JavaScript expression, rather than a filename, directly on
+the command line, use the -e flag.
+
+jamutil ast -e 'document.getElementById("id").replaceChild'
+
+This AST structure is used internally in the JAM analysis, so this
+utility is mainly for debugging purposes. However it can be used to
+investigate the structure of JavaScript expressions for other purposes.
+
+* Finding counter-examples
+
+The bin/ directory includes an executable called nwa, which takes an
+intersected policy/control automaton file as input, and outputs a
+counterexample trace to STDOUT. When invoking JAM with the -g flag,
+these automata are saved in the subdirectory of output/ for that run.
+
+This utility can be run as follows, replacing the argument as necessary.
+
+$JAMPKG/bin/nwa $JAMPKG/output/snote-0/1/raut-0
+
 

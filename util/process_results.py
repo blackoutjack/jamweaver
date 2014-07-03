@@ -95,7 +95,7 @@ def parse_stack(lines):
       lastsrc = lastsrc[7:]
     # Get the init time.
     if lastsrc.startswith(cfg.TEST_DIR):
-      lastsrc = lastsrc[30:]
+      lastsrc = lastsrc[len(cfg.TEST_DIR):]
       begin = lastsrc.find("/test.php?script=")
       if begin > -1:
         begin += 17

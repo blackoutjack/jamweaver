@@ -87,13 +87,14 @@ JAM officially supports predicates indicating weak equality (==), strict
 equality (===), corresponding inequality (!=, !==), the JavaScript
 instanceof operator, and a set of special extension functions explained
 below. It's best to specify strict equality when possible, as this will
-be more efficient (by avoid the analysis of JavaScript's complicated
+be more efficient (by avoiding the analysis of JavaScript's complicated
 type coersion rules).
 
 JAM also supports arbitrary conjunctions (but not disjunctions) of any
 supported predicates on a given edge. Disjunctions are effectively
 supported via the ability to specify multiple disjoint paths through the
-policy automaton.
+policy automaton. Negation (!) of conjuncts is supported, except in the
+cases noted below.
 
 Other JavaScript expressions that evaluate to boolean may be tried,
 though you may find support to be sketchy. Please let the UW-Madison
@@ -101,28 +102,36 @@ team know if there are unsupported constructs you'd like to use.
 
 The currently-implemented extension predicates are as follows.
 
-jam#called(#object#location): returns true if the pointed-to native
-  function was invoked by the evaluated statement
+jam#called(#object#location): Returns true if the pointed-to native
+  function was invoked by the evaluated statement. Negation of this
+  type of predicate is not supported.
 
-jam#set(#object,"member"): returns true if the specified object member was
-  assigned to in the course of evaluation
+jam#set(#object,"member"): Returns true if the specified object member was
+  assigned to in the course of evaluation. Negation of this type of
+  predicate is not supported.
 
-jam#get(#object,"member"): returns true if the specified object member was
-  retrieved during the course of evaluation
+jam#get(#object,"member"): Returns true if the specified object member was
+  retrieved during the course of evaluation. Negation of this type of
+  predicate is not supported.
 
-jam#arg(i): retrieves the value of the actual argument(s) at position i of
-  any invoked functions; this can be used in the context
-  "jam#arg(0) === value" to construct a predicate.
+jam#arg(i): Retrieves the value of the actual argument(s) at position i
+  of any invoked functions. This can be used in the context of other
+  predicates, such as "jam#arg(0) === value", to construct a predicate.
 
-jam#type(id,"Type"): returns true if the given variable references a value
-  of type Type (where Type is one of the standard JavaScript types
+jam#type(ref,"Type"): Returns true if the given reference contains a
+  value of type Type (where Type is one of the standard JavaScript types
   Number, Object, String, Undefined or Null).
 
-jam#stringstartswith(jam#arg(0),"http"): returns true if the value referenced
-  in the first argument is string that begins with the 2nd argument.
+jam#regextest(/regex/,ref): Returns true if the regular expression
+  matches the value (which is coerced to a string).
 
-jam#stringcontains(jam#arg(0),"script"): returns true if the value referenced
-  in the first argument is string that contains with the 2nd argument.
+jam#stringstartswith(ref,"string"): Returns true if the value
+  referenced by the first argument is string that begins with the 2nd
+  argument. (This predicate type is subsumed by jam#regextest.)
+
+jam#stringcontains(ref,"string"): Returns true if the value
+  referenced in the first argument is string that contains with the 2nd
+  argument. (This predicate type is subsumed by jam#regextest.)
 
 Predicates may also contain special "wildcard" identifiers beginning
 with the ` (backtick) character. These may be used to construct more
@@ -142,19 +151,23 @@ identifier may be overwritten in the course of a program). So the #
 syntax to represent the immutable location of the native object is
 needed for soundness of the analysis.
 
+See doc/RUNNING ("Utilities" section) for instructions for retrieving
+the precise name of a given native reference for use in a policy
+specification.
+
 
 ######## Seeding predicates ########
 
 Rather than relying on the predicate-learning functionality of JAM
 (which is admittedly immature at this stage), it's possible to "seed"
-the analysis with predicates that can rule out some counter-examples.
+the analysis with predicates that can rule out some counterexamples.
 It's important to note that specifying predicates to track in the
 analysis is not the same as asserting that these predicates are true.
 It simply tells JAM to build the program model with these predicates
 included; this means that the analysis will remain sound even if the
 user specifies an irrelevant predicate or a predicate that may never
 be true. (However, as with policy predicates, it's possible to cause
-an aborted analysis by specifying a syntactically flawed seeded
+an aborted analysis by specifying a syntactically flawed seed
 predicate.)
 
 Predicates are seeded by providing a seed file as the argument to the -d
@@ -169,8 +182,7 @@ edge specification will be applied to analysis of those edges only.
 Predicates listed prior to any edge specifications are applied globally.
 
 The seeded predicates can be of the same form, and using the same JAM
-predicate extensions as the policy language. A new extension function,
-type, was introduced for seeding purposes. See snote/seeds/ in the
-JAMScript repository for example seed files.
+predicate extensions as the policy language. The test cases in
+tests/micro-benchmarks contain a few example seed files.
 
 

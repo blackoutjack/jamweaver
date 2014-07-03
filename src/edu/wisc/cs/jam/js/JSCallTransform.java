@@ -189,6 +189,8 @@ public class JSCallTransform extends JSTransform {
       // This one should be done prior to the TransactionConverter.
       NodeTraversal.traverse(comp, root, new CallEncloser());
       Dbg.out("Dynamic callsites enclosed: " + dynamicEncloseCnt, 1);
+      if (JAM.Opts.countNodes)
+        FileUtil.writeToMain("dynamic-callsites-enclosed:" + dynamicEncloseCnt + "\n", JAMConfig.INFO_FILENAME, true);
       suf = "callenclose.js";
     }
 
@@ -199,12 +201,18 @@ public class JSCallTransform extends JSTransform {
 
     NodeTraversal.traverse(comp, root, new TransactionConverter());
     Dbg.out("Transaction-enclosed callsites transformed: " + txTransformCnt, 1);
+    if (JAM.Opts.countNodes)
+      FileUtil.writeToMain("enclosed-callsites-transformed:" + txTransformCnt + "\n", JAMConfig.INFO_FILENAME, true);
     Dbg.out("Transaction-enclosed callsites unable to be transformed: " + txNotTransformedCnt, 1);
+    if (JAM.Opts.countNodes)
+      FileUtil.writeToMain("enclosed-callsites-not-transformed:" + txNotTransformedCnt + "\n", JAMConfig.INFO_FILENAME, true);
 
     if (!JAM.Opts.noIndirect) {
       // This one should be done after the TransactionConverter.
       NodeTraversal.traverse(comp, root, new CallConverter());
       Dbg.out("Dynamic callsites transformed: " + dynamicTransformCnt, 1);
+      if (JAM.Opts.countNodes)
+        FileUtil.writeToMain("dynamic-callsites-indirected:" + dynamicTransformCnt + "\n", JAMConfig.INFO_FILENAME, true);
       suf = "calltransform.js";
     }
 

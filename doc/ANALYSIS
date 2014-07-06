@@ -65,11 +65,15 @@ a file.
 ./jamscript/mozilla-esr17/obj-release/browser/dist/bin/firefox &> perf.txt
 
 4) Run the automated test suite by accessing the URL below. By default,
-4 variants of each application are loaded:
-  optimized.js: This primes the browser by loading static files, etc.
+6 variants of each application are loaded. The first 3 prime the browser
+by downloading static files, and the latter 3 produce performance
+measurements:
   original.js: The unprotected application
   transformed.js: The woven, "fine-grained," output of the JAM weaver
   original.modular.js: The program with a "coarse-grained" transaction
+  original.profile.js: Performance profiling version of the above
+  transformed.profile.js: Performance profiling version of the above
+  original.modular.profile.js: Performance profiling version of the above
 See README in the jamtests repository for more information on the
 automated browser tests.
 

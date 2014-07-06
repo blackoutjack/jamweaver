@@ -62,7 +62,7 @@ def wovenOverheadByOriginal(stats, variants, display, log=True):
     if action == 'load':
       loadoriginalTime.append(orig)
       loadoverhead2.append(ratio2)
-      loadoverhead1.append(ratio2)
+      loadoverhead1.append(ratio1)
     else:
       originalTime.append(orig)
       overhead2.append(ratio2)

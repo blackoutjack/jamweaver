@@ -17,15 +17,14 @@ columns 2, 4 and 5 from the info.txt file. (Column 3, the policy
 description, is hard-coded.) To recreate the entire table, the full
 benchmark suite must be run to accumulate the info.txt files.
 
-The script to generate the tables is run as follows. (The
-transferconfig.py file is used for esoteric reasons.)
+The script to generate the tables is run as follows.
 
-./util/generate_tables.py util/transferconfig.py
+./util/generate_tables.py
 
 To generate a human-readable table (rather than LaTeX format), use the
 -f option.
 
-./util/generate_tables.py util/transferconfig.py -f human
+./util/generate_tables.py -f human
 
 ##### Policy translation #####
 

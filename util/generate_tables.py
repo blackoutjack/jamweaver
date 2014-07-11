@@ -13,49 +13,6 @@ import filecmp
 import operator
 import math
 
-DISABLED = [
-  'sms2', 'sms2-template', 'txjs', 'kraken-results', 'jssec',
-  'jssec-bad', 'jsbeautifier', 'jsqrcode-mal', 'snote-mini',
-  'kraken-mega', 'kraken-mega2', 'sunspider-mega', 'sunspider-mega2',
-  'jsbench-yahoo-safari-urem', 'jsbench-yahoo-firefox-urem',
-  'jsbench-yahoo-chrome-urem', 'jsbench-twitter-chrome-urem',
-  'octane-pdf', 'octane-zlib', 'octane-zlib-eval', 'octane-eb',
-  'octane-gb', 'octane-mandreel', 'octane-codeload',
-  'octane-typescript', 'octane', 'googlemaps', 'jsqrcode-get',
-]
-
-POLDESCS = {
-  'squirrelmail': 'disallow access to src property',
-  'squirrelmail-bad': 'disallow access to src property',
-  'doubleclick-loader': 'prevent navigation',
-  'userprefs': 'disallow appendChild and eval',
-  'sunspider': 'disallow XMLHttpRequest.open',
-  'kraken': 'disallow XMLHttpRequest.open',
-  'beacon': 'isolate document from cookie',
-  'plusone': 'prevent script creation, document edits',
-  'imageloader': 'disallow document.write',
-  'sms2-*': 'prevent all network communication',
-  'snote': 'certain elements write-once/read-only',
-  'piwik': 'isolate document from cookie',
-  'mwwidgets': 'certain elements write-once/read-only',
-  'midori': 'prevent modification of cookie',
-  'greybox': 'prevent creation of script elements',
-  'googiespell': 'disallow document.write',
-  'ga': 'prevent script creation, document edits',
-  'jsqrcode': 'prevent all network communication',
-  'hulurespawn': 'disallow local storage access',
-  'colorpicker': 'prevent navigation, src/cookie access',
-  'adsense': 'isolate document from cookie',
-  'flickr': 'prevent external pop-up creation',
-  'puzzle': 'prevent creation of script elements',
-  'jswidgets-menu': 'prevent creation of script elements',
-  'portscanner': 'disallow setting src property',
-  'jsbench-google-chrome-urem': 'disallow XMLHttpRequest.open',
-  'jsbench-amazon-chrome-urem': 'disallow XMLHttpRequest.open',
-  'jsbench-facebook-chrome-urem': 'disallow XMLHttpRequest.open',
-  'phylojive': 'isolate document from cookie',
-}
-
 def geomeanPercent(vals):
   tot = 0.0
   for val in vals:
@@ -187,7 +144,7 @@ def generate_info_table(results):
   sms2indtot = 0.0
   sms2cnt = 0
   for appkey, cnts in results.iteritems():
-    if appkey in DISABLED:
+    if appkey in cfg.DISABLED:
       continue
     if appkey == 'jsqrcode':
       app = 'jsqrcode-call'
@@ -218,16 +175,16 @@ def generate_info_table(results):
       sms2indtot += indcnt
       sms2cnt += 1
     else:
-      if appkey in POLDESCS:
-        poldesc = POLDESCS[appkey]
+      if appkey in cfg.POLDESCS:
+        poldesc = cfg.POLDESCS[appkey]
       else:
         print >> sys.stderr, "No description for policy: %s" % appkey
         poldesc = ''
       vals[appkey] = (appkey, origcnt, poldesc, txcnt, indcnt)
 
   if sms2cnt > 0:
-    if 'sms2-*' in POLDESCS:
-      poldesc = POLDESCS['sms2-*']
+    if 'sms2-*' in cfg.POLDESCS:
+      poldesc = cfg.POLDESCS['sms2-*']
     else:
       print >> sys.stderr, "No description for policy: %s" % 'sms2-*'
       poldesc = ''
@@ -254,7 +211,7 @@ def generate_policy_table(results):
     if basekey not in cnts:
       cfg.warn("Node count for base policy not found: %s, %s" % (app, basekey))
       continue
-    if app in DISABLED:
+    if app in cfg.DISABLED:
       continue
     basecnt = int(cnts[basekey])
 
@@ -296,17 +253,15 @@ def generate_tables(vals):
 
 def main():
   parser = OptionParser(usage="%prog config.py")
+  parser.add_option('-c', '--config', action='store', default='util/resultsconfig.py', dest='config', help='configuration.py file')
   parser.add_option('-v', '--verbose', action='store_true', default=False, dest='verbose', help='generate verbose output')
   parser.add_option('-f', '--format', action='store', default='latex', dest='format', help='output format', metavar='latex|human (default:latex)')
 
   opts, args = parser.parse_args()
 
-  if len(args) != 1:
-    parser.error("Invalid number of arguments")
-
   global cfg
   try:
-    cfg = imp.load_source("cfg", args[0])
+    cfg = imp.load_source("cfg", opts.config)
   except:
     print >> sys.stderr, "Unable to load configuration file: %s" % opts.config
     sys.exit(1)
@@ -319,11 +274,8 @@ def main():
   FORMAT = opts.format.lower()
 
   results = {}
-  for destdir, props in cfg.TARGETDIRS.iteritems():
-    if destdir != cfg.appstgt:
-      continue
-    bases = props['basenames']
-    collect_results(results, cfg.SOURCEDIR, bases)
+  bases = cfg.APPBASES
+  collect_results(results, cfg.SOURCEDIR, bases)
   generate_tables(results)
 #/main
 

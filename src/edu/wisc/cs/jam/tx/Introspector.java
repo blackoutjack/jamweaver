@@ -382,6 +382,19 @@ public class Introspector {
     // Close the function.
     sb.append(ind0);
     sb.append("}\n");
+    if (!transform || !hasCall) {
+      sb.append(ind0);
+      sb.append(getName());
+      sb.append(".subsumedBy = ");
+      sb.append(JAMConfig.COMPREHENSIVE_INTROSPECTOR);
+      sb.append("\n");
+    }
+
+    // Freeze the introspector object.
+    sb.append(ind0);
+    sb.append("Object.freeze(");
+    sb.append(getName());
+    sb.append(");\n");
       
     return sb.toString();
   }

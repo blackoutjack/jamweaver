@@ -485,8 +485,8 @@ def generate_graphs(stats):
     stat = stats[app]
     actdescs = load_actions(stat)
     for actdesc in actdescs:
-      # Group init and load times together
-      if actdesc == 'init': continue
+      # Optionally group init and load times together
+      if cfg.INCLUDE_INIT and actdesc == 'init': continue
 
       try:
         variants = load_variants(stat, actdesc)
@@ -494,15 +494,19 @@ def generate_graphs(stats):
         times['action'] = actdesc
         for vardesc, variant in variants.iteritems():
           tm = variant.actions[actdesc].avg_time()
-          # Add on policy.js and libTx.js load time.
-          if actdesc == 'load' and vardesc != 'original':
-            if 'init' in variant.actions:
-              inittm = variant.actions['init'].avg_time() 
-              if inittm > maxinit: maxinit = inittm
-              if inittm < mininit: mininit = inittm
-              tm += inittm
-            else:
-              util.warn("No init time for load: %s/%s" % (app, vardesc))
+          # Optionally add on policy.js and libTx.js load time.
+          if cfg.INCLUDE_INIT:
+            if actdesc == 'load' and vardesc != 'original':
+              if 'init' in variant.actions:
+                inittm = variant.actions['init'].avg_time() 
+                if inittm > maxinit: maxinit = inittm
+                if inittm < mininit: mininit = inittm
+                tm += inittm
+              else:
+                util.warn("No init time for load: %s/%s" % (app, vardesc))
+          elif actdesc == 'init' and vardesc != 'original':
+            if tm > maxinit: maxinit = tm
+            if tm < mininit: mininit = tm
           times[vardesc] = tm
 
         # Check for zero/negative times.
@@ -521,20 +525,20 @@ def generate_graphs(stats):
         if time2 > time1 and time0 > 100.0:
           print >> sys.stderr, "LONG-DURATION OUTLIER: %s/%s/%.2f/%.2f/%.2f" % (app, actdesc, time0, time1, time2)
 
-        if time0 < 0.1 or time1 < 0.1 or time2 < 0.1:
+        if actdesc != 'init' and time0 < 0.1 or time1 < 0.1 or time2 < 0.1:
           print >> sys.stderr, "TINY TIME: %s/%s/%.2f/%.2f/%.2f" % (app, actdesc, time0, time1, time2)
 
         # Check for cases where secure code is faster than unprotected.
-        if time2 / time0 <= 0.90:
+        if actdesc != 'init' and time2 / time0 <= 0.90:
           print >> sys.stderr, "WOVEN UNDERLIER: %s/%s %.2f" % (app, actdesc, time2 / time0)
 
-        if time1 / time0 < 0.90:
+        if actdesc != 'init' and time1 / time0 < 0.90:
           print >> sys.stderr, "MODULAR UNDERLIER: %s/%s %.2f" % (app, actdesc, time1 / time0)
 
         if time2 / time1 > 1.5:
           print >> sys.stderr, "LARGE TRANSFORMED/MODULAR RATIO: %s/%s/%.2f/%.2f" % (app, actdesc, time2 / time1, time0)
 
-        if actdesc != 'load' and time2 / time0 > 5:
+        if actdesc != 'init' and actdesc != 'load' and time2 / time0 > 5:
           print >> sys.stderr, "LARGE TRANSFORMED/ORIGINAL RATIO: %s/%s/%.2f" % (app, actdesc, time2 / time0)
 
         timelist.append(times)

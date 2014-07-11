@@ -13,7 +13,7 @@ from util import sort_dirs
 from util import get_variant_bases
 
 # Include the "init" time in the "load" time, or report separately.
-INCLUDE_INIT = False
+INCLUDE_INIT = True
 
 SOURCEDIR = OUTDIR
 APPBASES = get_variant_bases(BENCHMARK_DIR)

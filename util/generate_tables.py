@@ -94,6 +94,12 @@ def printHumanTableRows(valsToPrint, sortRow, showSort=True, dec=1):
   for r in rows:
     print rowfmt % tuple(r)
 
+def get_app_display(appkey):
+  if appkey in cfg.APP_TRANSLATE:
+    return cfg.APP_TRANSLATE[appkey]
+  else:
+    return appkey
+
 def collect_results(results, srcdir, bases):
   # Assumes that directories within |srcdir| are of the form "app-iter",
   # where "iter" is a label to separate the results of multiple analyses
@@ -102,11 +108,9 @@ def collect_results(results, srcdir, bases):
   resultsdirs = os.listdir(srcdir)
 
   resultsdirs = cfg.sort_dirs(bases, resultsdirs)
-  for app, dirlist in resultsdirs.iteritems():
-    if app == 'jsqrcode-call':
-      appkey = 'jsqrcode'
-    else:
-      appkey = app
+  for appkey, dirlist in resultsdirs.iteritems():
+    if appkey in cfg.DISABLED:
+      continue
 
     info = None
     for dirinfo in dirlist:
@@ -114,11 +118,11 @@ def collect_results(results, srcdir, bases):
       if info is None or dirinfo['version'] > info['version']:
         info = dirinfo
     if info is None:
-      cfg.warn("No results found for app: %s" % app)
+      cfg.warn("No results found for app: %s" % appkey)
       continue
     cntfile = os.path.join(srcdir, info['dir'], 'info.txt')
     if not os.path.isfile(cntfile):
-      cfg.warn("No info file found for app: %s %s" % (app, cntfile))
+      cfg.warn("No info file found for app: %s %s" % (appkey, cntfile))
       continue
       
     if appkey in results:
@@ -146,12 +150,10 @@ def generate_info_table(results):
   for appkey, cnts in results.iteritems():
     if appkey in cfg.DISABLED:
       continue
-    if appkey == 'jsqrcode':
-      app = 'jsqrcode-call'
-    else:
-      app = appkey
 
-    origkey = app + ".original.js"
+    app = get_app_display(appkey)
+
+    origkey = appkey + ".original.js"
     if origkey not in cnts:
       cfg.warn("Node count for original program not found: %s, %s" % (app, origkey))
       continue
@@ -169,30 +171,25 @@ def generate_info_table(results):
       continue
     indcnt = int(cnts[indkey])
 
-    if appkey.startswith("sms2-"):
+    if app.startswith(cfg.SMS2PREFIX):
       sms2origtot += origcnt
       sms2txtot += txcnt
       sms2indtot += indcnt
       sms2cnt += 1
     else:
-      if appkey in cfg.POLDESCS:
-        poldesc = cfg.POLDESCS[appkey]
-      else:
-        print >> sys.stderr, "No description for policy: %s" % appkey
-        poldesc = ''
-      vals[appkey] = (appkey, origcnt, poldesc, txcnt, indcnt)
+      vals[app] = (app, origcnt, txcnt, indcnt)
 
   if sms2cnt > 0:
-    if 'sms2-*' in cfg.POLDESCS:
-      poldesc = cfg.POLDESCS['sms2-*']
-    else:
-      print >> sys.stderr, "No description for policy: %s" % 'sms2-*'
-      poldesc = ''
-    vals["sms2-*"] = ("sms2-*", sms2origtot / sms2cnt, poldesc, sms2txtot / sms2cnt, sms2indtot / sms2cnt)
+    vals[cfg.SMS2KEY] = (cfg.SMS2KEY, sms2origtot / sms2cnt, sms2txtot / sms2cnt, sms2indtot / sms2cnt)
 
   print "Original program node count"
   printTableRows(vals, 1, True)
     
+def get_policy_description(app):
+  if app in cfg.POLICY_DESCRIPTIONS:
+    return cfg.POLICY_DESCRIPTIONS[app]
+  cfg.warn("No description for policy: %s" % app)
+  return ''
 
 def generate_policy_table(results):
   vals = {}
@@ -200,7 +197,12 @@ def generate_policy_table(results):
   sms2spectot = 0.0
   sms2auttot = 0.0
   sms2cnt = 0
-  for app, cnts in results.iteritems():
+  for appkey, cnts in results.iteritems():
+    if appkey in cfg.DISABLED:
+      continue
+
+    app = get_app_display(appkey)
+
     autkey = "policy.aut"
     if autkey not in cnts:
       cfg.warn("Node count for policy automaton not found: %s, %s" % (app, autkey))
@@ -211,8 +213,6 @@ def generate_policy_table(results):
     if basekey not in cnts:
       cfg.warn("Node count for base policy not found: %s, %s" % (app, basekey))
       continue
-    if app in cfg.DISABLED:
-      continue
     basecnt = int(cnts[basekey])
 
     speckey = "policy.js"
@@ -221,23 +221,25 @@ def generate_policy_table(results):
       continue
     speccnt = int(cnts[speckey])
 
-    if app.startswith("sms2-"):
+    if app.startswith(cfg.SMS2PREFIX):
       sms2cnt += 1
       sms2auttot += autcnt
       sms2basetot += basecnt
       sms2spectot += speccnt
     else:
-      vals[app] = (app, autcnt, basecnt, speccnt)
+      poldesc = get_policy_description(app)
+      vals[app] = (app, poldesc, autcnt, basecnt, speccnt)
 
   if sms2cnt > 0:
-    vals["sms2-*"] = ("sms2-*", sms2auttot / sms2cnt, sms2basetot / sms2cnt, sms2spectot / sms2cnt) 
+    poldesc = get_policy_description(cfg.SMS2KEY)
+    vals[cfg.SMS2KEY] = (cfg.SMS2KEY, poldesc, sms2auttot / sms2cnt, sms2basetot / sms2cnt, sms2spectot / sms2cnt) 
 
   print "Policy node count"
-  printTableRows(vals, 1, True)
+  printTableRows(vals, 2, True)
 
   basex = []
   specx = []
-  for app, autcnt, basecnt, speccnt in vals.values():
+  for app, poldesc, autcnt, basecnt, speccnt in vals.values():
     basex.append(float(basecnt)/float(autcnt))
     specx.append(float(speccnt)/float(autcnt))
 

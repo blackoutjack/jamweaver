@@ -487,6 +487,7 @@ def generate_graphs(stats):
     for actdesc in actdescs:
       # Optionally group init and load times together
       if cfg.INCLUDE_INIT and actdesc == 'init': continue
+      if cfg.SUPPRESS_SMS2_LOAD and actdesc == 'load' and app.startswith('sms2-'): continue
 
       try:
         variants = load_variants(stat, actdesc)

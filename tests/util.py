@@ -481,6 +481,11 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
   cmd.append('-f')
   cmd.append(TXLIB)
 
+  # Load the JAMScript debug extensions
+  if debug:
+    cmd.append('-f')
+    cmd.append(TXDBGLIB)
+
   # Load the files containing the policy iBlocks.
   for pol in policies:
     cmd.append('-f')

@@ -14,6 +14,8 @@ from util import get_variant_bases
 
 # Include the "init" time in the "load" time, or report separately.
 INCLUDE_INIT = True
+# Load times for SMS2 apps aren't very interesting.
+SUPPRESS_SMS2_LOAD = False
 
 SOURCEDIR = OUTDIR
 APPBASES = get_variant_bases(BENCHMARK_DIR)
@@ -50,6 +52,9 @@ JUNK_MARKERS = [
   "NOTE: ",
 ]
 
+SMS2PREFIX = 'sms2-'
+SMS2KEY = SMS2PREFIX + '*'
+
 DISABLED = [
   'sms2', 'sms2-template', 'txjs', 'kraken-results', 'jssec',
   'jssec-bad', 'jsbeautifier', 'jsqrcode-mal', 'snote-mini',
@@ -62,7 +67,7 @@ DISABLED = [
   'squirrelmail-bad',
 ]
 
-POLDESCS = {
+POLICY_DESCRIPTIONS = {
   'squirrelmail': 'disallow access to src property',
   'doubleclick-loader': 'prevent navigation',
   'userprefs': 'disallow appendChild and eval',
@@ -71,7 +76,7 @@ POLDESCS = {
   'beacon': 'isolate document from cookie',
   'plusone': 'prevent script creation, document edits',
   'imageloader': 'disallow document.write',
-  'sms2-*': 'prevent all network communication',
+  SMS2KEY: 'prevent all network communication',
   'snote': 'certain elements write-once/read-only',
   'piwik': 'isolate document from cookie',
   'mwwidgets': 'certain elements write-once/read-only',
@@ -87,9 +92,23 @@ POLDESCS = {
   'puzzle': 'prevent creation of script elements',
   'jswidgets-menu': 'prevent creation of script elements',
   'portscanner': 'disallow setting src property',
-  'jsbench-google-chrome-urem': 'disallow XMLHttpRequest.open',
-  'jsbench-amazon-chrome-urem': 'disallow XMLHttpRequest.open',
-  'jsbench-facebook-chrome-urem': 'disallow XMLHttpRequest.open',
+  'jsbench-google': 'disallow XMLHttpRequest.open',
+  'jsbench-amazon': 'disallow XMLHttpRequest.open',
+  'jsbench-facebook': 'disallow XMLHttpRequest.open',
   'phylojive': 'isolate document from cookie',
+}
+
+APP_TRANSLATE = {
+  'jsqrcode-call': 'jsqrcode',
+  'jsbench-google-chrome-urem': 'jsbench-google',
+  'jsbench-amazon-chrome-urem': 'jsbench-amazon',
+  'jsbench-facebook-chrome-urem': 'jsbench-facebook',
+}
+
+APP_REVERSE_TRANSLATE = {
+  'jsqrcode': 'jsqrcode-call',
+  'jsbench-google': 'jsbench-google-chrome-urem',
+  'jsbench-amazon':'jsbench-amazon-chrome-urem',
+  'jsbench-facebook' : 'jsbench-facebook-chrome-urem',
 }
 

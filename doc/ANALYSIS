@@ -97,37 +97,38 @@ The plots are generated as the following files.
 The data reported in the paper is printed at the end. The provenance of
 these numbers is shown below.
 
-  ``We measured an overall 25% speed-up for program actions instrumented
+  ``We measured an overall 23% speed-up for program actions instrumented
   with fine-grained transactions versus coarse-grained transactions when
   summarized by the geometric mean.''
-  == 1 - GEOMETRIC MEAN (all, fine-grained / coarse-grained)
+  == 100 * (1 - GEOMETRIC MEAN (all, fine-grained / coarse-grained))
 
-  ``This breaks into a 12% speed-up for page-load actions, which
+  ``This breaks into a 3% speed-up for page-load actions, which
   includes the time taken to load the JavaScript policy object and the
   JAMScript library,''
-  == 1 - GEOMETRIC MEAN (load, fine-grained / coarse-grained)
+  == 100 * (1 - GEOMETRIC MEAN (load, fine-grained / coarse-grained))
 
-  ``and a 37% speed-up for other program actions.''
-  == 1 - GEOMETRIC MEAN (other, fine-grained / coarse-grained)
+  ``and a 40% speed-up for other program actions.''
+  == 100 * (1 - GEOMETRIC MEAN (other, fine-grained / coarse-grained))
 
   ``When summarized by the geometric mean, the measured execution
   time for actions other than the initial page load protected by fine-
-  grained transactions is 166% of the time for the unprotected pro-
+  grained transactions is 161% of the time for the unprotected pro-
   gram.''
   == 100 * GEOMETRIC MEAN (other, fine-grained / unprotected)
 
-  ``This number can be compared to 265% for coarse-grained
+  ``This number can be compared to 270% for coarse-grained
   transactions.''
   == 100 * GEOMETRIC MEAN (other, coarse-grained / unprotected)
   
-  ``Loading the page took 35.6 times longer for the instrumented
-  programs (both fine-grained and coarse-grained), which must load the
-  policy object and JAMScript library prior to the program itself.''
+  ``Loading the page took 27.5 and 28.3 times longer for the
+  instrumented programs (fine-grained and coarse-grained, respectively),
+  which must load the policy object and JAMScript library prior to the
+  program itself.''
   == GEOMETRIC MEAN (load, fine-grained / unprotected)
   == GEOMETRIC MEAN (load, coarse-grained / unprotected)
 
   ``However, the absolute time represented by this slow-
-  down ranges from 6.7ms to 33.5ms, which is negligible to human
+  down ranges from 8.4ms to 26.1ms, which is negligible to human
   perception.''
   == MIN INIT TIME and MAX INIT TIME
 

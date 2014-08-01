@@ -1,36 +1,34 @@
 function v29(runner$$2) {
   function RunNextSetup() {
-    var v31 = index$$40 < length$$12;
-    if(v31) {
+    if(index$$40 < length$$12) {
       try {
         var v163 = suite$$1.benchmarks;
-        introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
           var v30 = v163[index$$40]
         }
-        JAMScript.call(v30.Setup, v30, [])
+        v30.Setup()
       }catch(e$$4) {
-        JAMScript.call(suite$$1.NotifyError, suite$$1, [e$$4]);
+        JAM.call(suite$$1.NotifyError, suite$$1, [e$$4]);
         return null
       }
       return RunNextBenchmark
     }
-    JAMScript.call(suite$$1.NotifyResult, suite$$1, []);
+    suite$$1.NotifyResult();
     return null
   }
   function RunNextBenchmark() {
     try {
       var v164 = suite$$1.benchmarks;
-      introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
         var v32 = v164[index$$40]
       }
-      data$$20 = JAMScript.call(suite$$1.RunSingleBenchmark, suite$$1, [v32, data$$20])
+      data$$20 = JAM.call(suite$$1.RunSingleBenchmark, suite$$1, [v32, data$$20])
     }catch(e$$5) {
-      JAMScript.call(suite$$1.NotifyError, suite$$1, [e$$5]);
+      JAM.call(suite$$1.NotifyError, suite$$1, [e$$5]);
       return null
     }
     var v33;
-    var v165 = data$$20 == null;
-    if(v165) {
+    if(data$$20 == null) {
       v33 = RunNextTearDown
     }else {
       v33 = RunNextBenchmark()
@@ -42,21 +40,20 @@ function v29(runner$$2) {
       var v166 = suite$$1.benchmarks;
       var v167 = index$$40;
       index$$40 = index$$40 + 1;
-      introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
         var v34 = v166[v167]
       }
-      JAMScript.call(v34.TearDown, v34, [])
+      v34.TearDown()
     }catch(e$$6) {
-      JAMScript.call(suite$$1.NotifyError, suite$$1, [e$$6]);
+      JAM.call(suite$$1.NotifyError, suite$$1, [e$$6]);
       return null
     }
     return RunNextSetup
   }
-  JAMScript.call(BenchmarkSuite.ResetRNG, BenchmarkSuite, []);
+  BenchmarkSuite.ResetRNG();
   this.results = [];
   this.runner = runner$$2;
-  var v35 = this.benchmarks;
-  var length$$12 = v35.length;
+  var length$$12 = this.benchmarks.length;
   var index$$40 = 0;
   var suite$$1 = this;
   var data$$20;
@@ -69,49 +66,39 @@ function v28(benchmark$$1, data$$18) {
     var i$$5 = 0;
     var v168;
     if(doDeterministic$$1) {
-      var v257 = benchmark$$1.deterministicIterations;
-      v168 = i$$5 < v257
+      v168 = i$$5 < benchmark$$1.deterministicIterations
     }else {
       v168 = elapsed < 1E3
     }
     var v37 = v168;
     for(;v37;) {
-      JAMScript.call(benchmark$$1.run, benchmark$$1, []);
-      var v36 = new Date;
-      elapsed = v36 - start$$4;
+      benchmark$$1.run();
+      elapsed = new Date - start$$4;
       i$$5 = i$$5 + 1;
       var v169;
       if(doDeterministic$$1) {
-        var v258 = benchmark$$1.deterministicIterations;
-        v169 = i$$5 < v258
+        v169 = i$$5 < benchmark$$1.deterministicIterations
       }else {
         v169 = elapsed < 1E3
       }
       v37 = v169
     }
-    var v38 = data$$19 != null;
-    if(v38) {
-      var v170 = data$$19.runs;
-      data$$19.runs = v170 + i$$5;
-      var v171 = data$$19.elapsed;
-      data$$19.elapsed = v171 + elapsed
+    if(data$$19 != null) {
+      data$$19.runs = data$$19.runs + i$$5;
+      data$$19.elapsed = data$$19.elapsed + elapsed
     }
     return
   }
   var config = BenchmarkSuite.config;
   var v39;
-  var v259 = config.doWarmup;
-  var v172 = v259 !== undefined;
-  if(v172) {
+  if(config.doWarmup !== undefined) {
     v39 = config.doWarmup
   }else {
     v39 = benchmark$$1.doWarmup
   }
   var doWarmup$$1 = v39;
   var v40;
-  var v260 = config.doDeterministic;
-  var v173 = v260 !== undefined;
-  if(v173) {
+  if(config.doDeterministic !== undefined) {
     v40 = config.doDeterministic
   }else {
     v40 = benchmark$$1.doDeterministic
@@ -121,128 +108,81 @@ function v28(benchmark$$1, data$$18) {
   if(v174) {
     v174 = data$$18 == null
   }
-  var v41 = v174;
-  if(v41) {
+  if(v174) {
     data$$18 = {runs:0, elapsed:0}
   }
-  var v47 = data$$18 == null;
-  if(v47) {
+  if(data$$18 == null) {
     Measure(null);
     return{runs:0, elapsed:0}
   }else {
     Measure(data$$18);
-    var v175 = data$$18.runs;
-    var v176 = benchmark$$1.minIterations;
-    var v42 = v175 < v176;
-    if(v42) {
+    if(data$$18.runs < benchmark$$1.minIterations) {
       return data$$18
     }
-    var v177 = data$$18.elapsed;
-    var v43 = v177 * 1E3;
-    var v44 = data$$18.runs;
-    var usec = v43 / v44;
+    var usec = data$$18.elapsed * 1E3 / data$$18.runs;
     var v45;
-    var v261 = benchmark$$1.rmsResult;
-    var v178 = v261 != null;
-    if(v178) {
-      v45 = JAMScript.call(benchmark$$1.rmsResult, benchmark$$1, [])
+    if(benchmark$$1.rmsResult != null) {
+      v45 = benchmark$$1.rmsResult()
     }else {
       v45 = 0
     }
     var rms = v45;
-    var v46 = new BenchmarkResult(benchmark$$1, usec, rms);
-    JAMScript.call(this.NotifyStep, this, [v46]);
+    JAM.call(this.NotifyStep, this, [new BenchmarkResult(benchmark$$1, usec, rms)]);
     return null
   }
   return
 }
 function v27(error$$2) {
-  var v179 = this.runner;
-  var v50 = v179.NotifyError;
-  if(v50) {
+  if(this.runner.NotifyError) {
     var v48 = this.runner;
-    var v49 = this.name;
-    JAMScript.call(v48.NotifyError, v48, [v49, error$$2])
+    JAM.call(v48.NotifyError, v48, [this.name, error$$2])
   }
-  var v180 = this.runner;
-  var v53 = v180.NotifyStep;
-  if(v53) {
+  if(this.runner.NotifyStep) {
     var v51 = this.runner;
-    var v52 = this.name;
-    JAMScript.call(v51.NotifyStep, v51, [v52])
+    JAM.call(v51.NotifyStep, v51, [this.name])
   }
   return
 }
 function v26(runner$$1) {
-  var v54 = BenchmarkSuite.scores;
-  v54.push(1);
-  var v56 = runner$$1.NotifyResult;
-  if(v56) {
-    var v55 = this.name;
-    JAMScript.call(runner$$1.NotifyResult, runner$$1, [v55, "Skipped"])
+  BenchmarkSuite.scores.push(1);
+  if(runner$$1.NotifyResult) {
+    JAM.call(runner$$1.NotifyResult, runner$$1, [this.name, "Skipped"])
   }
   return
 }
 function v25() {
-  var v57 = this.results;
-  var mean = JAMScript.call(BenchmarkSuite.GeometricMeanTime, BenchmarkSuite, [v57]);
-  var v181 = this.reference;
-  var v58 = v181[0];
-  var score$$1 = v58 / mean;
-  var v59 = BenchmarkSuite.scores;
-  v59.push(score$$1);
-  var v182 = this.runner;
-  var v63 = v182.NotifyResult;
-  if(v63) {
-    var v60 = 100 * score$$1;
-    var formatted$$1 = JAMScript.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [v60]);
+  var mean = JAM.call(BenchmarkSuite.GeometricMeanTime, BenchmarkSuite, [this.results]);
+  var score$$1 = this.reference[0] / mean;
+  BenchmarkSuite.scores.push(score$$1);
+  if(this.runner.NotifyResult) {
+    var formatted$$1 = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * score$$1]);
     var v61 = this.runner;
-    var v62 = this.name;
-    JAMScript.call(v61.NotifyResult, v61, [v62, formatted$$1])
+    JAM.call(v61.NotifyResult, v61, [this.name, formatted$$1])
   }
-  var v262 = this.reference;
-  var v183 = v262.length;
-  var v72 = v183 == 2;
-  if(v72) {
-    var v64 = this.results;
-    var meanLatency = JAMScript.call(BenchmarkSuite.GeometricMeanLatency, BenchmarkSuite, [v64]);
-    var v71 = meanLatency != 0;
-    if(v71) {
-      var v184 = this.reference;
-      var v65 = v184[1];
-      var scoreLatency = v65 / meanLatency;
-      var v66 = BenchmarkSuite.scores;
-      v66.push(scoreLatency);
-      var v185 = this.runner;
-      var v70 = v185.NotifyResult;
-      if(v70) {
-        var v67 = 100 * scoreLatency;
-        var formattedLatency = JAMScript.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [v67]);
+  if(this.reference.length == 2) {
+    var meanLatency = JAM.call(BenchmarkSuite.GeometricMeanLatency, BenchmarkSuite, [this.results]);
+    if(meanLatency != 0) {
+      var scoreLatency = this.reference[1] / meanLatency;
+      BenchmarkSuite.scores.push(scoreLatency);
+      if(this.runner.NotifyResult) {
+        var formattedLatency = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * scoreLatency]);
         var v68 = this.runner;
-        var v186 = this.name;
-        var v69 = v186 + "Latency";
-        JAMScript.call(v68.NotifyResult, v68, [v69, formattedLatency])
+        JAM.call(v68.NotifyResult, v68, [this.name + "Latency", formattedLatency])
       }
     }
   }
   return
 }
 function v24(result$$1) {
-  var v73 = this.results;
-  v73.push(result$$1);
-  var v187 = this.runner;
-  var v76 = v187.NotifyStep;
-  if(v76) {
+  this.results.push(result$$1);
+  if(this.runner.NotifyStep) {
     var v74 = this.runner;
-    var v188 = result$$1.benchmark;
-    var v75 = v188.name;
-    JAMScript.call(v74.NotifyStep, v74, [v75])
+    JAM.call(v74.NotifyStep, v74, [result$$1.benchmark.name])
   }
   return
 }
 function v23(value$$29) {
-  var v77 = value$$29 > 100;
-  if(v77) {
+  if(value$$29 > 100) {
     return value$$29.toFixed(0)
   }else {
     return value$$29.toPrecision(3)
@@ -253,33 +193,24 @@ function v22(measurements$$1) {
   var log$$2 = 0;
   var hasLatencyResult = false;
   var i$$4 = 0;
-  var v189 = measurements$$1.length;
-  var v79 = i$$4 < v189;
+  var v79 = i$$4 < measurements$$1.length;
   for(;v79;) {
-    introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
       var v263 = measurements$$1[i$$4]
     }
-    var v190 = v263.latency;
-    var v78 = v190 != 0;
-    if(v78) {
+    if(v263.latency != 0) {
       var v191 = log$$2;
-      introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
         var v283 = measurements$$1[i$$4]
       }
-      var v264 = v283.latency;
-      var v192 = Math.log(v264);
-      log$$2 = v191 + v192;
+      log$$2 = v191 + Math.log(v283.latency);
       hasLatencyResult = true
     }
     i$$4 = i$$4 + 1;
-    var v193 = measurements$$1.length;
-    v79 = i$$4 < v193
+    v79 = i$$4 < measurements$$1.length
   }
   if(hasLatencyResult) {
-    var v80 = Math.E;
-    var v194 = measurements$$1.length;
-    var v81 = log$$2 / v194;
-    return Math.pow(v80, v81)
+    return Math.pow(Math.E, log$$2 / measurements$$1.length)
   }else {
     return 0
   }
@@ -288,131 +219,100 @@ function v22(measurements$$1) {
 function v21(measurements) {
   var log$$1 = 0;
   var i$$3 = 0;
-  var v195 = measurements.length;
-  var v82 = i$$3 < v195;
+  var v82 = i$$3 < measurements.length;
   for(;v82;) {
     var v196 = log$$1;
-    introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
       var v284 = measurements[i$$3]
     }
-    var v265 = v284.time;
-    var v197 = Math.log(v265);
-    log$$1 = v196 + v197;
+    log$$1 = v196 + Math.log(v284.time);
     i$$3 = i$$3 + 1;
-    var v198 = measurements.length;
-    v82 = i$$3 < v198
+    v82 = i$$3 < measurements.length
   }
-  var v83 = Math.E;
-  var v199 = measurements.length;
-  var v84 = log$$1 / v199;
-  return Math.pow(v83, v84)
+  return Math.pow(Math.E, log$$1 / measurements.length)
 }
 function v20(numbers) {
   var log = 0;
   var i$$2 = 0;
-  var v200 = numbers.length;
-  var v85 = i$$2 < v200;
+  var v85 = i$$2 < numbers.length;
   for(;v85;) {
     var v201 = log;
-    introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
       var v266 = numbers[i$$2]
     }
-    var v202 = Math.log(v266);
-    log = v201 + v202;
+    log = v201 + Math.log(v266);
     i$$2 = i$$2 + 1;
-    var v203 = numbers.length;
-    v85 = i$$2 < v203
+    v85 = i$$2 < numbers.length
   }
-  var v86 = Math.E;
-  var v204 = numbers.length;
-  var v87 = log / v204;
-  return Math.pow(v86, v87)
+  return Math.pow(Math.E, log / numbers.length)
 }
 function v19() {
   var result = 0;
   var suites$$1 = BenchmarkSuite.suites;
   var i$$1 = 0;
-  var v205 = suites$$1.length;
-  var v88 = i$$1 < v205;
+  var v88 = i$$1 < suites$$1.length;
   for(;v88;) {
-    introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
       var v285 = suites$$1[i$$1]
     }
-    var v267 = v285.benchmarks;
-    var v206 = v267.length;
-    result = result + v206;
+    result = result + v285.benchmarks.length;
     i$$1 = i$$1 + 1;
-    var v207 = suites$$1.length;
-    v88 = i$$1 < v207
+    v88 = i$$1 < suites$$1.length
   }
   return result
 }
 function v18(runner, skipBenchmarks$$1) {
   function RunStep() {
     var v208 = continuation;
-    var v268 = !v208;
-    if(v268) {
+    if(!v208) {
       v208 = index$$39 < length$$11
     }
     var v94 = v208;
     for(;v94;) {
       if(continuation) {
-        continuation = JAMScript.call(continuation, null, [])
+        continuation = continuation()
       }else {
         var v89 = index$$39;
         index$$39 = index$$39 + 1;
-        introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
           var suite = suites[v89]
         }
-        var v91 = runner.NotifyStart;
-        if(v91) {
-          var v90 = suite.name;
-          JAMScript.call(runner.NotifyStart, runner, [v90])
+        if(runner.NotifyStart) {
+          JAM.call(runner.NotifyStart, runner, [suite.name])
         }
-        var v269 = suite.name;
-        var v209 = skipBenchmarks$$1.indexOf(v269);
-        var v92 = v209 > -1;
-        if(v92) {
-          JAMScript.call(suite.NotifySkipped, suite, [runner])
+        if(skipBenchmarks$$1.indexOf(suite.name) > -1) {
+          JAM.call(suite.NotifySkipped, suite, [runner])
         }else {
-          continuation = JAMScript.call(suite.RunStep, suite, [runner])
+          continuation = JAM.call(suite.RunStep, suite, [runner])
         }
       }
       var v210 = continuation;
       if(v210) {
-        var v286 = typeof window;
-        var v270 = v286 != "undefined";
+        var v270 = typeof window != "undefined";
         if(v270) {
           v270 = window.setTimeout
         }
         v210 = v270
       }
-      var v93 = v210;
-      if(v93) {
+      if(v210) {
         window.setTimeout(RunStep, 25);
         return
       }
       var v211 = continuation;
-      var v271 = !v211;
-      if(v271) {
+      if(!v211) {
         v211 = index$$39 < length$$11
       }
       v94 = v211
     }
-    var v97 = runner.NotifyScore;
-    if(v97) {
-      var v95 = BenchmarkSuite.scores;
-      var score = JAMScript.call(BenchmarkSuite.GeometricMean, BenchmarkSuite, [v95]);
-      var v96 = 100 * score;
-      var formatted = JAMScript.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [v96]);
-      JAMScript.call(runner.NotifyScore, runner, [formatted])
+    if(runner.NotifyScore) {
+      var score = JAM.call(BenchmarkSuite.GeometricMean, BenchmarkSuite, [BenchmarkSuite.scores]);
+      var formatted = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * score]);
+      JAM.call(runner.NotifyScore, runner, [formatted])
     }
     return
   }
   var v98;
-  var v272 = typeof skipBenchmarks$$1;
-  var v212 = v272 === "undefined";
-  if(v212) {
+  if(typeof skipBenchmarks$$1 === "undefined") {
     v98 = []
   }else {
     v98 = skipBenchmarks$$1
@@ -429,32 +329,13 @@ function v18(runner, skipBenchmarks$$1) {
 function v17() {
   function v16() {
     function v15() {
-      var v213 = seed + 2127912214;
-      var v214 = seed << 12;
-      var v99 = v213 + v214;
-      seed = v99 & 4294967295;
-      var v215 = seed ^ 3345072700;
-      var v216 = seed >>> 19;
-      var v100 = v215 ^ v216;
-      seed = v100 & 4294967295;
-      var v217 = seed + 374761393;
-      var v218 = seed << 5;
-      var v101 = v217 + v218;
-      seed = v101 & 4294967295;
-      var v219 = seed + 3550635116;
-      var v220 = seed << 9;
-      var v102 = v219 ^ v220;
-      seed = v102 & 4294967295;
-      var v221 = seed + 4251993797;
-      var v222 = seed << 3;
-      var v103 = v221 + v222;
-      seed = v103 & 4294967295;
-      var v223 = seed ^ 3042594569;
-      var v224 = seed >>> 16;
-      var v104 = v223 ^ v224;
-      seed = v104 & 4294967295;
-      var v105 = seed & 268435455;
-      return v105 / 268435456
+      seed = seed + 2127912214 + (seed << 12) & 4294967295;
+      seed = (seed ^ 3345072700 ^ seed >>> 19) & 4294967295;
+      seed = seed + 374761393 + (seed << 5) & 4294967295;
+      seed = (seed + 3550635116 ^ seed << 9) & 4294967295;
+      seed = seed + 4251993797 + (seed << 3) & 4294967295;
+      seed = (seed ^ 3042594569 ^ seed >>> 16) & 4294967295;
+      return(seed & 268435455) / 268435456
     }
     var seed = 49734321;
     return v15
@@ -472,20 +353,15 @@ function v13() {
 }
 function v12() {
   var v107 = performance.now;
-  var v226 = !v107;
-  if(v226) {
+  if(!v107) {
     var v225 = performance.mozNow;
-    var v274 = !v225;
-    if(v274) {
+    if(!v225) {
       var v273 = performance.msNow;
-      var v288 = !v273;
-      if(v288) {
+      if(!v273) {
         var v287 = performance.oNow;
-        var v295 = !v287;
-        if(v295) {
+        if(!v287) {
           var v294 = performance.webkitNow;
-          var v298 = !v294;
-          if(v298) {
+          if(!v294) {
             v294 = Date.now
           }
           v287 = v294
@@ -550,8 +426,7 @@ function BenchmarkSuite(name$$32, reference, benchmarks$$1) {
   this.name = name$$32;
   this.reference = reference;
   this.benchmarks = benchmarks$$1;
-  var v112 = BenchmarkSuite.suites;
-  v112.push(this);
+  BenchmarkSuite.suites.push(this);
   return
 }
 function setupCodeLoad() {
@@ -579,49 +454,32 @@ function jenkinsHash(key$$14, len) {
   var i$$6 = 0;
   var v113 = i$$6 < len;
   for(;v113;) {
-    introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
       var v227 = key$$14[i$$6]
     }
     hash = hash + v227;
-    var v228 = hash << 10;
-    hash = hash + v228;
-    var v229 = hash >> 6;
-    hash = hash ^ v229;
+    hash = hash + (hash << 10);
+    hash = hash ^ hash >> 6;
     i$$6 = i$$6 + 1;
     v113 = i$$6 < len
   }
-  var v230 = hash << 3;
-  hash = hash + v230;
-  var v231 = hash >> 11;
-  hash = hash ^ v231;
-  var v232 = hash << 15;
-  hash = hash + v232;
+  hash = hash + (hash << 3);
+  hash = hash ^ hash >> 11;
+  hash = hash + (hash << 15);
   return hash
 }
 function cacheBust(str$$6, old) {
-  var v233 = salt.toString();
-  var v114 = v233.split("");
-  var keys = v114.map(parseFloat);
-  var v234 = keys.length;
-  var v115 = jenkinsHash(keys, v234);
-  var hash$$1 = Math.abs(v115);
-  var v116 = old;
-  var v117 = hash$$1.toString(36);
-  var replacement = v116 + v117;
-  var v118 = new RegExp(old, "g");
-  return str$$6.replace(v118, replacement)
+  var keys = salt.toString().split("").map(parseFloat);
+  var hash$$1 = Math.abs(jenkinsHash(keys, keys.length));
+  var replacement = old + hash$$1.toString(36);
+  return str$$6.replace(new RegExp(old, "g"), replacement)
 }
 function runClosure() {
-  var v275 = "var googsalt=" + salt;
-  var v235 = v275 + ";";
-  var v119 = v235 + BASE_JS;
-  var src$$inline_0 = v119 + "(function(){return goog.cloneObject(googsalt);})();";
+  var src$$inline_0 = "var googsalt=" + salt + ";" + BASE_JS + "(function(){return goog.cloneObject(googsalt);})();";
   src$$inline_0 = cacheBust(src$$inline_0, "goog");
-  var result$$inline_1 = JAMScript.call(indirectEval, null, [src$$inline_0]);
-  var v121 = result$$inline_1 != salt;
-  if(v121) {
-    var v120 = "Incorrect result: " + result$$inline_1;
-    throw new Error(v120);
+  var result$$inline_1 = JAM.call(indirectEval, null, [src$$inline_0]);
+  if(result$$inline_1 != salt) {
+    throw new Error("Incorrect result: " + result$$inline_1);
   }
   return
 }
@@ -666,68 +524,40 @@ function MockElement() {
   return
 }
 function runJQuery() {
-  var v289 = "var windowmock = {'document':new MockElement(),                                 'location':{'href':''},                                 'navigator':{'userAgent':''}};" + "var jQuerySalt=";
-  var v276 = v289 + salt;
-  var v236 = v276 + ";";
-  var v122 = v236 + JQUERY_JS;
-  var src$$inline_3 = v122 + "(function(){return windowmock.jQuery.grep([jQuerySalt],              function(a,b){return true;})[0];})();";
+  var src$$inline_3 = "var windowmock = {'document':new MockElement(),                                 'location':{'href':''},                                 'navigator':{'userAgent':''}};" + "var jQuerySalt=" + salt + ";" + JQUERY_JS + "(function(){return windowmock.jQuery.grep([jQuerySalt],              function(a,b){return true;})[0];})();";
   src$$inline_3 = cacheBust(src$$inline_3, "jQuery");
-  var result$$inline_4 = JAMScript.call(indirectEval, null, [src$$inline_3]);
-  var v124 = result$$inline_4 != salt;
-  if(v124) {
-    var v123 = "Incorrect result: " + result$$inline_4;
-    throw new Error(v123);
+  var result$$inline_4 = JAM.call(indirectEval, null, [src$$inline_3]);
+  if(result$$inline_4 != salt) {
+    throw new Error("Incorrect result: " + result$$inline_4);
   }
   return
 }
 function ShowBox(name$$33) {
   function v11(entry) {
-    var v237 = JAMScript.call(name$$33.valueOf, name$$33, []);
-    var v238 = JAMScript.call(entry.valueOf, entry, []);
-    var v127 = v237 === v238;
-    if(v127) {
-      var v239 = "Box-" + name$$33;
-      var v125 = v239 + "Latency";
-      var box1 = JAMScript.call(document.getElementById, document, [v125]);
-      var v126 = box1.style;
-      v126.visibility = "visible"
+    if(name$$33.valueOf() === entry.valueOf()) {
+      var box1 = JAM.call(document.getElementById, document, ["Box-" + name$$33 + "Latency"]);
+      box1.style.visibility = "visible"
     }
     return
   }
-  var v128 = "Box-" + name$$33;
-  var box = JAMScript.call(document.getElementById, document, [v128]);
-  var v129 = box.style;
-  v129.visibility = "visible";
-  var v240 = JAMScript.call(document.getElementById, document, ["progress-bar"]);
-  var v130 = v240.style;
-  var v296 = completed = completed + 1;
-  var v290 = v296 / benchmarks;
-  var v277 = v290 * 100;
-  var v241 = "" + v277;
-  var bar = v130.width = v241 + "%";
+  var box = JAM.call(document.getElementById, document, ["Box-" + name$$33]);
+  box.style.visibility = "visible";
+  var bar = JAM.call(document.getElementById, document, ["progress-bar"]).style.width = "" + (completed = completed + 1) / benchmarks * 100 + "%";
   latencyBenchmarks.forEach(v11);
   return
 }
 function AddResult(name$$34, result$$4) {
-  var v242 = name$$34 + ": ";
-  var v131 = v242 + result$$4;
-  console.log(v131);
-  var v132 = "Result-" + name$$34;
-  var box$$1 = JAMScript.call(document.getElementById, document, [v132]);
-  JAMScript.set(box$$1, "innerHTML", result$$4);
+  console.log(name$$34 + ": " + result$$4);
+  var box$$1 = JAM.call(document.getElementById, document, ["Result-" + name$$34]);
+  JAM.set(box$$1, "innerHTML", result$$4);
   return
 }
 function AddError(name$$35, error$$3) {
-  var v243 = name$$35 + ": ";
-  var v244 = error$$3.message;
-  var v133 = v243 + v244;
-  console.log(v133);
-  var v135 = error$$3 == "TypedArrayUnsupported";
-  if(v135) {
+  console.log(name$$35 + ": " + error$$3.message);
+  if(error$$3 == "TypedArrayUnsupported") {
     AddResult(name$$35, "<b>Unsupported</b>")
   }else {
-    var v134 = error$$3 == "PerformanceNowUnsupported";
-    if(v134) {
+    if(error$$3 == "PerformanceNowUnsupported") {
       AddResult(name$$35, "<b>Timer error</b>")
     }else {
       AddResult(name$$35, "<b>Error</b>")
@@ -737,93 +567,62 @@ function AddError(name$$35, error$$3) {
   return
 }
 function AddScore(score$$2) {
-  var status = JAMScript.call(document.getElementById, document, ["main-banner"]);
+  var status = JAM.call(document.getElementById, document, ["main-banner"]);
   if(success) {
-    JAMScript.set(status, "innerHTML", "Octane Score: " + score$$2)
+    JAM.set(status, "innerHTML", "Octane Score: " + score$$2)
   }else {
-    JAMScript.set(status, "innerHTML", "Octane Score (incomplete): " + score$$2)
+    JAM.set(status, "innerHTML", "Octane Score (incomplete): " + score$$2)
   }
-  var v245 = JAMScript.call(document.getElementById, document, ["progress-bar-container"]);
-  var v136 = v245.style;
-  v136.visibility = "hidden";
-  var v246 = JAMScript.call(document.getElementById, document, ["bottom-text"]);
-  var v137 = v246.style;
-  v137.visibility = "visible";
-  var v138 = JAMScript.call(document.getElementById, document, ["inside-anchor"]);
-  var v139 = JAMScript.call(document.getElementById, document, ["bar-appendix"]);
-  JAMScript.call(v138.removeChild, v138, [v139]);
-  var v247 = JAMScript.call(document.getElementById, document, ["alertbox"]);
-  var v140 = v247.style;
-  v140.visibility = "hidden";
+  JAM.call(document.getElementById, document, ["progress-bar-container"]).style.visibility = "hidden";
+  JAM.call(document.getElementById, document, ["bottom-text"]).style.visibility = "visible";
+  var v138 = JAM.call(document.getElementById, document, ["inside-anchor"]);
+  JAM.call(v138.removeChild, v138, [JAM.call(document.getElementById, document, ["bar-appendix"])]);
+  JAM.call(document.getElementById, document, ["alertbox"]).style.visibility = "hidden";
   return
 }
 function Run() {
-  var v141 = JAMScript.call(document.getElementById, document, ["main-banner"]);
-  JAMScript.set(v141, "innerHTML", "Running Octane...");
-  var v142 = JAMScript.call(document.getElementById, document, ["bar-appendix"]);
-  JAMScript.set(v142, "innerHTML", '<br/><div class="progress progress-striped" id="progress-bar-container" style="visibility:hidden"><div class="bar"style="width: 0%;" id="progress-bar"></div></div>');
-  var anchor = JAMScript.call(document.getElementById, document, ["run-octane"]);
-  var parent = JAMScript.call(document.getElementById, document, ["main-container"]);
-  var v143 = JAMScript.call(document.getElementById, document, ["inside-anchor"]);
-  JAMScript.call(parent.appendChild, parent, [v143]);
-  JAMScript.call(parent.removeChild, parent, [anchor]);
-  var v144 = JAMScript.call(document.getElementById, document, ["startup-text"]);
-  JAMScript.set(v144, "innerHTML", "");
-  var v248 = JAMScript.call(document.getElementById, document, ["progress-bar-container"]);
-  var v145 = v248.style;
-  v145.visibility = "visible";
-  var v146 = {NotifyStart:ShowBox, NotifyError:AddError, NotifyResult:AddResult, NotifyScore:AddScore};
-  JAMScript.call(BenchmarkSuite.RunSuites, BenchmarkSuite, [v146, skipBenchmarks]);
+  JAM.set(JAM.call(document.getElementById, document, ["main-banner"]), "innerHTML", "Running Octane...");
+  JAM.set(JAM.call(document.getElementById, document, ["bar-appendix"]), "innerHTML", '<br/><div class="progress progress-striped" id="progress-bar-container" style="visibility:hidden"><div class="bar"style="width: 0%;" id="progress-bar"></div></div>');
+  var anchor = JAM.call(document.getElementById, document, ["run-octane"]);
+  var parent = JAM.call(document.getElementById, document, ["main-container"]);
+  JAM.call(parent.appendChild, parent, [JAM.call(document.getElementById, document, ["inside-anchor"])]);
+  JAM.call(parent.removeChild, parent, [anchor]);
+  JAM.set(JAM.call(document.getElementById, document, ["startup-text"]), "innerHTML", "");
+  JAM.call(document.getElementById, document, ["progress-bar-container"]).style.visibility = "visible";
+  JAM.call(BenchmarkSuite.RunSuites, BenchmarkSuite, [{NotifyStart:ShowBox, NotifyError:AddError, NotifyResult:AddResult, NotifyScore:AddScore}, skipBenchmarks]);
   return
 }
 function CheckCompatibility() {
-  var v249 = typeof Uint8Array;
-  var v147 = v249 != "undefined";
+  var v147 = typeof Uint8Array != "undefined";
   if(v147) {
-    var v278 = typeof Float64Array;
-    var v250 = v278 != "undefined";
+    var v250 = typeof Float64Array != "undefined";
     if(v250) {
-      var v297 = new Uint8Array(0);
-      var v291 = v297.subarray;
-      var v279 = typeof v291;
-      v250 = v279 != "undefined"
+      v250 = typeof(new Uint8Array(0)).subarray != "undefined"
     }
     v147 = v250
   }
   var hasTypedArrays = v147;
-  var v149 = !hasTypedArrays;
-  if(v149) {
+  if(!hasTypedArrays) {
     console.log("Typed Arrays not supported");
-    var v251 = JAMScript.call(document.getElementById, document, ["alertbox"]);
-    var v148 = v251.style;
-    v148.display = "block"
+    JAM.call(document.getElementById, document, ["alertbox"]).style.display = "block"
   }
-  var v292 = window.document;
-  var v280 = v292.URL;
-  var v252 = v280.indexOf("skip_zlib=1");
-  var v150 = v252 >= 0;
-  if(v150) {
+  if(window.document.URL.indexOf("skip_zlib=1") >= 0) {
     skipBenchmarks.push("zlib")
   }
-  var v293 = window.document;
-  var v281 = v293.URL;
-  var v253 = v281.indexOf("auto=1");
-  var v151 = v253 >= 0;
-  if(v151) {
+  if(window.document.URL.indexOf("auto=1") >= 0) {
     Run()
   }
   return
 }
 function Load() {
-  JAMScript.call(setTimeout, null, [CheckCompatibility, 200]);
+  JAM.call(setTimeout, null, [CheckCompatibility, 200]);
   return
 }
 var performance = performance || {};
 var v152 = performance;
 var v300 = v12();
 v152.now = v300;
-var v153 = BenchmarkResult.prototype;
-v153.valueOf = v13;
+BenchmarkResult.prototype.valueOf = v13;
 BenchmarkSuite.suites = [];
 BenchmarkSuite.version = "9";
 BenchmarkSuite.config = {doWarmup:undefined, doDeterministic:undefined};
@@ -835,23 +634,13 @@ BenchmarkSuite.GeometricMean = v20;
 BenchmarkSuite.GeometricMeanTime = v21;
 BenchmarkSuite.GeometricMeanLatency = v22;
 BenchmarkSuite.FormatScore = v23;
-var v154 = BenchmarkSuite.prototype;
-v154.NotifyStep = v24;
-var v155 = BenchmarkSuite.prototype;
-v155.NotifyResult = v25;
-var v156 = BenchmarkSuite.prototype;
-v156.NotifySkipped = v26;
-var v157 = BenchmarkSuite.prototype;
-v157.NotifyError = v27;
-var v158 = BenchmarkSuite.prototype;
-v158.RunSingleBenchmark = v28;
-var v159 = BenchmarkSuite.prototype;
-v159.RunStep = v29;
-var v160 = [45E4];
-var v254 = new Benchmark("CodeLoadClosure", false, false, 1600, runCodeLoadClosure, setupCodeLoad, tearDownCodeLoad, null, 16);
-var v255 = new Benchmark("CodeLoadJQuery", false, false, 100, runCodeLoadJQuery, setupCodeLoad, tearDownCodeLoad, null, 16);
-var v161 = [v254, v255];
-var CodeLoad = new BenchmarkSuite("CodeLoad", v160, v161);
+BenchmarkSuite.prototype.NotifyStep = v24;
+BenchmarkSuite.prototype.NotifyResult = v25;
+BenchmarkSuite.prototype.NotifySkipped = v26;
+BenchmarkSuite.prototype.NotifyError = v27;
+BenchmarkSuite.prototype.RunSingleBenchmark = v28;
+BenchmarkSuite.prototype.RunStep = v29;
+var CodeLoad = new BenchmarkSuite("CodeLoad", [45E4], [new Benchmark("CodeLoadClosure", false, false, 1600, runCodeLoadClosure, setupCodeLoad, tearDownCodeLoad, null, 16), new Benchmark("CodeLoadJQuery", false, false, 100, runCodeLoadJQuery, setupCodeLoad, tearDownCodeLoad, null, 16)]);
 var salt;
 var indirectEval;
 var v301 = 'var COMPILED=!0,goog=goog||{};goog.global=this;goog.DEBUG=!0;goog.LOCALE="en";goog.provide=function(a){if(!COMPILED){if(goog.isProvided_(a))throw Error(\'Namespace "\'+a+\'" already declared.\');delete goog.implicitNamespaces_[a];for(var b=a;(b=b.substring(0,b.lastIndexOf(".")))&&!goog.getObjectByName(b);)goog.implicitNamespaces_[b]=!0}goog.exportPath_(a)};goog.setTestOnly=function(a){if(COMPILED&&!goog.DEBUG)throw a=a||"",Error("Importing test-only code into non-debug environment"+a?": "+a:".");};COMPILED||(goog.isProvided_=function(a){return!goog.implicitNamespaces_[a]&&!!goog.getObjectByName(a)},goog.implicitNamespaces_={});goog.exportPath_=function(a,b,c){a=a.split(".");c=c||goog.global;!(a[0]in c)&&c.execScript&&c.execScript("var "+a[0]);for(var d;a.length&&(d=a.shift());)!a.length&&goog.isDef(b)?c[d]=b:c=c[d]?c[d]:c[d]={}};goog.getObjectByName=function(a,b){for(var c=a.split("."),d=b||goog.global,e;e=c.shift();)if(goog.isDefAndNotNull(d[e]))d=d[e];else return null;return d};goog.globalize=function(a,b){var c=b||goog.global,d;for(d in a)c[d]=a[d]};goog.addDependency=function(a,b,c){if(!COMPILED){for(var d,a=a.replace(/\\\\/g,"/"),e=goog.dependencies_,g=0;d=b[g];g++){e.nameToPath[d]=a;a in e.pathToNames||(e.pathToNames[a]={});e.pathToNames[a][d]=true}for(d=0;b=c[d];d++){a in e.requires||(e.requires[a]={});e.requires[a][b]=true}}};goog.ENABLE_DEBUG_LOADER=!0;goog.require=function(a){if(!COMPILED&&!goog.isProvided_(a)){if(goog.ENABLE_DEBUG_LOADER){var b=goog.getPathFromDeps_(a);if(b){goog.included_[b]=true;goog.writeScripts_();return}}a="goog.require could not find: "+a;goog.global.console&&goog.global.console.error(a);throw Error(a);}};goog.basePath="";goog.nullFunction=function(){};goog.identityFunction=function(a){return a};goog.abstractMethod=function(){throw Error("unimplemented abstract method");};goog.addSingletonGetter=function(a){a.getInstance=function(){return a.instance_||(a.instance_=new a)}};!COMPILED&&goog.ENABLE_DEBUG_LOADER&&(goog.included_={},goog.dependencies_={pathToNames:{},nameToPath:{},requires:{},visited:{},written:{}},goog.inHtmlDocument_=function(){var a=goog.global.document;return typeof a!="undefined"&&"write"in a},goog.findBasePath_=function(){if(goog.global.CLOSURE_BASE_PATH)goog.basePath=goog.global.CLOSURE_BASE_PATH;else if(goog.inHtmlDocument_())for(var a=goog.global.document.getElementsByTagName("script"),b=a.length-1;b>=0;--b){var c=a[b].src,d=c.lastIndexOf("?"), d=d==-1?c.length:d;if(c.substr(d-7,7)=="base.js"){goog.basePath=c.substr(0,d-7);break}}},goog.importScript_=function(a){var b=goog.global.CLOSURE_IMPORT_SCRIPT||goog.writeScriptTag_;!goog.dependencies_.written[a]&&b(a)&&(goog.dependencies_.written[a]=true)},goog.writeScriptTag_=function(a){if(goog.inHtmlDocument_()){goog.global.document.write(\'<script type="text/javascript" src="\'+a+\'"><\\/script>\');return true}return false},goog.writeScripts_=function(){function a(e){if(!(e in d.written)){if(!(e in d.visited)){d.visited[e]=true;if(e in d.requires)for(var f in d.requires[e])if(!goog.isProvided_(f))if(f in d.nameToPath)a(d.nameToPath[f]);else throw Error("Undefined nameToPath for "+f);}if(!(e in c)){c[e]=true;b.push(e)}}}var b=[],c={},d=goog.dependencies_,e;for(e in goog.included_)d.written[e]||a(e);for(e=0;e<b.length;e++)if(b[e])goog.importScript_(goog.basePath+b[e]);else throw Error("Undefined scrip' + 
@@ -878,13 +667,11 @@ var v303 = v304 + 'y(this,arguments):a==null||d?this.each(function(){var b=d?a:f
 var v302 = v303 + 'duration==Infinity?this.now=e:(c=e-this.startTime,this.state=c/i.duration,this.pos=f.easing[i.animatedProperties[this.prop]](this.state,c,0,1,i.duration),this.now=this.start+(this.end-this.start)*this.pos),this.update();return!0}},f.extend(f.fx,{tick:function(){var a,b=f.timers,c=0;for(;c<b.length;c++)a=b[c],!a()&&b[c]===a&&b.splice(c--,1);b.length||f.fx.stop()},interval:13,stop:function(){clearInterval(co),co=null},speeds:{slow:600,fast:200,_default:400},step:{opacity:function(a){f.style(a.elem,"opacity",a.now)},_default:function(a){a.elem.style&&a.elem.style[a.prop]!=null?a.elem.style[a.prop]=a.now+a.unit:a.elem[a.prop]=a.now}}}),f.each(cp.concat.apply([],cp),function(a,b){b.indexOf("margin")&&(f.fx.step[b]=function(a){f.style(a.elem,b,Math.max(0,a.now)+a.unit)})}),f.expr&&f.expr.filters&&(f.expr.filters.animated=function(a){return f.grep(f.timers,function(b){return a===b.elem}).length});var cv,cw=/^t(?:able|d|h)$/i,cx=/^(?:body|html)$/i;"getBoundingClientRect"in c.documentElement?cv=function(a,b,c,d){try{d=a.getBoundingClientRect()}catch(e){}if(!d||!f.contains(c,a))return d?{top:d.top,left:d.left}:{top:0,left:0};var g=b.body,h=cy(b),i=c.clientTop||g.clientTop||0,j=c.clientLeft||g.clientLeft||0,k=h.pageYOffset||f.support.boxModel&&c.scrollTop||g.scrollTop,l=h.pageXOffset||f.support.boxModel&&c.scrollLeft||g.scrollLeft,m=d.top+k-i,n=d.left+l-j;return{top:m,left:n}}:cv=function(a,b,c){var d,e=a.offsetParent,g=a,h=b.body,i=b.defaultView,j=i?i.getComputedStyle(a,null):a.currentStyle,k=a.offsetTop,l=a.offsetLeft;while((a=a.parentNode)&&a!==h&&a!==c){if(f.support.fixedPosition&&j.position==="fixed")break;d=i?i.getComputedStyle(a,null):a.currentStyle,k-=a.scrollTop,l-=a.scrollLeft,a===e&&(k+=a.offsetTop,l+=a.offsetLeft,f.support.doesNotAddBorder&&(!f.support.doesAddBorderForTableAndCells||!cw.test(a.nodeName))&&(k+=parseFloat(d.borderTopWidth)||0,l+=parseFloat(d.borderLeftWidth)||0),g=e,e=a.offsetParent),f.support.subtractsBorderForOverflowNotVisible&&d.overflow!=="visible"&&(k+=parseFloat(d.borderTopWidth)||0,l+=parseFloat(d.borderLeftWidth)||0),j=d}if(j.position==="relative"||j.position==="static")k+=h.offsetTop,l+=h.offsetLeft;f.support.fixedPosition&&j.position==="fixed"&&(k+=Math.max(c.scrollTop,h.scrollTop),l+=Math.max(c.scrollLeft,h.scrollLeft));return{top:k,left:l}},f.fn.offset=function(a){if(arguments.length)return a===b?this:this.each(function(b){f.offset.setOffset(this,a,b)});var c=this[0],d=c&&c.ownerDocument;if(!d)return null;if(c===d.body)return f.offset.bodyOffset(c);return cv(c,d,d.documentElement)},f.offset={bodyOffset:function(a){var b=a.offsetTop,c=a.offsetLeft;f.support.doesNotIncludeMarginInBodyOffset&&(b+=parseFloat(f.css(a,"marginTop"))||0,c+=parseFloat(f.css(a,"marginLeft"))||0);return{top:b,left:c}},setOffset:function(a,b,c){var d=f.css(a,"position");d==="static"&&(a.style.position="relative");var e=f(a),g=e.offset(),h=f.css(a,"top"),i=f.css(a,"left"),j=(d==="absolute"||d==="fixed")&&f.inArray("auto",[h,i])>-1,k={},l={},m,n;j?(l=e.position(),m=l.top,n=l.left):(m=parseFloat(h)||0,n=parseFloat(i)||0),f.isFunction(b)&&(b=b.call(a,c,g)),b.top!=null&&(k.top=b.top-g.top+m),b.left!=null&&(k.left=b.left-g.left+n),"using"in b?b.using.call(a,k):e.css(k)}},f.fn.extend({position:function(){if(!this[0])return null;var a=this[0],b=this.offsetParent(),c=this.offset(),d=cx.test(b[0].nodeName)?{top:0,left:0}:b.offset();c.top-=parseFloat(f.css(a,"marginTop"))||0,c.left-=parseFloat(f.css(a,"marginLeft"))||0,d.top+=parseFloat(f.css(b[0],"borderTopWidth"))||0,d.left+=parseFloat(f.css(b[0],"borderLeftWidth"))||0;return{top:c.top-d.top,left:c.left-d.left}},offsetParent:function(){return this.map(function(){var a=this.offsetParent||c.body;while(a&&!cx.test(a.nodeName)&&f.css(a,"position")==="static")a=a.offsetParent;return a})}}),f.each({scrollLeft:"pageXOffset",scrollTop:"pageYOffset"},function(a,c){var d=/Y/.test(c);f.fn[a]=function(e){return f.access(this,function(a,e,g){var h=cy(a);if(g===b)return h?c in h?h[c]:f.support.boxModel&&h.document.documentElement[e]||h.document.body[e]:a[e];h?h.scrollTo(d?f(h).scrollLeft():g,d?g:f(h).scrollTop()):a[e]=g},a,e,arguments.length,null)}}),f.each({Height:"height",Width:"width"},function(a,c){var d="client"+a,e="scroll"+a,g="offset"+a;f.fn["inner"+a]=function(){var a=this[0];return a?a.style?parseFloat(f.css(a,c,"padding")):this[c]():null},f.fn["outer"+a]=function(a){var b=this[0];return b?b.style?parseFloat(f.css(b,c,a?"margin":"border")):this[c]():null},f.fn[c]=function(a){return f.access(this,function(a,c,h){var i,j,k,l;if(f.isWindow(a)){i=a.document,j=i.documentElement[d];return f.support.boxModel&&j||i.body&&i.body[d]||j}if(a.nodeType===9){i=a.documentElement;if(i[d]>=i[e])return i[d];return Math.max(a.body[e],i[e],a.body[g],i[g])}if(h===b){k=f.css(a,c),l=parseFloat(k);return f.isNumeric(l)?l:k}f(a).css(c,h)},c,a,arguments.length,null)}}),a.jQuery=a.$=f,typeof define=="function"&&define.amd&&define.amd.jQuery&&define("jquery",[],function(){return f})})(windowmock);';
 var JQUERY_JS = v302;
 var completed = 0;
-var benchmarks = JAMScript.call(BenchmarkSuite.CountBenchmarks, BenchmarkSuite, []);
+var benchmarks = BenchmarkSuite.CountBenchmarks();
 var success = true;
 var latencyBenchmarks = ["Splay", "Mandreel"];
 var v162;
-var v282 = typeof skipBenchmarks;
-var v256 = v282 === "undefined";
-if(v256) {
+if(typeof skipBenchmarks === "undefined") {
   v162 = []
 }else {
   v162 = skipBenchmarks

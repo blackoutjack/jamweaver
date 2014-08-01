@@ -7,12 +7,14 @@ import java.util.Map;
 import java.util.HashMap;
 
 import edu.wisc.cs.jam.PolicyLanguage;
+import edu.wisc.cs.jam.PolicyType;
 import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
 
 import edu.wisc.cs.jam.js.NodeUtil;
 import edu.wisc.cs.jam.js.JSExp;
+import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPolicyType;
 
 // This represents a snippet of JavaScript that evaluates the
 // truth value of a single conjunct of a JAM policy predicate with
@@ -27,23 +29,7 @@ public class EvaluatorNode {
   // This is generated and saved when toString is called.
   private String code;
 
-  public enum Type {
-    SET,
-    GET,
-    CALL,
-    TYPE,
-    STRINGCONTAINS,
-    STRINGSTARTSWITH,
-    SHEQ,
-    SHNE,
-    EQ,
-    NE,
-    INSTANCEOF,
-    REGEXTEST,
-    DUMMY
-  }
-
-  private Type type;
+  private PolicyType type;
   private boolean not = false;
 
   // Mapping for wild card. This may be shared with other EvaluatorNode
@@ -53,7 +39,7 @@ public class EvaluatorNode {
   // Native locations that have been referenced. Shared in the same way
   // as |wilds|.
   private Map<String,String> natives;
-  // Collect object/property pairs that are checked in SET predicates.
+  // Collect object/property pairs that are checked in WRITE predicates.
   private List<String[]> setProperties;
 
   public EvaluatorNode(PolicyLanguage pl, Exp e) {
@@ -65,46 +51,9 @@ public class EvaluatorNode {
       exp = exp.getFirstChild();
     }
 
-    if (exp.isCall()) {
-      String callName = exp.getFirstChild().toCode();
-      if (callName.equals("jam#called")) {
-        type = Type.CALL;
-        if (not)
-          throw new UnsupportedOperationException("Negated jam#called predicates not supported: " + exp.toCode());
-      } else if (callName.equals("jam#set")) {
-        type = Type.SET;
-        if (not)
-          throw new UnsupportedOperationException("Negative jam#set predicates not supported: " + exp.toCode());
-      } else if (callName.equals("jam#get")) {
-        type = Type.GET;
-        if (not)
-          throw new UnsupportedOperationException("Negative jam#get predicates not supported: " + exp.toCode());
-      } else if (callName.equals("jam#type")) {
-        type = Type.TYPE;
-      } else if (callName.equals("jam#stringcontains")) {
-        type = Type.STRINGCONTAINS;
-      } else if (callName.equals("jam#stringstartswith")) {
-        type = Type.STRINGSTARTSWITH;
-      } else if (callName.equals("jam#regextest")) {
-        type = Type.REGEXTEST;
-      } else {
-        throw new UnsupportedOperationException("Unknown predicate call: " + exp.toCode());
-      }
-    } else if (exp.is(JSExp.SHEQ)) {
-      type = Type.SHEQ;
-    } else if (exp.is(JSExp.SHNE)) {
-      type = Type.SHNE;
-    } else if (exp.is(JSExp.EQ)) {
-      type = Type.EQ;
-    } else if (exp.is(JSExp.NE)) {
-      type = Type.NE;
-    } else if (exp.is(JSExp.INSTANCEOF)) {
-      type = Type.INSTANCEOF;
-    } else if (exp.is(JSExp.FALSE)) {
-      type = Type.DUMMY;
-    } else {
+    type = pl.getPolicyType(exp);
+    if (type == null)
       throw new UnsupportedOperationException("Unknown conjunct type: " + exp.toCode());
-    }
   }
 
   public void setWilds(Map<String,String> wilds) {
@@ -127,7 +76,7 @@ public class EvaluatorNode {
     return wilds;
   }
 
-  public Type getType() {
+  public PolicyType getType() {
     return type;
   }
 
@@ -159,6 +108,26 @@ public class EvaluatorNode {
     return boundExpr;
   }
 
+  protected String loadWild(String wildRef, String concRef) {
+    String jsRef = null;
+    if (wilds.containsKey(wildRef)) {
+      // Some previous clause encountered a wildcard identifier, and
+      // we currently assume that only |set|, |get| and |called|
+      // conjuncts can unify wildcards (since we're unifying with
+      // the nodes in write sequence, read sequence and call
+      // sequence).
+      jsRef = wilds.get(wildRef);
+      assert jsRef != null : "Null wild mapping encountered: " + wildRef;
+    } else {
+      if (concRef != null) {
+        // Unify the wildcard property name with the concrete reference.
+        wilds.put(wildRef, concRef);
+        jsRef = concRef;
+      }
+    }
+    return jsRef;
+  }
+
   protected void makeBinaryConjunct(StringBuilder sb) {
     assert exp.getChildCount() == 2 : "Invalid child count for equality conjunct: " + exp.toCode();
 
@@ -178,36 +147,22 @@ public class EvaluatorNode {
       String objid = null;
       String objstr = obj.toCode();
       if (language.isWild(obj)) {
-        if (wilds.containsKey(objstr)) {
-          // Some previous clause encountered a wildcard identifier, and
-          // we currently assume that only |set|, |get| and |called|
-          // conjuncts can unify wildcards (since we're unifying with
-          // the nodes in write sequence, read sequence and call
-          // sequence). So assume that the wildcard name is unified.
-          objid = wilds.get(objstr);
-          assert objid != null : "Conjunction malfunction";
-        } else {
-          // %%% This could be handled more gingerly, and correctly.
-          assert false : "Wildcard is not unified";
+        // %%% Could perhaps a concrete ref be provided?
+        objid = loadWild(objstr, null);
+        if (objid == null) {
+          throw new UnsupportedOperationException("Wildcard " + objstr + " is not unified: " + exp.toCode());
         }
       } else {
         // %%% Output code that compares |varname === native| where
         // %%% |native| is the native object corresponding to the
         // %%% location cited in the policy predicate.
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("This case hasn't been implemented yet: " + exp.toCode());
       }
 
       String propname = null;
       String propstr = prop.toCode();
       if (language.isWild(prop)) {
-        if (wilds.containsKey(propstr)) {
-          propname = wilds.get(propstr);
-          assert propname != null : "Conjunction malfunction";
-        } else {
-          // Unify the wildcard property name with the write node id.
-          // %%% Does this come up, and work right?
-          wilds.put(propstr, "node.id");
-        }
+        propname = loadWild(propstr, "node.id");
       } else {
         assert prop.isString() : "Invalid property identifier: " + propstr;
         propname = propstr;
@@ -237,15 +192,10 @@ public class EvaluatorNode {
 
       if (language.isWild(lhs)) {
         String wildstr = lhs.toCode();
-        String name = null;
-        if (wilds.containsKey(wildstr)) {
-          name = wilds.get(wildstr);
-          assert name != null : "Conjunction malfunction";
-        } else {
-          throw new UnsupportedOperationException();
+        lop = loadWild(wildstr, null);
+        if (lop == null) {
+          throw new UnsupportedOperationException("Wildcard " + wildstr + " is not unified: " + exp.toCode());
         }
-
-        lop = name;
       } else {
         // Close over the global object.
         // %%% This doesn't work since the global object for the script
@@ -273,14 +223,7 @@ public class EvaluatorNode {
         String objname = null;
         if (language.isWild(arg0)) {
           String wildstr = arg0.toCode();
-          if (wilds.containsKey(wildstr)) {
-            objname = wilds.get(wildstr);
-            assert objname != null : "Conjunction malfunction";
-          } else {
-            // Unify the wildcard object with the write node object.
-            wilds.put(wildstr, "node.obj");
-            objname = "node.obj";
-          }
+          objname = loadWild(wildstr, "node.obj");
         } else if (language.isNativeLocation(arg0)) {
           String objloc = arg0.toCode();
           String objexpr = NodeUtil.nativeLocationToExpression.get(objloc);
@@ -348,17 +291,17 @@ public class EvaluatorNode {
     // %%% Delegate this to PolicyLanguage.
     String op = null;
     boolean isInfix = true;
-    if (type == Type.SHEQ) {
+    if (type == JSPolicyType.SHEQ) {
       op = "JAM.identical";
       isInfix = false;
-    } else if (type == Type.EQ) {
+    } else if (type == JSPolicyType.EQ) {
       op = " == ";
-    } else if (type == Type.SHNE) {
+    } else if (type == JSPolicyType.SHNE) {
       op = "!JAM.identical";
       isInfix = false;
-    } else if (type == Type.NE) {
+    } else if (type == JSPolicyType.NE) {
       op = " != ";
-    } else if (type == Type.INSTANCEOF) {
+    } else if (type == JSPolicyType.INSTANCEOF) {
       op = "JAM.instanceof";
       isInfix = false;
     } else {
@@ -443,17 +386,10 @@ public class EvaluatorNode {
       String objid = null;
       String objstr = obj.toCode();
       if (language.isWild(obj)) {
-        if (wilds.containsKey(objstr)) {
-          // Some previous clause encountered a wildcard identifier, and
-          // we currently assume that only |set|, |get| and |called|
-          // conjuncts can unify wildcards (since we're unifying with
-          // the nodes in write sequence, read sequence and call
-          // sequence). So assume that the wildcard name is unified.
-          objid = wilds.get(objstr);
-          assert objid != null : "Conjunction malfunction";
-        } else {
-          // %%% This could be handled more gingerly, and correctly.
-          assert false : "Wildcard is not unified";
+        // %%% Can a concrete reference be provided?
+        objid = loadWild(objstr, null);
+        if (objid == null) {
+          throw new UnsupportedOperationException("Wildcard " + objstr + " is not unified: " + exp.toCode());
         }
       } else {
         // %%% Output code that compares |varname === native| where
@@ -465,14 +401,7 @@ public class EvaluatorNode {
       String propname = null;
       String propstr = prop.toCode();
       if (language.isWild(prop)) {
-        if (wilds.containsKey(propstr)) {
-          propname = wilds.get(propstr);
-          assert propname != null : "Conjunction malfunction";
-        } else {
-          // Unify the wildcard property name with the write node id.
-          // %%% Does this come up, and work right?
-          wilds.put(propstr, "node.id");
-        }
+        propname = loadWild(propstr, "node.id");
       } else {
         assert prop.isString() : "Invalid property identifier: " + prop.toCode();
         propname = propstr;
@@ -564,17 +493,10 @@ public class EvaluatorNode {
       String objid = null;
       String objstr = obj.toCode();
       if (language.isWild(obj)) {
-        if (wilds.containsKey(objstr)) {
-          // Some previous clause encountered a wildcard identifier, and
-          // we currently assume that only |set|, |get| and |called|
-          // conjuncts can unify wildcards (since we're unifying with
-          // the nodes in write sequence, read sequence and call
-          // sequence). So assume that the wildcard name is unified.
-          objid = wilds.get(objstr);
-          assert objid != null : "Conjunction malfunction";
-        } else {
-          // %%% This could be handled more gingerly, and correctly.
-          assert false : "Wildcard is not unified";
+        // %%% Could a concrete value be provided?
+        objid = loadWild(objstr, null);
+        if (objid == null) {
+          throw new UnsupportedOperationException("Wildcard " + objstr + " is not unified: " + exp.toCode());
         }
       } else {
         // %%% Output code that compares |varname === native| where
@@ -586,14 +508,7 @@ public class EvaluatorNode {
       String propname = null;
       String propstr = prop.toCode();
       if (language.isWild(prop)) {
-        if (wilds.containsKey(propstr)) {
-          propname = wilds.get(propstr);
-          assert propname != null : "Conjunction malfunction";
-        } else {
-          // Unify the wildcard property name with the write node id.
-          // %%% Does this come up, and work right?
-          wilds.put(propstr, "node.id");
-        }
+        propname = loadWild(propstr, "node.id");
       } else {
         assert prop.isString() : "Invalid property identifier: " + prop.toCode();
         propname = propstr;
@@ -757,9 +672,9 @@ public class EvaluatorNode {
     }
   }
 
-  protected void makeGetOrSetConjunct(StringBuilder sb) {
+  protected void makeAccessConjunct(StringBuilder sb) {
     // There should be 1 call name and 2 arguments.
-    assert exp.getChildCount() == 3 : "Invalid number of children for get/set conjunct: " + exp.getChildCount() + " children for " + exp.toCode();
+    assert exp.getChildCount() == 3 : "Invalid number of children for access conjunct: " + exp.getChildCount() + " children for " + exp.toCode();
 
     // %%% Maybe change format back to |set(obj.prop)| and with a wild
     // %%% |set(%x.%y)|.
@@ -770,22 +685,10 @@ public class EvaluatorNode {
     Exp prop = exp.getChild(2);
     
     boolean hasObjClause = false;
+    String objid = null;
     String objstr = obj.toCode();
     if (language.isWild(obj)) {
-      if (wilds.containsKey(objstr)) {
-        // Some previous clause encountered a wildcard identifier, but
-        // we currently assume that only |set|, |get| and |called|
-        // conjuncts can unify wildcards (since we're unifying with
-        // the nodes in write sequence, read sequence and call
-        // sequence). And assume that there's only one |set|, |get| or
-        // |called| conjunct in any single conjunction.
-        String varname = wilds.get(objstr);
-        assert varname == null : "Conjunction malfunction";
-        wilds.put(objstr, "node.obj");
-      } else {
-        // Unify the wildcard object with the write node object.
-        wilds.put(objstr, "node.obj");
-      }
+      objid = loadWild(objstr, "node.obj");
     } else if (language.isNativeLocation(obj)) {
       String loc = objstr;
       String nativeObj = NodeUtil.nativeLocationToExpression.get(loc);
@@ -814,23 +717,10 @@ public class EvaluatorNode {
       throw new UnsupportedOperationException("Unknown predicate call name: " + obj.toCode());
     }
 
+    String propname = null;
     String propstr = prop.toCode();
     if (language.isWild(prop)) {
-      if (wilds.containsKey(propstr)) {
-        String varname = wilds.get(propstr);
-        // A previous clause encountered a wildcard identifier, but
-        // we currently assume that only |set|, |get| and |called|
-        // conjuncts can unify wildcards (since we're unifying with
-        // the nodes in write sequence, read sequence and call
-        // sequence). And that there's only one |set|, |get| or |called|
-        // conjunct in any single conjunction.
-        assert varname == null : "Conjunction malfunction";
-        wilds.put(propstr, "node.id");
-      } else {
-        // Unify the wildcard property name with the write node id.
-        wilds.put(propstr, "node.id");
-      }
-
+      propname = loadWild(propstr, "node.id");
     } else {
       if (hasObjClause) {
         sb.append(" && ");
@@ -845,7 +735,7 @@ public class EvaluatorNode {
       sb.append("true");
     }
 
-    if (type == Type.SET) {
+    if (type == JSPolicyType.WRITE) {
       // Let subsequent nodes know to use |node.value| rather than
       // |node.obj.prop| to test the value.
       String[] objprop = { objstr, propstr };
@@ -863,10 +753,11 @@ public class EvaluatorNode {
       sb.append("!");
     }
     sb.append("(");
-    switch (type) {
-      case SET:
-      case GET:
-        makeGetOrSetConjunct(sb);
+    switch ((JSPolicyType)type) {
+      case WRITE:
+      case READ:
+      case DELETE:
+        makeAccessConjunct(sb);
         break;
       case CALL:
         makeCallConjunct(sb);
@@ -899,5 +790,4 @@ public class EvaluatorNode {
   }
 
 }
-
 

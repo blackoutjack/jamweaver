@@ -43,7 +43,6 @@ public class BackwardAnalysis extends JAMAnalysis {
     model.build();
 
     RelationAutomaton ra = model.getRelationAutomaton();
-    CheckManager cm = getCheckManager();
 
     for (Policy.Edge pe : policyPath.getPolicyEdges()) {
       Predicate pred = pe.getSymbol().getPredicate();
@@ -89,8 +88,6 @@ public class BackwardAnalysis extends JAMAnalysis {
 
         if (JAM.Opts.debug)
           FileUtil.serializeToFile(model.getRelationAutomaton(), "raut-" + iteration + ".aut");
-
-        CheckManager cm = getCheckManager();
 
         Set<String> seedNames = null;
         if (JAM.Opts.seedLocal) {
@@ -151,8 +148,6 @@ public class BackwardAnalysis extends JAMAnalysis {
 
   protected void runRefine(ProgramModel model) {
     Dbg.out("Attempting model refinement", 2);
-
-    CheckManager cm = getCheckManager();
 
     // %%% Want to only get the checks added by this analysis?
     for (RuntimeCheck c : getChecks()) {

@@ -188,16 +188,17 @@ def copy_source(app, desc, src, tgtdir, wrap=False, mod=False):
     srctxt = srcfl.read()
   srcfl.close()
 
+  # Normalize the number of blank lines.
+  srctxt = ind + srctxt.strip() + "\n"
+
   if mod:
     # Generate a modular transaction version. 
-    srctxt = ind + "introspect(JAMScript.introspectors.processAll) {\n" + srctxt + "\n" + ind + "}\n"
-  # Normalize the number of blank lines.
-  srctxt = srctxt.strip() + "\n"
+    srctxt = ind + "introspect(JAM.policy.pFull) {\n" + srctxt + "\n" + ind + "}\n"
 
   # Optionally, a result file in the target directory can contain
   # a JavaScript expression that should evaluate to |true| (or some
   # other value). This value will be returned by |runTest| and
-  # displayed by the JAMScript log.
+  # displayed by the JAM log.
   if wrap:
     # %%% A little unintuitive to store the expected results in the
     # %%% destination directory.
@@ -448,12 +449,85 @@ def update_profiles(tgtdir, bases, wrap, iso):
     if sms2:
       update_profile(tgtdir, app + '-big', wrap, iso)
 
+def update_expected(bases):
+  appfiles = cfg.get_source_info(cfg.SOURCEDIR, bases)
+  dirs = [cfg.MICROBENCHMARK_DIR, cfg.BENCHMARK_DIR]
+
+  for from_dir in dirs:
+    paths = cfg.load_sources(from_dir, '.js', '.exp.js')
+    
+    for flpath in paths:
+      base = cfg.get_base(flpath)
+      if base not in bases: continue
+
+      # Some benchmarks have a modified version with a "-bad"
+      # or "-ok" suffix. These can use the same policy as
+      # the non-modified version.
+      policies = cfg.load_policies(from_dir, base) 
+      if len(policies) == 0:
+        subparts = base.split('-')
+        if subparts[-1] == 'bad' or subparts[-1] == 'ok':
+          xbase = '-'.join(subparts[:-1])
+          policies = cfg.load_policies(from_dir, xbase)
+      if len(policies) == 0:
+        policies = {'': ''}
+
+      seedfile = cfg.load_seeds(from_dir, base)
+          
+      # Run with each policy file separately.
+      for poldesc in policies:
+        # Differentiate the output if policy indexed by a non-numeric key.
+        # For example, the policy file jsqrcode.call.policy will be
+        # indexed by "call", and the output will be stored separately from
+        # the analysis using jsqrcode.get.policy. Alter the .exp filename
+        # accordingly.
+        if poldesc != '':
+          outbase = base + '-' + poldesc
+          exppre = '.' + poldesc
+        else:
+          outbase = base
+          exppre = ''
+
+        # Mimic the logic in run.py:run_*
+        if from_dir == cfg.BENCHMARK_DIR:
+          refine = 0
+        else:
+          refine = 3
+          if seedfile is not None:
+            refine = 0
+          if base.startswith('exfil_test') and poldesc != '':
+            refine = 0
+          if base == 'timeout0':
+            refine = 0
+
+        if refine:
+          expsuf = exppre + ".exp.js"
+        else:
+          expsuf = exppre + ".norefine.exp.js"
+
+        basefiles = appfiles[outbase]
+        if 'collapsed' in basefiles:
+          outfile = appfiles[outbase]['collapsed']
+          outfl = open(outfile, 'r')
+          outp = outfl.read()
+          outfl.close()
+          
+          expfile = cfg.get_exp_path(flpath, expsuf)
+          #stat = cfg.validate_output(flpath, outp, expsuf)
+          #print stat + ":", expfile, "/", outfile
+          stat = cfg.overwrite_expected(flpath, outp, expsuf)
+          if stat == "overwritten":
+            print base + expsuf, stat
+        else:
+          cfg.warn("Output not found: " + base)
+
 def main():
   parser = OptionParser(usage="%prog transferconfig.py")
   parser.add_option('-f', '--overwrite', action='store_true', default=False, dest='overwrite', help='overwrite existing files')
   parser.add_option('-v', '--verbose', action='store_true', default=False, dest='verbose', help='generate verbose output')
   parser.add_option('-a', '--app', action='store', default=None, dest='app', help='limit transfer to the given app')
   parser.add_option('-u', '--updateprof', action='store_true', default=False, dest='updateprof', help='just update previously-transferred profile sources')
+  parser.add_option('-e', '--updateexp', action='store_true', default=False, dest='updateexp', help='just update expected results')
 
   opts, args = parser.parse_args()
 
@@ -479,6 +553,8 @@ def main():
     iso = props['isolate']
     if opts.updateprof:
       update_profiles(destdir, bases, wrap, iso)
+    elif opts.updateexp:
+      update_expected(bases)
     else:
       transfer_results(cfg.SOURCEDIR, destdir, bases, wrap, iso)
 

@@ -1,26 +1,17 @@
 function warmup() {
   var start$$5 = new Date;
-  var v37 = new Date;
-  var v23 = v37 - start$$5;
-  var v2 = v23 < warmupMS;
+  var v2 = new Date - start$$5 < warmupMS;
   for(;v2;) {
     var i$$2 = 0;
     var v1 = i$$2 < 100;
     for(;v1;) {
-      var v42 = Math.random();
-      var v41 = Math.asin(v42);
-      var v38 = Math.acos(v41);
-      var v24 = Math.atan(v38);
-      var v0 = v24 > 4;
-      if(v0) {
+      if(Math.atan(Math.acos(Math.asin(Math.random()))) > 4) {
         return
       }
       i$$2 = i$$2 + 1;
       v1 = i$$2 < 100
     }
-    var v39 = new Date;
-    var v25 = v39 - start$$5;
-    v2 = v25 < warmupMS
+    v2 = new Date - start$$5 < warmupMS
   }
   return
 }
@@ -29,35 +20,23 @@ function start() {
   return
 }
 function next() {
-  var v3 = document.getElementById("frameparent");
-  JAMScript.set(v3, "innerHTML", "");
-  var v4 = document.getElementById("frameparent");
-  JAMScript.set(v4, "innerHTML", "<iframe id='testframe'>");
+  JAM.set(document.getElementById("frameparent"), "innerHTML", "");
+  JAM.set(document.getElementById("frameparent"), "innerHTML", "<iframe id='testframe'>");
   var testFrame = document.getElementById("testframe");
-  var v26 = testIndex = testIndex + 1;
-  var v27 = tests.length;
-  var v11 = v26 < v27;
-  if(v11) {
+  if((testIndex = testIndex + 1) < tests.length) {
     warmup();
     var v5 = testFrame.contentDocument;
-    introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
-      var v210 = [[], v5, v5.open]
-    }
-    JAMScript.call(v210[2], v210[1], v210[0]);
+    JAM.call(JAM.get(v5, "open", JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074), v5, []);
     var v6 = testFrame.contentDocument;
-    introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
       var v7 = testContents[testIndex]
     }
-    JAMScript.call(v6.write, v6, [v7]);
-    var v8 = testFrame.contentDocument;
-    v8.close();
+    JAM.call(v6.write, v6, [v7]);
+    testFrame.contentDocument.close();
     window.setTimeout(next, 0)
   }else {
-    var v28 = currentRepeat = currentRepeat + 1;
-    var v10 = v28 < repeatCount;
-    if(v10) {
-      var v9 = document.getElementById("countdown");
-      JAMScript.set(v9, "innerHTML", repeatCount - currentRepeat);
+    if((currentRepeat = currentRepeat + 1) < repeatCount) {
+      JAM.set(document.getElementById("countdown"), "innerHTML", repeatCount - currentRepeat);
       testIndex = -1;
       window.setTimeout(next, 128)
     }else {
@@ -67,15 +46,14 @@ function next() {
   return
 }
 function recordResult(time) {
-  var v14 = currentRepeat >= 0;
-  if(v14) {
-    introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  if(currentRepeat >= 0) {
+    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
       var v12 = output[currentRepeat]
     }
-    introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
       var v13 = tests[testIndex]
     }
-    JAMScript.set(v12, v13, time)
+    JAM.set(v12, v13, time)
   }
   return
 }
@@ -83,42 +61,30 @@ function finish() {
   var outputString = "{";
   outputString = outputString + '"v": "sunspider-1.0.2", ';
   var test;
-  var v19 = output[0];
-  for(test in v19) {
-    var v40 = '"' + test;
-    var v29 = v40 + '":[';
-    outputString = outputString + v29;
+  for(test in output[0]) {
+    outputString = outputString + ('"' + test + '":[');
     var i$$3 = 0;
-    var v30 = output.length;
-    var v17 = i$$3 < v30;
+    var v17 = i$$3 < output.length;
     for(;v17;) {
-      introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
         var v15 = output[i$$3]
       }
-      introspect(JAMScript.introspectors.processC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
         var time$$1 = v15[test]
       }
-      var v16 = time$$1 != time$$1;
-      if(v16) {
+      if(time$$1 != time$$1) {
         time$$1 = '"NaN"'
       }
-      var v31 = time$$1 + ",";
-      outputString = outputString + v31;
+      outputString = outputString + (time$$1 + ",");
       i$$3 = i$$3 + 1;
-      var v32 = output.length;
-      v17 = i$$3 < v32
+      v17 = i$$3 < output.length
     }
-    var v33 = outputString.length;
-    var v18 = v33 - 1;
-    outputString = outputString.substring(0, v18);
+    outputString = outputString.substring(0, outputString.length - 1);
     outputString = outputString + "],"
   }
-  var v34 = outputString.length;
-  var v20 = v34 - 1;
-  outputString = outputString.substring(0, v20);
+  outputString = outputString.substring(0, outputString.length - 1);
   outputString = outputString + "}";
-  var v21 = encodeURI(outputString);
-  location = "results.html?" + v21;
+  location = "results.html?" + encodeURI(outputString);
   return
 }
 var tests = ["3d-cube", "3d-morph", "3d-raytrace", "access-binary-trees", "access-fannkuch", "access-nbody", "access-nsieve", "bitops-3bit-bits-in-byte", "bitops-bits-in-byte", "bitops-bitwise-and", "bitops-nsieve-bits", "controlflow-recursive", "crypto-aes", "crypto-md5", "crypto-sha1", "date-format-tofte", "date-format-xparb", "math-cordic", "math-partial-sums", "math-spectral-norm", "regexp-dna", "string-base64", "string-fasta", "string-tagcloud", "string-unpack-code", "string-validate-input"];
@@ -323,13 +289,11 @@ var warmupMS = 8;
 var output = [];
 output.length = repeatCount;
 var i = 0;
-var v35 = output.length;
-var v22 = i < v35;
+var v22 = i < output.length;
 for(;v22;) {
   output[i] = {};
   i = i + 1;
-  var v36 = output.length;
-  v22 = i < v36
+  v22 = i < output.length
 }
 start();
 

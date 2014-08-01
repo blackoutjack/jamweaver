@@ -1,16 +1,16 @@
 function f() {
   var y$$31 = x;
-  if(JAMScript.isEval(eval)) {
-    eval("introspect(JAMScript.introspectors.processAll) { " + "var z;" + " }")
+  if(JAM.isEval(eval)) {
+    eval("introspect(JAM.policy.pFull) { " + "var z;" + " }")
   }else {
-    JAMScript.call(eval, null, ["var z;"])
+    JAM.call(eval, null, ["var z;"])
   }
   return y$$31
 }
-if(JAMScript.isEval(eval)) {
-  eval("introspect(JAMScript.introspectors.processAll) { " + "var x = 4;" + " }")
+if(JAM.isEval(eval)) {
+  eval("introspect(JAM.policy.pFull) { " + "var x = 4;" + " }")
 }else {
-  JAMScript.call(eval, null, ["var x = 4;"])
+  JAM.call(eval, null, ["var x = 4;"])
 }
 z = f();
 alert(z);

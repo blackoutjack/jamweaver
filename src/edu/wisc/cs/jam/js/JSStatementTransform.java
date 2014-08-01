@@ -25,6 +25,10 @@ public class JSStatementTransform extends JSTransform {
   
   protected boolean DEBUG = false;
 
+  protected Set<Node> tmpDefs;
+  protected Set<Node> tmpUses;
+  protected Set<String> simpleTmpDefs;
+
   @Override
   public void run(SourceFile src) {
     Node root = src.getRootNode();
@@ -34,19 +38,16 @@ public class JSStatementTransform extends JSTransform {
     ReturnExplicit re = new ReturnExplicit(src);
     Dbg.out("Starting pass RETURN", 4); 
     NodeTraversal.traverse(comp, root, re);
-    if (DEBUG) src.update();
 
     // Name anonymous functions.
     DeanonymizeFunction df = new DeanonymizeFunction(src);
     Dbg.out("Starting pass DEANONYMIZE", 4); 
     NodeTraversal.traverse(comp, root, df);
-    if (DEBUG) src.update();
 
     // Conduct function definition rearrangement.
     FunctionElevate fe = new FunctionElevate(src);
     Dbg.out("Starting pass ELEVATE", 4); 
     NodeTraversal.traverse(comp, root, fe);
-    if (DEBUG) src.update();
 
     boolean changed = true;
     StatementSplit ss = new StatementSplit(src);
@@ -55,36 +56,34 @@ public class JSStatementTransform extends JSTransform {
       NodeTraversal.traverse(comp, root, ss);
       changed = ss.madeChange();
       ss.flagChange(false);
-      if (DEBUG) src.update();
     }
 
     SplitSetsAndCalls ssc = new SplitSetsAndCalls(src);
     Dbg.out("Starting pass SPLIT", 4); 
     NodeTraversal.traverse(comp, root, ssc);
-    if (DEBUG) src.update();
 
     // Break up large array literals.
     ArrayLiteralConverter alc = new ArrayLiteralConverter(src);
     Dbg.out("Starting pass ARRAY", 4); 
     NodeTraversal.traverse(comp, root, alc);
-    if (DEBUG) src.update();
 
     // Break up large string literals.
     StringConverter sc = new StringConverter(src);
     Dbg.out("Starting pass STRING", 4); 
     NodeTraversal.traverse(comp, root, sc);
-    if (DEBUG) src.update();
+  }
+
+  public Set<String> getCollapsableTemporaries() {
+    return new HashSet<String>(simpleTmpDefs);
   }
 
   public class StatementSplit extends IterativeTraversal {
-
-    protected Set<Node> tmpDefs;
-    protected Set<Node> tmpUses;
     
     public StatementSplit(SourceFile src) {
       super(src);
       tmpDefs = new HashSet<Node>();
       tmpUses = new HashSet<Node>();
+      simpleTmpDefs = new HashSet<String>();
     }
 
     protected boolean isVerySimple(Node n) {
@@ -330,8 +329,22 @@ public class JSStatementTransform extends JSTransform {
         Node stmtParent = stmt.getParent();
         stmtParent.addChildBefore(tmpInit, stmt);
 
+        String id = tmpName.getString();
+        /*
+        if (n.isName()) {
+          sourceFile.propagateType(n.getString(), id);
+        } else if (NodeUtil.returnsBoolean(n)) {
+          sourceFile.setType(id, "Boolean");
+        } else if (NodeUtil.returnsString(sourceFile, n)) {
+          sourceFile.setType(id, "String");
+        } else if (NodeUtil.returnsNumber(sourceFile, n)) {
+          sourceFile.setType(id, "Number");
+        }
+        */
+
         tmpDefs.add(tmpName);
         tmpUses.add(tmpRef);
+        simpleTmpDefs.add(id);
         return true;
       }
     }

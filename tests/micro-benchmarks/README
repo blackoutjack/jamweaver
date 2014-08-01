@@ -1,0 +1,18 @@
+
+JAM microbenchmark tests
+=========================
+
+To create a new test, add these files:
+
+  TEST.js: the input program
+  TEST.exp.js: the expected output program with abstraction refinement
+  TEST.norefine.exp.js: expected output without refinement
+  TEST.policy: the input policy (optional; defaults to `simple.policy')
+
+If you don't wish to construct TEST.exp.js by hand,
+you can copy output/TEST-0/TEST-collapsed.js after a successful run.
+
+To run all the tests, invoke the tests/run.py script as follows.
+
+$JAMPKG/tests/run.py -m
+

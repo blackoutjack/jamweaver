@@ -17,8 +17,9 @@ public interface SourceFile {
   public abstract void postprocess(ControlAutomaton c, CheckManager cm);
   public abstract void finalize();
   public abstract String getType(String n);
+  public abstract void setType(String n, String typ);
+  public abstract boolean propagateType(String srcName, String destName);
   public abstract String getFilename();
-  public void update();
 
   public abstract CallGraph getCallGraph();
   public abstract void reportCodeChange();

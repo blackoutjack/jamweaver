@@ -1,7 +1,5 @@
-introspect(JAMScript.introspectors.processAll) {
-  document.write("<script>document.write(");
-  document.write("'BOY HOWDY'");
-  document.write(");\x3c/script>");
-  document.close()
-}
-;
+JAM.call(document.write, document, ["<script>document.write("]);
+JAM.call(document.write, document, ["'BOY HOWDY'"]);
+JAM.call(document.write, document, [");\x3c/script>"]);
+JAM.call(document.close, document, []);
+

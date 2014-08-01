@@ -1,8 +1,8 @@
 var a = new String;
-if(JAMScript.isEval(eval)) {
-  eval("introspect(JAMScript.introspectors.processAll) { " + "String = Boolean" + " }")
+if(JAM.isEval(eval)) {
+  eval("introspect(JAM.policy.pFull) { " + "String = Boolean" + " }")
 }else {
-  JAMScript.call(eval, null, ["String = Boolean"])
+  JAM.call(eval, null, ["String = Boolean"])
 }
 var b = new String;
 

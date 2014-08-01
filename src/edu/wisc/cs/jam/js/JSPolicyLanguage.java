@@ -7,6 +7,7 @@ import edu.wisc.cs.jam.PolicyType;
 import edu.wisc.cs.jam.Policy;
 import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.Exp;
+import edu.wisc.cs.jam.Dbg;
 
 public class JSPolicyLanguage extends PolicyLanguage {
 
@@ -14,6 +15,7 @@ public class JSPolicyLanguage extends PolicyLanguage {
     WRITE,
     READ,
     CALL,
+    DELETE,
     TYPE,
     STRINGCONTAINS,
     STRINGSTARTSWITH,
@@ -26,16 +28,33 @@ public class JSPolicyLanguage extends PolicyLanguage {
     DUMMY
   }
 
-  protected JSPolicyType getPolicyType(Exp e) {
+  public JSPolicyType getPolicyType(Exp e) {
     JSPolicyType type = null;
+
+    boolean not = false;
+    if (e.isNot()) {
+      not = true;
+      e = e.getFirstChild();
+    }
+
     if (e.isCall()) {
-      String callName = e.getFirstChild().toString();
+      String callName = e.getFirstChild().toCode();
       if (callName.equals("jam#called")) {
         type = JSPolicyType.CALL;
+        if (not)
+          throw new UnsupportedOperationException("Negated jam#called predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#set")) {
         type = JSPolicyType.WRITE;
+        if (not)
+          throw new UnsupportedOperationException("Negative jam#set predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#get")) {
         type = JSPolicyType.READ;
+        if (not)
+          throw new UnsupportedOperationException("Negative jam#get predicates not supported: " + e.toCode());
+      } else if (callName.equals("jam#delete")) {
+        type = JSPolicyType.DELETE;
+        if (not)
+          throw new UnsupportedOperationException("Negative jam#delete predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#type")) {
         type = JSPolicyType.TYPE;
       } else if (callName.equals("jam#stringcontains")) {
@@ -60,12 +79,6 @@ public class JSPolicyLanguage extends PolicyLanguage {
     } else if (e.is(JSExp.FALSE)) {
       type = JSPolicyType.DUMMY;
     } else {
-      if (e.getChildCount() > 0) {
-        // Use the first child as the type indicator.
-        // %%% Kinda ugly.
-        Exp esub = e.getFirstChild();
-        return getPolicyType(esub);
-      }
       return null;
     }
     return type;
@@ -73,7 +86,7 @@ public class JSPolicyLanguage extends PolicyLanguage {
 
   @Override
   public JSPolicyType getPolicyEdgeType(Policy.Edge edge) {
-    Exp e = edge.getSymbol().getPredicate().getPositive().getExpression();
+    Exp e = edge.getSymbol().getPredicate().getConjuncts().get(0);
     JSPolicyType type = getPolicyType(e);
     if (type == null) {
       throw new UnsupportedOperationException("Unknown policy type: " + e.toCode());

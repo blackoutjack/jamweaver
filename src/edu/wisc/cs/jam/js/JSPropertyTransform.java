@@ -128,7 +128,7 @@ public class JSPropertyTransform extends JSTransform {
     Dbg.out("Property writes transformed: " + propertyTransformCnt, 1);
 
     // Generate the transformed output.
-    src.update();
+    src.reportCodeChange();
     String filename = FileUtil.getBaseName() + "-" + suf;
     FileUtil.writeToMain(src.toString() + "\n", filename);
   }
@@ -149,7 +149,7 @@ public class JSPropertyTransform extends JSTransform {
     // Wrap a property write that may generate dynamic code.
     // obj.prop = val;
     //   ==> 
-    // JAMScript.set(obj, prop, val);
+    // JAM.set(obj, prop, val);
     //
     protected void transformProperty(NodeTraversal t, Node n, Node parent) {
       assert n.isAssign();
@@ -191,7 +191,7 @@ public class JSPropertyTransform extends JSTransform {
       Node obj = lhs.getFirstChild();
       Node prop = lhs.getChildAtIndex(1);
 
-      // Generate the call |JAMScript.set(obj, prop, val)|.
+      // Generate the call |JAM.set(obj, prop, val)|.
       Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
       Node proxName = Node.newString(Token.STRING, "set");
       Node libAcc = new Node(Token.GETPROP, libName, proxName);

@@ -141,7 +141,7 @@ public class Transaction {
         parent.addChildToBack(tx);
       }
     }
-    sourceFile.update();
+    sourceFile.reportCodeChange();
 
     setApplied(true);
   }
@@ -176,7 +176,7 @@ public class Transaction {
       next = stmt;
     }
 
-    sourceFile.update();
+    sourceFile.reportCodeChange();
 
     setApplied(false);
   }

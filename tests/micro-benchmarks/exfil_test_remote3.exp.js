@@ -2,16 +2,12 @@ function exfiltrate_key_history() {
   var URL = "./exfil.js";
   var tags = document.getElementsByTagName("div");
   var v0 = tags[0];
-  JAMScript.call(v0.setAttribute, v0, ["data-src", URL]);
+  JAM.call(v0.setAttribute, v0, ["data-src", URL]);
   var script = document.createElement("script");
-  var v4 = tags[0];
-  var v1 = v4.getAttribute("data-src");
-  JAMScript.call(script.setAttribute, script, ["src", v1]);
-  var v5 = document.getElementsByTagName("head");
-  var v2 = v5[0];
-  JAMScript.call(v2.appendChild, v2, [script]);
+  JAM.call(script.setAttribute, script, ["src", tags[0].getAttribute("data-src")]);
+  var v2 = document.getElementsByTagName("head")[0];
+  JAM.call(v2.appendChild, v2, [script]);
   return
 }
-var v3 = document.getElementById("test");
-JAMScript.set(v3, "onclick", exfiltrate_key_history);
+JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history);
 

@@ -4,7 +4,6 @@ switch(x) {
     y = x;
     alert(x);
   default:
-    var v0 = x + 1;
-    alert(v0)
+    alert(x + 1)
 }
 ;

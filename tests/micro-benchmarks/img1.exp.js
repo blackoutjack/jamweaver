@@ -1,17 +1,11 @@
 function v0() {
-  var v5 = String.prototype;
-  var v3 = v5.indexOf;
-  var v1 = "indexOf 2: " + v3;
-  alert(v1);
+  alert("indexOf 2: " + String.prototype.indexOf);
   return
 }
 var html = "<img src='notapic.jpg' onerror='String.prototype.indexOf = false' />";
 var elts = document.getElementsByTagName("div");
 var elt = elts.item(0);
-JAMScript.set(elt, "innerHTML", html);
-var v6 = String.prototype;
-var v4 = v6.indexOf;
-var v2 = "indexOf 1: " + v4;
-alert(v2);
-JAMScript.call(setTimeout, null, [v0, 1E3]);
+JAM.set(elt, "innerHTML", html);
+alert("indexOf 1: " + String.prototype.indexOf);
+JAM.call(setTimeout, null, [v0, 1E3]);
 

@@ -46,7 +46,7 @@ public class IncrementalAnalysis extends JAMAnalysis {
   protected synchronized void removeUnlockedChecks() {
     for (RuntimeCheck check : getChecks()) {
       if (!check.isLocked()) {
-        parent.removeCheck(check);
+        cm.removeCheck(check);
         checks.remove(check);
       }
     }

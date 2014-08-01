@@ -22,7 +22,7 @@ APPBASES = get_variant_bases(BENCHMARK_DIR)
 
 #VARIANTS = ['original', 'formtransed', 'transformed']
 #VARIANT_DISPLAY = ['unprotected', 'without indirect', 'with indirect']
-VARIANTS = ['original', 'original.modular', 'transformed']
+VARIANTS = ['original', 'original.modular', 'collapsed']
 VARIANT_DISPLAY = ['unprotected', 'coarse-grained', 'fine-grained']
 RESULTS_SOURCE = os.path.join(PERFDIR, 'times');
 #TEST_DIR = 'jamscript/tests/apps/'

@@ -190,7 +190,7 @@ def get_source_info(srcdir, bases):
       if os.path.isfile(instrpolfile):
         appinfo['instrumented.policy'] = instrpolfile
 
-      keys = ['original','closure','preprocessed','isolated','post','instrumented','transformed','optimized','formtransed']
+      keys = ['original','closure','preprocessed','isolated','post','instrumented','indirection','collapsed','optimized']
 
       for key in keys:
         keyfile = os.path.join(dirpath, app + '-' + key + '.js')

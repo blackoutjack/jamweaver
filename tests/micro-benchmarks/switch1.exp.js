@@ -1,6 +1,5 @@
 function f() {
-  var v0 = "CNT: " + cnt;
-  alert(v0);
+  alert("CNT: " + cnt);
   return cnt++
 }
 var cnt = 0;

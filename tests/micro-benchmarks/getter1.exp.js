@@ -3,20 +3,16 @@ function hello() {
 }
 function v2() {
   function inner() {
-    if(JAMScript.isEval(eval)) {
-      var f = eval("introspect(JAMScript.introspectors.processAll) { " + "hello" + " }")
+    if(JAM.isEval(eval)) {
+      var f = eval("introspect(JAM.policy.pFull) { " + "hello" + " }")
     }else {
-      var f = JAMScript.call(eval, null, ["hello"])
+      var f = JAM.call(eval, null, ["hello"])
     }
-    var v0 = JAMScript.call(f, null, []);
-    return v0 + " whatever"
+    return f() + " whatever"
   }
-  var v1 = inner();
-  return"ok" + v1
+  return"ok" + inner()
 }
 var a = {};
-var v4 = {get:v2};
-JAMScript.call(Object.defineProperty, Object, [a, "ok", v4]);
-var v3 = a.ok;
-alert(v3);
+JAM.call(Object.defineProperty, Object, [a, "ok", {get:v2}]);
+alert(a.ok);
 

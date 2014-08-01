@@ -1,5 +1,5 @@
 function f() {
-  JAMScript.call(e, null, ["x = 2"]);
+  JAM.call(e, null, ["x = 2"]);
   return
 }
 x = 0;

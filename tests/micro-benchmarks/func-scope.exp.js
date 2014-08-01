@@ -1,16 +1,14 @@
 function v1() {
-  var v2 = cnt < 6;
-  if(v2) {
+  if(cnt < 6) {
     cnt = cnt + 1;
-    JAMScript.call(g, null, [])
+    g()
   }
   return
 }
 function v0() {
-  var v3 = cnt < 3;
-  if(v3) {
+  if(cnt < 3) {
     cnt = cnt + 1;
-    JAMScript.call(f, null, [])
+    f()
   }
   return
 }
@@ -19,7 +17,7 @@ if(x) {
   var cnt = 0;
   var f = v0;
   var g = v1;
-  JAMScript.call(f, null, []);
-  JAMScript.call(g, null, [])
+  f();
+  g()
 }
 ;

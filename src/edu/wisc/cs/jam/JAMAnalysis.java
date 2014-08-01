@@ -33,6 +33,9 @@ public class JAMAnalysis implements Runnable {
   // and merges the results.
   protected JAM parent;
 
+  // This tracks the runtime checks placed by the analysis.
+  protected CheckManager cm;
+
   // The policy path to be analyzed by this object.
   protected PolicyPath policyPath;
 
@@ -55,6 +58,7 @@ public class JAMAnalysis implements Runnable {
   public JAMAnalysis(JAM j, PolicyPath p) {
     parent = j;
     policyPath = p;
+    cm = j.getCheckManager();
 
     checks = new ArrayList<RuntimeCheck>();
 
@@ -85,7 +89,7 @@ public class JAMAnalysis implements Runnable {
   }
 
   public CheckManager getCheckManager() {
-    return parent.getCheckManager();
+    return cm;
   }
 
   // From the global list of checks, pull in the ones that are
@@ -94,7 +98,7 @@ public class JAMAnalysis implements Runnable {
     // Collect any checks that have been added during the previous
     // analysis of another policy path, but also are relevant to the
     // instrumentation of the current policy path.
-    for (RuntimeCheck c : parent.getChecks()) {
+    for (RuntimeCheck c : cm.getChecks()) {
       // Nothing to do if we already have the check loaded.
       if (checks.contains(c)) continue;
       if (policyPath.checkApplies(c)) {
@@ -121,7 +125,7 @@ public class JAMAnalysis implements Runnable {
   protected synchronized void addCheck(RuntimeCheck c) {
     // The parent coordinates the application of the check (i.e. the
     // actual source rewriting).
-    parent.addCheck(c);
+    cm.addCheck(c);
     // Multiple counter-examples can contain the same check, leading to
     // duplication.
     if (!checks.contains(c)) checks.add(c);

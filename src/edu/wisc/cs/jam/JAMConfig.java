@@ -9,10 +9,10 @@ public class JAMConfig {
 	public static final String JAMPKG = System.getenv("JAMPKG");
 
   public static final String TRANSACTION_KEYWORD = "introspect";
-  public static final String TRANSACTION_LIBRARY = "JAMScript";
-  public static final String INTROSPECTOR_PREFIX = "process";
-  public static final String COMPREHENSIVE_INTROSPECTOR = INTROSPECTOR_PREFIX + "All";
-  public static final String INTROSPECTOR_LIST = "introspectors";
+  public static final String TRANSACTION_LIBRARY = "JAM";
+  public static final String INTROSPECTOR_PREFIX = "p";
+  public static final String COMPREHENSIVE_INTROSPECTOR = INTROSPECTOR_PREFIX + "Full";
+  public static final String INTROSPECTOR_LIST = "policy";
 
 	// File containing the instrumentation function declaration.
 	//public static final String EXTERN_FILE = JAMPKG + "/lib/externs.js";

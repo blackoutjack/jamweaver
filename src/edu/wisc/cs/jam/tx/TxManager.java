@@ -3,6 +3,7 @@ package edu.wisc.cs.jam.tx;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.SourceFile;
 import edu.wisc.cs.jam.Semantics;
 import edu.wisc.cs.jam.Policy;
+import edu.wisc.cs.jam.PolicyType;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.RuntimeCheck;
 import edu.wisc.cs.jam.ExpSymbol;
@@ -303,7 +305,7 @@ public class TxManager implements CheckManager, Callback {
     // expression will be an accessor that points directly to a function
     // with a name that indicates which edge specifications it checks,
     // so that we can generate an Introspector object from the name.
-    // The expression will be like |JAMScript.introspectors.processXYZ|
+    // The expression will be like |JAM.policy.pXYZ|
     // where XYZ is a hash of the policy edge specifications that are
     // checked by the introspector.
     Introspector introspect = null;
@@ -311,7 +313,7 @@ public class TxManager implements CheckManager, Callback {
     if (ispect.isAccessor()) {
       Exp obj = ispect.getFirstChild();
       String objstr = obj.toCode();
-      String hdlrbank = JAMConfig.TRANSACTION_LIBRARY + ".introspectors";
+      String hdlrbank = JAMConfig.TRANSACTION_LIBRARY + "." + JAMConfig.INTROSPECTOR_LIST;
       if (objstr.equals(hdlrbank)) {
         Exp prop = ispect.getChild(1);
         if (prop.isString()) {
@@ -319,7 +321,7 @@ public class TxManager implements CheckManager, Callback {
           // %%% Create utility |removeQuotes| function
           propstr = propstr.substring(1, propstr.length() - 1);
           if (propstr.equals(JAMConfig.COMPREHENSIVE_INTROSPECTOR)) {
-            introspect = introspectorMap.getUntransformedComprehensive();
+            introspect = introspectorMap.getComprehensive();
           } else if (propstr.startsWith(JAMConfig.INTROSPECTOR_PREFIX)) {
             String hash = propstr.substring(JAMConfig.INTROSPECTOR_PREFIX.length());
             List<Policy.Edge> edges = policy.getEdgesByHash(hash);
@@ -374,8 +376,17 @@ public class TxManager implements CheckManager, Callback {
   protected void appendPolicyOpening(StringBuilder sb) {
     sb.append("var policy = (function() {\n");
     sb.append("\n");
-    sb.append("  // Policy states previously visited\n");
-    sb.append("  var states = [0];\n");
+    int stateCnt = policy.getStateCount(); 
+    // If only an initial and final state, no tracking is needed.
+    if (stateCnt > 2) {
+      sb.append("  // Policy states previously visited\n");
+      // Add |true| at the zero index to avoid subtracting 1 each time.
+      sb.append("  var states = [true");
+      for (int i=2; i<stateCnt; i++) {
+        sb.append(",false");
+      }
+      sb.append("];\n");
+    }
     sb.append("\n");
   }
 
@@ -399,11 +410,9 @@ public class TxManager implements CheckManager, Callback {
 
   // Output the code for the introspector functions.
   protected void appendIntrospectorMap(StringBuilder sb, Set<Introspector> hdlrs) {
-    sb.append("    // Map introspectors to lists of policy transitions.\n");
-    sb.append("    introspectors: {\n");
     if (hdlrs != null) {
       for (Introspector h : hdlrs) {
-        sb.append("      ");
+        sb.append("    ");
         sb.append(h.getName());
         sb.append(": ");
         sb.append(h.getName());
@@ -412,38 +421,34 @@ public class TxManager implements CheckManager, Callback {
     }
 
     // Always add the comprehensive introspector.
-    Introspector processAll = introspectorMap.getUntransformedComprehensive();
-    sb.append("      ");
+    Introspector processAll = introspectorMap.getComprehensive();
+    sb.append("    ");
     sb.append(processAll.getName());
     sb.append(": ");
     sb.append(processAll.getName());
-    sb.append("\n");
-
-    sb.append("    },\n");
     sb.append("\n");
   }
   
   protected void appendPolicyClosing(StringBuilder sb) {
     sb.append("  };\n");
     sb.append("}());\n");
-    sb.append("Object.freeze(policy);\n");
   }
 
   protected void appendComprehensiveIntrospector(StringBuilder sb) {
-    Introspector processAll = introspectorMap.getUntransformedComprehensive();
-    sb.append(processAll.toString(false));
+    Introspector processAll = introspectorMap.getComprehensive();
+    sb.append(processAll.toString());
   }
 
-  protected void appendIntrospectors(StringBuilder sb, Set<Introspector> hdlrs, boolean transform) {
+  protected void appendIntrospectors(StringBuilder sb, Set<Introspector> hdlrs) {
     for (Introspector ispect : hdlrs) {
-      sb.append(ispect.toString(transform));
+      sb.append(ispect.toString());
       sb.append("\n");
     }
   }
 
-  // Output the policy object for instrumented but untransformed code.
+  // Output the policy object with only the comprehensive introspector.
   @Override
-  public Exp getUntransformedPolicyCode() {
+  public Exp getBasePolicyCode() {
     StringBuilder sb = new StringBuilder();
 
     appendPolicyOpening(sb);
@@ -453,42 +458,7 @@ public class TxManager implements CheckManager, Callback {
     Map<String,String> nativeRefs = new LinkedHashMap<String,String>();
     for (Evaluator ev : evaluatorMap.values()) {
       ev.toString(); // %%% Hack to load natives.
-      // Create the evaluators without the callsite transformation.
-      nativeRefs.putAll(ev.getNativeReferences());
-    }
-
-    appendNativeReferences(sb, nativeRefs);
-    appendComprehensiveIntrospector(sb);
-
-    // Get the introspectors that are used in transactions.
-    Set<Introspector> hdlrs = new LinkedHashSet<Introspector>();
-    for (Transaction tx : activeTransactions.values()) {
-      hdlrs.add(tx.getIntrospector());
-    }
-    appendIntrospectors(sb, hdlrs, false);
-
-    appendPolicyObjectOpening(sb);
-    appendIntrospectorMap(sb, hdlrs);
-    appendPolicyClosing(sb);
-
-    Node node = sourceFile.nodeFromCode(sb.toString());
-    return JSExp.create(sourceFile, node);
-  }
-
-  // Output the modular policy object, with a comprehensive introspector
-  // and untransformed call predicates.
-  @Override
-  public Exp getModularPolicyCode() {
-    StringBuilder sb = new StringBuilder();
-
-    appendPolicyOpening(sb);
-    
-    // Collect the native objects needed for evaluation. This is an
-    // ordered map since some natives may be dependent on others.
-    Map<String,String> nativeRefs = new LinkedHashMap<String,String>();
-    for (Evaluator ev : evaluatorMap.values()) {
-      ev.toString(); // %%% Hack to load natives.
-      // Create the evaluators without the callsite transformation.
+      // Create the evaluators.
       nativeRefs.putAll(ev.getNativeReferences());
     }
 
@@ -506,28 +476,29 @@ public class TxManager implements CheckManager, Callback {
   // Output the policy object, complete with all requisite introspectors
   // and evaluators, in JavaScript.
   @Override
-  public Exp getPolicyCode() {
+  public Exp getSpecializedPolicyCode() {
     StringBuilder sb = new StringBuilder();
 
     appendPolicyOpening(sb);
-
+    
     // Collect the native objects needed for evaluation. This is an
     // ordered map since some natives may be dependent on others.
     Map<String,String> nativeRefs = new LinkedHashMap<String,String>();
     for (Evaluator ev : evaluatorMap.values()) {
       ev.toString(); // %%% Hack to load natives.
+      // Create the evaluators.
       nativeRefs.putAll(ev.getNativeReferences());
     }
 
     appendNativeReferences(sb, nativeRefs);
     appendComprehensiveIntrospector(sb);
 
-    // Determine which introspectors are in use.
+    // Get the introspectors that are used in transactions.
     Set<Introspector> hdlrs = new LinkedHashSet<Introspector>();
     for (Transaction tx : activeTransactions.values()) {
       hdlrs.add(tx.getIntrospector());
     }
-    appendIntrospectors(sb, hdlrs, true);
+    appendIntrospectors(sb, hdlrs);
 
     appendPolicyObjectOpening(sb);
     appendIntrospectorMap(sb, hdlrs);
@@ -535,6 +506,23 @@ public class TxManager implements CheckManager, Callback {
 
     Node node = sourceFile.nodeFromCode(sb.toString());
     return JSExp.create(sourceFile, node);
+  }
+
+  public Set<PolicyType> getPolicyTypes(String ispect) {
+    String hash = ispect.substring(JAMConfig.INTROSPECTOR_PREFIX.length());
+    
+    Introspector i = null;
+    if (hash.equals("Full")) {
+      i = introspectorMap.getComprehensive();
+    } else {
+      List<Policy.Edge> edges = policy.getEdgesByHash(hash);
+      if (edges == null) {
+        Dbg.warn("No edges for hash: " + hash);
+        return null;
+      }
+      i = introspectorMap.get(edges);
+    }
+    return i.getPolicyTypes();
   }
 
   // This class effectively maps a set of policy edges to the
@@ -545,34 +533,34 @@ public class TxManager implements CheckManager, Callback {
     
     // Use LinkedHashSet keys instead of List for efficiency only.
     Map<LinkedHashSet<Policy.Edge>,Introspector> introspectors;
-    Introspector untransformedComprehensive;
+    Introspector comprehensive;
 
     public IntrospectorMap(Policy pol) {
       introspectors = new HashMap<LinkedHashSet<Policy.Edge>,Introspector>();
-      // Generate the comprehensive introspector to use for the callsite
-      // transformation. Ensure that they are in reverse path order.
+      // Generate the comprehensive introspector. Ensure that policy
+      // edges are evaluated in reverse path order.
       List<Policy.Edge> polEdges = pol.getAdvancingEdges();
       List<Policy.Edge> compEdges = new ArrayList<Policy.Edge>();
       for (Policy.Edge pe : polEdges) {
         insertInReverseOrder(compEdges, pe);
       }
-      untransformedComprehensive = get(compEdges);
-      untransformedComprehensive.setComprehensive(true);
-      untransformedComprehensive.setName(JAMConfig.COMPREHENSIVE_INTROSPECTOR);
+      comprehensive = get(compEdges);
+      comprehensive.setComprehensive(true);
+      comprehensive.setName(JAMConfig.COMPREHENSIVE_INTROSPECTOR);
       // Remove this from the general introspectors list, so another
       // introspector checking all predicates can be generated use
       // with woven transactions.
       introspectors.clear();
     }
 
-    public Introspector getUntransformedComprehensive() {
-      return untransformedComprehensive;
+    public Introspector getComprehensive() {
+      return comprehensive;
     }
 
     // Return a list of all the introspectors in use.
     public List<Introspector> getIntrospectors() {
       ArrayList<Introspector> ret = new ArrayList<Introspector>(introspectors.values());
-      ret.add(getUntransformedComprehensive());
+      ret.add(getComprehensive());
       return ret;
     }
     
@@ -621,7 +609,7 @@ public class TxManager implements CheckManager, Callback {
         match = new Introspector(transitions);
         // Name the introspector based on the hashes of the policy edges.
         StringBuilder sb = new StringBuilder();
-        sb.append("process");
+        sb.append(JAMConfig.INTROSPECTOR_PREFIX);
         for (Policy.Edge pe : match.getPolicyEdges()) {
           sb.append(policy.getHash(pe));
         }
@@ -633,28 +621,6 @@ public class TxManager implements CheckManager, Callback {
 
       return match;
     }
-  }
-
-  @Override
-  public List<String> getTransformableIntrospectors(SourceFile src) {
-    List<String> ispects = new ArrayList<String>();
-    for (Introspector i : introspectorMap.getIntrospectors()) {
-      if (i.canTransform()) {
-        ispects.add(i.getName());
-      }
-    }
-    return ispects;
-  }
-
-  @Override
-  public List<String> getCallIntrospectors(SourceFile src) {
-    List<String> ispects = new ArrayList<String>();
-    for (Introspector i : introspectorMap.getIntrospectors()) {
-      if (i.isCall()) {
-        ispects.add(i.getName());
-      }
-    }
-    return ispects;
   }
 }
 

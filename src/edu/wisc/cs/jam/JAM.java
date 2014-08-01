@@ -78,23 +78,6 @@ public class JAM {
       FileUtil.writeToFile(cex, "cex-" + counterExampleCount);
   }
 
-  public int getCheckCount() {
-    return cm.getCheckCount();
-  }
-
-  public List<RuntimeCheck> getChecks() {
-    return cm.getChecks();
-  }
-
-  // Insert a check into the source file being analyzed.
-  public void addCheck(RuntimeCheck c) {
-    cm.addCheck(c);
-  }
-
-  public void removeCheck(RuntimeCheck c) {
-    cm.removeCheck(c);
-  }
-
   // Load the policy as a list of policy paths.
   public void initPolicy() {
     Dbg.out("Initializing policy", 3);
@@ -239,27 +222,16 @@ public class JAM {
   }
 
   protected void outputPolicyCode() {
-    // Create a policy without transformed call predicates and with
-    // only the comprehensive introspector(s) to use with modular
-    // transactions.
-    Exp modpol = getCheckManager().getModularPolicyCode();
+    // Create a policy with only the comprehensive introspector(s) to
+    // use with modular transactions.
+    Exp modpol = getCheckManager().getBasePolicyCode();
     if (modpol != null) {
       FileUtil.writeToMain(modpol.toCode(), "modular.policy.js");
       if (Opts.countNodes)
         FileUtil.writeToMain("modular.policy.js:" + modpol.getTreeSize() + "\n", JAMConfig.INFO_FILENAME, true);
     }
 
-    if (!JAM.Opts.noTransform) {
-      // Generate a policy to be used for the untransformed code.
-      Exp instrpol = getCheckManager().getUntransformedPolicyCode();
-      if (instrpol != null) {
-        FileUtil.writeToMain(instrpol.toCode(), "instrumented.policy.js");
-        if (JAM.Opts.countNodes)
-          FileUtil.writeToMain("instrumented.policy.js:" + instrpol.getTreeSize() + "\n", JAMConfig.INFO_FILENAME, true);
-      }
-    }
-
-    Exp polsrc = getCheckManager().getPolicyCode();
+    Exp polsrc = getCheckManager().getSpecializedPolicyCode();
     if (polsrc != null) {
       FileUtil.writeToMain(polsrc.toCode(), "policy.js");
       if (Opts.countNodes)
@@ -308,7 +280,7 @@ public class JAM {
       // Output the instrumented source.
       FileUtil.writeToMain(jam.getSourceFile(), FileUtil.getBaseName() + "-instrumented.js");
       Dbg.out("Summary: " + jam.getCounterExampleCount() + " counterexamples found; "
-        + jam.getCheckCount() + " runtime checks inserted", 1);
+        + jam.getCheckManager().getCheckCount() + " runtime checks inserted", 1);
     }
 
     jam.postanalyze();
@@ -413,9 +385,6 @@ public class JAM {
 
     @Option(name="-P", usage="Do intraprocedural analysis only")
     public static boolean intraprocedural = false;
-
-    @Option(name="-I", usage="Skip the call-site transformation")
-    public static boolean noTransform = false;
 
     @Option(name="--bddformat", usage="0=sat paths, 1=tree, 2=both (debug)", metaVar="FMTID")
     public static int bddformat = 1;

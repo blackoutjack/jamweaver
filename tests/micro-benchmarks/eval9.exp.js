@@ -1,9 +1,9 @@
 function f() {
   var y$$31 = x;
-  if(JAMScript.isEval(eval)) {
-    eval("introspect(JAMScript.introspectors.processAll) { " + "var x;" + " }")
+  if(JAM.isEval(eval)) {
+    eval("introspect(JAM.policy.pFull) { " + "var x;" + " }")
   }else {
-    JAMScript.call(eval, null, ["var x;"])
+    JAM.call(eval, null, ["var x;"])
   }
   return y$$31
 }

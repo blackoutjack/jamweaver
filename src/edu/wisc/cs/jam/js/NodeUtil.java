@@ -92,6 +92,20 @@ public class NodeUtil {
     Token.AND,
     Token.OR,
   };
+  private static int[] NUMBER_OP_TYPES = {
+    Token.BITOR,
+    Token.BITXOR,
+    Token.BITAND,
+    Token.LSH,
+    Token.RSH,
+    Token.URSH,
+    Token.SUB,
+    Token.MUL,
+    Token.DIV,
+    Token.MOD,
+    Token.INC,
+    Token.DEC
+  };
   private static int[] BOOLEAN_OP_TYPES = {
     Token.SHEQ,
     Token.SHNE,
@@ -349,14 +363,6 @@ public class NodeUtil {
     if (n == null) return false;
     int ntype = n.getType();
     for (int t : BINOP_TYPES)
-      if (ntype == t) return true;
-    return false;
-  }
-
-  public static boolean returnsBoolean(Node n) {
-    if (n == null) return false;
-    int ntype = n.getType();
-    for (int t : BOOLEAN_OP_TYPES)
       if (ntype == t) return true;
     return false;
   }
@@ -657,10 +663,87 @@ public class NodeUtil {
     return tx;
   }
 
+  // Return an enclosing HOOK, OR, or AND.
+  // %%% Untested
+  public static Node isWithinShortCircuit(Node n) {
+    Node stmt = n.getParent();
+    while (stmt != null && !stmt.isHook()
+        && !stmt.isAnd() && !stmt.isOr()) {
+      // Don't go past control statements.
+      if (isControl(stmt)) {
+        return null;
+      }
+      stmt = stmt.getParent();
+    }
+    return stmt;
+  }
+
+  // %%% Untested
+  public static Node getContainingBlock(Node n) {
+    Node block = n.getParent();
+    while (block != null && !block.isBlock()) {
+      block = block.getParent();
+    }
+    return block;
+    
+  }
+
   public static boolean isTransaction(Node n) {
     if (n == null) return false;
     if (n.getType() == Token.TRANSACTION)
       return true;
+    return false;
+  }
+
+  public static boolean returnsBoolean(Node n) {
+    if (n == null) return false;
+    if (n.isTrue() || n.isFalse())
+      return true;
+    int ntype = n.getType();
+    for (int t : BOOLEAN_OP_TYPES)
+      if (ntype == t) return true;
+    return false;
+  }
+
+  public static boolean returnsString(SourceFile src, Node n) {
+    if (n == null) return false;
+    if (n.isString()) return true;
+    if (n.isName()) {
+      String typ = src.getType(n.getString());
+      if (typ != null && typ.equals("String"))
+        return true;
+    }
+    if (n.isAdd()) {
+      Node first = n.getFirstChild();
+      if (returnsString(src, first))
+        return true;
+      Node second = n.getChildAtIndex(1);
+      if (returnsString(src, second))
+        return true;
+    }
+    // %%% Could have cases for AND, OR.
+    return false;
+  }
+
+  public static boolean returnsNumber(SourceFile src, Node n) {
+    if (n == null) return false;
+    if (n.isNumber()) return true;
+    if (n.isName()) {
+      String typ = src.getType(n.getString());
+      if (typ != null && typ.equals("Number"))
+        return true;
+      return false;
+    }
+    if (n.isAdd()) {
+      Node first = n.getFirstChild();
+      Node second = n.getChildAtIndex(1);
+      if (returnsNumber(src, first) && returnsNumber(src, second))
+        return true;
+    }
+    // %%% Could have cases for AND, OR.
+    int ntype = n.getType();
+    for (int t : NUMBER_OP_TYPES)
+      if (ntype == t) return true;
     return false;
   }
 

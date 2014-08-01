@@ -27,7 +27,6 @@ public class TransactionCheck extends RuntimeCheck {
   public void apply() {
     // Don't do anything if this check is already applied.
     if (isApplied()) return;
-    //getSourceFile().update();
     setApplied(true);
   }
 

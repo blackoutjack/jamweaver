@@ -276,7 +276,7 @@ def modularVsWovenOverheadByOriginalOld(stats):
 
   for times in stats:
     orig = times['original']
-    woven = times['transformed']
+    woven = times['collapsed']
     modular = times['original.modular']
 
     originalTime.append(orig)
@@ -375,7 +375,7 @@ def modularVsWovenOverhead(stats, log=True, threshold=100.0, absolute=True):
 
   for times in stats:
     orig = times['original']
-    woven = times['transformed']
+    woven = times['collapsed']
     modular = times['original.modular']
 
     # Skip actions that humans can't distinguish.

@@ -26,25 +26,28 @@ import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.PolicyType;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.JAM;
 
+import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPolicyType;
+
 // Reuse ExpressionFlattener to maintain sequential variable naming.
 public class JSCallTransform extends JSTransform {
+
+  public final boolean TRANFORM_GLOBAL_NAMES = false;
 
   protected Set<String> conservativeCalls;
   protected Set<String> dynamicCalls;
   protected Set<String> directEvalCalls;
     
-  protected List<String> transformableIntrospectors;
-  protected List<String> callIntrospectors;
-
   private int dynamicEncloseCnt = 0;
   private int dynamicTransformCnt = 0;
   private int txTransformCnt = 0;
-  private int txNotTransformedCnt = 0;
+  private int propertyTransformCnt = 0;
 
   protected CheckManager cm;
+  protected SourceFile sourceFile;
 
   protected static Set<String> dynamicExterns;
   
@@ -184,6 +187,7 @@ public class JSCallTransform extends JSTransform {
     String suf = null;
     Compiler comp = src.getCompiler();
     Node root = src.getRootNode();
+    sourceFile = src;
 
     if (JAM.Opts.noIndirect) {
       // This one should be done prior to the TransactionConverter.
@@ -194,18 +198,15 @@ public class JSCallTransform extends JSTransform {
       suf = "callenclose.js";
     }
 
-    transformableIntrospectors = cm.getTransformableIntrospectors(src);
-    callIntrospectors = cm.getCallIntrospectors(src);
-
     NodeTraversal.traverse(comp, root, new EvalConverter());
 
     NodeTraversal.traverse(comp, root, new TransactionConverter());
     Dbg.out("Transaction-enclosed callsites transformed: " + txTransformCnt, 1);
     if (JAM.Opts.countNodes)
       FileUtil.writeToMain("enclosed-callsites-transformed:" + txTransformCnt + "\n", JAMConfig.INFO_FILENAME, true);
-    Dbg.out("Transaction-enclosed callsites unable to be transformed: " + txNotTransformedCnt, 1);
-    if (JAM.Opts.countNodes)
-      FileUtil.writeToMain("enclosed-callsites-not-transformed:" + txNotTransformedCnt + "\n", JAMConfig.INFO_FILENAME, true);
+    //Dbg.out("Transaction-enclosed callsites unable to be transformed: " + txNotTransformedCnt, 1);
+    //if (JAM.Opts.countNodes)
+    //  FileUtil.writeToMain("enclosed-callsites-not-transformed:" + txNotTransformedCnt + "\n", JAMConfig.INFO_FILENAME, true);
 
     if (!JAM.Opts.noIndirect) {
       // This one should be done after the TransactionConverter.
@@ -217,13 +218,13 @@ public class JSCallTransform extends JSTransform {
     }
 
     // Generate the transformed output.
-    src.update();
+    src.reportCodeChange();
     String filename = FileUtil.getBaseName() + "-" + suf;
     FileUtil.writeToMain(src.toString() + "\n", filename);
   }
 
   protected Node createComprehensiveIntrospector() {
-    // Create |JAMScript.introspectors.processAll|
+    // Create |JAM.policy.pFull|
     Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
     Node libProp1 = Node.newString(JAMConfig.INTROSPECTOR_LIST);
     Node libProp2 = Node.newString(JAMConfig.COMPREHENSIVE_INTROSPECTOR);
@@ -237,9 +238,158 @@ public class JSCallTransform extends JSTransform {
     tx.replaceChild(oldspect, ispect);
   }
 
+  protected void transformGetExpression(NodeTraversal t, Node n, Node parent, Node ispect) {
+    assert n.isName() || NodeUtil.isAccessor(n);
+
+    Node obj = null;
+    Node prop = null;
+    if (n.isName()) {
+      obj = new Node(Token.NULL);
+      prop = Node.newString(Token.STRING, n.getString());
+    } else {
+      obj = n.getFirstChild();
+      if (maybeTransformSubexpression(t, obj, n, ispect))
+        obj = n.getFirstChild();
+      prop = n.getChildAtIndex(1);
+      obj.detachFromParent();
+      prop.detachFromParent();
+    }
+
+    // Generate the call |JAM.set(obj, prop, val)|.
+    Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
+    Node proxName = Node.newString(Token.STRING, "get");
+    Node libAcc = new Node(Token.GETPROP, libName, proxName);
+    Node proxCall = new Node(Token.CALL, libAcc, obj, prop);
+
+    // Pass the introspector to |set|.
+    if (ispect != null) {
+      proxCall.addChildToBack(ispect.cloneTree());
+    }
+
+    parent.replaceChild(n, proxCall);
+
+    propertyTransformCnt++;
+  }
+
+  protected void transformAssignExpression(NodeTraversal t, Node n, Node parent, Node ispect) {
+    assert n.isAssign();
+
+    Node lhs = n.getFirstChild();
+    assert NodeUtil.isAccessor(lhs) || lhs.isName();
+    Node rhs = n.getChildAtIndex(1);
+
+    Node obj = null;
+    Node prop = null;
+    if (lhs.isName()) {
+      obj = new Node(Token.NULL);
+      prop = Node.newString(Token.STRING, lhs.getString());
+    } else {
+      obj = lhs.getFirstChild();
+      prop = lhs.getChildAtIndex(1);
+      obj.detachFromParent();
+      prop.detachFromParent();
+    }
+
+    // Generate the call |JAM.set(obj, prop, val)|.
+    Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
+    Node proxName = Node.newString(Token.STRING, "set");
+    Node libAcc = new Node(Token.GETPROP, libName, proxName);
+
+    rhs.detachFromParent();
+    Node proxCall = new Node(Token.CALL, libAcc, obj, prop, rhs);
+
+    // Pass the introspector to |set|.
+    if (ispect != null) {
+      proxCall.addChildToBack(ispect.cloneTree());
+    }
+
+    parent.replaceChild(n, proxCall);
+
+    propertyTransformCnt++;
+  }
+
+  protected boolean maybeTransformSubexpression(NodeTraversal t, Node n, Node parent, Node ispect) {
+    assert ispect != null;
+    boolean ret = false;
+
+    Set<PolicyType> ptypes = getPolicyTypes(ispect);
+
+    if (NodeUtil.isAccessor(n)) {
+      if (ptypes.contains(JSPolicyType.READ)) {
+        //Dbg.dbg("GET TRANSFORM: " + sourceFile.codeFromNode(parent));
+        transformGetExpression(t, n, parent, ispect);
+        ret = true;
+      }
+    } else if (n.isName()) {
+      if (TRANFORM_GLOBAL_NAMES) {
+        Scope s = t.getScope();
+        // Guard implicit properties of the global object. Note that
+        // the |arguments| identifier is not declared but is not global.
+        // %%% What happens if a var is declared in the global scope?
+        String name = n.getString();
+        if (!s.isDeclared(name, true) && !name.equals("arguments")) {
+          transformGetExpression(t, n, parent, ispect);
+          ret = true;
+        }
+      }
+    } else if (n.isAssign()) {
+      if (ptypes.contains(JSPolicyType.WRITE)) {
+        // Transform ASSIGN nodes only, not VAR initializers.
+        Node lhs = NodeUtil.getAssignLHS(n);
+        if (NodeUtil.isAccessor(lhs)) {
+          //Dbg.dbg("SET TRANSFORM: " + sourceFile.codeFromNode(parent));
+          transformAssignExpression(t, n, parent, ispect);
+          ret = true;
+        } else if (lhs.isName()) {
+          if (TRANFORM_GLOBAL_NAMES) {
+            Scope s = t.getScope();
+            // Guard implicit properties of the global object.
+            // %%% How does it work if a var is declared in the global scope?
+            String name = n.getString();
+            if (!s.isDeclared(name, true) && !name.equals("arguments")) {
+              transformAssignExpression(t, n, parent, ispect);
+              ret = true;
+            }
+          }
+        }
+      }
+      Node rhs = NodeUtil.getAssignRHS(n);
+      // Recurse.
+      if (maybeTransformSubexpression(t, rhs, rhs.getParent(), ispect))
+        ret = true;
+    } else if (n.isArrayLit()) {
+      int childCnt = n.getChildCount();
+      for (int i=0; i<childCnt; i++) {
+        Node c = n.getChildAtIndex(i);
+        if (maybeTransformSubexpression(t, c, n, ispect))
+          ret = true;
+      }
+    } else if (n.isObjectLit()) {
+      int childCnt = n.getChildCount();
+      for (int i=0; i<childCnt; i++) {
+        Node c = n.getChildAtIndex(i);
+        if (c.isGetterDef()) {
+          // %%% What to do here?
+        } else if (c.isSetterDef()) {
+          // %%% What to do here?
+        } else {
+          assert c.getChildCount() == 1;
+          Node val = c.getFirstChild();
+          if (maybeTransformSubexpression(t, val, c, ispect))
+            ret = true;
+        }
+      }
+    } else if (NodeUtil.isLiteral(n) || n.isRegExp() || n.isThis()) {
+      // Do nothing for these node types.
+    } else {
+      Dbg.warn("Subexpression type not handled: " + n);
+    }
+    return ret;
+  }
+
   // Create an array literal holding the call receiver, followed by
   // each of the arguments. The call node is left unchanged.
-  protected Node callArgsToArray(NodeTraversal t, Node n, Node parent) {
+  protected Node callArgsToArray(NodeTraversal t, Node n, Node parent, Node ispect) {
     assert n.isCall() || n.isNew();
 
     int childCount = n.getChildCount();
@@ -249,91 +399,37 @@ public class JSCallTransform extends JSTransform {
 
     for (int i=childCount-1; i>=1; i--) {
       Node arg = n.getChildAtIndex(i);
-      array.addChildToFront(arg.cloneTree());
+      Node newArg = arg.cloneTree();
+      array.addChildToFront(newArg);
+      if (ispect != null)
+        maybeTransformSubexpression(t, newArg, array, ispect);
     }
     
     return array;
   }
-    
-  // Perform a transformation to pull callsites outside of transactions.
-  // introspect(ispect) {
-  //   var r = o.m(arg0, ..);
-  // }
-  //   =====>
-  // introspect(ispect) {
-  //   var v0 = [[o, arg0, ..], o, o.m];
-  // }
-  // var r = JAMScript.call(v0[2], v0[1], v0[0]);
-  //
-  protected void transformCallWithinNonCallTx(NodeTraversal t, Node n, Node parent, Node tx) {
-    assert NodeUtil.isTransaction(tx);
-    assert n.isCall() || n.isNew();
 
-    Node txBlock = tx.getChildAtIndex(1);
-    assert(txBlock.getType() == Token.BLOCK);
-
-    Node stmt = NodeUtil.getEnclosingStatement(n);
-    Node stmtParent = stmt.getParent();
-    
-    // Create |var v0 = [[o, arg0, ..], o.m]|
-    Node array = new Node(Token.ARRAYLIT);
-    Node v0 = createNameNode(t.getScope());
-    Node init0 = new Node(Token.VAR, v0.cloneTree());
-    init0.getFirstChild().addChildToBack(array);
-
-    Node args = callArgsToArray(t, n, parent);
-    array.addChildToBack(args);
-    Node tgt = n.getFirstChild();
-    if (n.isCall() && NodeUtil.isAccessor(tgt)) {
-      array.addChildToBack(tgt.getFirstChild().cloneTree());
-    } else {
-      // For |new|, still add a |null| receiver for consistency.
-      array.addChildToBack(new Node(Token.NULL));
-    }
-    array.addChildToBack(tgt.cloneTree());
-
-    // Add the new nodes to the transaction block.
-    stmtParent.replaceChild(stmt, init0);
-
-    // Create |JAMScript.call(v0[2], v0[1], v0[0])|.
-    Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
-    Node libProp = null;
-    if (n.isNew()) {
-      libProp = Node.newString("new");
-    } else {
-      libProp = Node.newString("call");
-    }
-    Node libTgt = new Node(Token.GETPROP, libName, libProp);
-    Node libCall = new Node(Token.CALL, libTgt);
-
-    Node get2 = new Node(Token.GETELEM, v0.cloneTree(), Node.newNumber(2));
-    libCall.addChildToBack(get2);
-    if (n.isCall()) {
-      // Only pass the receiver to |JAMScript.call|.
-      Node get1 = new Node(Token.GETELEM, v0.cloneTree(), Node.newNumber(1));
-      libCall.addChildToBack(get1);
-    }
-    Node get0 = new Node(Token.GETELEM, v0, Node.newNumber(0));
-    libCall.addChildToBack(get0);
-
-    // Create |var r = JAMScript.call(...)|.
-    // |stmt| is already detached.
-    parent.replaceChild(n, libCall);
-    tx.getParent().addChildAfter(stmt, tx);
+  protected Node callArgsToArray(NodeTraversal t, Node n, Node parent) {
+    return callArgsToArray(t, n, parent, null);
   }
 
   // Transform transactions that check call predicates to
-  // |JAMScript.callIntrospect| invocations.
+  // |JAM.call| invocations.
   // introspect(ispect) {
   //   var r = o.m(arg0, ..);
   // }
   //   =====>
-  // var r = JAMScript.callIntrospect(o.m, o, [arg0, ..]);
+  // var r = JAM.call(JAM.get(o, m, ispect), o, [arg0, ..], ispect);
+  // %%% The call should be extracted to a temporary variable and
+  // %%% any external expressions should remain in the introspect block.
+  // %%% See commaCall0.js for an example.
+  // %%% Non-trivial subexpressions likewise must be extracted and left
+  // %%% inside a transaction. See exfil_test.js.
   //
-  protected void transformCallWithinCallTx(NodeTraversal t, Node n, Node parent, Node tx) {
+  protected void transformCallWithinTx(NodeTraversal t, Node n, Node parent, Node tx) {
     assert NodeUtil.isTransaction(tx);
     assert n.isCall() || n.isNew();
 
+    Scope s = t.getScope();
     Node txParent = tx.getParent();
     Node txBlock = tx.getChildAtIndex(1);
     assert(txBlock.getType() == Token.BLOCK);
@@ -346,43 +442,88 @@ public class JSCallTransform extends JSTransform {
       txParent.addChildBefore(stmt, tx);
     }
     
-    // Create |JAMScript.callIntrospect()|.
+    // Create |JAM.call()|.
     Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
     Node libProp = null;
     if (n.isNew()) {
-      libProp = Node.newString("newIntrospect");
+      libProp = Node.newString("new");
     } else {
-      libProp = Node.newString("callIntrospect");
+      libProp = Node.newString("call");
     }
     Node libTgt = new Node(Token.GETPROP, libName, libProp);
     Node libCall = new Node(Token.CALL, libTgt);
 
     Node tgt = n.getFirstChild();
-    libCall.addChildToBack(tgt.cloneTree());
+    Node tgtParam = tgt.cloneTree();
+    libCall.addChildToBack(tgtParam);
+    maybeTransformSubexpression(t, tgtParam, libCall, ispect);
     if (n.isCall()) {
       if (NodeUtil.isAccessor(tgt)) {
-        libCall.addChildToBack(tgt.getFirstChild().cloneTree());
+        Node recParam = tgt.getFirstChild().cloneTree();
+        libCall.addChildToBack(recParam);
+        maybeTransformSubexpression(t, recParam, libCall, ispect);
       } else {
         libCall.addChildToBack(new Node(Token.NULL));
       }
     }
-    Node args = callArgsToArray(t, n, parent);
+    Node args = callArgsToArray(t, n, parent, ispect);
     libCall.addChildToBack(args);
-    libCall.addChildToBack(ispect);
+
+    Set<PolicyType> ptypes = getPolicyTypes(ispect);
+    if (ptypes.contains(JSPolicyType.CALL)) {
+      libCall.addChildToBack(ispect.cloneTree());
+    }
 
     // Replace the old call with the constructed library call.
     parent.replaceChild(n, libCall);
+  }
+
+  protected Node getTxBlock(Node tx) {
+    assert NodeUtil.isTransaction(tx);
+    Node ret = tx.getChildAtIndex(1);
+    assert ret.isBlock();
+    return ret;
+  }
+
+  protected String getIntrospectorName(Node ispect) {
+    assert NodeUtil.isAccessor(ispect);
+    Node ispectNode = ispect;
+    while (ispectNode.isGetProp()) {
+      ispectNode = ispectNode.getChildAtIndex(1);
+    }
+    assert ispectNode.isString() : "Introspector property is not a string: " + ispectNode;
+    return ispectNode.getString();
+  }
+
+  protected String getTxIntrospectorName(Node tx) {
+    assert NodeUtil.isTransaction(tx);
+    Node ispectNode = tx.getFirstChild();
+    while (ispectNode.isGetProp()) {
+      ispectNode = ispectNode.getChildAtIndex(1);
+    }
+    assert ispectNode.isName();
+    return ispectNode.getString();
+  }
+
+  protected Set<PolicyType> getPolicyTypes(Node ispect) {
+    String ispectName = getIntrospectorName(ispect);
+    return cm.getPolicyTypes(ispectName);
+  }
+
+  protected Set<PolicyType> getTxPolicyTypes(Node tx) {
+    String ispectName = getTxIntrospectorName(tx);
+    return cm.getPolicyTypes(ispectName);
   }
 
   // Perform a transformation on callsites that may target externs that
   // generate dynamic code.
   // var r = o.m(arg0, ..);
   //   =====>
-  // var r = JAMScript.call(o.m, o, [arg0, ..]);
+  // var r = JAM.call(o.m, o, [arg0, ..]);
   //
   // var r = f(arg0, ..);
   //   =====>
-  // var r = JAMScript.call(f, null, [arg0, ..]);
+  // var r = JAM.call(f, null, [arg0, ..]);
   //
   protected void transformDynamicCall(NodeTraversal t, Node n, Node parent) {
     assert n.isCall() || n.isNew();
@@ -390,7 +531,7 @@ public class JSCallTransform extends JSTransform {
     int childCount = n.getChildCount();
     assert(childCount > 0); 
     
-    // Create |JAMScript.call(o.m, o, [arg0, ..])|
+    // Create |JAM.call(o.m, o, [arg0, ..])|
     Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
     Node libProp = null;
     if (n.isNew()) {
@@ -423,22 +564,22 @@ public class JSCallTransform extends JSTransform {
   //
   // var r = eval(arg0, ...);
   //   =====>
-  // if (JAMScript.isEval(eval)) {
-  //   var r = eval("introspect(JAMScript.introspectors.processAll) {" + arg0 + "}");
+  // if (JAM.isEval(eval)) {
+  //   var r = eval("introspect(JAM.policy.pFull) {" + arg0 + "}");
   // } else {
-  //   var r = JAMScript.call(eval, null, [arg0, ...]);
+  //   var r = JAM.call(eval, null, [arg0, ...]);
   // }
   //
   // A direct eval within a transaction is transformed as follows.
   //
-  // introspector(JAMScript.introspectors.ispect) {
+  // introspector(JAM.policy.ispect) {
   //   var r = eval(arg0, ...);
   // }
   //   =====>
-  // if (JAMScript.isEval(eval)) {
-  //   var r = eval("introspect(JAMScript.introspectors.processAll) {" + arg0 + "}");
+  // if (JAM.isEval(eval)) {
+  //   var r = eval("introspect(JAM.policy.pFull) {" + arg0 + "}");
   // } else {
-  //   var r = JAMScript.callIntrospector(eval, null, [arg0, ...], ispect);
+  //   var r = JAM.call(eval, null, [arg0, ...], ispect);
   // }
   protected void transformDirectEvalCall(NodeTraversal t, Node n, Node parent) {
     int childCount = n.getChildCount();
@@ -452,27 +593,19 @@ public class JSCallTransform extends JSTransform {
     // Dig into the copy and find the node corresponding to |n|.
     Node nCopy = NodeUtil.findEquivalentSubtree(stmtCopy, n);
 
-    // Create |var r = JAMScript.call(eval, null, [arg0, ..])|.
+    // Create |var r = JAM.call(eval, null, [arg0, ..])|.
     if (tx == null) {
       transformDynamicCall(t, n, parent);
     } else {
-      stmtParent = tx.getParent();
-      Node ispectNode = tx.getFirstChild();
-      while (ispectNode.isGetProp()) {
-        ispectNode = ispectNode.getChildAtIndex(1);
-      }
-      assert ispectNode.isString();
-      String ispectName = ispectNode.getString();
-      if (callIntrospectors.contains(ispectName)) {
-        transformCallWithinCallTx(t, n, parent, tx);
-      } else {
-        transformCallWithinNonCallTx(t, n, parent, tx);
-      }
-      txTransformCnt++;
+      transformCallWithinTx(t, n, parent, tx);
     }
 
-    // Create |var r = eval("introspect(JAMScript.introspectors.processAll) {" + arg0 + "}")|
-    Node openIntrospect = Node.newString(JAMConfig.TRANSACTION_KEYWORD + "(" + JAMConfig.TRANSACTION_LIBRARY + ".introspectors.processAll) { ");
+    // Create |var r = eval("introspect(JAM.policy.pFull) {" + arg0 + "}")|
+    String openStr = JAMConfig.TRANSACTION_KEYWORD + "("
+      + JAMConfig.TRANSACTION_LIBRARY + "."
+      + JAMConfig.INTROSPECTOR_LIST + "."
+      + JAMConfig.COMPREHENSIVE_INTROSPECTOR + ") { ";
+    Node openIntrospect = Node.newString(openStr);
     Node oldArg = nCopy.getChildAtIndex(1);
     Node oldArgCopy = oldArg.cloneTree();
     Node closeIntrospect = Node.newString(" }");
@@ -484,7 +617,7 @@ public class JSCallTransform extends JSTransform {
     Node thenBranch = new Node(Token.BLOCK);
     thenBranch.addChildToBack(stmtCopy);
 
-    // Create |JAMScript.isEval(eval)|
+    // Create |JAM.isEval(eval)|
     Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
     Node libProp = Node.newString("isEval");
     Node libTgt = new Node(Token.GETPROP, libName, libProp);
@@ -514,7 +647,7 @@ public class JSCallTransform extends JSTransform {
     // introspection block.
     // var r = o.m(arg0, ..);
     //   =====>
-    // introspect(JAMScript.introspectors.processAll) {
+    // introspect(JAM.policy.pFull) {
     //   var r = o.m(arg0, ..);
     // }
     //
@@ -526,10 +659,10 @@ public class JSCallTransform extends JSTransform {
       Node stmt = NodeUtil.getEnclosingStatement(n);
       Node stmtParent = stmt.getParent();
       
-      // Create |JAMScript.introspectors.processAll|
+      // Create |JAM.policy.pFull|
       Node ispect = createComprehensiveIntrospector();
 
-      // Create |introspect(JAMScript.introspectors.processAll) { ... }|.
+      // Create |introspect(JAM.policy.pFull) { ... }|.
       if (tx == null) {
         Node prev = stmtParent.getChildBefore(stmt);
         stmt.detachFromParent();
@@ -573,12 +706,9 @@ public class JSCallTransform extends JSTransform {
         if (tx == null) {
           transformDynamicCall(t, n, parent);
         } else {
-          // Just use the comprehensive introspector.
-          Node ispect = createComprehensiveIntrospector();
-          setIntrospector(tx, ispect);
+          transformCallWithinTx(t, n, parent, tx);
         }
       }
-      dynamicTransformCnt++;
     }
   }
 
@@ -615,24 +745,9 @@ public class JSCallTransform extends JSTransform {
       // Get any surrounding transaction.
       Node tx = NodeUtil.isWithinTransaction(n);
       if (tx != null) {
-        Node ispectNode = tx.getFirstChild();
-        while (ispectNode.isGetProp()) {
-          ispectNode = ispectNode.getChildAtIndex(1);
-        }
-        assert ispectNode.isString();
-        String ispectName = ispectNode.getString();
-        if (transformableIntrospectors.contains(ispectName)) {
-          if (callIntrospectors.contains(ispectName)) {
-            transformCallWithinCallTx(t, n, parent, tx);
-          } else {
-            transformCallWithinNonCallTx(t, n, parent, tx);
-          }
-          txTransformCnt++;
-        } else {
-          txNotTransformedCnt++;
-        }
+        transformCallWithinTx(t, n, parent, tx);
+        txTransformCnt++;
       }
     }
   }
-
 }

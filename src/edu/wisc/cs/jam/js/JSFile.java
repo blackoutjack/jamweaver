@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -61,6 +62,7 @@ public class JSFile implements edu.wisc.cs.jam.SourceFile {
   protected CallGraph callGraph;
   protected TypeFacts typeFacts;
   protected List<com.google.javascript.jscomp.SourceFile> externList;
+  protected Set<String> temporaries;
 
   protected boolean needsCallGraphUpdate;
 
@@ -265,8 +267,7 @@ public class JSFile implements edu.wisc.cs.jam.SourceFile {
     return true;
   }
 
-  @Override
-  public void update() {
+  protected void update() {
     reportCodeChange();
     sourceFile = com.google.javascript.jscomp.SourceFile.fromCode(getFilename(), toString());
   }
@@ -379,13 +380,13 @@ public class JSFile implements edu.wisc.cs.jam.SourceFile {
 
     runPass(options, null, JAM.Opts.debug);
     update();
+
     FileUtil.writeToMain(this, FileUtil.getBaseName() + "-closure.js");
 
     // Add flattener to the passes.
-    Transform flatpass = new JSStatementTransform();
-    //Transform flatpass = new JSExpandTransform();
-    //Transform flatpass = new JSPreTransform();
-    flatpass.run(this);
+    JSStatementTransform expandpass = new JSStatementTransform();
+    expandpass.run(this);
+    temporaries = expandpass.getCollapsableTemporaries();
     update();
 
     // Output the preprocessed source.
@@ -402,19 +403,31 @@ public class JSFile implements edu.wisc.cs.jam.SourceFile {
     }
     */
 
-    Dbg.out("Done preprocessing", 2);
-
     if (!JAM.Opts.skipTypeInference) {
       // Type inference must be done after the variable renaming that
       // occurs during preprocessing.
       inferTypes();
     }
+
+    Dbg.out("Done preprocessing", 2);
   } // end preprocess
 
   @Override
   public String getType(String name) {
     if (typeFacts == null) return null;
     return typeFacts.getType(name);
+  }
+
+  @Override
+  public boolean propagateType(String srcName, String destName) {
+    Dbg.dbg("Propagating " + srcName + " -> " + destName);
+    return typeFacts.propagateType(srcName, destName);
+  }
+
+  @Override
+  public void setType(String name, String typ) {
+    Dbg.dbg("Setting type " + name + " -> " + typ);
+    typeFacts.setType(name, typ);
   }
 
   protected class NodeCounter implements Callback {
@@ -492,15 +505,16 @@ public class JSFile implements edu.wisc.cs.jam.SourceFile {
   @Override
   public void postprocess(ControlAutomaton c, CheckManager cm) {
    
-    if (!JAM.Opts.noTransform) {
-      // Perform the transformation to isolate callsites. 
-      // %%% Remove the need for ControlAutomaton.
-      Transform ct = new JSCallTransform(c, cm);
-      ct.run(this);
+    // Perform the transformation to isolate higher-order scripts. 
+    // %%% Remove the need for ControlAutomaton.
+    Transform it = new JSIndirectionTransform(c, cm);
+    it.run(this);
 
-      Transform pt = new JSPropertyTransform();
-      pt.run(this);
+    if (temporaries != null) {
+      Transform collapse = new JSCollapseTransform(temporaries);
+      collapse.run(this);
     }
+    update();
   }
   
   @Override

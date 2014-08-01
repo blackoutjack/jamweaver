@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import edu.wisc.cs.jam.PolicyLanguage;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Predicate;
+import edu.wisc.cs.jam.PolicyType;
+import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPolicyType;
 
 // This represents a single JavaScript function that evaluates the
 // truth value of a single JAM policy predicate.
@@ -21,13 +23,6 @@ public class Evaluator {
   private Map<String,String> natives;
 
   private PolicyLanguage language;
-
-  public enum Type {
-    WRITE,
-    READ,
-    CALL,
-    DUMMY
-  }
 
   public Evaluator(PolicyLanguage pl, Predicate pred) {
     language = pl;
@@ -46,24 +41,23 @@ public class Evaluator {
     return new LinkedHashMap<String,String>(natives);
   }
 
-  public Type getType() {
-    // %%% Delegate this to PolicyLangauge.
+  public JSPolicyType getType() {
     EvaluatorNode e0 = nodes.get(0);
-    switch (e0.getType()) {
-      case SET:
-      case SHEQ:
-      case SHNE:
-      case EQ:
-      case NE:
-        return Type.WRITE;
-      case GET: 
-        return Type.READ;
-      case CALL:
-        return Type.CALL;
-      case DUMMY:
-        return Type.DUMMY;
-      default:
-        throw new UnsupportedOperationException("Unknown evaluator type: " + this);
+    PolicyType typ = e0.getType();
+    if (typ == JSPolicyType.WRITE || typ == JSPolicyType.SHEQ
+        || typ == JSPolicyType.SHNE || typ == JSPolicyType.EQ
+        || typ == JSPolicyType.NE) {
+      return JSPolicyType.WRITE;
+    } else if (typ == JSPolicyType.READ) {
+      return JSPolicyType.READ;
+    } else if (typ == JSPolicyType.DELETE) {
+      return JSPolicyType.DELETE;
+    } else if (typ == JSPolicyType.CALL) {
+      return JSPolicyType.CALL;
+    } else if (typ == JSPolicyType.DUMMY) {
+      return JSPolicyType.DUMMY;
+    } else {
+      throw new UnsupportedOperationException("Unknown evaluator type: " + this);
     }
   }
 

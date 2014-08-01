@@ -26,19 +26,20 @@ import java.util.Iterator;
 import edu.wisc.cs.jam.SourceFile;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.Dbg;
 
 // Generates Prolog clauses regarding types in the program
 public class TypeFacts {
 
   private SourceFile sourceFile;
-  private Map<String,JSType> symbolTypes;
+  private Map<String,String> symbolTypes;
   // Save these since they can be expensive to calculate.
   private int hash = 0;
   private String str = "";
 
   public TypeFacts(SourceFile src, SymbolTable symbols) {
     sourceFile = src;
-    symbolTypes = new HashMap<String,JSType>();
+    symbolTypes = new HashMap<String,String>();
     
     // Guard here to allow creating a dummy record.
     if (symbols != null) load(symbols);
@@ -98,15 +99,13 @@ public class TypeFacts {
       if (t != null) {
         // All References for this symbol have the same type.
         String name = sym.getName();
-        symbolTypes.put(name, t);
+        symbolTypes.put(name, getTypeName(t));
       }
     }
   }
 
   public String getType(String name) {
-    JSType t = symbolTypes.get(name);
-    if (t == null) return null;
-    return getTypeName(t);
+    return symbolTypes.get(name);
   }
 
   protected String getTypeName(JSType t) {
@@ -121,6 +120,35 @@ public class TypeFacts {
     return null;
   }
 
+  /*
+  // %%% Doesn't work.
+  protected JSType getTypeFromName(String typ) {
+    if (typ.equals("Number")) {
+      JSType ret = Node.newNumber(0).getJSType();
+      return ret;
+    } else if (typ.equals("String")) {
+      JSType ret = Node.newString("").getJSType();
+      return ret;
+    } else if (typ.equals("Boolean")) {
+      JSType ret = new Node(Token.TRUE).getJSType();
+      return ret;
+    }
+    return null;
+  }
+  */
+
+  public boolean propagateType(String src, String dest) {
+    String t = symbolTypes.get(src);
+    if (t == null) return false;
+    assert !symbolTypes.containsKey(dest) : "Destination name already has a type: " + dest + " / " + symbolTypes.get(dest);
+    symbolTypes.put(dest, t);
+    return true;
+  }
+
+  public void setType(String name, String typ) {
+    symbolTypes.put(name, typ);
+  }
+
   @Override
   public String toString() {
     if (!str.equals("")) {
@@ -128,52 +156,22 @@ public class TypeFacts {
     }
 
     StringBuilder ret = new StringBuilder();
-    ret.append(":- export hastype/2.\n");
-
-    boolean gotOne = false;
-    /*
-    for (Map.Entry<String,JSType> e : symbolTypes.entrySet()) {
-      String typename = getTypeName(e.getValue());
-      if (typename == null) continue;
-
-      // We don't need to output a dummy clause.
-      gotOne = true;
-
-      // Output a clause with the following format.
-      // hastype('"name"','Type').
-      ret.append("hastype('\"");
+    for (Map.Entry<String,String> e : symbolTypes.entrySet()) {
       ret.append(e.getKey());
-      ret.append("\"','");
-      ret.append(typename);
-      ret.append("').\n");
-    }
-    */
-
-    if (!gotOne) {
-      // Output a dummy clause to make XSB happy.
-      ret.append("hastype('NONE','NONE').\n");
+      ret.append(" / ");
+      ret.append(e.getValue());
+      ret.append("\n");
     }
 
     return ret.toString();
   }
 
-  public Map<String,String> getTypeMap() {
-    Map<String,String> ret = new HashMap<String,String>();
-    for (Map.Entry<String,JSType> e : symbolTypes.entrySet()) {
-      String type = getTypeName(e.getValue());
-      if (type != null) {
-        ret.put(e.getKey(), type);
-      }
-    }
-    return ret;
-  }
-
   @Override
   public int hashCode() {
     if (hash == 0) {
-      for (Map.Entry<String,JSType> e : symbolTypes.entrySet()) {
+      for (Map.Entry<String,String> e : symbolTypes.entrySet()) {
         hash += e.getKey().hashCode(); 
-        hash += e.getValue().toString().hashCode();
+        hash += e.getValue().hashCode();
       }
     }
     return hash;

@@ -5,7 +5,7 @@ BINDIR?=../bin
 # Java compiler
 JAVAC=javac
 # Java compilation flags
-JFLAGS=#-g# -Xlint
+JFLAGS=-g# -Xlint
 
 JAVABDDVERSION=1.0b2
 COMMONSVERSION=3-3.1
@@ -30,7 +30,7 @@ MAINSRC=$(MAINBASE:%=$(MAINDIR)/%.java)
 MAINCLS=$(MAINSRC:%.java=%.class)
 
 # Java classes in the edu.wisc.cs.jam.js package.
-JSBASE=JavaScript JSFile JSSemantics JSTransform JSStatementTransform JSCallTransform JSPropertyTransform JSControlStructure JSInterproceduralControlStructure JSExp JSPredicateLearner JSPolicyLanguage FunctionFacts NodeUtil TypeFacts
+JSBASE=JavaScript JSFile JSSemantics JSTransform JSStatementTransform JSIndirectionTransform JSCollapseTransform JSControlStructure JSInterproceduralControlStructure JSExp JSPredicateLearner JSPolicyLanguage FunctionFacts NodeUtil TypeFacts
 JSSRC=$(JSBASE:%=$(JSDIR)/%.java)
 JSCLS=$(JSSRC:.java=.class)
 

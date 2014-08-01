@@ -469,7 +469,7 @@ def print_time_comparison(stats):
         times = {}
         for vardesc, variant in variants.iteritems():
           times[vardesc] = variant.actions[actdesc].avg_time()
-        #print_times(app, actdesc, times)
+        print_times(app, actdesc, times)
       except Exception as e:
         util.warn(str(e))
 
@@ -482,6 +482,7 @@ def generate_graphs(stats):
   maxinit = 0.0
   for app in apps:
     #if app != 'squirrelmail': continue
+    #if app.startswith(cfg.SMS2PREFIX) and app.endswith('-call'): continue
     stat = stats[app]
     actdescs = load_actions(stat)
     for actdesc in actdescs:
@@ -518,7 +519,7 @@ def generate_graphs(stats):
             ok = False
         if not ok: continue
 
-        # Check for cases where transformed performs worse than modular
+        # Check for cases where woven performs worse than modular
         # on long-duration base case.
         time0 = float(times[cfg.VARIANTS[0]])
         time1 = float(times[cfg.VARIANTS[1]])
@@ -557,9 +558,8 @@ def generate_graphs(stats):
 
 def generate_output(stats):
   #print_all_times(stats)
-  print_time_comparison(stats)
+  #print_time_comparison(stats)
   generate_graphs(stats)
-
 #/generate_output
 
 def main():
@@ -606,19 +606,15 @@ def main():
     stats = parse_results(resultstxt)
     generate_output(stats)
 
-  if analysis == 'a' or analysis == 'c':
+  if analysis in ['a', 'c', 'm']:
     if len(resultsfiles) != 2: parser.error("Size of results list != 2")
     resultslist = collect_separate_results(resultsfiles)
     stats0 = parse_results(resultslist[0])
     stats1 = parse_results(resultslist[1])
-    compare_results(stats0, stats1)
-
-  if analysis == 'a' or analysis == 'm':
-    if len(resultsfiles) != 2: parser.error("Size of results list != 2")
-    resultslist = collect_separate_results(resultsfiles)
-    stats0 = parse_results(resultslist[0])
-    stats1 = parse_results(resultslist[1])
-    compare_times(stats0, stats1)
+    if analysis in ['a', 'c']:
+      compare_results(stats0, stats1)
+    if analysis in ['a', 'm']:
+      compare_times(stats0, stats1)
 #/main
 
 if __name__ == "__main__":

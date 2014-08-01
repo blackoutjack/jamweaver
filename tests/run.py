@@ -28,7 +28,7 @@ def load_testcases(from_dir, default_policy=None):
     #if base.startswith("sms2-"):
     #  SKIP = False
     #if SKIP: continue
-    #if base != "sunspider": continue
+    #if base != "phylojive": continue
 
     # Find any applicable policy files.
     policies = load_policies(from_dir, base) 
@@ -40,8 +40,8 @@ def load_testcases(from_dir, default_policy=None):
     if len(policies) == 0:
       subparts = base.split('-')
       if subparts[-1] == 'bad' or subparts[-1] == 'ok':
-        base = '-'.join(subparts[:-1])
-        policies = load_policies(from_dir, base)
+        xbase = '-'.join(subparts[:-1])
+        policies = load_policies(from_dir, xbase)
         
     # Default to the simple policy.
     if len(policies) == 0:

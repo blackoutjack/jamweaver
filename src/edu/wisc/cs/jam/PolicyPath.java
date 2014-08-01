@@ -69,13 +69,7 @@ public class PolicyPath extends Automaton<State,PredicateSymbol> {
       }
 
       // Insert the edge in a ordered list of policy-advancing edges.
-      int i = 0;
-      for (; i<advancingEdges.size(); i++) {
-        Edge existing = advancingEdges.get(i);
-        if (existing.getSource().getId() > newEdge.getSource().getId())
-          break;
-      }
-      advancingEdges.add(i, newEdge);
+      advancingEdges.add(newEdge);
 
       // Collect a list of predicates. This may be a newly created
       // predicate, or one retrieved from a previous matching edge.
@@ -90,8 +84,8 @@ public class PolicyPath extends Automaton<State,PredicateSymbol> {
 
     // Assert that the policy path contains both an initial and a final
     // state.
-    assert advancingEdges.get(0).getSource().isInitial() : "No initial state for policy path";
-    assert advancingEdges.get(advancingEdges.size() - 1).getDestination().isFinal() : "No final state for policy path";
+    assert advancingEdges.get(0).getSource().isInitial() : "No initial state for policy path: " + this;
+    assert advancingEdges.get(advancingEdges.size() - 1).getDestination().isFinal() : "No final state for policy path: " + this;
 
     // Create the self-edges for each (non-final) state.
     for (State s : getStates()) {

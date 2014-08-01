@@ -6,15 +6,12 @@ import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.Policy;
 import edu.wisc.cs.automaton.State;
 
+import edu.wisc.cs.jam.PolicyType;
+import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPolicyType;
+
 // This is a simple wrapper for a Policy.Edge object, that knows how
 // to print the edge specification in the JavaScript policy context.
 public class PolicyTransition {
-
-  // The name of the array that contains all the edge specifications.
-  // %%% The type/nature of this may change to allow multiple
-  // %%% specification arrays.
-  private static final String EDGE_SPECIFICATION_ARRAY = "transitions";
-  private static final String UNTRANSFORMED_SPECIFICATION_ARRAY = "untransformedTransitions";
 
   private Policy.Edge edge;
   private Evaluator evaluator;
@@ -34,27 +31,26 @@ public class PolicyTransition {
     return edge;
   }
 
-  public String getType() {
-    switch (evaluator.getType()) {
+  public PolicyType getType() {
+    return evaluator.getType();
+  }
+
+  public String getTypeName() {
+    JSPolicyType typ = (JSPolicyType)getType();
+    switch (typ) {
       case WRITE:
         return "write";
       case READ:
         return "read";
       case CALL:
         return "call";
+      case DELETE:
+        return "call";
       case DUMMY:
         return "dummy";
       default:
         throw new UnsupportedOperationException("Unknown evaluator type: " + evaluator.toString());
     }
-  }
-
-  public static String getArrayName() {
-    return EDGE_SPECIFICATION_ARRAY;
-  }
-
-  public static String getUntransformedArrayName() {
-    return UNTRANSFORMED_SPECIFICATION_ARRAY;
   }
 
   public String getEvaluatorClause() {

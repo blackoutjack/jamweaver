@@ -5,6 +5,7 @@ import java.util.Set;
 public abstract class PolicyLanguage {
   
   // Utility methods.
+  public abstract PolicyType getPolicyType(Exp e);
   public abstract PolicyType getPolicyEdgeType(Policy.Edge edge);
   public abstract boolean isWild(Exp e);
   public abstract boolean isNativeLocation(Exp e);

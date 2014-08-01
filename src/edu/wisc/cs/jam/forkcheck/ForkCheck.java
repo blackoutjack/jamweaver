@@ -102,7 +102,7 @@ public class ForkCheck extends RuntimeCheck {
     }
 
     parent.addChildBefore(checkNode, n);
-    getSourceFile().update();
+    getSourceFile().reportCodeChange();
 
     setApplied(true);
   }

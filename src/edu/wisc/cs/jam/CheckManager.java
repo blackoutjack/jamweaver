@@ -2,7 +2,7 @@
 package edu.wisc.cs.jam;
 
 import java.util.Map;
-import java.util.HashMap;
+import java.util.Set;
 import java.util.List;
 
 // This interface abstracts the operations needed to manage the
@@ -32,12 +32,10 @@ public interface CheckManager {
   public abstract void initChecks(ExpSymbol sym);
   public abstract boolean isRuntimeCheck(Exp s);
 
-  public abstract Exp getUntransformedPolicyCode();
-  public abstract Exp getModularPolicyCode();
-  public abstract Exp getPolicyCode();
+  public abstract Exp getSpecializedPolicyCode();
+  public abstract Exp getBasePolicyCode();
 
-  // %%% Generalize/remove
-  public abstract List<String> getTransformableIntrospectors(SourceFile src);
-  public abstract List<String> getCallIntrospectors(SourceFile src);
+  // %%% Hacky
+  public abstract Set<PolicyType> getPolicyTypes(String check);
 }
 

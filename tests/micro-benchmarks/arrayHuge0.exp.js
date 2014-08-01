@@ -32,6 +32,5 @@ var v6 = v7.concat(v8);
 var v4 = v5.concat(v6);
 var v2 = v3.concat(v4);
 var v7160 = v1.concat(v2);
-var v0 = v7160.length;
-alert(v0);
+alert(v7160.length);
 

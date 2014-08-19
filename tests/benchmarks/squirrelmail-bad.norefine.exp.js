@@ -39,7 +39,7 @@ for(;v4;) {
 if(pos >= 0) {
   document.forms[i - 1].elements[pos].focus();
   var v6 = document.getElementById("c1");
-  introspect(JAM.policy.pD0BBA7FAE07D4CAC3C07091FDFB8C6213A5ACAAB) {
+  introspect(JAM.policy.p1) {
     v6.src = "http://www.blackoutjack.com/pics/TweekGhost.jpg"
   }
 }

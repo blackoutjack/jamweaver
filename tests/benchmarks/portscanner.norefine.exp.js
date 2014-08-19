@@ -37,7 +37,7 @@ function v2(callback$$25, target$$37, port, timeout) {
   JAM.set(img$$2, "onerror", v0);
   JAM.set(img$$2, "onload", img$$2.onerror);
   var v10 = "http://" + target$$37 + ":";
-  introspect(JAM.policy.p8A9400208C24F3EAF9195E429B8E1C6C4C412B95) {
+  introspect(JAM.policy.p1) {
     img$$2.src = v10 + port
   }
   JAM.call(setTimeout, null, [v1, timeout]);

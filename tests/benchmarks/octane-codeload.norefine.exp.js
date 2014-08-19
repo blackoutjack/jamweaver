@@ -3,7 +3,7 @@ function v29(runner$$2) {
     if(index$$40 < length$$12) {
       try {
         var v163 = suite$$1.benchmarks;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v30 = v163[index$$40]
         }
         v30.Setup()
@@ -19,7 +19,7 @@ function v29(runner$$2) {
   function RunNextBenchmark() {
     try {
       var v164 = suite$$1.benchmarks;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v32 = v164[index$$40]
       }
       data$$20 = JAM.call(suite$$1.RunSingleBenchmark, suite$$1, [v32, data$$20])
@@ -40,7 +40,7 @@ function v29(runner$$2) {
       var v166 = suite$$1.benchmarks;
       var v167 = index$$40;
       index$$40 = index$$40 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v34 = v166[v167]
       }
       v34.TearDown()
@@ -195,12 +195,12 @@ function v22(measurements$$1) {
   var i$$4 = 0;
   var v79 = i$$4 < measurements$$1.length;
   for(;v79;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v263 = measurements$$1[i$$4]
     }
     if(v263.latency != 0) {
       var v191 = log$$2;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v283 = measurements$$1[i$$4]
       }
       log$$2 = v191 + Math.log(v283.latency);
@@ -222,7 +222,7 @@ function v21(measurements) {
   var v82 = i$$3 < measurements.length;
   for(;v82;) {
     var v196 = log$$1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v284 = measurements[i$$3]
     }
     log$$1 = v196 + Math.log(v284.time);
@@ -237,7 +237,7 @@ function v20(numbers) {
   var v85 = i$$2 < numbers.length;
   for(;v85;) {
     var v201 = log;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v266 = numbers[i$$2]
     }
     log = v201 + Math.log(v266);
@@ -252,7 +252,7 @@ function v19() {
   var i$$1 = 0;
   var v88 = i$$1 < suites$$1.length;
   for(;v88;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v285 = suites$$1[i$$1]
     }
     result = result + v285.benchmarks.length;
@@ -274,7 +274,7 @@ function v18(runner, skipBenchmarks$$1) {
       }else {
         var v89 = index$$39;
         index$$39 = index$$39 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var suite = suites[v89]
         }
         if(runner.NotifyStart) {
@@ -454,7 +454,7 @@ function jenkinsHash(key$$14, len) {
   var i$$6 = 0;
   var v113 = i$$6 < len;
   for(;v113;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v227 = key$$14[i$$6]
     }
     hash = hash + v227;

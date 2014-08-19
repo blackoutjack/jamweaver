@@ -45,7 +45,7 @@ public class PolicyTransition {
       case CALL:
         return "call";
       case DELETE:
-        return "call";
+        return "delete";
       case DUMMY:
         return "dummy";
       default:

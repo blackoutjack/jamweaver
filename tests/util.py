@@ -236,6 +236,7 @@ def load_policies(from_dir, base_name, polsuf='.policy'):
       # Strip the base, the suffix, and surrounding dots. This could
       # result in the empty string, but that's no problem.
       key = polname[len(base_name)+1:-len(polsuf)]
+      #if base_name.startswith('sms2') and (key == "get" or key == "call"): continue
       ret[key] = os.path.join(from_dir, polname)
 
   return ret

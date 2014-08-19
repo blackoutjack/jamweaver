@@ -60,7 +60,7 @@ NWASRC=$(NWABASE:%=$(NWADIR)/%.java)
 NWACLS=$(NWASRC:.java=.class)
 
 # Java classes in the edu.wisc.cs.jam.tx package
-TXBASE=Evaluator EvaluatorNode Introspector PolicyTransition Transaction TransactionCheck TxManager
+TXBASE=Evaluator EvaluatorNode Introspector PolicyTransition Transaction TransactionCheck TxManager TxUtil
 TXSRC=$(TXBASE:%=$(TXDIR)/%.java)
 TXCLS=$(TXSRC:.java=.class)
 

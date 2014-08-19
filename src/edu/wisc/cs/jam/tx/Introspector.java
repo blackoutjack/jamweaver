@@ -21,6 +21,8 @@ public class Introspector {
 
   private List<PolicyTransition> edgeSpecifications;
   private String name;
+  private String hash;
+
   // A flag to denote the COMPREHENSIVE_INTROSPECTOR introspector.
   private boolean comprehensive;
 
@@ -72,6 +74,14 @@ public class Introspector {
     }
   }
 
+  public void setHash(String h) {
+    hash = h; 
+  }
+
+  public String getHash() {
+    return hash;
+  }
+
   public void setName(String name) {
     this.name = name;
   }
@@ -106,7 +116,7 @@ public class Introspector {
     return ret;
   }
 
-  protected void getCondition(StringBuilder sb, List<PolicyTransition> group, State src, State dest, String nodetype) {
+  protected void getCondition(StringBuilder sb, TransitionGroup group, State src, State dest, String nodetype, boolean checkType) {
     boolean isInit = src.isInitial();
     boolean isFinal = dest.isFinal();
     if (!isInit) {
@@ -120,13 +130,15 @@ public class Introspector {
       sb.append("] && ");
     }
 
-    sb.append("node.type === \"");
-    sb.append(nodetype);
-    sb.append("\" && ");
+    if (checkType) {
+      sb.append("node.type === \"");
+      sb.append(nodetype);
+      sb.append("\" && ");
+    }
 
     sb.append("((");
     boolean first = true;
-    for (PolicyTransition pt : group) {
+    for (PolicyTransition pt : group.getTransitions()) {
       if (first) {
         first = false;
       } else {
@@ -138,45 +150,95 @@ public class Introspector {
     sb.append("))");
   }
 
-  protected void transitionsToString(StringBuilder sb, String ind0) {
+  public class TransitionGroup {
+    PolicyType type;
+    State source;
+    State destination;
+    List<PolicyTransition> transitions;
+
+    public void add(PolicyTransition pt) {
+      if (transitions == null) {
+        transitions = new ArrayList<PolicyTransition>();
+        type = pt.getType();
+        Policy.Edge pe = pt.getPolicyEdge();
+        source = pe.getSource();
+        destination = pe.getDestination();
+      } else {
+        assert matches(pt);
+      }
+
+      transitions.add(pt);
+    }
+
+    public List<PolicyTransition> getTransitions() {
+      return new ArrayList<PolicyTransition>(transitions);
+    }
+
+    public State getSource() {
+      return source;
+    }
+
+    public State getDestination() {
+      return destination;
+    }
+
+    public PolicyType getType() {
+      return type;
+    }
+
+    public String getTypeName() {
+      return transitions.get(0).getTypeName();
+    }
+
+    public boolean matches(PolicyTransition pt) {
+      if (transitions.size() == 0) return false;
+      if (pt.getType() != type) return false;
+      Policy.Edge pe = pt.getPolicyEdge();
+      if (pe.getSource() != source) return false;
+      if (pe.getDestination() != destination) return false;
+      return true;
+    }
+  }
+
+  protected List<TransitionGroup> getTransitionGroups() {
     // Group the transitions such that some logic can be optimized. They
     // can be grouped if they share a start state, end state and type.
     // Transitions are assumed to be in a topological order already.
-    List<List<PolicyTransition>> groups = new ArrayList<List<PolicyTransition>>();
+    List<TransitionGroup> groups = new ArrayList<TransitionGroup>();
     for (PolicyTransition pt : edgeSpecifications) {
-      Policy.Edge pedge = pt.getPolicyEdge();
-      List<PolicyTransition> addTo = null;
-      for (List<PolicyTransition> group : groups) {
-        PolicyTransition prev = group.get(0);
-        Policy.Edge prevedge = prev.getPolicyEdge();
-        if (prev.getType() == pt.getType() &&
-            pedge.getSource() == prevedge.getSource() &&
-            pedge.getDestination() == prevedge.getDestination()) {
+      TransitionGroup addTo = null;
+      for (TransitionGroup group : groups) {
+        if (group.matches(pt)) {
           addTo = group;
           break;
         }
       }
       if (addTo == null) {
-        addTo = new ArrayList<PolicyTransition>();
+        addTo = new TransitionGroup();
         groups.add(addTo);
       }
       addTo.add(pt);
     }
+    return groups;
+  }
+
+  protected void transitionsToString(StringBuilder sb, List<TransitionGroup> groups, String seqtype, String ind0) {
 
     String ind1 = "  " + ind0;
 
-    for (List<PolicyTransition> group : groups) {
-      PolicyTransition pt0 = group.get(0);
-      String nodetype = pt0.getTypeName();
-      Policy.Edge pe = pt0.getPolicyEdge();
-      State src = pe.getSource();
-      State dest = pe.getDestination();
+    for (TransitionGroup group : groups) {
+      String nodetype = group.getTypeName();
+      State src = group.getSource();
+      State dest = group.getDestination();
       boolean isFinal = dest.isFinal();
 
       sb.append(ind0);
       sb.append("if (");
 
-      getCondition(sb, group, src, dest, nodetype);
+      // If only iterating over the exact type of node we're interested
+      // in, we can skip the |node.type| check.
+      boolean checktype = !seqtype.equals(nodetype);
+      getCondition(sb, group, src, dest, nodetype, checktype);
 
       // Close the conditional statement.
       sb.append(") {\n");
@@ -257,8 +319,24 @@ public class Introspector {
       cond.append(")");
     }
 
+    String seqtype = null;
+    List<TransitionGroup> groups = getTransitionGroups();
+    for (TransitionGroup group : groups) {
+      if (seqtype == null) {
+        seqtype = group.getTypeName();
+      } else if (!seqtype.equals(group.getTypeName())) {
+        // %%% Could add a case for a join value |modify| or |invoke|.
+        seqtype = "action";
+      }
+    }
+    assert seqtype != null;
+    // Get the uppercase form to fill in the method call.
+    String seqType = seqtype.substring(0, 1).toUpperCase() + seqtype.substring(1);
+
     sb.append(ind1);
-    sb.append("var as = tx.getActionSequence();\n");
+    sb.append("var as = tx.get");
+    sb.append(seqType);
+    sb.append("Sequence();\n");
     sb.append(ind1);
     sb.append("var len = as.length;\n");
 
@@ -269,7 +347,7 @@ public class Introspector {
     sb.append(ind2);
     sb.append("var node = as[i];\n");
 
-    transitionsToString(sb, ind2);
+    transitionsToString(sb, groups, seqtype, ind2);
 
     sb.append(ind1);
     sb.append("}\n");
@@ -309,6 +387,14 @@ public class Introspector {
     sb.append(".subsumedBy = ");
     sb.append(JAMConfig.COMPREHENSIVE_INTROSPECTOR);
     sb.append("\n");
+
+    if (!seqtype.equals("action")) {
+      sb.append(ind0);
+      sb.append(getName());
+      sb.append(".itype = \"");
+      sb.append(seqtype);
+      sb.append("\";\n");
+    }
 
     // Freeze the introspector object.
     sb.append(ind0);

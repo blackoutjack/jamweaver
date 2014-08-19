@@ -16,7 +16,7 @@ function v1() {
     function v0() {
       var b$$inline_1 = j$$2;
       var v96 = this.src;
-      var v51 = JAM.call(v96.indexOf, v96, ["c1=2"], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493) < 0;
+      var v51 = JAM.call(v96.indexOf, v96, ["c1=2"], JAM.policy.p3) < 0;
       if(!v51) {
         v51 = !b$$inline_1.d.createElement
       }
@@ -25,28 +25,28 @@ function v1() {
         if(!v23) {
           var v52 = this[h$$5] == 2;
           if(v52) {
-            v52 = this.height > JAM.call(f$$1.round, f$$1, [JAM.call(f$$1.random, f$$1, [], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493) * 100], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493)
+            v52 = this.height > JAM.call(f$$1.round, f$$1, [JAM.call(f$$1.random, f$$1, [], JAM.policy.p3) * 100], JAM.policy.p3)
           }
           v23 = v52
         }
         if(v23) {
           var v4 = b$$inline_1.d;
-          var c$$inline_2 = JAM.call(v4.createElement, v4, [g$$1], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493);
+          var c$$inline_2 = JAM.call(v4.createElement, v4, [g$$1], JAM.policy.p3);
           var v24 = b$$inline_1.d;
-          var d$$inline_3 = JAM.call(v24.getElementsByTagName, v24, [g$$1], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493)[0];
+          var d$$inline_3 = JAM.call(v24.getElementsByTagName, v24, [g$$1], JAM.policy.p3)[0];
           var v54 = b$$inline_1.script_extension_url;
           if(!v54) {
             v54 = e$$5
           }
           var v25 = v54;
           var v86 = this.src;
-          var v6 = [v25, "?", "c2=", JAM.call(v86.match, v86, [i$$2], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493)[1]];
-          var j$$inline_4 = JAM.call(v6.join, v6, [""], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493);
+          var v6 = [v25, "?", "c2=", JAM.call(v86.match, v86, [i$$2], JAM.policy.p3)[1]];
+          var j$$inline_4 = JAM.call(v6.join, v6, [""], JAM.policy.p3);
           if(d$$inline_3) {
             c$$inline_2.src = j$$inline_4;
             c$$inline_2.async = !0;
             var v56 = d$$inline_3.parentNode;
-            JAM.call(v56.insertBefore, v56, [c$$inline_2, d$$inline_3], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493)
+            JAM.call(v56.insertBefore, v56, [c$$inline_2, d$$inline_3], JAM.policy.p3)
           }
         }
       }
@@ -68,7 +68,7 @@ function v1() {
           v28 = g$$2 == "number"
         }
         if(v28) {
-          JAM.set(f$$2, f$$2[a$$1], l$$2 + "=" + JAM.call(c$$1, null, [b$$2[l$$2]], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493), JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811);
+          JAM.set(f$$2, f$$2[a$$1], l$$2 + "=" + JAM.call(c$$1, null, [b$$2[l$$2]], JAM.policy.p3), JAM.policy.p2);
           var v31;
           if(l$$2 == "c2") {
             v31 = k$$2 = b$$2[l$$2]
@@ -101,18 +101,18 @@ function v1() {
       j$$2.d = v34;
       if(typeof j$$2.url_append == "string") {
         var v36 = j$$2.url_append;
-        var v12 = JAM.call(v36.replace, v36, [/&amp;/, "&"], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493);
-        i$$3 = JAM.call(v12.split, v12, ["&"], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493);
+        var v12 = JAM.call(v36.replace, v36, [/&amp;/, "&"], JAM.policy.p3);
+        i$$3 = JAM.call(v12.split, v12, ["&"], JAM.policy.p3);
         l$$2 = 0;
         var n$$2 = i$$3[a$$1];
         var o$$1;
         var v13 = l$$2 < n$$2;
         for(;v13;) {
           var v37 = i$$3[l$$2];
-          o$$1 = JAM.call(v37.split, v37, ["="], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493);
+          o$$1 = JAM.call(v37.split, v37, ["="], JAM.policy.p3);
           var v38 = o$$1[a$$1] == 2;
           if(v38) {
-            JAM.set(f$$2, f$$2[a$$1], o$$1[0] + "=" + JAM.call(c$$1, null, [o$$1[1]], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493), JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811)
+            JAM.set(f$$2, f$$2[a$$1], o$$1[0] + "=" + JAM.call(c$$1, null, [o$$1[1]], JAM.policy.p3), JAM.policy.p2)
           }
           l$$2 = l$$2 + 1;
           v13 = l$$2 < n$$2
@@ -120,7 +120,7 @@ function v1() {
       }
       var v70;
       var v109 = j$$2.d.URL;
-      if(JAM.call(v109.charAt, v109, [4], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493) == "s") {
+      if(JAM.call(v109.charAt, v109, [4], JAM.policy.p3) == "s") {
         v70 = "s://sb"
       }else {
         v70 = "://b"
@@ -133,9 +133,9 @@ function v1() {
         v71 = "c1=2&"
       }
       var v40 = v71;
-      var v72 = JAM.call(f$$2.join, f$$2, ["&"], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493);
-      e$$6 = ["http", v39, d$$1, "/b?", v40, JAM.call(v72.replace, v72, [/&$/, ""], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493)];
-      udm_(JAM.call(e$$6.join, e$$6, [""], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493), v0)
+      var v72 = JAM.call(f$$2.join, f$$2, ["&"], JAM.policy.p3);
+      e$$6 = ["http", v39, d$$1, "/b?", v40, JAM.call(v72.replace, v72, [/&$/, ""], JAM.policy.p3)];
+      udm_(JAM.call(e$$6.join, e$$6, [""], JAM.policy.p3), v0)
     }
     return
   }
@@ -188,19 +188,19 @@ function udm_(a, b) {
     v18 = escape
   }
   var s$$2 = v18;
-  if(JAM.call(e$$4[g], e$$4, [c], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493) + 1) {
+  if(JAM.call(e$$4[g], e$$4, [c], JAM.policy.p3) + 1) {
     p = 0;
-    o = JAM.call(e$$4.split, e$$4, [";"], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493);
+    o = JAM.call(e$$4.split, e$$4, [";"], JAM.policy.p3);
     q = o[i$$1];
     var v19 = p < q;
     for(;v19;) {
       var v47 = o[p];
-      n$$1 = JAM.call(v47[g], v47, [c], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493);
+      n$$1 = JAM.call(v47[g], v47, [c], JAM.policy.p3);
       var v48 = n$$1 + 1;
       if(v48) {
         var v74 = m;
         var v102 = o[p];
-        f = v74 + unescape(JAM.call(v102[h$$4], v102, [n$$1 + c[i$$1]], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493))
+        f = v74 + unescape(JAM.call(v102[h$$4], v102, [n$$1 + c[i$$1]], JAM.policy.p3))
       }
       p = p + 1;
       v19 = p < q
@@ -216,15 +216,15 @@ function udm_(a, b) {
     }
     v138 = v140
   }
-  a = v92 + (v135 + v138 + "&c8=" + JAM.call(s$$2, null, [d.title], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493) + f + "&c7=" + JAM.call(s$$2, null, [d.URL], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493) + "&c9=" + JAM.call(s$$2, null, [d.referrer], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493));
+  a = v92 + (v135 + v138 + "&c8=" + JAM.call(s$$2, null, [d.title], JAM.policy.p3) + f + "&c7=" + JAM.call(s$$2, null, [d.URL], JAM.policy.p3) + "&c9=" + JAM.call(s$$2, null, [d.referrer], JAM.policy.p3));
   var v76 = a[i$$1] > j;
   if(v76) {
-    var v95 = JAM.call(a[g], a, [m], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493) > 0;
+    var v95 = JAM.call(a[g], a, [m], JAM.policy.p3) > 0;
     if(v95) {
-      var v113 = JAM.call(a[h$$4], a, [0, j - 8], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493);
-      k = JAM.call(v113.lastIndexOf, v113, [m], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493);
-      var v114 = JAM.call(a[h$$4], a, [0, k], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493) + l + "cut=" + JAM.call(s$$2, null, [JAM.call(a[h$$4], a, [k + 1], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493)], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493);
-      a = JAM.call(v114[h$$4], v114, [0, j], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493)
+      var v113 = JAM.call(a[h$$4], a, [0, j - 8], JAM.policy.p3);
+      k = JAM.call(v113.lastIndexOf, v113, [m], JAM.policy.p3);
+      var v114 = JAM.call(a[h$$4], a, [0, k], JAM.policy.p3) + l + "cut=" + JAM.call(s$$2, null, [JAM.call(a[h$$4], a, [k + 1], JAM.policy.p3)], JAM.policy.p3);
+      a = JAM.call(v114[h$$4], v114, [0, j], JAM.policy.p3)
     }
   }
   var v49;
@@ -240,13 +240,13 @@ function udm_(a, b) {
     }
     v49 = n$$1.src = a
   }else {
-    v49 = JAM.call(d.write, d, ["<", "p", "><", 'img src="', a, '" height="1" width="1" alt="*"', "><", "/p", ">"], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493)
+    v49 = JAM.call(d.write, d, ["<", "p", "><", 'img src="', a, '" height="1" width="1" alt="*"', "><", "/p", ">"], JAM.policy.p3)
   }
   v49;
   return
 }
 var _comscore = _comscore || [];
-JAM.call(_comscore.push, _comscore, [{c1:"2", c2:"6770185"}], JAM.policy.p76F930B34187247043082CAF9881927B310E8F564E301A1AA8BF2B7374C3F6541DC9BB72815A4493);
+JAM.call(_comscore.push, _comscore, [{c1:"2", c2:"6770185"}], JAM.policy.p3);
 var v50 = typeof _comscore == "undefined";
 if(v50) {
   _comscore = []

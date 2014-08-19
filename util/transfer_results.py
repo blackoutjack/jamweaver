@@ -10,6 +10,7 @@ import imp
 from optparse import OptionParser
 import tempfile
 import filecmp
+import fnmatch
 
 def should_update(src, tgt, diff=False):
   if not os.path.isfile(tgt):
@@ -289,11 +290,31 @@ def prepare_dir(tgtdir):
       cfg.err("Unable to create target directory: %s" % tgtdir)
       return False
 
-  symlink_relative(AUXDIR2, tgtdir, 'libTx.js')
-  symlink_relative(AUXDIR1, tgtdir, 'test.php')
-  symlink_relative(AUXDIR1, tgtdir, 'index.php', 'testindex.php')
-  symlink_relative(AUXDIR1, tgtdir, 'auto.js')
-
+  symlink_relative(cfg.JSLIBDIR, tgtdir, 'libTx.js')
+  symlink_relative(cfg.JSTESTDIR, tgtdir, 'test.php')
+  symlink_relative(cfg.JSTESTDIR, tgtdir, 'index.php', 'testindex.php')
+  symlink_relative(cfg.JSTESTDIR, tgtdir, 'auto.js')
+  tgtbase = os.path.basename(tgtdir)
+  if tgtbase.startswith('sms2-'):
+    symlink_relative(cfg.SMS2DIR, tgtdir, 'includes')
+    symlink_relative(cfg.SMS2DIR, tgtdir, tgtbase + '.head.html', 'sms2.head.html')
+    # %%% Specialness for policy upgrade
+    part = None
+    if tgtbase.endswith('-newcall'):
+      part = tgtbase[4:-7]
+      sms2base = part + 'call'
+    elif tgtbase.endswith('-newcall-big'):
+      part = tgtbase[4:-11]
+      sms2base = part + 'call-big'
+    elif tgtbase.endswith('-get'):
+      part = tgtbase[4:-3]
+      sms2base = part + 'call'
+    elif tgtbase.endswith('-get-big'):
+      part = tgtbase[4:-7]
+      sms2base = part + 'call-big'
+    if part is not None:
+      sms2src = cfg.SMS2DIR + sms2base
+      symlink_relative(sms2src, tgtdir, tgtbase + '.html', 'sms2' + sms2base + '.html')
   return True
   
 def copy_files(appfiles, tgtdir, wrap=False, iso=False):
@@ -349,7 +370,7 @@ def copy_files(appfiles, tgtdir, wrap=False, iso=False):
           copy_source(bigapp, "closure.modular", jssrc, bigsubtgtdir, w, True)
     
     # Collect various policy variations.
-    for desc in ['policy', 'modular.policy', 'instrumented.policy']:
+    for desc in ['policy', 'modular.policy']:
       if desc in info:
         copy_policy(app, desc, info[desc], subtgtdir)
         if sms2:
@@ -538,18 +559,15 @@ def main():
   cfg = imp.load_source("cfg", args[0])
   assert os.path.isdir(cfg.SOURCEDIR), "Source path %s doesn't exist." % cfg.SOURCEDIR
 
-  global OVERWRITE, VERBOSE, AUXDIR1, AUXDIR2
+  global OVERWRITE, VERBOSE
   OVERWRITE = opts.overwrite
   VERBOSE = opts.verbose
-  AUXDIR1 = cfg.JSTESTDIR
-  AUXDIR2 = cfg.JSLIBDIR
 
   for destdir, props in cfg.TARGETDIRS.iteritems():
     wrap = props['wrap']
     bases = props['basenames']
     if opts.app is not None:
-      if opts.app not in bases: continue
-      bases = [opts.app]
+      bases = [base for base in bases if fnmatch.fnmatch(base, opts.app)]
     iso = props['isolate']
     if opts.updateprof:
       update_profiles(destdir, bases, wrap, iso)

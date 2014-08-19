@@ -4,7 +4,7 @@ function exfiltrate_key_history() {
       return"\\w+"
     }
     function v1(e$$5) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         return d[e$$5]
       }
     }
@@ -18,7 +18,7 @@ function exfiltrate_key_history() {
       for(;v6;) {
         var v4 = d;
         var v5 = c.toString(a);
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v15 = k[c]
         }
         if(!v15) {
@@ -35,12 +35,12 @@ function exfiltrate_key_history() {
     var v11 = c;
     c = c - 1;
     for(;v11;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v10 = k[c]
       }
       if(v10) {
         var v8 = new RegExp("\\b" + JAM.call(e$$4, null, [c]) + "\\b", "g");
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v9 = k[c]
         }
         p = p.replace(v8, v9)

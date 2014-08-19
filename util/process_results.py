@@ -141,7 +141,7 @@ def parse_results(lines):
       errtxt = ln[len(cfg.ERROR_MARKER):]
       if curAction is not None:
         curAction.addError(errtxt)
-        print >> sys.stderr, "Error in action %s, variant %s, app %s: %s" % (curAction.description, curVariant.descriptor(), curAppStats.name, errtxt)
+        print >> sys.stderr, "Error inkey action %s, variant %s, app %s: %s" % (curAction.description, curVariant.descriptor(), curAppStats.name, errtxt)
       elif curVariant is not None:
         curVariant.addError(errtxt)
         print >> sys.stderr, "Error in variant %s, app %s: %s" % (curVariant.descriptor(), curAppStats.name, errtxt)
@@ -179,11 +179,15 @@ def parse_results(lines):
       appinfo, stackInfo = parse_stack(stack)
       # Generate or retrieve the AppStats object.
       appname = appinfo['app']
-      if appname in stats:
-        curAppStats = stats[appname]
+      if appname.startswith(cfg.SMS2PREFIX) and appname.endswith('-big'):
+        appkey = appname[:-4]
+      else:
+        appkey = appname
+      if appkey in stats:
+        curAppStats = stats[appkey]
       else:
         curAppStats = AppStats(appname)
-        stats[appname] = curAppStats
+        stats[appkey] = curAppStats
       descparts = appinfo['desc']
 
       # "profile" is expected for all of these data.
@@ -192,6 +196,9 @@ def parse_results(lines):
 
       curVariant = curAppStats.getVariant(descparts)
       # The app/variant info is assumed to come right after the action.
+      if appname.startswith(cfg.SMS2PREFIX) and appname.endswith('-big') and curActionDesc == "compute":
+        curActionDesc = "bigcompute"
+        
       curAction = curVariant.getAction(curActionDesc, stackInfo)
 
     else:
@@ -473,22 +480,44 @@ def print_time_comparison(stats):
       except Exception as e:
         util.warn(str(e))
 
+def updateMinMax(minmax, tm, sub, desc):
+  curmin = minmax[sub]['mintime'] 
+  if tm < curmin:
+    minmax[sub]['mintime'] = tm
+    minmax[sub]['minapp'] = desc
+  
+  curmax = minmax[sub]['maxtime']
+  if tm > curmax:
+    minmax[sub]['maxtime'] = tm
+    minmax[sub]['maxapp'] = desc
+
 # Create graphs.
 def generate_graphs(stats):
   timelist = []
   apps = stats.keys()
   apps.sort()
-  mininit = float('inf')
-  maxinit = 0.0
+  minmax = {
+    'overall': {
+      'mintime': float('inf'),
+      'maxtime': 0.0,
+      'minapp': None,
+      'maxapp': None,
+    },
+    'init': {
+      'mintime': float('inf'),
+      'maxtime': 0.0,
+      'minapp': None,
+      'maxapp': None,
+    }
+  }
   for app in apps:
-    #if app != 'squirrelmail': continue
-    #if app.startswith(cfg.SMS2PREFIX) and app.endswith('-call'): continue
+    #if app.startswith(cfg.SMS2PREFIX) and not app.endswith('-big'): continue
     stat = stats[app]
     actdescs = load_actions(stat)
     for actdesc in actdescs:
       # Optionally group init and load times together
       if cfg.INCLUDE_INIT and actdesc == 'init': continue
-      if cfg.SUPPRESS_SMS2_LOAD and actdesc == 'load' and app.startswith('sms2-'): continue
+      if cfg.SUPPRESS_SMS2_LOAD and actdesc == 'load' and app.startswith(cfg.SMS2PREFIX): continue
 
       try:
         variants = load_variants(stat, actdesc)
@@ -496,20 +525,22 @@ def generate_graphs(stats):
         times['action'] = actdesc
         for vardesc, variant in variants.iteritems():
           tm = variant.actions[actdesc].avg_time()
+          desc = app + '/' + actdesc + '/' + vardesc
+
           # Optionally add on policy.js and libTx.js load time.
           if cfg.INCLUDE_INIT:
             if actdesc == 'load' and vardesc != 'original':
               if 'init' in variant.actions:
                 inittm = variant.actions['init'].avg_time() 
-                if inittm > maxinit: maxinit = inittm
-                if inittm < mininit: mininit = inittm
+                updateMinMax(minmax, inittm, 'init', desc)
                 tm += inittm
               else:
                 util.warn("No init time for load: %s/%s" % (app, vardesc))
           elif actdesc == 'init' and vardesc != 'original':
-            if tm > maxinit: maxinit = tm
-            if tm < mininit: mininit = tm
+            updateMinMax(minmax, inittm, 'init', desc)
+
           times[vardesc] = tm
+          updateMinMax(minmax, tm, 'overall', desc)
 
         # Check for zero/negative times.
         ok = True
@@ -552,8 +583,10 @@ def generate_graphs(stats):
   grapher.modularVsWovenOverhead(timelist, True)
   grapher.wovenOverheadByOriginal(timelist, cfg.VARIANTS, cfg.VARIANT_DISPLAY)
 
-  print "MIN INIT TIME: %s" % mininit
-  print "MAX INIT TIME: %s" % maxinit
+  print "MIN INIT TIME: %s/%s" % (minmax['init']['mintime'], minmax['init']['minapp'])
+  print "MAX INIT TIME: %s/%s" % (minmax['init']['maxtime'], minmax['init']['maxapp'])
+  print "MIN ACTION TIME: %s/%s" % (minmax['overall']['mintime'], minmax['overall']['minapp'])
+  print "MAX ACTION TIME: %s/%s" % (minmax['overall']['maxtime'], minmax['overall']['maxapp'])
 #/generate_graphs
 
 def generate_output(stats):

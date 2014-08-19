@@ -14,7 +14,7 @@ function v117() {
   var sc_tmp$$1 = arguments.length - 1;
   var v121 = sc_tmp$$1 >= 0;
   for(;v121;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v120 = arguments[sc_tmp$$1]
     }
     args$$6 = sc_cons(v120, args$$6);
@@ -113,11 +113,11 @@ function v109(grammar, lexer) {
         for(;true;) {
           if(l$$30 instanceof sc_Pair) {
             ender$$3 = l$$30.car;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               state$$11 = sc_states_129[j$$8]
             }
             var v1107 = ender$$3 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               ender_set$$2 = state$$11[v1107]
             }
             if(ender_set$$2 !== false) {
@@ -130,7 +130,7 @@ function v109(grammar, lexer) {
                   }
                 }
                 var v126 = k$$8 + 5;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   k$$8 = ender_set$$2[v126]
                 }
                 v127 = k$$8 >= 0
@@ -158,7 +158,7 @@ function v109(grammar, lexer) {
       sc_conf_131 = BgL_sc_stateza2_23za2[0];
       if(sc_conf_131 >= 0) {
         var v131 = sc_conf_131 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           conf_set$$12 = BgL_sc_stateza2_23za2[v131]
         }
         head$$4 = conf_set$$12[4];
@@ -174,23 +174,23 @@ function v109(grammar, lexer) {
           prev$$2 = sc_conf_131 - 1;
           var v1109 = sc_conf_131 >= BgL_sc_nbzd2nts_24zd2;
           if(v1109) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v1739 = sc_steps_25[prev$$2]
             }
             v1109 = v1739 >= 0
           }
           if(v1109) {
             sc_loop1_127 = v106;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v1110 = sc_steps_25[prev$$2]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v132 = sc_enders_26[v1110]
             }
             JAM.call(sc_loop1_127, null, [v132])
           }
           var v134 = sc_i_130 + 5;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             sc_i_130 = conf_set$$12[v134]
           }
           v135 = sc_i_130 >= 0
@@ -212,24 +212,24 @@ function v109(grammar, lexer) {
       BgL_sc_ntza2_126za2 = JAM.call(sc_ind_43, null, [nt$$6, sc_nts_119]);
       if(BgL_sc_ntza2_126za2 !== false) {
         BgL_sc_nbzd2nts_125zd2 = sc_nts_119.length;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           l$$29 = sc_enders_120[BgL_sc_ntza2_126za2]
         }
         nb_trees = 0;
         var v139 = l$$29 instanceof sc_Pair;
         for(;v139;) {
           sc_conf_124 = l$$29.car;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             state$$10 = sc_states_123[j$$7]
           }
           var v2436 = sc_conf_124 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             conf_set$$11 = state$$10[v2436]
           }
           var v2129;
           if(conf_set$$11 !== false) {
             var v2437 = i$$67 + 5;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               v2129 = conf_set$$11[v2437]
             }
           }else {
@@ -263,11 +263,11 @@ function v109(grammar, lexer) {
         for(;true;) {
           if(l$$28 instanceof sc_Pair) {
             ender$$2 = l$$28.car;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               sc_state_117 = sc_states_114[j$$6]
             }
             var v1112 = ender$$2 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               ender_set$$1 = sc_state_117[v1112]
             }
             if(ender_set$$1 !== false) {
@@ -277,17 +277,17 @@ function v109(grammar, lexer) {
               for(;v144;) {
                 var v1113 = k$$7 >= i$$66;
                 if(v1113) {
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     state$$9 = sc_states_114[k$$7]
                   }
                   var v2765 = prev$$1 + 1;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     conf_set$$10 = state$$9[v2765]
                   }
                   var v2439;
                   if(conf_set$$10 !== false) {
                     var v2766 = i$$66 + 5;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       v2439 = conf_set$$10[v2766]
                     }
                   }else {
@@ -299,13 +299,13 @@ function v109(grammar, lexer) {
                   nb_prev_trees = JAM.call(nb_deriv_trees, null, [prev$$1, i$$66, k$$7, sc_enders_111, sc_steps_112, sc_toks_113, sc_states_114, BgL_sc_nbzd2nts_115zd2]);
                   nb_ender_trees = JAM.call(nb_deriv_trees, null, [ender$$2, k$$7, j$$6, sc_enders_111, sc_steps_112, sc_toks_113, sc_states_114, BgL_sc_nbzd2nts_115zd2]);
                   var v141 = k$$7 + 5;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     k$$7 = ender_set$$1[v141]
                   }
                   n$$13 = n$$13 + nb_prev_trees * nb_ender_trees
                 }else {
                   var v142 = k$$7 + 5;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     k$$7 = ender_set$$1[v142]
                   }
                 }
@@ -331,7 +331,7 @@ function v109(grammar, lexer) {
       if(tmp1124 !== false) {
         v2768 = tmp1124
       }else {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v3041 = sc_steps_112[prev$$1]
         }
         v2768 = v3041 < 0
@@ -340,10 +340,10 @@ function v109(grammar, lexer) {
         v1115 = 1
       }else {
         sc_loop1_116 = v103;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v2440 = sc_steps_112[prev$$1]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v2131 = sc_enders_111[v2440]
         }
         v1115 = JAM.call(sc_loop1_116, null, [v2131, 0])
@@ -361,24 +361,24 @@ function v109(grammar, lexer) {
       BgL_sc_ntza2_109za2 = JAM.call(sc_ind_43, null, [nt$$5, sc_nts_101]);
       if(BgL_sc_ntza2_109za2 !== false) {
         BgL_sc_nbzd2nts_108zd2 = sc_nts_101.length;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           l$$27 = sc_enders_102[BgL_sc_ntza2_109za2]
         }
         trees = null;
         var v150 = l$$27 instanceof sc_Pair;
         for(;v150;) {
           sc_conf_107 = l$$27.car;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             state$$8 = sc_states_106[j$$5]
           }
           var v2441 = sc_conf_107 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             conf_set$$9 = state$$8[v2441]
           }
           var v2132;
           if(conf_set$$9 !== false) {
             var v2442 = i$$65 + 5;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               v2132 = conf_set$$9[v2442]
             }
           }else {
@@ -418,7 +418,7 @@ function v109(grammar, lexer) {
               return JAM.call(loop3, null, [l3$$1.cdr, sc_l2_100])
             }else {
               var v1118 = k$$6 + 5;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v156 = ender_set[v1118]
               }
               return JAM.call(loop2, null, [v156, l2$$8])
@@ -434,17 +434,17 @@ function v109(grammar, lexer) {
             if(k$$6 >= 0) {
               var v1119 = k$$6 >= i$$64;
               if(v1119) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   sc_state_99 = sc_states_96[k$$6]
                 }
                 var v2769 = prev + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   conf_set$$8 = sc_state_99[v2769]
                 }
                 var v2444;
                 if(conf_set$$8 !== false) {
                   var v2770 = i$$64 + 5;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     v2444 = conf_set$$8[v2770]
                   }
                 }else {
@@ -459,7 +459,7 @@ function v109(grammar, lexer) {
                 return JAM.call(loop3, null, [ender_trees, l2$$7])
               }else {
                 var v158 = k$$6 + 5;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   k$$6 = ender_set[v158]
                 }
               }
@@ -476,11 +476,11 @@ function v109(grammar, lexer) {
         for(;true;) {
           if(l1$$14 instanceof sc_Pair) {
             ender$$1 = l1$$14.car;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               state$$7 = sc_states_96[j$$4]
             }
             var v1120 = ender$$1 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               ender_set = state$$7[v1120]
             }
             if(ender_set !== false) {
@@ -498,14 +498,14 @@ function v109(grammar, lexer) {
       var sc_loop1_98;
       var prev;
       var name$$38;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         name$$38 = sc_names_94[sc_conf_91]
       }
       var v1121;
       if(name$$38 !== false) {
         var v1743;
         if(sc_conf_91 < BgL_sc_nbzd2nts_97zd2) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v2772 = sc_toks_95[i$$64]
           }
           v1743 = sc_list(sc_list(name$$38, v2772.car))
@@ -516,10 +516,10 @@ function v109(grammar, lexer) {
       }else {
         prev = sc_conf_91 - 1;
         sc_loop1_98 = v100;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v2446 = sc_steps_93[prev]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v2136 = sc_enders_92[v2446]
         }
         v1121 = JAM.call(sc_loop1_98, null, [v2136, null])
@@ -534,23 +534,23 @@ function v109(grammar, lexer) {
       var BgL_sc_ntza2_90za2;
       BgL_sc_ntza2_90za2 = JAM.call(sc_ind_43, null, [nt$$4, sc_nts_86]);
       if(BgL_sc_ntza2_90za2 !== false) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           l$$26 = sc_enders_87[BgL_sc_ntza2_90za2]
         }
         for(;true;) {
           if(l$$26 instanceof sc_Pair) {
             sc_conf_89 = l$$26.car;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               state$$6 = sc_states_88[j$$3]
             }
             var v2447 = sc_conf_89 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               conf_set$$7 = state$$6[v2447]
             }
             var v2137;
             if(conf_set$$7 !== false) {
               var v2448 = i$$63 + 5;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 v2137 = conf_set$$7[v2448]
               }
             }else {
@@ -583,11 +583,11 @@ function v109(grammar, lexer) {
           i$$62 = head$$3;
           var v170 = i$$62 >= 0;
           for(;v170;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               sc_state_83 = sc_states_78[i$$62]
             }
             var v1123 = pred + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               pred_set = sc_state_83[v1123]
             }
             if(pred_set !== false) {
@@ -596,7 +596,7 @@ function v109(grammar, lexer) {
               JAM.call(conf_set_union, null, [state$$5, BgL_sc_nextzd2set_84zd2, sc_next_85, pred_set])
             }
             var v169 = i$$62 + 5;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               i$$62 = BgL_sc_confzd2set_76zd2[v169]
             }
             v170 = i$$62 >= 0
@@ -627,25 +627,25 @@ function v109(grammar, lexer) {
       var sc_conf_80;
       var BgL_sc_nbzd2nts_81zd2;
       var sc_state_82;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         sc_state_82 = sc_states_67[BgL_sc_statezd2num_68zd2]
       }
       BgL_sc_nbzd2nts_81zd2 = sc_nts_73.length;
       for(;true;) {
         sc_conf_80 = sc_state_82[0];
         if(sc_conf_80 >= 0) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             step = sc_steps_72[sc_conf_80]
           }
           var v173 = sc_conf_80 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             BgL_sc_confzd2set_79zd2 = sc_state_82[v173]
           }
           head$$3 = BgL_sc_confzd2set_79zd2[4];
           sc_state_82[0] = BgL_sc_confzd2set_79zd2[0];
           JAM.call(conf_set_merge_new_bang, null, [BgL_sc_confzd2set_79zd2]);
           if(step >= 0) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               sc_l_74 = sc_starters_69[step]
             }
             var v175 = sc_l_74 instanceof sc_Pair;
@@ -653,7 +653,7 @@ function v109(grammar, lexer) {
               starter = sc_l_74.car;
               starter_set = JAM.call(BgL_sc_confzd2setzd2getza2_44za2, null, [sc_state_82, BgL_sc_statezd2num_68zd2, starter]);
               var v1745 = BgL_sc_statezd2num_68zd2 + 5;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v1124 = starter_set[v1745]
               }
               if(v1124 === false) {
@@ -664,20 +664,20 @@ function v109(grammar, lexer) {
               }
               v175 = sc_l_74 instanceof sc_Pair
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               l$$24 = sc_enders_70[step]
             }
             var v177 = l$$24 instanceof sc_Pair;
             for(;v177;) {
               ender = l$$24.car;
               var v2138 = ender + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 conf_set$$6 = sc_state_82[v2138]
               }
               var v2139;
               if(conf_set$$6 !== false) {
                 var v2450 = BgL_sc_statezd2num_68zd2 + 5;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   v2139 = conf_set$$6[v2450]
                 }
               }else {
@@ -695,7 +695,7 @@ function v109(grammar, lexer) {
             }
           }else {
             var v178 = step + BgL_sc_nbzd2nts_81zd2;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               preds = sc_predictors_71[v178]
             }
             sc_states_78 = sc_states_67;
@@ -717,18 +717,18 @@ function v109(grammar, lexer) {
       var v184 = i$$61 >= 0;
       for(;v184;) {
         var v1746 = i$$61 + 5;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1126 = conf_set$$5[v1746]
         }
         if(v1126 === false) {
           JAM.call(conf_set_adjoin, null, [state$$4, conf_set$$5, sc_conf_66, i$$61]);
           var v181 = i$$61 + 5;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             i$$61 = other_set[v181]
           }
         }else {
           var v182 = i$$61 + 5;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             i$$61 = other_set[v182]
           }
         }
@@ -742,31 +742,31 @@ function v109(grammar, lexer) {
       var BgL_sc_stateza2_65za2;
       var conf_set$$4;
       var state$$3;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         state$$3 = sc_states_60[BgL_sc_statezd2num_62zd2]
       }
       var v1127;
       var v2773 = sc_conf_63 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         conf_set$$4 = state$$3[v2773]
       }
       var v2774;
       if(conf_set$$4 !== false) {
         var v3043 = i$$60 + 5;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           v2774 = conf_set$$4[v3043]
         }
       }else {
         v2774 = false
       }
       if(v2774 !== false) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           BgL_sc_stateza2_65za2 = BgL_sc_statesza2_61za2[BgL_sc_statezd2num_62zd2]
         }
         BgL_sc_confzd2setza2_64z70 = JAM.call(BgL_sc_confzd2setzd2getza2_44za2, null, [BgL_sc_stateza2_65za2, BgL_sc_statezd2num_62zd2, sc_conf_63]);
         var v2452;
         var v3284 = i$$60 + 5;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v3045 = BgL_sc_confzd2setza2_64z70[v3284]
         }
         if(v3045 === false) {
@@ -786,7 +786,7 @@ function v109(grammar, lexer) {
       var sc_conf_59;
       var l1$$13;
       var state$$2;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         state$$2 = sc_states_57[BgL_sc_statezd2num_58zd2]
       }
       l1$$13 = l$$23;
@@ -795,7 +795,7 @@ function v109(grammar, lexer) {
         sc_conf_59 = l1$$13.car;
         conf_set$$3 = JAM.call(BgL_sc_confzd2setzd2getza2_44za2, null, [state$$2, BgL_sc_statezd2num_58zd2, sc_conf_59]);
         var v1748 = i$$59 + 5;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1128 = conf_set$$3[v1748]
         }
         if(v1128 === false) {
@@ -834,7 +834,7 @@ function v109(grammar, lexer) {
       var conf_set;
       var BgL_sc_confzd2set_55zd2;
       var v1130 = sc_conf_54 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         BgL_sc_confzd2set_55zd2 = state[v1130]
       }
       var v1131;
@@ -873,7 +873,7 @@ function v109(grammar, lexer) {
       i$$56 = sc_nts_49.length - 1;
       for(;true;) {
         if(i$$56 >= 0) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v1132 = sc_nts_49[i$$56]
           }
           if(sc_isEqual(v1132, nt$$3)) {
@@ -1001,7 +1001,7 @@ function v109(grammar, lexer) {
     sc_i_28 = 0;
     var v202 = sc_i_28 < BgL_sc_nbzd2toks_35zd2;
     for(;v202;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v199 = sc_toks_36[sc_i_28]
       }
       tok_nts = v199.cdr;
@@ -1033,7 +1033,7 @@ function v109(grammar, lexer) {
       sc_steps_25 = sc_steps_38;
       BgL_sc_nbzd2nts_24zd2 = BgL_sc_nbzd2nts_31zd2;
       toks = sc_toks_36;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         BgL_sc_stateza2_23za2 = BgL_sc_statesza2_30za2[i$$55]
       }
       loop1 = v107;
@@ -1061,7 +1061,7 @@ function v109(grammar, lexer) {
         sc_i_19 = JAM.call(ind, null, [head$$2, nts]);
         var v205 = starters;
         var v206 = sc_i_19;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1135 = starters[sc_i_19]
         }
         var v3729 = new sc_Pair(conf$$1, v1135);
@@ -1076,7 +1076,7 @@ function v109(grammar, lexer) {
           sc_i_17 = JAM.call(ind, null, [nt$$2, nts]);
           var v207 = predictors;
           var v208 = sc_i_17;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v1136 = predictors[sc_i_17]
           }
           var v3731 = new sc_Pair(sc_conf_18, v1136);
@@ -1089,7 +1089,7 @@ function v109(grammar, lexer) {
         i$$54 = JAM.call(ind, null, [head$$2, nts]);
         var v212 = enders;
         var v213 = i$$54;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1138 = enders[i$$54]
         }
         var v3732 = new sc_Pair(sc_conf_18, v1138);
@@ -1202,7 +1202,7 @@ function v109(grammar, lexer) {
     i$$53 = sc_nts_10.length - 1;
     for(;true;) {
       if(i$$53 >= 0) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1144 = sc_nts_10[i$$53]
         }
         if(sc_isEqual(v1144, nt)) {
@@ -1261,7 +1261,7 @@ function v109(grammar, lexer) {
     JAM.set(sc_steps_2, i$$52, i$$52 - nb_nts);
     var v236 = sc_names_1;
     var v237 = i$$52;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1145 = sc_nts_8[i$$52]
     }
     var v3733 = sc_list(v1145, 0);
@@ -1816,7 +1816,7 @@ function v61() {
   var sc_tmp = arguments.length - 1;
   var v302 = sc_tmp >= 0;
   for(;v302;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v301 = arguments[sc_tmp]
     }
     args$$5 = sc_cons(v301, args$$5);
@@ -1871,18 +1871,18 @@ function v56() {
 }
 function v54(symb$$4) {
   var v1214 = symb$$4 + "use";
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v317 = this[v1214]
   }
   if(v317) {
     var v312 = symb$$4 + "nb";
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var nb$$5 = this[v312]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1215 = this[symb$$4]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v2180 = this[symb$$4]
     }
     JAM.set(this, symb$$4, v2180 - 1);
@@ -1893,10 +1893,10 @@ function v54(symb$$4) {
     }
     return"#" + nb$$5 + "#"
   }
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1216 = this[symb$$4]
   }
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v2181 = this[symb$$4]
   }
   JAM.set(this, symb$$4, v2181 - 1);
@@ -1906,13 +1906,13 @@ function v54(symb$$4) {
     delete this[symb$$4 + "use"]
   }
   var res$$28 = "";
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1217 = this[symb$$4]
   }
   if(v1217 !== undefined) {
     JAM.set(this, symb$$4 + "use", true);
     var v2500 = symb$$4 + "nb";
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v2182 = this[v2500]
     }
     res$$28 = res$$28 + ("#" + v2182 + "=")
@@ -1922,7 +1922,7 @@ function v54(symb$$4) {
   var v324 = i$$46 < this.length;
   for(;v324;) {
     var v1220 = res$$28;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1795 = this[i$$46]
     }
     res$$28 = v1220 + sc_genToWriteCircleString(v1795, symb$$4);
@@ -1937,18 +1937,18 @@ function v54(symb$$4) {
 }
 function v53(symb$$3, inList) {
   var v1224 = symb$$3 + "use";
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v331 = this[v1224]
   }
   if(v331) {
     var v325 = symb$$3 + "nb";
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var nb$$4 = this[v325]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1225 = this[symb$$3]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v2183 = this[symb$$3]
     }
     JAM.set(this, symb$$3, v2183 - 1);
@@ -1963,10 +1963,10 @@ function v53(symb$$3, inList) {
       return"#" + nb$$4 + "#"
     }
   }
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1226 = this[symb$$3]
   }
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v2184 = this[symb$$3]
   }
   JAM.set(this, symb$$3, v2184 - 1);
@@ -1976,20 +1976,20 @@ function v53(symb$$3, inList) {
     delete this[symb$$3 + "use"]
   }
   var res$$27 = "";
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1227 = this[symb$$3]
   }
   if(v1227 !== undefined) {
     JAM.set(this, symb$$3 + "use", true);
     if(inList) {
       var v2501 = symb$$3 + "nb";
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v2185 = this[v2501]
       }
       res$$27 = res$$27 + (". #" + v2185 + "=")
     }else {
       var v2502 = symb$$3 + "nb";
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v2186 = this[v2502]
       }
       res$$27 = res$$27 + ("#" + v2186 + "=")
@@ -2114,7 +2114,7 @@ function v46() {
   function readReference(nb$$3) {
     if(nb$$3 in this.backref) {
       var v353 = this.backref;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         return v353[nb$$3]
       }
     }else {
@@ -2385,7 +2385,7 @@ function v45() {
         default:
           var v401 = sc_Char.readable2char;
           var v402 = tmp$$17.toLowerCase();
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var entry$$1 = v401[v402]
           }
           if(entry$$1) {
@@ -2574,7 +2574,7 @@ function v30(writeOrDisplay$$1) {
   var v426 = i$$28 < this.length;
   for(;v426;) {
     var v1295 = res$$17;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v2192 = this[i$$28]
     }
     res$$17 = v1295 + (" " + JAM.call(writeOrDisplay$$1, null, [v2192]));
@@ -2587,7 +2587,7 @@ function v30(writeOrDisplay$$1) {
 function v29() {
   var v427 = sc_Char.char2readable;
   var v428 = this.val;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var entry = v427[v428]
   }
   if(entry) {
@@ -2642,7 +2642,7 @@ function v21(runner$$2) {
     if(index$$40 < length$$12) {
       try {
         var v1304 = suite$$1.benchmarks;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v432 = v1304[index$$40]
         }
         v432.Setup()
@@ -2658,7 +2658,7 @@ function v21(runner$$2) {
   function RunNextBenchmark() {
     try {
       var v1305 = suite$$1.benchmarks;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v434 = v1305[index$$40]
       }
       data$$20 = JAM.call(suite$$1.RunSingleBenchmark, suite$$1, [v434, data$$20])
@@ -2679,7 +2679,7 @@ function v21(runner$$2) {
       var v1307 = suite$$1.benchmarks;
       var v1308 = index$$40;
       index$$40 = index$$40 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v436 = v1307[v1308]
       }
       v436.TearDown()
@@ -2834,12 +2834,12 @@ function v14(measurements$$1) {
   var i$$5 = 0;
   var v481 = i$$5 < measurements$$1.length;
   for(;v481;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1826 = measurements$$1[i$$5]
     }
     if(v1826.latency != 0) {
       var v1332 = log$$2;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v2194 = measurements$$1[i$$5]
       }
       log$$2 = v1332 + Math.log(v2194.latency);
@@ -2861,7 +2861,7 @@ function v13(measurements) {
   var v484 = i$$4 < measurements.length;
   for(;v484;) {
     var v1337 = log$$1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v2195 = measurements[i$$4]
     }
     log$$1 = v1337 + Math.log(v2195.time);
@@ -2876,7 +2876,7 @@ function v12(numbers) {
   var v487 = i$$3 < numbers.length;
   for(;v487;) {
     var v1342 = log;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1829 = numbers[i$$3]
     }
     log = v1342 + Math.log(v1829);
@@ -2891,7 +2891,7 @@ function v11() {
   var i$$2 = 0;
   var v490 = i$$2 < suites$$1.length;
   for(;v490;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v2196 = suites$$1[i$$2]
     }
     result$$1 = result$$1 + v2196.benchmarks.length;
@@ -2913,7 +2913,7 @@ function v10(runner, skipBenchmarks$$1) {
       }else {
         var v491 = index$$39;
         index$$39 = index$$39 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var suite = suites[v491]
         }
         if(runner.NotifyStart) {
@@ -3080,7 +3080,7 @@ function sc_alert() {
   var v515 = i$$7 < len;
   for(;v515;) {
     var v1368 = s$$3;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1838 = arguments[i$$7]
     }
     s$$3 = v1368 + sc_toDisplayString(v1838);
@@ -3119,7 +3119,7 @@ function sc_withHandlerLambda(handler$$3, body) {
   return
 }
 function sc_putpropBang(sym, key$$14, val) {
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var ht = sc_properties[sym]
   }
   if(!ht) {
@@ -3130,12 +3130,12 @@ function sc_putpropBang(sym, key$$14, val) {
   return
 }
 function sc_getprop(sym$$1, key$$15) {
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var ht$$1 = sc_properties[sym$$1]
   }
   if(ht$$1) {
     if(key$$15 in ht$$1) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         return ht$$1[key$$15]
       }
     }else {
@@ -3147,7 +3147,7 @@ function sc_getprop(sym$$1, key$$15) {
   return
 }
 function sc_rempropBang(sym$$2, key$$16) {
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var ht$$2 = sc_properties[sym$$2]
   }
   if(ht$$2) {
@@ -3189,7 +3189,7 @@ function sc_equal(x$$49) {
   var i$$9 = 1;
   var v526 = i$$9 < arguments.length;
   for(;v526;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1374 = arguments[i$$9]
     }
     if(x$$49 !== v1374) {
@@ -3204,7 +3204,7 @@ function sc_less(x$$50) {
   var i$$10 = 1;
   var v528 = i$$10 < arguments.length;
   for(;v528;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1377 = arguments[i$$10]
     }
     if(x$$50 >= v1377) {
@@ -3220,7 +3220,7 @@ function sc_greater(x$$51, y$$31) {
   var i$$11 = 1;
   var v530 = i$$11 < arguments.length;
   for(;v530;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1380 = arguments[i$$11]
     }
     if(x$$51 <= v1380) {
@@ -3236,7 +3236,7 @@ function sc_lessEqual(x$$52, y$$32) {
   var i$$12 = 1;
   var v532 = i$$12 < arguments.length;
   for(;v532;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1383 = arguments[i$$12]
     }
     if(x$$52 > v1383) {
@@ -3252,7 +3252,7 @@ function sc_greaterEqual(x$$53, y$$33) {
   var i$$13 = 1;
   var v534 = i$$13 < arguments.length;
   for(;v534;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1386 = arguments[i$$13]
     }
     if(x$$53 < v1386) {
@@ -3284,7 +3284,7 @@ function sc_plus() {
   var i$$14 = 0;
   var v537 = i$$14 < arguments.length;
   for(;v537;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1389 = arguments[i$$14]
     }
     sum = sum + v1389;
@@ -3298,7 +3298,7 @@ function sc_multi() {
   var i$$15 = 0;
   var v538 = i$$15 < arguments.length;
   for(;v538;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1392 = arguments[i$$15]
     }
     product = product * v1392;
@@ -3315,7 +3315,7 @@ function sc_minus(x$$59) {
     var i$$16 = 1;
     var v539 = i$$16 < arguments.length;
     for(;v539;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1396 = arguments[i$$16]
       }
       res$$1 = res$$1 - v1396;
@@ -3334,7 +3334,7 @@ function sc_div(x$$60) {
     var i$$17 = 1;
     var v541 = i$$17 < arguments.length;
     for(;v541;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1400 = arguments[i$$17]
       }
       res$$2 = res$$2 / v1400;
@@ -3396,7 +3396,7 @@ function sc_gcd() {
   var i$$18 = 0;
   var v553 = i$$18 < arguments.length;
   for(;v553;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v552 = arguments[i$$18]
     }
     gcd = sc_euclid_gcd(gcd, v552);
@@ -3410,10 +3410,10 @@ function sc_lcm() {
   var i$$19 = 0;
   var v555 = i$$19 < arguments.length;
   for(;v555;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1406 = arguments[i$$19]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1839 = arguments[i$$19]
     }
     var f = Math.round(v1406 / sc_euclid_gcd(v1839, lcm));
@@ -3507,13 +3507,13 @@ function sc_cons(car$$1, cdr$$1) {
 }
 function sc_consStar() {
   var v564 = arguments.length - 1;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var res$$4 = arguments[v564]
   }
   var i$$20 = arguments.length - 2;
   var v567 = i$$20 >= 0;
   for(;v567;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v566 = arguments[i$$20]
     }
     res$$4 = new sc_Pair(v566, res$$4);
@@ -3677,7 +3677,7 @@ function sc_list() {
   var i$$21 = a$$2.length - 1;
   var v604 = i$$21 >= 0;
   for(;v604;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v603 = a$$2[i$$21]
     }
     res$$6 = new sc_Pair(v603, res$$6);
@@ -3822,13 +3822,13 @@ function sc_append() {
     return null
   }
   var v624 = arguments.length - 1;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var res$$11 = arguments[v624]
   }
   var i$$24 = arguments.length - 2;
   var v627 = i$$24 >= 0;
   for(;v627;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v626 = arguments[i$$24]
     }
     res$$11 = sc_dualAppend(v626, res$$11);
@@ -3858,7 +3858,7 @@ function sc_appendBang() {
   var i$$25 = 0;
   var v632 = i$$25 < arguments.length;
   for(;v632;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v631 = arguments[i$$25]
     }
     res$$12 = sc_dualAppendBang(res$$12, v631);
@@ -3992,7 +3992,7 @@ function sc_isCharStringCIGreaterEqual(cs1$$9, cs2$$9) {
 }
 function sc_Char(c$$1) {
   var v669 = sc_Char.lazy;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var cached = v669[c$$1]
   }
   if(cached) {
@@ -4117,10 +4117,10 @@ function sc_isVectorEqual(v1$$1, v2, comp$$1) {
   var i$$29 = 0;
   var v692 = i$$29 < v1$$1.length;
   for(;v692;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1867 = v1$$1[i$$29]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1868 = v2[i$$29]
     }
     if(!JAM.call(comp$$1, null, [v1867, v1868])) {
@@ -4143,7 +4143,7 @@ function sc_vector() {
   var i$$30 = 0;
   var v695 = i$$30 < arguments.length;
   for(;v695;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v694 = arguments[i$$30]
     }
     a$$5.push(v694);
@@ -4156,7 +4156,7 @@ function sc_vectorLength(v$$1) {
   return v$$1.length
 }
 function sc_vectorRef(v$$2, pos) {
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     return v$$2[pos]
   }
 }
@@ -4169,7 +4169,7 @@ function sc_vector2list(a$$6) {
   var i$$31 = a$$6.length - 1;
   var v698 = i$$31 >= 0;
   for(;v698;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v697 = a$$6[i$$31]
     }
     res$$18 = sc_cons(v697, res$$18);
@@ -4223,7 +4223,7 @@ function sc_vectorCopyBang(target$$37, tstart, source$$1, sstart, send) {
     var j = sstart;
     var v705 = j < send;
     for(;v705;) {
-      JAM.set(target$$37, i$$33, JAM.get(source$$1, j, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+      JAM.set(target$$37, i$$33, JAM.get(source$$1, j, JAM.policy.p1));
       i$$33 = i$$33 + 1;
       j = j + 1;
       v705 = j < send
@@ -4234,7 +4234,7 @@ function sc_vectorCopyBang(target$$37, tstart, source$$1, sstart, send) {
     j = send - 1;
     var v707 = j >= sstart;
     for(;v707;) {
-      JAM.set(target$$37, i$$33, JAM.get(source$$1, j, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+      JAM.set(target$$37, i$$33, JAM.get(source$$1, j, JAM.policy.p1));
       i$$33 = i$$33 - 1;
       j = j - 1;
       v707 = j >= sstart
@@ -4250,7 +4250,7 @@ function sc_apply(proc) {
   var i$$34 = 1;
   var v711 = i$$34 < arguments.length - 1;
   for(;v711;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v710 = arguments[i$$34]
     }
     args.push(v710);
@@ -4258,7 +4258,7 @@ function sc_apply(proc) {
     v711 = i$$34 < arguments.length - 1
   }
   var v712 = arguments.length - 1;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var l$$14 = arguments[v712]
   }
   var v714 = l$$14 !== null;
@@ -4282,13 +4282,13 @@ function sc_map(proc$$1, l1$$4) {
     var v719 = i$$35 < nbApplyArgs;
     for(;v719;) {
       var v1498 = i$$35 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v717 = arguments[v1498]
       }
       applyArgs[i$$35] = v717.car;
       var v718 = i$$35 + 1;
       var v1871 = i$$35 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1499 = arguments[v1871]
       }
       arguments[v718] = v1499.cdr;
@@ -4314,13 +4314,13 @@ function sc_mapBang(proc$$2, l1$$5) {
     var v726 = i$$36 < nbApplyArgs$$1;
     for(;v726;) {
       var v1500 = i$$36 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v724 = arguments[v1500]
       }
       applyArgs$$1[i$$36] = v724.car;
       var v725 = i$$36 + 1;
       var v1872 = i$$36 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1501 = arguments[v1872]
       }
       arguments[v725] = v1501.cdr;
@@ -4346,13 +4346,13 @@ function sc_forEach(proc$$3, l1$$6) {
     var v733 = i$$37 < nbApplyArgs$$2;
     for(;v733;) {
       var v1502 = i$$37 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v731 = arguments[v1502]
       }
       applyArgs$$2[i$$37] = v731.car;
       var v732 = i$$37 + 1;
       var v1873 = i$$37 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1503 = arguments[v1873]
       }
       arguments[v732] = v1503.cdr;
@@ -4440,13 +4440,13 @@ function sc_filterMap(proc$$8, l1$$11, l2$$4, l3) {
     var v752 = i$$38 < nbApplyArgs$$3;
     for(;v752;) {
       var v1507 = i$$38 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v750 = arguments[v1507]
       }
       applyArgs$$3[i$$38] = v750.car;
       var v751 = i$$38 + 1;
       var v1876 = i$$38 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1508 = arguments[v1876]
       }
       arguments[v751] = v1508.cdr;
@@ -4565,7 +4565,7 @@ function sc_isStructNamed(name$$35, s$$6) {
   return v768
 }
 function sc_getStructField(s$$7, name$$36, field) {
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     return s$$7[field]
   }
 }
@@ -4595,7 +4595,7 @@ function sc_bitUrsh(x$$73, y$$42) {
   return x$$73 >>> y$$42
 }
 function sc_jsField(o$$16, field$$2) {
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     return o$$16[field$$2]
   }
 }
@@ -4626,7 +4626,7 @@ function sc_jsMethodCall(o$$20, field$$5) {
     i$$40 = i$$40 + 1;
     v772 = i$$40 < arguments.length
   }
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v773 = o$$20[field$$5]
   }
   return JAM.call(v773.apply, v773, [o$$20, args$$2])
@@ -4673,11 +4673,11 @@ function sc_pregexpMatch(re$$1, s$$9) {
   var i$$42 = tmp$$12.length - 1;
   var v782 = i$$42 >= 0;
   for(;v782;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1520 = tmp$$12[i$$42]
     }
     if(v1520 !== null) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1521 = tmp$$12[i$$42]
       }
       res$$20 = sc_cons(sc_jsstring2string(v1521), res$$20)
@@ -4760,7 +4760,7 @@ function sc_hashtablePutBang(ht$$3, key$$18, val$$7) {
 function sc_hashtableGet(ht$$4, key$$19) {
   var hash$$1 = sc_hash(key$$19);
   if(hash$$1 in ht$$4) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v794 = ht$$4[hash$$1]
     }
     return v794.val
@@ -4772,15 +4772,15 @@ function sc_hashtableGet(ht$$4, key$$19) {
 function sc_hashtableForEach(ht$$5, f$$1) {
   var v$$4;
   for(v$$4 in ht$$5) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1525 = ht$$5[v$$4]
     }
     if(v1525 instanceof sc_HashtableElement) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1526 = ht$$5[v$$4]
       }
       var v796 = v1526.key;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1527 = ht$$5[v$$4]
       }
       JAM.call(f$$1, null, [v796, v1527.val])
@@ -5235,16 +5235,16 @@ function sc_prepWriteCircle(o$$32, symb$$1, nbPointer$$1) {
     v1571 = o$$32 instanceof sc_Vector
   }
   if(v1571) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1572 = o$$32[symb$$1]
     }
     if(v1572 !== undefined) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1573 = o$$32[symb$$1]
       }
       JAM.set(o$$32, symb$$1, v1573 + 1);
       var v1893 = symb$$1 + "nb";
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1574 = o$$32[v1893]
       }
       if(!v1574) {
@@ -5261,7 +5261,7 @@ function sc_prepWriteCircle(o$$32, symb$$1, nbPointer$$1) {
       var i$$45 = 0;
       var v859 = i$$45 < o$$32.length;
       for(;v859;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v858 = o$$32[i$$45]
         }
         sc_prepWriteCircle(v858, symb$$1, nbPointer$$1);
@@ -5290,7 +5290,7 @@ function sc_print(s$$22) {
     var i$$47 = 0;
     var v864 = i$$47 < arguments.length;
     for(;v864;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v863 = arguments[i$$47]
       }
       sc_display(v863);
@@ -5326,7 +5326,7 @@ function sc_format(s$$23, args$$4) {
         case 65:
         ;
         case 97:
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v871 = arguments[j$$2]
           }
           sc_display(v871, p$$45);
@@ -5336,7 +5336,7 @@ function sc_format(s$$23, args$$4) {
         case 83:
         ;
         case 115:
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v872 = arguments[j$$2]
           }
           sc_write(v872, p$$45);
@@ -5346,7 +5346,7 @@ function sc_format(s$$23, args$$4) {
         case 86:
         ;
         case 118:
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v873 = arguments[j$$2]
           }
           sc_display(v873, p$$45);
@@ -5357,7 +5357,7 @@ function sc_format(s$$23, args$$4) {
         case 67:
         ;
         case 99:
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v1583 = arguments[j$$2]
           }
           JAM.call(p$$45.appendJSString, p$$45, [String.fromCharCode(v1583)]);
@@ -5367,7 +5367,7 @@ function sc_format(s$$23, args$$4) {
         case 88:
         ;
         case 120:
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v1584 = arguments[j$$2]
           }
           JAM.call(p$$45.appendJSString, p$$45, [JAM.call(v1584.toString, v1584, [6])]);
@@ -5377,7 +5377,7 @@ function sc_format(s$$23, args$$4) {
         case 79:
         ;
         case 111:
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v1585 = arguments[j$$2]
           }
           JAM.call(p$$45.appendJSString, p$$45, [JAM.call(v1585.toString, v1585, [8])]);
@@ -5387,7 +5387,7 @@ function sc_format(s$$23, args$$4) {
         case 66:
         ;
         case 98:
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v1586 = arguments[j$$2]
           }
           JAM.call(p$$45.appendJSString, p$$45, [JAM.call(v1586.toString, v1586, [2])]);
@@ -5503,7 +5503,7 @@ function sc_symbolAppend() {
   var v889 = i$$49 < arguments.length;
   for(;v889;) {
     var v1595 = res$$29;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1900 = arguments[i$$49]
     }
     res$$29 = v1595 + v1900.slice(1);
@@ -5529,7 +5529,7 @@ function sc_string() {
   var i$$50 = 0;
   var v893 = i$$50 < arguments.length;
   for(;v893;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v892 = arguments[i$$50]
     }
     arguments[i$$50] = v892.val;

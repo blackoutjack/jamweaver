@@ -165,7 +165,7 @@ def generate_info_table(results):
       continue
     txcnt = int(cnts[txkey])
 
-    indkey = "dynamic-callsites-indirected"
+    indkey = "callsites-indirected"
     if indkey not in cnts:
       cfg.warn("Indirection count not found: %s, %s" % (app, indkey))
       continue

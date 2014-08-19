@@ -11,9 +11,12 @@ from perc_box_plot import percentile_box_plot as perc_box
 
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from matplotlib import rc
+import matplotlib
 from decimal import *
 
 from optparse import OptionParser
+
+plt.rcParams['pdf.fonttype'] = 42
 
 #
 # Plot of execution time of woven transactions vs. unprotected.
@@ -86,7 +89,7 @@ def wovenOverheadByOriginal(stats, variants, display, log=True):
   cas = plt.gca()
 
   plt.scatter(loadoriginalTime, loadoverhead2, marker='o', color='green', facecolors='none')
-  plt.scatter(originalTime, overhead2, marker='x', color='blue')
+  plt.scatter(originalTime, overhead2, marker='x', color='black')
   plt.legend(
     ('page load', 'other actions'),
     loc='lower left'
@@ -216,7 +219,7 @@ def modularVsWovenOverheadByOriginal(stats, variants, display, log=True):
   if len(loadoriginalTime) > 0:
     plt.scatter(loadoriginalTime, loadoverheadRatio, marker='o', color='green', facecolors='none')
   if len(originalTime) > 0:
-    plt.scatter(originalTime, overheadRatio, marker='x', color='blue')
+    plt.scatter(originalTime, overheadRatio, marker='x', color='black')
   plt.legend(
     ('page load', 'other actions'),
     loc='lower left'

@@ -101,7 +101,7 @@ function v107() {
       }
       JAM.call(o$$6.setAttribute, o$$6, ["tabset", obj$$25.id]);
       if(o$$6.parentNode.className == "tab-selected") {
-        JAM.set(midoriTab.selectedTabs, obj$$25.id, o$$6, JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811);
+        JAM.set(midoriTab.selectedTabs, obj$$25.id, o$$6, JAM.policy.p2);
         JAM.call(midoriTab.select, midoriTab, [o$$6, true])
       }
       JAM.call(midori.addEventListener, midori, [o$$6, "click", v104]);
@@ -121,7 +121,7 @@ function v103(obj$$24, noAnim) {
     this.selectedTabs[tabSet].parentNode.className = "";
     JAM.call(midori.get, midori, ["#" + this.selectedTabs[tabSet].hash.substr(1)]).style.display = "none"
   }
-  JAM.set(this.selectedTabs, tabSet, obj$$24, JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811);
+  JAM.set(this.selectedTabs, tabSet, obj$$24, JAM.policy.p2);
   obj$$24.parentNode.className = "tab-selected";
   var v143;
   if(noAnim) {
@@ -316,12 +316,12 @@ function v90(vars$$3) {
   }
   var newSize = v194;
   if(newSize > 2) {
-    JAM.set(vars$$3.element.style, vars$$3.what, newSize.toString() + "px", JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811);
+    JAM.set(vars$$3.element.style, vars$$3.what, newSize.toString() + "px", JAM.policy.p2);
     vars$$3.element.style.opacity = newSize / 50
   }else {
     clearInterval(this.intervals[vars$$3.intervalKey].intervalId);
     vars$$3.element.style.display = "none";
-    JAM.set(vars$$3.element.style, vars$$3.what, vars$$3.elementSize.toString() + "px", JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811);
+    JAM.set(vars$$3.element.style, vars$$3.what, vars$$3.elementSize.toString() + "px", JAM.policy.p2);
     vars$$3.element.style.opacity = 1;
     if(vars$$3.callback) {
       JAM.call(vars$$3.callback, vars$$3, [vars$$3.element])
@@ -367,10 +367,10 @@ function v87(vars$$1) {
   var v213 = this.intervals[vars$$1.intervalKey];
   v213.newSize = v213.newSize + Math.round((vars$$1.elementSize - this.intervals[vars$$1.intervalKey].newSize) / 2);
   if(this.intervals[vars$$1.intervalKey].newSize < vars$$1.elementSize) {
-    JAM.set(vars$$1.element.style, vars$$1.what, this.intervals[vars$$1.intervalKey].newSize.toString() + "px", JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811)
+    JAM.set(vars$$1.element.style, vars$$1.what, this.intervals[vars$$1.intervalKey].newSize.toString() + "px", JAM.policy.p2)
   }else {
     clearInterval(this.intervals[vars$$1.intervalKey].intervalId);
-    JAM.set(vars$$1.element.style, vars$$1.what, vars$$1.elementSize.toString() + "px", JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811);
+    JAM.set(vars$$1.element.style, vars$$1.what, vars$$1.elementSize.toString() + "px", JAM.policy.p2);
     vars$$1.element.style.overflow = "visible";
     if(vars$$1.callback) {
       JAM.call(vars$$1.callback, vars$$1, [vars$$1.element])
@@ -389,7 +389,7 @@ function v86(element$$4, what) {
     v224 = element$$4.offsetHeight
   }
   var offsetSize = v224;
-  JAM.set(element$$4.style, what, offsetSize.toString() + "px", JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811);
+  JAM.set(element$$4.style, what, offsetSize.toString() + "px", JAM.policy.p2);
   var v766;
   if(what == "width") {
     v766 = element$$4.offsetWidth
@@ -397,7 +397,7 @@ function v86(element$$4, what) {
     v766 = element$$4.offsetHeight
   }
   var outsideSize = v766 - offsetSize;
-  JAM.set(element$$4.style, what, (offsetSize - outsideSize).toString() + "px", JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811);
+  JAM.set(element$$4.style, what, (offsetSize - outsideSize).toString() + "px", JAM.policy.p2);
   return outsideSize
 }
 function v85(obj$$23, highlightClass, removeAll) {
@@ -718,7 +718,7 @@ function v69(parentNode$$1, prefix$$2, a$$2) {
   return
 }
 function v68(name$$31, value$$30, expires, path, domain) {
-  introspect(JAM.policy.p3F9F399AB000376076BBFF3A9A9C0103B23A9835) {
+  introspect(JAM.policy.p1) {
     setCookieSentinel = true
   }
   var today = new Date;
@@ -738,7 +738,7 @@ function v68(name$$31, value$$30, expires, path, domain) {
     v1164 = ""
   }
   var v813 = v1164;
-  introspect(JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811) {
+  introspect(JAM.policy.p2) {
     v293.cookie = v812 + v813
   }
   return
@@ -946,7 +946,7 @@ function v50(obj$$17, styleList) {
     if(i$$7 == "float") {
       v337 = JAM.call(this.setFloat, this, [obj$$17, styleList[i$$7]])
     }else {
-      v337 = JAM.set(obj$$17.style, i$$7, styleList[i$$7], JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811)
+      v337 = JAM.set(obj$$17.style, i$$7, styleList[i$$7], JAM.policy.p2)
     }
     v337
   }
@@ -988,7 +988,7 @@ function v49(stylesheet, rule$$2, property$$3) {
           }
           if(v854) {
             if(rule$$2 == "*") {
-              JAM.set(values$$4, rules[i$$6].selectorText, value, JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811)
+              JAM.set(values$$4, rules[i$$6].selectorText, value, JAM.policy.p2)
             }else {
               return rules[i$$6].style[rules[i$$6].style[j$$1]]
             }
@@ -996,7 +996,7 @@ function v49(stylesheet, rule$$2, property$$3) {
         }else {
           if(j$$1.toLowerCase() == property$$3) {
             if(rule$$2 == "*") {
-              JAM.set(values$$4, rules[i$$6].selectorText, rules[i$$6].style[j$$1], JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811)
+              JAM.set(values$$4, rules[i$$6].selectorText, rules[i$$6].style[j$$1], JAM.policy.p2)
             }else {
               return rules[i$$6].style[j$$1]
             }
@@ -1316,7 +1316,7 @@ function v44(match$$1, pSelector, pA, pB) {
       }
       c$$2 = c$$2.nextSibling
     }
-    JAM.set(this.pCache, nodeKey, {parentChildren:parentChildren, pI:0}, JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811)
+    JAM.set(this.pCache, nodeKey, {parentChildren:parentChildren, pI:0}, JAM.policy.p2)
   }
   var parentNumChildren = parentChildren.length;
   switch(pSelector) {
@@ -1783,7 +1783,7 @@ function midoriDragDrop(containerId$$1, dropCallback) {
       var v513 = j$$3 < numObjs$$4;
       for(;v513;) {
         if(thisObj$$1.objs[j$$3] == o$$9) {
-          JAM.set(thisObj$$1.objs, j$$3, "", JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811);
+          JAM.set(thisObj$$1.objs, j$$3, "", JAM.policy.p2);
           break
         }
         j$$3 = j$$3 + 1;
@@ -1798,7 +1798,7 @@ function midoriDragDrop(containerId$$1, dropCallback) {
     var v517 = j$$3 < numObjs$$4;
     for(;v517;) {
       if(this.objs[j$$3] == parentObj$$1) {
-        JAM.set(this.objs, j$$3, "", JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811);
+        JAM.set(this.objs, j$$3, "", JAM.policy.p2);
         break
       }
       j$$3 = j$$3 + 1;
@@ -2040,7 +2040,7 @@ function midoriAjax(callback$$29, params$$1, cache) {
       thisObj$$2.responseText = thisObj$$2.request.responseText;
       thisObj$$2.responseXML = thisObj$$2.request.responseXML;
       thisObj$$2.status = thisObj$$2.request.status;
-      JAM.set(thisObj$$2.cache, thisObj$$2.cacheKey, thisObj$$2.responseText, JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811)
+      JAM.set(thisObj$$2.cache, thisObj$$2.cacheKey, thisObj$$2.responseText, JAM.policy.p2)
     }
     JAM.call(thisObj$$2.callback, thisObj$$2, [params$$1]);
     return
@@ -2096,7 +2096,7 @@ function midoriAutoComplete(vars$$7) {
           v577 = thisObj$$3.ajax.responseText
         }
         var response = v577;
-        JAM.set(thisObj$$3.suggestions, response["snippet"], response["result"], JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811);
+        JAM.set(thisObj$$3.suggestions, response["snippet"], response["result"], JAM.policy.p2);
         JAM.call(thisObj$$3.showSuggestions, thisObj$$3, [response["snippet"]])
       }
       return
@@ -2178,7 +2178,7 @@ function midoriAutoComplete(vars$$7) {
     for(i$$24 in suggestions) {
       if(vars$$7.htmlTemplate) {
         for(k$$2 in suggestions[i$$24]) {
-          JAM.set(properties, k$$2, suggestions[i$$24][k$$2], JAM.policy.p425E08A28862414CF7130381FE99A660F52DB811)
+          JAM.set(properties, k$$2, suggestions[i$$24][k$$2], JAM.policy.p2)
         }
       }
       var v1027 = html;

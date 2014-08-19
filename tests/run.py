@@ -241,7 +241,7 @@ def main():
     parser.error("Invalid number of arguments")
 
   allmods = True
-  if opts.benchmarks or opts.micro or opts.interpreter:
+  if opts.benchmarks or opts.micro:
     allmods = False
 
   #if opts.interpreter:

@@ -2,14 +2,14 @@ function pdfjsWrapper() {
   function MetadataClosure() {
     function Metadata_has(name$$72) {
       var v20990 = this.metadata;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v6227 = v20990[name$$72]
       }
       return typeof v6227 !== "undefined"
     }
     function Metadata_get(name$$71) {
       var v6228 = this.metadata;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v92 = v6228[name$$71]
       }
       if(!v92) {
@@ -75,12 +75,12 @@ function pdfjsWrapper() {
         var v101 = ii$$77 < iLength;
         for(;v101;) {
           var v22912 = desc.childNodes;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22365 = v22912[ii$$77]
           }
           if(v22365.nodeName.toLowerCase() !== "#text") {
             var v6237 = desc.childNodes;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v99 = v6237[ii$$77]
             }
             JAM.call(entries$$3.push, entries$$3, [v99])
@@ -177,7 +177,7 @@ function pdfjsWrapper() {
       var j$$79 = end$$20 - 1;
       var v113 = i$$197 < j$$79;
       for(;v113;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var temp$$1 = arr$$15[i$$197]
         }
         JAM.set(arr$$15, i$$197, arr$$15[j$$79]);
@@ -208,7 +208,7 @@ function pdfjsWrapper() {
         var charCode = str$$42.charCodeAt(i$$198);
         var charType = "L";
         if(charCode <= 255) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             charType = baseTypes[charCode]
           }
         }else {
@@ -285,7 +285,7 @@ function pdfjsWrapper() {
       i$$198 = 0;
       var v130 = i$$198 < strLength;
       for(;v130;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6255 = types$$3[i$$198]
         }
         if(v6255 == "NSM") {
@@ -300,7 +300,7 @@ function pdfjsWrapper() {
       i$$198 = 0;
       var v134 = i$$198 < strLength;
       for(;v134;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var t$$8 = types$$3[i$$198]
         }
         if(t$$8 == "EN") {
@@ -340,19 +340,19 @@ function pdfjsWrapper() {
       i$$198 = 1;
       var v140 = i$$198 < strLength - 1;
       for(;v140;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21006 = types$$3[i$$198]
         }
         var v6259 = v21006 == "ES";
         if(v6259) {
           var v22915 = i$$198 - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22370 = types$$3[v22915]
           }
           var v21007 = v22370 == "EN";
           if(v21007) {
             var v22916 = i$$198 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22371 = types$$3[v22916]
             }
             v21007 = v22371 == "EN"
@@ -362,19 +362,19 @@ function pdfjsWrapper() {
         if(v6259) {
           types$$3[i$$198] = "EN"
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21008 = types$$3[i$$198]
         }
         var v6260 = v21008 == "CS";
         if(v6260) {
           var v23100 = i$$198 - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22917 = types$$3[v23100]
           }
           var v22372 = v22917 == "EN";
           if(!v22372) {
             var v23101 = i$$198 - 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22918 = types$$3[v23101]
             }
             v22372 = v22918 == "AN"
@@ -382,11 +382,11 @@ function pdfjsWrapper() {
           var v21009 = v22372;
           if(v21009) {
             var v22920 = i$$198 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22373 = types$$3[v22920]
             }
             var v22921 = i$$198 - 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22374 = types$$3[v22921]
             }
             v21009 = v22373 == v22374
@@ -402,14 +402,14 @@ function pdfjsWrapper() {
       i$$198 = 0;
       var v146 = i$$198 < strLength;
       for(;v146;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6262 = types$$3[i$$198]
         }
         if(v6262 == "EN") {
           var j$$80 = i$$198 - 1;
           var v142 = j$$80 >= 0;
           for(;v142;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v6263 = types$$3[j$$80]
             }
             if(v6263 != "ET") {
@@ -422,7 +422,7 @@ function pdfjsWrapper() {
           j$$80 = i$$198 + 1;
           var v144 = j$$80 < strLength;
           for(;v144;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v6264 = types$$3[j$$80]
             }
             if(v6264 != "ET") {
@@ -486,7 +486,7 @@ function pdfjsWrapper() {
       i$$198 = 0;
       var v164 = i$$198 < strLength;
       for(;v164;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6268 = types$$3[i$$198]
         }
         if(v6268 == "ON") {
@@ -497,7 +497,7 @@ function pdfjsWrapper() {
             var jj$$inline_267 = types$$3.length;
             var v154 = j$$inline_266 < jj$$inline_267;
             for(;v154;) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6269 = types$$3[j$$inline_266]
               }
               if(v6269 != "ON") {
@@ -543,7 +543,7 @@ function pdfjsWrapper() {
       i$$198 = 0;
       var v166 = i$$198 < strLength;
       for(;v166;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6271 = types$$3[i$$198]
         }
         if(v6271 == "ON") {
@@ -556,12 +556,12 @@ function pdfjsWrapper() {
       var v171 = i$$198 < strLength;
       for(;v171;) {
         t$$8 = types$$3[i$$198];
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21013 = levels[i$$198]
         }
         if((v21013 & 1) == 0) {
           if(t$$8 == "R") {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v6273 = levels[i$$198]
             }
             levels[i$$198] = v6273 + 1
@@ -571,7 +571,7 @@ function pdfjsWrapper() {
               v6274 = t$$8 == "EN"
             }
             if(v6274) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6275 = levels[i$$198]
               }
               levels[i$$198] = v6275 + 2
@@ -587,7 +587,7 @@ function pdfjsWrapper() {
             v6276 = v21015
           }
           if(v6276) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v6277 = levels[i$$198]
             }
             levels[i$$198] = v6277 + 1
@@ -602,7 +602,7 @@ function pdfjsWrapper() {
       var ii$$76 = levels.length;
       var v174 = i$$198 < ii$$76;
       for(;v174;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var level$$16 = levels[i$$198]
         }
         if(highestLevel < level$$16) {
@@ -626,7 +626,7 @@ function pdfjsWrapper() {
         ii$$76 = levels.length;
         var v178 = i$$198 < ii$$76;
         for(;v178;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6279 = levels[i$$198]
           }
           if(v6279 < level$$16) {
@@ -653,7 +653,7 @@ function pdfjsWrapper() {
       ii$$76 = chars$$1.length;
       var v183 = i$$198 < ii$$76;
       for(;v183;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var ch$$14 = chars$$1[i$$198]
         }
         var v6280 = ch$$14 != "<";
@@ -690,15 +690,15 @@ function pdfjsWrapper() {
         for(;v189;) {
           var v187 = x$$83;
           var v188 = j$$76;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6282 = y$$61[j$$76]
           }
           var v23169 = j$$76 - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v23102 = y$$61[v23169]
           }
           var v23170 = j$$76 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v23103 = y$$61[v23170]
           }
           v187[v188] = v6282 - Math.floor((v23102 + v23103 + 2) / 4);
@@ -713,15 +713,15 @@ function pdfjsWrapper() {
         for(;v192;) {
           var v190 = x$$83;
           var v191 = j$$76;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6284 = y$$61[j$$76]
           }
           var v23104 = j$$76 - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22924 = x$$83[v23104]
           }
           var v23105 = j$$76 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22925 = x$$83[v23105]
           }
           v190[v191] = v6284 + Math.floor((v22924 + v22925) / 2);
@@ -757,7 +757,7 @@ function pdfjsWrapper() {
         var nn$$1 = i1_ + 2;
         var v199 = n$$46 < nn$$1;
         for(;v199;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v198 = y$$60[j$$75]
           }
           x$$82[j$$75] = K$$2 * v198;
@@ -770,7 +770,7 @@ function pdfjsWrapper() {
         nn$$1 = i1_ + 2;
         var v201 = n$$46 < nn$$1;
         for(;v201;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v200 = y$$60[j$$75]
           }
           x$$82[j$$75] = K_ * v200;
@@ -783,15 +783,15 @@ function pdfjsWrapper() {
         nn$$1 = i1_ + 2;
         var v202 = n$$46 < nn$$1;
         for(;v202;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6288 = x$$82[j$$75]
           }
           var v22926 = j$$75 - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22380 = x$$82[v22926]
           }
           var v22927 = j$$75 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22381 = x$$82[v22927]
           }
           x$$82[j$$75] = v6288 - delta$$4 * (v22380 + v22381);
@@ -804,15 +804,15 @@ function pdfjsWrapper() {
         nn$$1 = i1_ + 1;
         var v203 = n$$46 < nn$$1;
         for(;v203;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6290 = x$$82[j$$75]
           }
           var v22928 = j$$75 - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22382 = x$$82[v22928]
           }
           var v22929 = j$$75 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22383 = x$$82[v22929]
           }
           x$$82[j$$75] = v6290 - gamma * (v22382 + v22383);
@@ -825,15 +825,15 @@ function pdfjsWrapper() {
         nn$$1 = i1_ + 1;
         var v204 = n$$46 < nn$$1;
         for(;v204;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6292 = x$$82[j$$75]
           }
           var v22930 = j$$75 - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22384 = x$$82[v22930]
           }
           var v22931 = j$$75 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22385 = x$$82[v22931]
           }
           x$$82[j$$75] = v6292 - beta * (v22384 + v22385);
@@ -846,15 +846,15 @@ function pdfjsWrapper() {
         nn$$1 = i1_;
         var v205 = n$$46 < nn$$1;
         for(;v205;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6294 = x$$82[j$$75]
           }
           var v22932 = j$$75 - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22386 = x$$82[v22932]
           }
           var v22933 = j$$75 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22387 = x$$82[v22933]
           }
           x$$82[j$$75] = v6294 - alpha$$3 * (v22386 + v22387);
@@ -901,7 +901,7 @@ function pdfjsWrapper() {
           var jj$$18 = llWidth;
           var v210 = j$$74 < jj$$18;
           for(;v210;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               items$$4[l$$4] = llItems[k$$23]
             }
             j$$74 = j$$74 + 1;
@@ -922,7 +922,7 @@ function pdfjsWrapper() {
           jj$$18 = hlWidth;
           var v213 = j$$74 < jj$$18;
           for(;v213;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               items$$4[l$$4] = hlItems[k$$23]
             }
             j$$74 = j$$74 + 1;
@@ -943,7 +943,7 @@ function pdfjsWrapper() {
           jj$$18 = lhWidth;
           var v216 = j$$74 < jj$$18;
           for(;v216;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               items$$4[l$$4] = lhItems[k$$23]
             }
             j$$74 = j$$74 + 1;
@@ -964,7 +964,7 @@ function pdfjsWrapper() {
           jj$$18 = hhWidth;
           var v219 = j$$74 < jj$$18;
           for(;v219;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               items$$4[l$$4] = hhItems[k$$23]
             }
             j$$74 = j$$74 + 1;
@@ -985,7 +985,7 @@ function pdfjsWrapper() {
           if(width$$45 == 1) {
             if(u0$$1 % 1 != 0) {
               var v222 = v$$20 * width$$45;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v21025 = items$$4[v222]
               }
               items$$4[v222] = v21025 / 2
@@ -999,7 +999,7 @@ function pdfjsWrapper() {
           var u$$1 = 0;
           var v225 = u$$1 < width$$45;
           for(;v225;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               buffer$$29[l$$4] = items$$4[k$$23]
             }
             u$$1 = u$$1 + 1;
@@ -1071,7 +1071,7 @@ function pdfjsWrapper() {
         for(;v250;) {
           if(height$$37 == 1) {
             if(v0$$2 % 1 != 0) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6312 = items$$4[u$$1]
               }
               items$$4[u$$1] = v6312 / 2
@@ -1085,7 +1085,7 @@ function pdfjsWrapper() {
           v$$20 = 0;
           var v239 = v$$20 < height$$37;
           for(;v239;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               buffer$$29[l$$4] = items$$4[k$$23]
             }
             v$$20 = v$$20 + 1;
@@ -1161,15 +1161,15 @@ function pdfjsWrapper() {
         var j$$73 = 1;
         var v254 = i$$193 < ii$$74;
         for(;v254;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v251 = subbands$$2[i$$193]
           }
           var v6321 = i$$193 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v252 = subbands$$2[v6321]
           }
           var v6322 = i$$193 + 2;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v253 = subbands$$2[v6322]
           }
           ll = JAM.call(this.iterate, this, [ll, v251, v252, v253, u0, v0$$1]);
@@ -1213,48 +1213,48 @@ function pdfjsWrapper() {
             var index0 = i0$$2 * width$$44 + j$$72;
             var v258 = i0$$2 + 3 < height$$36;
             if(v258) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v21026 = processingFlags$$2[index0]
               }
               var v6324 = v21026 == 0;
               if(v6324) {
                 var v22934 = index0 + oneRowDown;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v22388 = processingFlags$$2[v22934]
                 }
                 var v21027 = v22388 == 0;
                 if(v21027) {
                   var v23106 = index0 + twoRowsDown;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v22935 = processingFlags$$2[v23106]
                   }
                   var v22389 = v22935 == 0;
                   if(v22389) {
                     var v23171 = index0 + threeRowsDown;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v23107 = processingFlags$$2[v23171]
                     }
                     var v22936 = v23107 == 0;
                     if(v22936) {
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v23172 = neighborsSignificance$$3[index0]
                       }
                       var v23108 = v23172 == 0;
                       if(v23108) {
                         var v23232 = index0 + oneRowDown;
-                        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                        introspect(JAM.policy.p1) {
                           var v23205 = neighborsSignificance$$3[v23232]
                         }
                         var v23173 = v23205 == 0;
                         if(v23173) {
                           var v23254 = index0 + twoRowsDown;
-                          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                          introspect(JAM.policy.p1) {
                             var v23233 = neighborsSignificance$$3[v23254]
                           }
                           var v23206 = v23233 == 0;
                           if(v23206) {
                             var v23255 = index0 + threeRowsDown;
-                            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                            introspect(JAM.policy.p1) {
                               var v23234 = neighborsSignificance$$3[v23255]
                             }
                             v23206 = v23234 == 0
@@ -1282,25 +1282,25 @@ function pdfjsWrapper() {
               cx$$6 = this.runLengthContext;
               var hasSignificantCoefficent = JAM.call(decoder$$4.readBit, decoder$$4, [cx$$6]);
               if(!hasSignificantCoefficent) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6325 = bitsDecoded$$3[index0]
                 }
                 bitsDecoded$$3[index0] = v6325 + 1;
                 var v6326 = index0 + oneRowDown;
                 var v22390 = index0 + oneRowDown;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v21028 = bitsDecoded$$3[v22390]
                 }
                 JAM.set(bitsDecoded$$3, v6326, v21028 + 1);
                 var v6327 = index0 + twoRowsDown;
                 var v22391 = index0 + twoRowsDown;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v21029 = bitsDecoded$$3[v22391]
                 }
                 bitsDecoded$$3[v6327] = v21029 + 1;
                 var v6328 = index0 + threeRowsDown;
                 var v22392 = index0 + threeRowsDown;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v21030 = bitsDecoded$$3[v22392]
                 }
                 bitsDecoded$$3[v6328] = v21030 + 1;
@@ -1316,7 +1316,7 @@ function pdfjsWrapper() {
               JAM.set(coefficentsSign$$2, index$$67, sign$$1);
               JAM.set(coefficentsMagnitude$$3, index$$67, 1);
               JAM.call(this.setNeighborsSignificance, this, [i$$192, j$$72]);
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6331 = processingFlags$$2[index$$67]
               }
               JAM.set(processingFlags$$2, index$$67, v6331 | firstMagnitudeBitMask$$2);
@@ -1324,7 +1324,7 @@ function pdfjsWrapper() {
               var i2 = i0$$2;
               var v262 = i2 <= i$$192;
               for(;v262;) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6332 = bitsDecoded$$3[index$$67]
                 }
                 JAM.set(bitsDecoded$$3, index$$67, v6332 + 1);
@@ -1340,11 +1340,11 @@ function pdfjsWrapper() {
               if(i$$192 >= height$$36) {
                 break
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6333 = coefficentsMagnitude$$3[index$$67]
               }
               if(!v6333) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v22393 = processingFlags$$2[index$$67]
                 }
                 v6333 = (v22393 & processedMask$$2) != 0
@@ -1355,13 +1355,13 @@ function pdfjsWrapper() {
                 v267 = i1$$3 < 4;
                 continue
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v265 = neighborsSignificance$$3[index$$67]
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var contextLabel$$3 = labels$$1[v265]
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 cx$$6 = contexts$$2[contextLabel$$3]
               }
               var decision$$1 = JAM.call(decoder$$4.readBit, decoder$$4, [cx$$6]);
@@ -1370,12 +1370,12 @@ function pdfjsWrapper() {
                 JAM.set(coefficentsSign$$2, index$$67, sign$$1);
                 JAM.set(coefficentsMagnitude$$3, index$$67, 1);
                 JAM.call(this.setNeighborsSignificance, this, [i$$192, j$$72]);
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6334 = processingFlags$$2[index$$67]
                 }
                 JAM.set(processingFlags$$2, index$$67, v6334 | firstMagnitudeBitMask$$2)
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6335 = bitsDecoded$$3[index$$67]
               }
               JAM.set(bitsDecoded$$3, index$$67, v6335 + 1);
@@ -1416,12 +1416,12 @@ function pdfjsWrapper() {
                 break
               }
               var index$$66 = i$$191 * width$$43 + j$$71;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v21033 = coefficentsMagnitude$$2[index$$66]
               }
               var v6336 = !v21033;
               if(!v6336) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v22394 = processingFlags$$1[index$$66]
                 }
                 v6336 = (v22394 & processedMask$$1) != 0
@@ -1432,16 +1432,16 @@ function pdfjsWrapper() {
                 continue
               }
               var contextLabel$$2 = 16;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v21036 = processingFlags$$1[index$$66]
               }
               if((v21036 & firstMagnitudeBitMask$$1) != 0) {
                 var v273 = i$$191 * width$$43 + j$$71;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v21037 = processingFlags$$1[v273]
                 }
                 processingFlags$$1[v273] = v21037 ^ firstMagnitudeBitMask$$1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var significance = neighborsSignificance$$2[index$$66]
                 }
                 var sumOfSignificance = (significance & 3) + (significance >> 2 & 3) + (significance >> 4 & 7);
@@ -1453,19 +1453,19 @@ function pdfjsWrapper() {
                 }
                 contextLabel$$2 = v276
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var cx$$5 = contexts$$1[contextLabel$$2]
               }
               var bit$$2 = JAM.call(decoder$$3.readBit, decoder$$3, [cx$$5]);
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6343 = coefficentsMagnitude$$2[index$$66]
               }
               coefficentsMagnitude$$2[index$$66] = v6343 << 1 | bit$$2;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6344 = bitsDecoded$$2[index$$66]
               }
               bitsDecoded$$2[index$$66] = v6344 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6345 = processingFlags$$1[index$$66]
               }
               processingFlags$$1[index$$66] = v6345 | processedMask$$1;
@@ -1492,19 +1492,19 @@ function pdfjsWrapper() {
         }
         var v283 = v6346;
         var v6347 = index$$65 - 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v284 = coefficentsSign$$1[v6347]
         }
         var v6348 = column$$1 + 1 < width$$42;
         if(v6348) {
           var v21041 = index$$65 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             v6348 = coefficentsMagnitude$$1[v21041]
           }
         }
         var v285 = v6348;
         var v6349 = index$$65 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v286 = coefficentsSign$$1[v6349]
         }
         var horizontalContribution = calcSignContribution(v283, v284, v285, v286);
@@ -1514,29 +1514,29 @@ function pdfjsWrapper() {
         }
         var v287 = v6350;
         var v6351 = index$$65 - width$$42;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v288 = coefficentsSign$$1[v6351]
         }
         var v6352 = row$$4 + 1 < height$$34;
         if(v6352) {
           var v21044 = index$$65 + width$$42;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             v6352 = coefficentsMagnitude$$1[v21044]
           }
         }
         var v289 = v6352;
         var v6353 = index$$65 + width$$42;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v290 = coefficentsSign$$1[v6353]
         }
         var verticalContribution = calcSignContribution(v287, v288, v289, v290);
         var v291 = 3 * (1 - horizontalContribution) + (1 - verticalContribution);
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var contextLabelAndXor = SignContextLabels[v291]
         }
         var contextLabel$$1 = contextLabelAndXor.contextLabel;
         var v292 = this.contexts;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var cx$$4 = v292[contextLabel$$1]
         }
         var v293 = this.decoder;
@@ -1562,7 +1562,7 @@ function pdfjsWrapper() {
         var qq$$1 = width$$41 * height$$33;
         var v295 = q$$6 < qq$$1;
         for(;v295;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6356 = processingFlags[q$$6]
           }
           processingFlags[q$$6] = v6356 & processedInverseMask;
@@ -1583,11 +1583,11 @@ function pdfjsWrapper() {
               if(i$$190 >= height$$33) {
                 break
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6357 = coefficentsMagnitude[index$$64]
               }
               if(!v6357) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v21046 = neighborsSignificance$$1[index$$64]
                 }
                 v6357 = !v21046
@@ -1598,13 +1598,13 @@ function pdfjsWrapper() {
                 v300 = i1$$1 < 4;
                 continue
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v299 = neighborsSignificance$$1[index$$64]
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var contextLabel = labels[v299]
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var cx$$3 = contexts[contextLabel]
               }
               var decision = JAM.call(decoder$$2.readBit, decoder$$2, [cx$$3]);
@@ -1613,16 +1613,16 @@ function pdfjsWrapper() {
                 JAM.set(coefficentsSign, index$$64, sign);
                 JAM.set(coefficentsMagnitude, index$$64, 1);
                 JAM.call(this.setNeighborsSignificance, this, [i$$190, j$$70]);
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6358 = processingFlags[index$$64]
                 }
                 JAM.set(processingFlags, index$$64, v6358 | firstMagnitudeBitMask)
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6359 = bitsDecoded$$1[index$$64]
               }
               JAM.set(bitsDecoded$$1, index$$64, v6359 + 1);
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6360 = processingFlags[index$$64]
               }
               JAM.set(processingFlags, index$$64, v6360 | processedMask);
@@ -1646,20 +1646,20 @@ function pdfjsWrapper() {
         if(row$$3 > 0) {
           if(column > 0) {
             var v304 = index$$63 - width$$40 - 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21048 = neighborsSignificance[v304]
             }
             neighborsSignificance[v304] = v21048 + 16
           }
           if(column + 1 < width$$40) {
             var v306 = index$$63 - width$$40 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21049 = neighborsSignificance[v306]
             }
             neighborsSignificance[v306] = v21049 + 16
           }
           var v308 = index$$63 - width$$40;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21050 = neighborsSignificance[v308]
           }
           neighborsSignificance[v308] = v21050 + 4
@@ -1667,39 +1667,39 @@ function pdfjsWrapper() {
         if(row$$3 + 1 < height$$32) {
           if(column > 0) {
             var v310 = index$$63 + width$$40 - 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21051 = neighborsSignificance[v310]
             }
             neighborsSignificance[v310] = v21051 + 16
           }
           if(column + 1 < width$$40) {
             var v312 = index$$63 + width$$40 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21052 = neighborsSignificance[v312]
             }
             JAM.set(neighborsSignificance, v312, v21052 + 16)
           }
           var v314 = index$$63 + width$$40;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21053 = neighborsSignificance[v314]
           }
           JAM.set(neighborsSignificance, v314, v21053 + 4)
         }
         if(column > 0) {
           var v316 = index$$63 - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21054 = neighborsSignificance[v316]
           }
           neighborsSignificance[v316] = v21054 + 1
         }
         if(column + 1 < width$$40) {
           var v318 = index$$63 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21055 = neighborsSignificance[v318]
           }
           JAM.set(neighborsSignificance, v318, v21055 + 1)
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6369 = neighborsSignificance[index$$63]
         }
         JAM.set(neighborsSignificance, index$$63, v6369 | 128);
@@ -1822,7 +1822,7 @@ function pdfjsWrapper() {
       function ArithmeticDecoder_exchangeLps(cx$$2) {
         var d$$10;
         var v344 = cx$$2.index;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var qeTableIcx$$1 = QeTable[v344]
         }
         if(this.a < qeTableIcx$$1.qe) {
@@ -1842,7 +1842,7 @@ function pdfjsWrapper() {
       function ArithmeticDecoder_exchangeMps(cx$$1) {
         var d$$9;
         var v349 = cx$$1.index;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var qeTableIcx = QeTable[v349]
         }
         if(this.a < qeTableIcx.qe) {
@@ -1873,7 +1873,7 @@ function pdfjsWrapper() {
       }
       function ArithmeticDecoder_readBit(cx) {
         var v6391 = cx.index;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v359 = QeTable[v6391]
         }
         var qeIcx = v359.qe;
@@ -1897,12 +1897,12 @@ function pdfjsWrapper() {
       function ArithmeticDecoder_byteIn() {
         var data$$107 = this.data;
         var bp = this.bp;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6396 = data$$107[bp]
         }
         if(v6396 == 255) {
           var v362 = bp + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var b1$$2 = data$$107[v362]
           }
           if(b1$$2 > 143) {
@@ -1911,7 +1911,7 @@ function pdfjsWrapper() {
           }else {
             bp = bp + 1;
             var v6398 = this.clow;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21065 = data$$107[bp]
             }
             this.clow = v6398 + (v21065 << 9);
@@ -1923,7 +1923,7 @@ function pdfjsWrapper() {
           var v6400 = this.clow;
           var v21066;
           if(bp < this.dataEnd) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22395 = data$$107[bp]
             }
             v21066 = v22395 << 8
@@ -1944,7 +1944,7 @@ function pdfjsWrapper() {
         this.data = data$$106;
         this.bp = start$$23;
         this.dataEnd = end$$18;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           this.chigh = data$$106[start$$23]
         }
         this.clow = 0;
@@ -1967,12 +1967,12 @@ function pdfjsWrapper() {
       function InclusionTree_nextLevel() {
         var currentLevel$$3 = this.currentLevel;
         var v416 = this.levels;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var level$$15 = v416[currentLevel$$3]
         }
         var v417 = level$$15.items;
         var v418 = level$$15.index;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var value$$75 = v417[v418]
         }
         JAM.set(level$$15.items, level$$15.index, 255);
@@ -1982,7 +1982,7 @@ function pdfjsWrapper() {
         }
         this.currentLevel = currentLevel$$3;
         var v422 = this.levels;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           level$$15 = v422[currentLevel$$3]
         }
         JAM.set(level$$15.items, level$$15.index, value$$75);
@@ -1991,18 +1991,18 @@ function pdfjsWrapper() {
       function InclusionTree_propagateValues() {
         var levelIndex = this.currentLevel;
         var v425 = this.levels;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var level$$14 = v425[levelIndex]
         }
         var v426 = level$$14.items;
         var v427 = level$$14.index;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var currentValue = v426[v427]
         }
         var v431 = (levelIndex = levelIndex - 1) >= 0;
         for(;v431;) {
           var v428 = this.levels;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             level$$14 = v428[levelIndex]
           }
           JAM.set(level$$14.items, level$$14.index, currentValue);
@@ -2013,7 +2013,7 @@ function pdfjsWrapper() {
       function InclusionTree_incrementValue(stopValue$$1) {
         var v432 = this.levels;
         var v433 = this.currentLevel;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var level$$13 = v432[v433]
         }
         JAM.set(level$$13.items, level$$13.index, stopValue$$1 + 1);
@@ -2025,13 +2025,13 @@ function pdfjsWrapper() {
         var v441 = currentLevel$$2 < this.levels.length;
         for(;v441;) {
           var v436 = this.levels;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var level$$12 = v436[currentLevel$$2]
           }
           var index$$62 = i$$187 + j$$69 * level$$12.width;
           level$$12.index = index$$62;
           var v438 = level$$12.items;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var value$$74 = v438[index$$62]
           }
           if(value$$74 == 255) {
@@ -2082,12 +2082,12 @@ function pdfjsWrapper() {
       function TagTree_nextLevel() {
         var currentLevel$$1 = this.currentLevel;
         var v449 = this.levels;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var level$$10 = v449[currentLevel$$1]
         }
         var v450 = level$$10.items;
         var v451 = level$$10.index;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var value$$73 = v450[v451]
         }
         currentLevel$$1 = currentLevel$$1 - 1;
@@ -2097,7 +2097,7 @@ function pdfjsWrapper() {
         }
         this.currentLevel = currentLevel$$1;
         var v453 = this.levels;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           level$$10 = v453[currentLevel$$1]
         }
         JAM.set(level$$10.items, level$$10.index, value$$73);
@@ -2106,14 +2106,14 @@ function pdfjsWrapper() {
       function TagTree_incrementValue() {
         var v456 = this.levels;
         var v457 = this.currentLevel;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var level$$9 = v456[v457]
         }
         var v6416 = level$$9.items;
         var v6417 = level$$9.index;
         var v22397 = level$$9.items;
         var v22398 = level$$9.index;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21072 = v22397[v22398]
         }
         JAM.set(v6416, v6417, v21072 + 1);
@@ -2125,13 +2125,13 @@ function pdfjsWrapper() {
         var v462 = currentLevel < this.levels.length;
         for(;v462;) {
           var v458 = this.levels;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var level$$8 = v458[currentLevel]
           }
           var index$$61 = i$$185 + j$$67 * level$$8.width;
           if(index$$61 in level$$8.items) {
             var v460 = level$$8.items;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               value$$72 = v460[index$$61]
             }
             break
@@ -2218,20 +2218,20 @@ function pdfjsWrapper() {
               var i$$183 = 0;
               var v492 = i$$183 < componentsCount$$8;
               for(;v492;) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v21075 = data$$105[j$$66]
                 }
                 var v480 = (v21075 & 127) + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v22399 = data$$105[j$$66]
                 }
                 var v481 = !!(v22399 & 128);
                 var v6433 = j$$66 + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v482 = data$$105[v6433]
                 }
                 var v6434 = j$$66 + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v483 = data$$105[v6434]
                 }
                 var component$$20 = {precision:v480, isSigned:v481, XRsiz:v482, YRsiz:v483};
@@ -2298,7 +2298,7 @@ function pdfjsWrapper() {
               var ii$$inline_197 = componentsCount$$inline_195;
               var v515 = i$$inline_196 < ii$$inline_197;
               for(;v515;) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var component$$inline_198 = components$$inline_187[i$$inline_196]
                 }
                 var tileComponents$$inline_199 = [];
@@ -2338,7 +2338,7 @@ function pdfjsWrapper() {
               j$$66 = position$$5 + 2;
               var v516 = j$$66;
               j$$66 = j$$66 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var sqcd = data$$105[v516]
               }
               var spqcdSize;
@@ -2369,22 +2369,22 @@ function pdfjsWrapper() {
                 if(spqcdSize == 8) {
                   var v6456 = j$$66;
                   j$$66 = j$$66 + 1;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v518 = data$$105[v6456]
                   }
                   spqcd.epsilon = v518 >> 3;
                   spqcd.mu = 0
                 }else {
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v519 = data$$105[j$$66]
                   }
                   spqcd.epsilon = v519 >> 3;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21105 = data$$105[j$$66]
                   }
                   var v520 = (v21105 & 7) << 8;
                   var v6458 = j$$66 + 1;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v521 = data$$105[v6458]
                   }
                   spqcd.mu = v520 | v521;
@@ -2409,7 +2409,7 @@ function pdfjsWrapper() {
               if(context$$12.SIZ.Csiz < 257) {
                 var v527 = j$$66;
                 j$$66 = j$$66 + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   cqcc = data$$105[v527]
                 }
               }else {
@@ -2418,7 +2418,7 @@ function pdfjsWrapper() {
               }
               var v529 = j$$66;
               j$$66 = j$$66 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 sqcd = data$$105[v529]
               }
               switch(sqcd & 31) {
@@ -2447,22 +2447,22 @@ function pdfjsWrapper() {
                 if(spqcdSize == 8) {
                   var v6462 = j$$66;
                   j$$66 = j$$66 + 1;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v531 = data$$105[v6462]
                   }
                   spqcd.epsilon = v531 >> 3;
                   spqcd.mu = 0
                 }else {
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v532 = data$$105[j$$66]
                   }
                   spqcd.epsilon = v532 >> 3;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21107 = data$$105[j$$66]
                   }
                   var v533 = (v21107 & 7) << 8;
                   var v6464 = j$$66 + 1;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v534 = data$$105[v6464]
                   }
                   spqcd.mu = v533 | v534;
@@ -2484,7 +2484,7 @@ function pdfjsWrapper() {
               j$$66 = position$$5 + 2;
               var v540 = j$$66;
               j$$66 = j$$66 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var scod = data$$105[v540]
               }
               cod.entropyCoderWithCustomPrecincts = !!(scod & 1);
@@ -2492,7 +2492,7 @@ function pdfjsWrapper() {
               cod.ephMarkerUsed = !!(scod & 4);
               var v544 = j$$66;
               j$$66 = j$$66 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 cod.progressionOrder = data$$105[v544]
               }
               var v545 = cod;
@@ -2501,29 +2501,29 @@ function pdfjsWrapper() {
               j$$66 = j$$66 + 2;
               var v546 = j$$66;
               j$$66 = j$$66 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 cod.multipleComponentTransform = data$$105[v546]
               }
               var v547 = j$$66;
               j$$66 = j$$66 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 cod.decompositionLevelsCount = data$$105[v547]
               }
               var v21108 = j$$66;
               j$$66 = j$$66 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6470 = data$$105[v21108]
               }
               cod.xcb = (v6470 & 15) + 2;
               var v21109 = j$$66;
               j$$66 = j$$66 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6471 = data$$105[v21109]
               }
               cod.ycb = (v6471 & 15) + 2;
               var v550 = j$$66;
               j$$66 = j$$66 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var blockStyle = data$$105[v550]
               }
               cod.selectiveArithmeticCodingBypass = !!(blockStyle & 1);
@@ -2534,14 +2534,14 @@ function pdfjsWrapper() {
               cod.segmentationSymbolUsed = !!(blockStyle & 32);
               var v557 = j$$66;
               j$$66 = j$$66 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 cod.transformation = data$$105[v557]
               }
               if(cod.entropyCoderWithCustomPrecincts) {
                 var precinctsSizes = {};
                 var v559 = j$$66 < length$$73 + position$$5;
                 for(;v559;) {
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var precinctsSize = data$$105[j$$66]
                   }
                   JAM.call(precinctsSizes.push, precinctsSizes, [{PPx:precinctsSize & 15, PPy:precinctsSize >> 4}]);
@@ -2598,11 +2598,11 @@ function pdfjsWrapper() {
               v567.length = v23382;
               tile$$8.dataEnd = tile$$8.length + position$$5 - 2;
               var v569 = position$$5 + 8;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 tile$$8.partIndex = data$$105[v569]
               }
               var v570 = position$$5 + 9;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 tile$$8.partsCount = data$$105[v570]
               }
               context$$12.mainHeader = false;
@@ -2626,7 +2626,7 @@ function pdfjsWrapper() {
                 var componentsCount$$inline_207 = siz$$inline_206.Csiz;
                 var v574 = context$$inline_204.tiles;
                 var v575 = tile$$8.index;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var tile$$inline_208 = v574[v575]
                 }
                 var resultTiles$$inline_209 = [];
@@ -2634,7 +2634,7 @@ function pdfjsWrapper() {
                 var v579 = c$$inline_210 < componentsCount$$inline_207;
                 for(;v579;) {
                   var v576 = tile$$inline_208.components;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var component$$inline_211 = v576[c$$inline_210]
                   }
                   var v577;
@@ -2661,7 +2661,7 @@ function pdfjsWrapper() {
                 var siz$$inline_216 = context$$inline_215.SIZ;
                 var tileIndex$$inline_217 = context$$inline_215.currentTile.index;
                 var v582 = context$$inline_215.tiles;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var tile$$inline_218 = v582[tileIndex$$inline_217]
                 }
                 var componentsCount$$inline_219 = siz$$inline_216.Csiz;
@@ -2669,7 +2669,7 @@ function pdfjsWrapper() {
                 var v620 = c$$inline_220 < componentsCount$$inline_219;
                 for(;v620;) {
                   var v583 = tile$$inline_218.components;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var component$$inline_221 = v583[c$$inline_220]
                   }
                   var decompositionLevelsCount$$inline_222 = component$$inline_221.codingStyleParameters.decompositionLevelsCount;
@@ -2687,12 +2687,12 @@ function pdfjsWrapper() {
                       result$$inline_299.PPy = 15
                     }else {
                       var v6497 = codOrCoc$$inline_298.precinctsSizes;
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v585 = v6497[r$$inline_297]
                       }
                       result$$inline_299.PPx = v585.PPx;
                       var v6498 = codOrCoc$$inline_298.precinctsSizes;
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v586 = v6498[r$$inline_297]
                       }
                       result$$inline_299.PPy = v586.PPy
@@ -2884,7 +2884,7 @@ function pdfjsWrapper() {
       var v709 = i$$inline_240 < ii$$inline_241;
       for(;v709;) {
         var v632 = context$$inline_235.tiles;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var tile$$inline_242 = v632[i$$inline_240]
         }
         var result$$inline_243 = [];
@@ -2893,7 +2893,7 @@ function pdfjsWrapper() {
         for(;v690;) {
           var image$$inline_245;
           var v633 = tile$$inline_242.components;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var component$$inline_315 = v633[c$$inline_244]
           }
           var codingStyleParameters$$inline_316 = component$$inline_315.codingStyleParameters;
@@ -2904,7 +2904,7 @@ function pdfjsWrapper() {
           var guardBits$$inline_321 = quantizationParameters$$inline_317.guardBits;
           var transformation$$inline_322 = codingStyleParameters$$inline_316.transformation;
           var v6531 = context$$inline_235.components;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v634 = v6531[c$$inline_244]
           }
           var precision$$inline_323 = v634.precision;
@@ -2915,7 +2915,7 @@ function pdfjsWrapper() {
           var v681 = i$$inline_327 <= decompositionLevelsCount$$inline_318;
           for(;v681;) {
             var v635 = component$$inline_315.resolutions;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var resolution$$inline_328 = v635[i$$inline_327]
             }
             var j$$inline_329 = 0;
@@ -2935,23 +2935,23 @@ function pdfjsWrapper() {
                 }
                 epsilon$$inline_332 = v638 + v6533
               }else {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v640 = spqcds$$inline_319[b$$inline_326]
                 }
                 mu$$inline_331 = v640.mu;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v641 = spqcds$$inline_319[b$$inline_326]
                 }
                 epsilon$$inline_332 = v641.epsilon
               }
               var v643 = resolution$$inline_328.subbands;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var subband$$inline_333 = v643[j$$inline_329]
               }
               var width$$inline_334 = subband$$inline_333.tbx1 - subband$$inline_333.tbx0;
               var height$$inline_335 = subband$$inline_333.tby1 - subband$$inline_333.tby0;
               var v648 = subband$$inline_333.type;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var gainLog2$$inline_336 = SubbandsGainLog2[v648]
               }
               var delta$$inline_337 = Math.pow(2, precision$$inline_323 + gainLog2$$inline_336 - epsilon$$inline_332) * (1 + mu$$inline_331 / 2048);
@@ -2970,7 +2970,7 @@ function pdfjsWrapper() {
               var ii$$inline_350 = codeblocks$$inline_346.length;
               var v678 = i$$inline_349 < ii$$inline_350;
               for(;v678;) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var codeblock$$inline_351 = codeblocks$$inline_346[i$$inline_349]
                 }
                 var blockWidth$$inline_352 = codeblock$$inline_351.tbx1_ - codeblock$$inline_351.tbx0_;
@@ -3000,7 +3000,7 @@ function pdfjsWrapper() {
                 var qq$$inline_360 = data$$inline_356.length;
                 var v661 = q$$inline_359 < qq$$inline_360;
                 for(;v661;) {
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var dataItem$$inline_361 = data$$inline_356[q$$inline_359]
                   }
                   totalLength$$inline_357 = totalLength$$inline_357 + (dataItem$$inline_361.end - dataItem$$inline_361.start);
@@ -3050,7 +3050,7 @@ function pdfjsWrapper() {
                   for(;v676;) {
                     var v6543;
                     var v22424 = bitModel$$inline_354.coefficentsSign;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21162 = v22424[position$$inline_367]
                     }
                     if(v21162) {
@@ -3060,12 +3060,12 @@ function pdfjsWrapper() {
                     }
                     var v670 = v6543;
                     var v6544 = bitModel$$inline_354.coefficentsMagnitude;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v671 = v6544[position$$inline_367]
                     }
                     var n$$inline_369 = v670 * v671;
                     var v672 = bitModel$$inline_354.bitsDecoded;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var nb$$inline_370 = v672[position$$inline_367]
                     }
                     var correction$$inline_371;
@@ -3135,13 +3135,13 @@ function pdfjsWrapper() {
           var jj$$inline_250 = y0items$$inline_246.length;
           var v695 = j$$inline_249 < jj$$inline_250;
           for(;v695;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var y0$$inline_251 = y0items$$inline_246[j$$inline_249]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var y1$$inline_252 = y1items$$inline_247[j$$inline_249]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var y2$$inline_253 = y2items$$inline_248[j$$inline_249]
             }
             var i1$$inline_254 = y0$$inline_251 - (y2$$inline_253 + y1$$inline_252 >> 2);
@@ -3155,7 +3155,7 @@ function pdfjsWrapper() {
         c$$inline_244 = 0;
         var v700 = c$$inline_244 < componentsCount$$inline_238;
         for(;v700;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var component$$inline_255 = components$$inline_237[c$$inline_244]
           }
           if(component$$inline_255.isSigned) {
@@ -3164,7 +3164,7 @@ function pdfjsWrapper() {
             continue
           }
           var offset$$inline_256 = 1 << component$$inline_255.precision - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var tileImage$$inline_257 = result$$inline_243[c$$inline_244]
           }
           var items$$inline_258 = tileImage$$inline_257.items;
@@ -3172,7 +3172,7 @@ function pdfjsWrapper() {
           jj$$inline_250 = items$$inline_258.length;
           var v699 = j$$inline_249 < jj$$inline_250;
           for(;v699;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v6553 = items$$inline_258[j$$inline_249]
             }
             items$$inline_258[j$$inline_249] = v6553 + offset$$inline_256;
@@ -3201,7 +3201,7 @@ function pdfjsWrapper() {
           jj$$inline_250 = items$$inline_258.length;
           var v706 = j$$inline_249 < jj$$inline_250;
           for(;v706;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v6555 = items$$inline_258[j$$inline_249]
             }
             var value$$inline_261 = (v6555 >> shift$$inline_259) + offset$$inline_256;
@@ -3221,7 +3221,7 @@ function pdfjsWrapper() {
             j$$inline_249 = j$$inline_249 + 1;
             v706 = j$$inline_249 < jj$$inline_250
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v707 = result$$inline_243[c$$inline_244]
           }
           v707.items = data$$inline_260;
@@ -3247,7 +3247,7 @@ function pdfjsWrapper() {
         for(;v717;) {
           var v715 = n$$45 * 256;
           var v21166 = offset$$41 + i$$182;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6562 = data$$104[v21166]
           }
           n$$45 = v715 + (v6562 & 255);
@@ -3309,7 +3309,7 @@ function pdfjsWrapper() {
         return
       }
       var xhr$$2 = new PdfJS_window.XMLHttpRequest;
-      JAM.call(JAM.get(xhr$$2, "open", JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074), xhr$$2, ["GET", url$$7, true]);
+      JAM.call(JAM.get(xhr$$2, "open", JAM.policy.p1), xhr$$2, ["GET", url$$7, true]);
       xhr$$2.responseType = "arraybuffer";
       var v728 = xhr$$2;
       var v23407 = JAM.call(v88.bind, v88, [this]);
@@ -3322,33 +3322,33 @@ function pdfjsWrapper() {
       return
     }
     function readUint32(data$$97, offset$$36) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v22427 = data$$97[offset$$36]
       }
       var v21168 = v22427 << 24;
       var v22941 = offset$$36 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v22428 = data$$97[v22941]
       }
       var v6564 = v21168 | v22428 << 16;
       var v22429 = offset$$36 + 2;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v21170 = data$$97[v22429]
       }
       var v729 = v6564 | v21170 << 8;
       var v6566 = offset$$36 + 3;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v730 = data$$97[v6566]
       }
       return v729 | v730
     }
     function readUint16$$1(data$$98, offset$$37) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v6567 = data$$98[offset$$37]
       }
       var v731 = v6567 << 8;
       var v6568 = offset$$37 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v732 = data$$98[v6568]
       }
       return v731 | v732
@@ -3449,7 +3449,7 @@ function pdfjsWrapper() {
       var ii$$69 = subbands.length;
       var v764 = i$$175 < ii$$69;
       for(;v764;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var subband$$1 = subbands[i$$175]
         }
         var codeblocks$$1 = subband$$1.codeblocks;
@@ -3457,7 +3457,7 @@ function pdfjsWrapper() {
         var jj$$14 = codeblocks$$1.length;
         var v763 = j$$62 < jj$$14;
         for(;v763;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var codeblock$$1 = codeblocks$$1[j$$62]
           }
           if(codeblock$$1.precinctNumber != precinctNumber$$1) {
@@ -3483,7 +3483,7 @@ function pdfjsWrapper() {
             var v770 = i$$176 < componentsCount$$3;
             for(;v770;) {
               var v765 = tile$$1.components;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var component$$14 = v765[i$$176]
               }
               if(r$$14 > component$$14.codingStyleParameters.decompositionLevelsCount) {
@@ -3492,7 +3492,7 @@ function pdfjsWrapper() {
                 continue
               }
               var v767 = component$$14.resolutions;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var resolution$$2 = v767[r$$14]
               }
               var numprecincts$$1 = resolution$$2.precinctParameters.numprecincts;
@@ -3519,7 +3519,7 @@ function pdfjsWrapper() {
       var siz$$2 = context$$5.SIZ;
       var tileIndex = context$$5.currentTile.index;
       var v774 = context$$5.tiles;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var tile$$1 = v774[tileIndex]
       }
       var layersCount = tile$$1.codingStyleDefaultParameters.layersCount;
@@ -3529,7 +3529,7 @@ function pdfjsWrapper() {
       var v777 = q$$3 < componentsCount$$3;
       for(;v777;) {
         var v22430 = tile$$1.components;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21176 = v22430[q$$3]
         }
         maxDecompositionLevelsCount = Math.max(maxDecompositionLevelsCount, v21176.codingStyleParameters.decompositionLevelsCount);
@@ -3552,7 +3552,7 @@ function pdfjsWrapper() {
             var v783 = i$$177 < componentsCount$$4;
             for(;v783;) {
               var v778 = tile$$2.components;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var component$$15 = v778[i$$177]
               }
               if(r$$15 > component$$15.codingStyleParameters.decompositionLevelsCount) {
@@ -3561,7 +3561,7 @@ function pdfjsWrapper() {
                 continue
               }
               var v780 = component$$15.resolutions;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var resolution$$3 = v780[r$$15]
               }
               var numprecincts$$2 = resolution$$3.precinctParameters.numprecincts;
@@ -3588,7 +3588,7 @@ function pdfjsWrapper() {
       var siz$$3 = context$$6.SIZ;
       var tileIndex$$1 = context$$6.currentTile.index;
       var v787 = context$$6.tiles;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var tile$$2 = v787[tileIndex$$1]
       }
       var layersCount$$1 = tile$$2.codingStyleDefaultParameters.layersCount;
@@ -3598,7 +3598,7 @@ function pdfjsWrapper() {
       var v790 = q$$4 < componentsCount$$4;
       for(;v790;) {
         var v22431 = tile$$2.components;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21178 = v22431[q$$4]
         }
         maxDecompositionLevelsCount$$1 = Math.max(maxDecompositionLevelsCount$$1, v21178.codingStyleParameters.decompositionLevelsCount);
@@ -3617,7 +3617,7 @@ function pdfjsWrapper() {
         var v795 = bufferSize < count$$21;
         for(;v795;) {
           var v791 = offset$$38 + position$$2;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var b$$29 = data$$99[v791]
           }
           position$$2 = position$$2 + 1;
@@ -3663,7 +3663,7 @@ function pdfjsWrapper() {
       var skipNextBit = false;
       var tileIndex$$3 = context$$8.currentTile.index;
       var v814 = context$$8.tiles;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var tile$$4 = v814[tileIndex$$3]
       }
       var packetsIterator$$1 = tile$$4.packetsIterator;
@@ -3686,7 +3686,7 @@ function pdfjsWrapper() {
         var v837 = i$$178 < ii$$70;
         for(;v837;) {
           var v817 = packet$$2.codeblocks;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var codeblock$$2 = v817[i$$178]
           }
           var precinct$$1 = codeblock$$2.precinct;
@@ -4111,12 +4111,12 @@ function pdfjsWrapper() {
     }
     function parse(data$$94) {
       function readUint16() {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6664 = data$$94[offset$$34]
         }
         var v947 = v6664 << 8;
         var v6665 = offset$$34 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v948 = data$$94[v6665]
         }
         var value$$69 = v947 | v948;
@@ -4137,7 +4137,7 @@ function pdfjsWrapper() {
         for(componentId$$1 in frame$$4.components) {
           if(frame$$4.components.hasOwnProperty(componentId$$1)) {
             var v950 = frame$$4.components;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               component$$10 = v950[componentId$$1]
             }
             if(maxH$$2 < component$$10.h) {
@@ -4153,7 +4153,7 @@ function pdfjsWrapper() {
         for(componentId$$1 in frame$$4.components) {
           if(frame$$4.components.hasOwnProperty(componentId$$1)) {
             var v957 = frame$$4.components;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               component$$10 = v957[componentId$$1]
             }
             var blocksPerLine$$1 = Math.ceil(Math.ceil(frame$$4.samplesPerLine / 8) * component$$10.h / maxH$$2);
@@ -4297,7 +4297,7 @@ function pdfjsWrapper() {
             for(;v991;) {
               var v984 = offset$$34;
               offset$$34 = offset$$34 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var quantizationTableSpec = data$$94[v984]
               }
               var tableData$$1 = new Int32Array(64);
@@ -4305,12 +4305,12 @@ function pdfjsWrapper() {
                 j$$57 = 0;
                 var v986 = j$$57 < 64;
                 for(;v986;) {
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var z$$6 = dctZigZag[j$$57]
                   }
                   var v985 = offset$$34;
                   offset$$34 = offset$$34 + 1;
-                  JAM.set(tableData$$1, z$$6, JAM.get(data$$94, v985, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+                  JAM.set(tableData$$1, z$$6, JAM.get(data$$94, v985, JAM.policy.p1));
                   j$$57 = j$$57 + 1;
                   v986 = j$$57 < 64
                 }
@@ -4319,7 +4319,7 @@ function pdfjsWrapper() {
                   j$$57 = 0;
                   var v987 = j$$57 < 64;
                   for(;v987;) {
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       z$$6 = dctZigZag[j$$57]
                     }
                     var v23416 = readUint16();
@@ -4344,7 +4344,7 @@ function pdfjsWrapper() {
             frame$$3.progressive = fileMarker === 65474;
             var v992 = offset$$34;
             offset$$34 = offset$$34 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               frame$$3.precision = data$$94[v992]
             }
             var v993 = frame$$3;
@@ -4357,7 +4357,7 @@ function pdfjsWrapper() {
             frame$$3.componentsOrder = [];
             var v995 = offset$$34;
             offset$$34 = offset$$34 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var componentsCount$$1 = data$$94[v995]
             }
             var componentId;
@@ -4366,27 +4366,27 @@ function pdfjsWrapper() {
             i$$169 = 0;
             var v1001 = i$$169 < componentsCount$$1;
             for(;v1001;) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 componentId = data$$94[offset$$34]
               }
               var v6692 = offset$$34 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v996 = data$$94[v6692]
               }
               var h$$15 = v996 >> 4;
               var v6693 = offset$$34 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v997 = data$$94[v6693]
               }
               var v$$19 = v997 & 15;
               var v998 = offset$$34 + 2;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var qId = data$$94[v998]
               }
               var v999 = frame$$3.componentsOrder;
               JAM.call(v999.push, v999, [componentId]);
               var v1000 = frame$$3.components;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v6694 = quantizationTables[qId]
               }
               JAM.set(v1000, componentId, {h:h$$15, v:v$$19, quantizationTable:v6694});
@@ -4404,7 +4404,7 @@ function pdfjsWrapper() {
             for(;v1007;) {
               var v1002 = offset$$34;
               offset$$34 = offset$$34 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var huffmanTableSpec = data$$94[v1002]
               }
               var codeLengths$$2 = new Uint8Array(16);
@@ -4412,7 +4412,7 @@ function pdfjsWrapper() {
               j$$57 = 0;
               var v1003 = j$$57 < 16;
               for(;v1003;) {
-                codeLengthSum = codeLengthSum + JAM.set(codeLengths$$2, j$$57, JAM.get(data$$94, offset$$34, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+                codeLengthSum = codeLengthSum + JAM.set(codeLengths$$2, j$$57, JAM.get(data$$94, offset$$34, JAM.policy.p1));
                 j$$57 = j$$57 + 1;
                 offset$$34 = offset$$34 + 1;
                 v1003 = j$$57 < 16
@@ -4421,7 +4421,7 @@ function pdfjsWrapper() {
               j$$57 = 0;
               var v1004 = j$$57 < codeLengthSum;
               for(;v1004;) {
-                JAM.set(huffmanValues, j$$57, JAM.get(data$$94, offset$$34, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+                JAM.set(huffmanValues, j$$57, JAM.get(data$$94, offset$$34, JAM.policy.p1));
                 j$$57 = j$$57 + 1;
                 offset$$34 = offset$$34 + 1;
                 v1004 = j$$57 < codeLengthSum
@@ -4448,7 +4448,7 @@ function pdfjsWrapper() {
             var scanLength = readUint16();
             var v1008 = offset$$34;
             offset$$34 = offset$$34 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var selectorsCount = data$$94[v1008]
             }
             var components$$3 = [];
@@ -4459,15 +4459,15 @@ function pdfjsWrapper() {
               var v1009 = frame$$3.components;
               var v6698 = offset$$34;
               offset$$34 = offset$$34 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v1010 = data$$94[v6698]
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 component$$9 = v1009[v1010]
               }
               var v1011 = offset$$34;
               offset$$34 = offset$$34 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var tableSpec = data$$94[v1011]
               }
               component$$9.huffmanTableDC = huffmanTablesDC[tableSpec >> 4];
@@ -4478,17 +4478,17 @@ function pdfjsWrapper() {
             }
             var v1015 = offset$$34;
             offset$$34 = offset$$34 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var spectralStart$$1 = data$$94[v1015]
             }
             var v1016 = offset$$34;
             offset$$34 = offset$$34 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var spectralEnd$$1 = data$$94[v1016]
             }
             var v1017 = offset$$34;
             offset$$34 = offset$$34 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var successiveApproximation = data$$94[v1017]
             }
             var processed$$2 = decodeScan(data$$94, offset$$34, frame$$3, components$$3, resetInterval$$1, spectralStart$$1, spectralEnd$$1, successiveApproximation >> 4, successiveApproximation & 15);
@@ -4513,10 +4513,10 @@ function pdfjsWrapper() {
       for(;v1027;) {
         var v1023 = frame$$3.components;
         var v6701 = frame$$3.componentsOrder;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1024 = v6701[i$$169]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           component$$9 = v1023[v1024]
         }
         var v1025 = this.components;
@@ -4540,7 +4540,7 @@ function pdfjsWrapper() {
         return
       }
       var xhr$$1 = new PdfJS_window.XMLHttpRequest;
-      JAM.call(JAM.get(xhr$$1, "open", JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074), xhr$$1, ["GET", path, true]);
+      JAM.call(JAM.get(xhr$$1, "open", JAM.policy.p1), xhr$$1, ["GET", path, true]);
       xhr$$1.responseType = "arraybuffer";
       var v1031 = xhr$$1;
       var v23420 = JAM.call(v87.bind, v87, [this]);
@@ -4560,7 +4560,7 @@ function pdfjsWrapper() {
       var v6707 = length$$67 > 0;
       if(v6707) {
         var v22473 = length$$67 - 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21245 = codeLengths$$1[v22473]
         }
         v6707 = !v21245
@@ -4571,7 +4571,7 @@ function pdfjsWrapper() {
         var v6708 = length$$67 > 0;
         if(v6708) {
           var v22474 = length$$67 - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21246 = codeLengths$$1[v22474]
           }
           v6708 = !v21246
@@ -4585,7 +4585,7 @@ function pdfjsWrapper() {
       var v1046 = i$$165 < length$$67;
       for(;v1046;) {
         j$$54 = 0;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6709 = codeLengths$$1[i$$165]
         }
         var v1041 = j$$54 < v6709;
@@ -4608,7 +4608,7 @@ function pdfjsWrapper() {
           }
           k$$14 = k$$14 + 1;
           j$$54 = j$$54 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6715 = codeLengths$$1[i$$165]
           }
           v1041 = j$$54 < v6715
@@ -4631,13 +4631,13 @@ function pdfjsWrapper() {
         }
         var v1050 = offset$$32;
         offset$$32 = offset$$32 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           bitsData = data$$92[v1050]
         }
         if(bitsData == 255) {
           var v1051 = offset$$32;
           offset$$32 = offset$$32 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var nextByte = data$$92[v1051]
           }
           if(nextByte) {
@@ -4653,7 +4653,7 @@ function pdfjsWrapper() {
         var bit;
         var v1056 = (bit = readBit()) !== null;
         for(;v1056;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             node$$2 = node$$2[bit]
           }
           if(typeof node$$2 === "number") {
@@ -4712,7 +4712,7 @@ function pdfjsWrapper() {
             continue
           }
           k$$16 = k$$16 + r$$9;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var z$$3 = dctZigZag[k$$16]
           }
           var v23421 = receiveAndExtend(s$$13);
@@ -4761,7 +4761,7 @@ function pdfjsWrapper() {
             continue
           }
           k$$17 = k$$17 + r$$10;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var z$$4 = dctZigZag[k$$17]
           }
           JAM.set(zz$$3, z$$4, receiveAndExtend(s$$14) * (1 << successive));
@@ -4776,7 +4776,7 @@ function pdfjsWrapper() {
         var r$$11 = 0;
         var v1097 = k$$18 <= e$$28;
         for(;v1097;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var z$$5 = dctZigZag[k$$18]
           }
           switch(successiveACState) {
@@ -4810,13 +4810,13 @@ function pdfjsWrapper() {
             case 1:
             ;
             case 2:
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v1090 = zz$$4[z$$5]
               }
               if(v1090) {
                 var v1086 = zz$$4;
                 var v1087 = z$$5;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v21251 = v1086[v1087]
                 }
                 JAM.set(v1086, v1087, v21251 + (readBit() << successive))
@@ -4834,13 +4834,13 @@ function pdfjsWrapper() {
               }
               break;
             case 3:
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v1093 = zz$$4[z$$5]
               }
               if(v1093) {
                 var v1091 = zz$$4;
                 var v1092 = z$$5;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v21253 = v1091[v1092]
                 }
                 JAM.set(v1091, v1092, v21253 + (readBit() << successive))
@@ -4850,13 +4850,13 @@ function pdfjsWrapper() {
               }
               break;
             case 4:
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v1096 = zz$$4[z$$5]
               }
               if(v1096) {
                 var v1094 = zz$$4;
                 var v1095 = z$$5;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v21255 = v1094[v1095]
                 }
                 JAM.set(v1094, v1095, v21255 + (readBit() << successive))
@@ -4879,10 +4879,10 @@ function pdfjsWrapper() {
         var blockRow = mcuRow * component$$6.v + row;
         var blockCol = mcuCol * component$$6.h + col;
         var v21257 = component$$6.blocks;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6736 = v21257[blockRow]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1103 = v6736[blockCol]
         }
         JAM.call(decode$$4, null, [component$$6, v1103]);
@@ -4892,10 +4892,10 @@ function pdfjsWrapper() {
         var blockRow$$1 = mcu$$2 / component$$7.blocksPerLine | 0;
         var blockCol$$1 = mcu$$2 % component$$7.blocksPerLine;
         var v21258 = component$$7.blocks;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6738 = v21258[blockRow$$1]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1106 = v6738[blockCol$$1]
         }
         JAM.call(decode$$5, null, [component$$7, v1106]);
@@ -4960,7 +4960,7 @@ function pdfjsWrapper() {
         i$$166 = 0;
         var v1116 = i$$166 < componentsLength;
         for(;v1116;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v1115 = components$$2[i$$166]
           }
           v1115.pred = 0;
@@ -4985,7 +4985,7 @@ function pdfjsWrapper() {
             i$$166 = 0;
             var v1120 = i$$166 < componentsLength;
             for(;v1120;) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 component = components$$2[i$$166]
               }
               h$$14 = component.h;
@@ -5012,12 +5012,12 @@ function pdfjsWrapper() {
           }
         }
         bitsCount = 0;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6743 = data$$92[offset$$32]
         }
         var v1123 = v6743 << 8;
         var v6744 = offset$$32 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1124 = data$$92[v6744]
         }
         marker = v1123 | v1124;
@@ -5061,10 +5061,10 @@ function pdfjsWrapper() {
         var v1227 = blockCol$$2 < blocksPerLine;
         for(;v1227;) {
           var v6746 = component$$8.blocks;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v1130 = v6746[blockRow$$2]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var zz$$inline_128 = v1130[blockCol$$2]
           }
           var dataOut$$inline_129 = r$$12;
@@ -5084,10 +5084,10 @@ function pdfjsWrapper() {
           i$$inline_142 = 0;
           var v1133 = i$$inline_142 < 64;
           for(;v1133;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v1131 = zz$$inline_128[i$$inline_142]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v1132 = qt$$inline_131[i$$inline_142]
             }
             JAM.set(p$$inline_141, i$$inline_142, v1131 * v1132);
@@ -5099,43 +5099,43 @@ function pdfjsWrapper() {
           for(;v1176;) {
             var row$$inline_143 = 8 * i$$inline_142;
             var v22479 = 1 + row$$inline_143;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21259 = p$$inline_141[v22479]
             }
             var v6747 = v21259 == 0;
             if(v6747) {
               var v22953 = 2 + row$$inline_143;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v22480 = p$$inline_141[v22953]
               }
               var v21260 = v22480 == 0;
               if(v21260) {
                 var v23115 = 3 + row$$inline_143;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v22954 = p$$inline_141[v23115]
                 }
                 var v22481 = v22954 == 0;
                 if(v22481) {
                   var v23178 = 4 + row$$inline_143;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v23116 = p$$inline_141[v23178]
                   }
                   var v22955 = v23116 == 0;
                   if(v22955) {
                     var v23209 = 5 + row$$inline_143;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v23179 = p$$inline_141[v23209]
                     }
                     var v23117 = v23179 == 0;
                     if(v23117) {
                       var v23236 = 6 + row$$inline_143;
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v23210 = p$$inline_141[v23236]
                       }
                       var v23180 = v23210 == 0;
                       if(v23180) {
                         var v23237 = 7 + row$$inline_143;
-                        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                        introspect(JAM.policy.p1) {
                           var v23211 = p$$inline_141[v23237]
                         }
                         v23180 = v23211 == 0
@@ -5152,7 +5152,7 @@ function pdfjsWrapper() {
             }
             if(v6747) {
               var v22482 = 0 + row$$inline_143;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v21261 = p$$inline_141[v22482]
               }
               t$$inline_140 = dctSqrt2 * v21261 + 512 >> 10;
@@ -5169,42 +5169,42 @@ function pdfjsWrapper() {
               continue
             }
             var v22483 = 0 + row$$inline_143;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21262 = p$$inline_141[v22483]
             }
             v0$$inline_132 = dctSqrt2 * v21262 + 128 >> 8;
             var v22484 = 4 + row$$inline_143;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21263 = p$$inline_141[v22484]
             }
             v1$$inline_133 = dctSqrt2 * v21263 + 128 >> 8;
             v2$$inline_134 = p$$inline_141[2 + row$$inline_143];
             v3$$inline_135 = p$$inline_141[6 + row$$inline_143];
             var v22956 = 1 + row$$inline_143;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22485 = p$$inline_141[v22956]
             }
             var v22957 = 7 + row$$inline_143;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22486 = p$$inline_141[v22957]
             }
             v4$$inline_136 = dctSqrt1d2 * (v22485 - v22486) + 128 >> 8;
             var v22958 = 1 + row$$inline_143;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22487 = p$$inline_141[v22958]
             }
             var v22959 = 7 + row$$inline_143;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22488 = p$$inline_141[v22959]
             }
             v7$$inline_139 = dctSqrt1d2 * (v22487 + v22488) + 128 >> 8;
             var v6753 = 3 + row$$inline_143;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v1150 = p$$inline_141[v6753]
             }
             v5$$inline_137 = v1150 << 4;
             var v6754 = 5 + row$$inline_143;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v1151 = p$$inline_141[v6754]
             }
             v6$$inline_138 = v1151 << 4;
@@ -5248,43 +5248,43 @@ function pdfjsWrapper() {
           for(;v1219;) {
             var col$$inline_144 = i$$inline_142;
             var v22489 = 1 * 8 + col$$inline_144;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21278 = p$$inline_141[v22489]
             }
             var v6771 = v21278 == 0;
             if(v6771) {
               var v22961 = 2 * 8 + col$$inline_144;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v22490 = p$$inline_141[v22961]
               }
               var v21279 = v22490 == 0;
               if(v21279) {
                 var v23119 = 3 * 8 + col$$inline_144;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v22962 = p$$inline_141[v23119]
                 }
                 var v22491 = v22962 == 0;
                 if(v22491) {
                   var v23182 = 4 * 8 + col$$inline_144;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v23120 = p$$inline_141[v23182]
                   }
                   var v22963 = v23120 == 0;
                   if(v22963) {
                     var v23213 = 5 * 8 + col$$inline_144;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v23183 = p$$inline_141[v23213]
                     }
                     var v23121 = v23183 == 0;
                     if(v23121) {
                       var v23239 = 6 * 8 + col$$inline_144;
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v23214 = p$$inline_141[v23239]
                       }
                       var v23184 = v23214 == 0;
                       if(v23184) {
                         var v23240 = 7 * 8 + col$$inline_144;
-                        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                        introspect(JAM.policy.p1) {
                           var v23215 = p$$inline_141[v23240]
                         }
                         v23184 = v23215 == 0
@@ -5301,7 +5301,7 @@ function pdfjsWrapper() {
             }
             if(v6771) {
               var v22492 = i$$inline_142 + 0;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v21280 = dataIn$$inline_130[v22492]
               }
               t$$inline_140 = dctSqrt2 * v21280 + 8192 >> 14;
@@ -5318,32 +5318,32 @@ function pdfjsWrapper() {
               continue
             }
             var v22493 = 0 * 8 + col$$inline_144;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21281 = p$$inline_141[v22493]
             }
             v0$$inline_132 = dctSqrt2 * v21281 + 2048 >> 12;
             var v22494 = 4 * 8 + col$$inline_144;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21282 = p$$inline_141[v22494]
             }
             v1$$inline_133 = dctSqrt2 * v21282 + 2048 >> 12;
             v2$$inline_134 = p$$inline_141[2 * 8 + col$$inline_144];
             v3$$inline_135 = p$$inline_141[6 * 8 + col$$inline_144];
             var v22966 = 1 * 8 + col$$inline_144;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22495 = p$$inline_141[v22966]
             }
             var v22967 = 7 * 8 + col$$inline_144;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22496 = p$$inline_141[v22967]
             }
             v4$$inline_136 = dctSqrt1d2 * (v22495 - v22496) + 2048 >> 12;
             var v22968 = 1 * 8 + col$$inline_144;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22497 = p$$inline_141[v22968]
             }
             var v22969 = 7 * 8 + col$$inline_144;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22498 = p$$inline_141[v22969]
             }
             v7$$inline_139 = dctSqrt1d2 * (v22497 + v22498) + 2048 >> 12;
@@ -5387,7 +5387,7 @@ function pdfjsWrapper() {
           i$$inline_142 = 0;
           var v1222 = i$$inline_142 < 64;
           for(;v1222;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21297 = p$$inline_141[i$$inline_142]
             }
             var sample$$inline_145 = 128 + (v21297 + 8 >> 4);
@@ -5413,7 +5413,7 @@ function pdfjsWrapper() {
           var v1226 = j$$56 < 8;
           for(;v1226;) {
             var v1223 = scanLine + j$$56;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var line = lines[v1223]
             }
             i$$167 = 0;
@@ -5450,7 +5450,7 @@ function pdfjsWrapper() {
     return constructor
   }
   function timeEnd(name$$69) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var time$$2 = consoleTimer[name$$69]
     }
     if(time$$2 == null) {
@@ -5516,7 +5516,7 @@ function pdfjsWrapper() {
       var ii$$66 = dependency$$3.length;
       var v1247 = i$$164 < ii$$66;
       for(;v1247;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var dep$$1 = dependency$$3[i$$164]
         }
         if(dep$$1.indexOf("font_") == 0) {
@@ -5572,7 +5572,7 @@ function pdfjsWrapper() {
   }
   function messageHandlerOn(actionName, handler$$9, scope) {
     var ah$$1 = this.actionHandler;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1269 = ah$$1[actionName]
     }
     if(v1269) {
@@ -5616,15 +5616,15 @@ function pdfjsWrapper() {
         }else {
           if(code$$23 >= 258) {
             if(code$$23 < nextCode) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 currentSequenceLength = dictionaryLengths[code$$23]
               }
               j$$53 = currentSequenceLength - 1;
               q = code$$23;
               var v1272 = j$$53 >= 0;
               for(;v1272;) {
-                JAM.set(currentSequence, j$$53, JAM.get(dictionaryValues, q, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                JAM.set(currentSequence, j$$53, JAM.get(dictionaryValues, q, JAM.policy.p1));
+                introspect(JAM.policy.p1) {
                   q = dictionaryPrevCodes[q]
                 }
                 j$$53 = j$$53 - 1;
@@ -5652,7 +5652,7 @@ function pdfjsWrapper() {
         }
         if(hasPrev) {
           JAM.set(dictionaryPrevCodes, nextCode, prevCode);
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v1278 = dictionaryLengths[prevCode]
           }
           JAM.set(dictionaryLengths, nextCode, v1278 + 1);
@@ -5681,7 +5681,7 @@ function pdfjsWrapper() {
         for(;v1284;) {
           var v1283 = currentBufferLength;
           currentBufferLength = currentBufferLength + 1;
-          JAM.set(buffer$$27, v1283, JAM.get(currentSequence, j$$53, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+          JAM.set(buffer$$27, v1283, JAM.get(currentSequence, j$$53, JAM.policy.p1));
           j$$53 = j$$53 + 1;
           v1284 = j$$53 < currentSequenceLength
         }
@@ -5772,7 +5772,7 @@ function pdfjsWrapper() {
           return 1
         }
         if(code$$22 >> 7 == 0) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             p$$7 = blackTable1[code$$22]
           }
         }else {
@@ -5818,7 +5818,7 @@ function pdfjsWrapper() {
           return 1
         }
         if(code$$21 >> 5 == 0) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             p$$6 = whiteTable1[code$$21]
           }
         }else {
@@ -5847,7 +5847,7 @@ function pdfjsWrapper() {
       var p$$5;
       if(this.eoblock) {
         code$$20 = JAM.call(this.lookBits, this, [7]);
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           p$$5 = twoDimTable[code$$20]
         }
         var v6861 = p$$5;
@@ -5889,7 +5889,7 @@ function pdfjsWrapper() {
         }
         if(v6864) {
           var v1336 = code$$19 - limitValue;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var p$$4 = table$$4[v1336]
           }
           if(p$$4[0] == i$$161) {
@@ -5922,14 +5922,14 @@ function pdfjsWrapper() {
         var code3;
         if(this.nextLine2D) {
           var i$$160 = 0;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6868 = codingLine$$2[i$$160]
           }
           var v1343 = v6868 < columns$$2;
           for(;v1343;) {
             refLine[i$$160] = codingLine$$2[i$$160];
             i$$160 = i$$160 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v6869 = codingLine$$2[i$$160]
             }
             v1343 = v6869 < columns$$2
@@ -5943,7 +5943,7 @@ function pdfjsWrapper() {
           refPos = 0;
           blackPixels$$2 = 0;
           var v21311 = this.codingPos;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6870 = codingLine$$2[v21311]
           }
           var v1380 = v6870 < columns$$2;
@@ -5952,12 +5952,12 @@ function pdfjsWrapper() {
             switch(code1$$2) {
               case twoDimPass:
                 var v6871 = refPos + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v1345 = refLine[v6871]
                 }
                 JAM.call(this.addPixels, this, [v1345, blackPixels$$2]);
                 var v21312 = refPos + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6872 = refLine[v21312]
                 }
                 if(v6872 < columns$$2) {
@@ -5990,31 +5990,31 @@ function pdfjsWrapper() {
                   }while(v1350)
                 }
                 var v21313 = this.codingPos;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6881 = codingLine$$2[v21313]
                 }
                 JAM.call(this.addPixels, this, [v6881 + code1$$2, blackPixels$$2]);
                 var v21314 = this.codingPos;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6882 = codingLine$$2[v21314]
                 }
                 if(v6882 < columns$$2) {
                   var v21315 = this.codingPos;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v6883 = codingLine$$2[v21315]
                   }
                   JAM.call(this.addPixels, this, [v6883 + code2$$2, blackPixels$$2 ^ 1])
                 }
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v21316 = refLine[refPos]
                 }
                 var v22502 = this.codingPos;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v21317 = codingLine$$2[v22502]
                 }
                 var v6884 = v21316 <= v21317;
                 if(v6884) {
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21318 = refLine[refPos]
                   }
                   v6884 = v21318 < columns$$2
@@ -6022,16 +6022,16 @@ function pdfjsWrapper() {
                 var v1355 = v6884;
                 for(;v1355;) {
                   refPos = refPos + 2;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21319 = refLine[refPos]
                   }
                   var v22503 = this.codingPos;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21320 = codingLine$$2[v22503]
                   }
                   var v6885 = v21319 <= v21320;
                   if(v6885) {
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21321 = refLine[refPos]
                     }
                     v6885 = v21321 < columns$$2
@@ -6040,27 +6040,27 @@ function pdfjsWrapper() {
                 }
                 break;
               case twoDimVertR3:
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6886 = refLine[refPos]
                 }
                 JAM.call(this.addPixels, this, [v6886 + 3, blackPixels$$2]);
                 blackPixels$$2 = blackPixels$$2 ^ 1;
                 var v21322 = this.codingPos;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6887 = codingLine$$2[v21322]
                 }
                 if(v6887 < columns$$2) {
                   refPos = refPos + 1;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21323 = refLine[refPos]
                   }
                   var v22504 = this.codingPos;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21324 = codingLine$$2[v22504]
                   }
                   var v6888 = v21323 <= v21324;
                   if(v6888) {
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21325 = refLine[refPos]
                     }
                     v6888 = v21325 < columns$$2
@@ -6068,16 +6068,16 @@ function pdfjsWrapper() {
                   var v1357 = v6888;
                   for(;v1357;) {
                     refPos = refPos + 2;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21326 = refLine[refPos]
                     }
                     var v22505 = this.codingPos;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21327 = codingLine$$2[v22505]
                     }
                     var v6889 = v21326 <= v21327;
                     if(v6889) {
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v21328 = refLine[refPos]
                       }
                       v6889 = v21328 < columns$$2
@@ -6087,27 +6087,27 @@ function pdfjsWrapper() {
                 }
                 break;
               case twoDimVertR2:
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6890 = refLine[refPos]
                 }
                 JAM.call(this.addPixels, this, [v6890 + 2, blackPixels$$2]);
                 blackPixels$$2 = blackPixels$$2 ^ 1;
                 var v21329 = this.codingPos;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6891 = codingLine$$2[v21329]
                 }
                 if(v6891 < columns$$2) {
                   refPos = refPos + 1;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21330 = refLine[refPos]
                   }
                   var v22506 = this.codingPos;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21331 = codingLine$$2[v22506]
                   }
                   var v6892 = v21330 <= v21331;
                   if(v6892) {
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21332 = refLine[refPos]
                     }
                     v6892 = v21332 < columns$$2
@@ -6115,16 +6115,16 @@ function pdfjsWrapper() {
                   var v1360 = v6892;
                   for(;v1360;) {
                     refPos = refPos + 2;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21333 = refLine[refPos]
                     }
                     var v22507 = this.codingPos;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21334 = codingLine$$2[v22507]
                     }
                     var v6893 = v21333 <= v21334;
                     if(v6893) {
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v21335 = refLine[refPos]
                       }
                       v6893 = v21335 < columns$$2
@@ -6134,27 +6134,27 @@ function pdfjsWrapper() {
                 }
                 break;
               case twoDimVertR1:
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6894 = refLine[refPos]
                 }
                 JAM.call(this.addPixels, this, [v6894 + 1, blackPixels$$2]);
                 blackPixels$$2 = blackPixels$$2 ^ 1;
                 var v21336 = this.codingPos;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6895 = codingLine$$2[v21336]
                 }
                 if(v6895 < columns$$2) {
                   refPos = refPos + 1;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21337 = refLine[refPos]
                   }
                   var v22508 = this.codingPos;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21338 = codingLine$$2[v22508]
                   }
                   var v6896 = v21337 <= v21338;
                   if(v6896) {
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21339 = refLine[refPos]
                     }
                     v6896 = v21339 < columns$$2
@@ -6162,16 +6162,16 @@ function pdfjsWrapper() {
                   var v1363 = v6896;
                   for(;v1363;) {
                     refPos = refPos + 2;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21340 = refLine[refPos]
                     }
                     var v22509 = this.codingPos;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21341 = codingLine$$2[v22509]
                     }
                     var v6897 = v21340 <= v21341;
                     if(v6897) {
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v21342 = refLine[refPos]
                       }
                       v6897 = v21342 < columns$$2
@@ -6181,27 +6181,27 @@ function pdfjsWrapper() {
                 }
                 break;
               case twoDimVert0:
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v1365 = refLine[refPos]
                 }
                 JAM.call(this.addPixels, this, [v1365, blackPixels$$2]);
                 blackPixels$$2 = blackPixels$$2 ^ 1;
                 var v21343 = this.codingPos;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6898 = codingLine$$2[v21343]
                 }
                 if(v6898 < columns$$2) {
                   refPos = refPos + 1;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21344 = refLine[refPos]
                   }
                   var v22510 = this.codingPos;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21345 = codingLine$$2[v22510]
                   }
                   var v6899 = v21344 <= v21345;
                   if(v6899) {
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21346 = refLine[refPos]
                     }
                     v6899 = v21346 < columns$$2
@@ -6209,16 +6209,16 @@ function pdfjsWrapper() {
                   var v1366 = v6899;
                   for(;v1366;) {
                     refPos = refPos + 2;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21347 = refLine[refPos]
                     }
                     var v22511 = this.codingPos;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21348 = codingLine$$2[v22511]
                     }
                     var v6900 = v21347 <= v21348;
                     if(v6900) {
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v21349 = refLine[refPos]
                       }
                       v6900 = v21349 < columns$$2
@@ -6228,13 +6228,13 @@ function pdfjsWrapper() {
                 }
                 break;
               case twoDimVertL3:
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6901 = refLine[refPos]
                 }
                 JAM.call(this.addPixelsNeg, this, [v6901 - 3, blackPixels$$2]);
                 blackPixels$$2 = blackPixels$$2 ^ 1;
                 var v21350 = this.codingPos;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6902 = codingLine$$2[v21350]
                 }
                 if(v6902 < columns$$2) {
@@ -6243,16 +6243,16 @@ function pdfjsWrapper() {
                   }else {
                     refPos = refPos + 1
                   }
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21351 = refLine[refPos]
                   }
                   var v22512 = this.codingPos;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21352 = codingLine$$2[v22512]
                   }
                   var v6903 = v21351 <= v21352;
                   if(v6903) {
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21353 = refLine[refPos]
                     }
                     v6903 = v21353 < columns$$2
@@ -6260,16 +6260,16 @@ function pdfjsWrapper() {
                   var v1370 = v6903;
                   for(;v1370;) {
                     refPos = refPos + 2;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21354 = refLine[refPos]
                     }
                     var v22513 = this.codingPos;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21355 = codingLine$$2[v22513]
                     }
                     var v6904 = v21354 <= v21355;
                     if(v6904) {
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v21356 = refLine[refPos]
                       }
                       v6904 = v21356 < columns$$2
@@ -6279,13 +6279,13 @@ function pdfjsWrapper() {
                 }
                 break;
               case twoDimVertL2:
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6905 = refLine[refPos]
                 }
                 JAM.call(this.addPixelsNeg, this, [v6905 - 2, blackPixels$$2]);
                 blackPixels$$2 = blackPixels$$2 ^ 1;
                 var v21357 = this.codingPos;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6906 = codingLine$$2[v21357]
                 }
                 if(v6906 < columns$$2) {
@@ -6294,16 +6294,16 @@ function pdfjsWrapper() {
                   }else {
                     refPos = refPos + 1
                   }
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21358 = refLine[refPos]
                   }
                   var v22514 = this.codingPos;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21359 = codingLine$$2[v22514]
                   }
                   var v6907 = v21358 <= v21359;
                   if(v6907) {
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21360 = refLine[refPos]
                     }
                     v6907 = v21360 < columns$$2
@@ -6311,16 +6311,16 @@ function pdfjsWrapper() {
                   var v1374 = v6907;
                   for(;v1374;) {
                     refPos = refPos + 2;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21361 = refLine[refPos]
                     }
                     var v22515 = this.codingPos;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21362 = codingLine$$2[v22515]
                     }
                     var v6908 = v21361 <= v21362;
                     if(v6908) {
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v21363 = refLine[refPos]
                       }
                       v6908 = v21363 < columns$$2
@@ -6330,13 +6330,13 @@ function pdfjsWrapper() {
                 }
                 break;
               case twoDimVertL1:
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6909 = refLine[refPos]
                 }
                 JAM.call(this.addPixelsNeg, this, [v6909 - 1, blackPixels$$2]);
                 blackPixels$$2 = blackPixels$$2 ^ 1;
                 var v21364 = this.codingPos;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v6910 = codingLine$$2[v21364]
                 }
                 if(v6910 < columns$$2) {
@@ -6345,16 +6345,16 @@ function pdfjsWrapper() {
                   }else {
                     refPos = refPos + 1
                   }
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21365 = refLine[refPos]
                   }
                   var v22516 = this.codingPos;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21366 = codingLine$$2[v22516]
                   }
                   var v6911 = v21365 <= v21366;
                   if(v6911) {
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21367 = refLine[refPos]
                     }
                     v6911 = v21367 < columns$$2
@@ -6362,16 +6362,16 @@ function pdfjsWrapper() {
                   var v1378 = v6911;
                   for(;v1378;) {
                     refPos = refPos + 2;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21368 = refLine[refPos]
                     }
                     var v22517 = this.codingPos;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v21369 = codingLine$$2[v22517]
                     }
                     var v6912 = v21368 <= v21369;
                     if(v6912) {
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v21370 = refLine[refPos]
                       }
                       v6912 = v21370 < columns$$2
@@ -6390,7 +6390,7 @@ function pdfjsWrapper() {
                 this.err = true
             }
             var v21371 = this.codingPos;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v6913 = codingLine$$2[v21371]
             }
             v1380 = v6913 < columns$$2
@@ -6400,7 +6400,7 @@ function pdfjsWrapper() {
           this.codingPos = 0;
           blackPixels$$2 = 0;
           var v21372 = this.codingPos;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6914 = codingLine$$2[v21372]
           }
           var v1384 = v6914 < columns$$2;
@@ -6420,13 +6420,13 @@ function pdfjsWrapper() {
               }while(v1382)
             }
             var v21373 = this.codingPos;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v6919 = codingLine$$2[v21373]
             }
             JAM.call(this.addPixels, this, [v6919 + code1$$2, blackPixels$$2]);
             blackPixels$$2 = blackPixels$$2 ^ 1;
             var v21374 = this.codingPos;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v6920 = codingLine$$2[v21374]
             }
             v1384 = v6920 < columns$$2
@@ -6541,7 +6541,7 @@ function pdfjsWrapper() {
         var v6937 = this.outputBits == 0;
         if(v6937) {
           var v22519 = this.codingPos;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21382 = codingLine$$2[v22519]
           }
           v6937 = v21382 < columns$$2
@@ -6549,11 +6549,11 @@ function pdfjsWrapper() {
         if(v6937) {
           this.codingPos = this.codingPos + 1;
           var v6939 = this.codingPos;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v1411 = codingLine$$2[v6939]
           }
           var v6940 = this.codingPos - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v1412 = codingLine$$2[v6940]
           }
           this.outputBits = v1411 - v1412
@@ -6577,17 +6577,17 @@ function pdfjsWrapper() {
             bits$$9 = bits$$9 - this.outputBits;
             this.outputBits = 0;
             var v21388 = this.codingPos;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v6953 = codingLine$$2[v21388]
             }
             if(v6953 < columns$$2) {
               this.codingPos = this.codingPos + 1;
               var v6955 = this.codingPos;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v1416 = codingLine$$2[v6955]
               }
               var v6956 = this.codingPos - 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v1417 = codingLine$$2[v6956]
               }
               this.outputBits = v1416 - v1417
@@ -6608,7 +6608,7 @@ function pdfjsWrapper() {
     function ccittFaxStreamAddPixelsNeg(a1$$1, blackPixels$$1) {
       var codingLine$$1 = this.codingLine;
       var codingPos$$1 = this.codingPos;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v6959 = codingLine$$1[codingPos$$1]
       }
       if(a1$$1 > v6959) {
@@ -6622,7 +6622,7 @@ function pdfjsWrapper() {
         }
         JAM.set(codingLine$$1, codingPos$$1, a1$$1)
       }else {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6962 = codingLine$$1[codingPos$$1]
         }
         if(a1$$1 < v6962) {
@@ -6634,7 +6634,7 @@ function pdfjsWrapper() {
           var v6963 = codingPos$$1 > 0;
           if(v6963) {
             var v22521 = codingPos$$1 - 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21390 = codingLine$$1[v22521]
             }
             v6963 = a1$$1 < v21390
@@ -6645,7 +6645,7 @@ function pdfjsWrapper() {
             var v6964 = codingPos$$1 > 0;
             if(v6964) {
               var v22522 = codingPos$$1 - 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v21391 = codingLine$$1[v22522]
               }
               v6964 = a1$$1 < v21391
@@ -6661,7 +6661,7 @@ function pdfjsWrapper() {
     function ccittFaxStreamAddPixels(a1, blackPixels) {
       var codingLine = this.codingLine;
       var codingPos = this.codingPos;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v6965 = codingLine[codingPos]
       }
       if(a1 > v6965) {
@@ -7401,10 +7401,10 @@ function pdfjsWrapper() {
       length$$66 = bytes$$21.length;
       var v2542 = i$$158 < length$$66;
       for(;v2542;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v2534 = bytes$$21[i$$158]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           c$$22 = hexvalueMap[v2534]
         }
         var v6990 = c$$22 == -1;
@@ -7414,10 +7414,10 @@ function pdfjsWrapper() {
         var v2536 = v6990;
         for(;v2536;) {
           var v6991 = i$$158 = i$$158 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v2535 = bytes$$21[v6991]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             c$$22 = hexvalueMap[v2535]
           }
           var v6992 = c$$22 == -1;
@@ -7429,24 +7429,24 @@ function pdfjsWrapper() {
         var v6993 = i$$158 + 1 < length$$66;
         if(v6993) {
           var v22526 = i$$158 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21398 = bytes$$21[v22526]
           }
           v6993 = v21398 !== gtCode
         }
         if(v6993) {
           var v6994 = i$$158 = i$$158 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v2537 = bytes$$21[v6994]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             n$$34 = hexvalueMap[v2537]
           }
           var v2538 = bufferLength$$10;
           bufferLength$$10 = bufferLength$$10 + 1;
           JAM.set(buffer$$25, v2538, c$$22 * 16 + n$$34)
         }else {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v6996 = bytes$$21[i$$158]
           }
           if(v6996 !== gtCode) {
@@ -7545,7 +7545,7 @@ function pdfjsWrapper() {
         var v2558 = i$$157 < 5;
         for(;v2558;) {
           var v2556 = t$$4 * 85;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7008 = input$$7[i$$157]
           }
           t$$4 = v2556 + (v7008 - 33);
@@ -7600,7 +7600,7 @@ function pdfjsWrapper() {
       for(;v2568;) {
         var v2567 = bufferLength$$8;
         bufferLength$$8 = bufferLength$$8 + 1;
-        JAM.set(buffer$$23, v2567, JAM.get(chunk$$1, i$$156, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+        JAM.set(buffer$$23, v2567, JAM.get(chunk$$1, i$$156, JAM.policy.p1));
         i$$156 = i$$156 + 1;
         v2568 = i$$156 < n$$33
       }
@@ -7652,7 +7652,7 @@ function pdfjsWrapper() {
       var v2609 = k$$13 < kk$$3;
       for(;v2609;) {
         var v2577 = jpxImage.tiles;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var tileCompoments = v2577[k$$13]
         }
         var tileWidth = tileCompoments[0].width;
@@ -7706,17 +7706,17 @@ function pdfjsWrapper() {
               for(;v2595;) {
                 var v2592 = dataPosition;
                 dataPosition = dataPosition + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   data$$85[v2592] = data0[sourcePosition]
                 }
                 var v2593 = dataPosition;
                 dataPosition = dataPosition + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   data$$85[v2593] = data1[sourcePosition]
                 }
                 var v2594 = dataPosition;
                 dataPosition = dataPosition + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   data$$85[v2594] = data2[sourcePosition]
                 }
                 sourcePosition = sourcePosition + 1;
@@ -7744,22 +7744,22 @@ function pdfjsWrapper() {
               for(;v2607;) {
                 var v2603 = dataPosition;
                 dataPosition = dataPosition + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   data$$85[v2603] = data0[sourcePosition]
                 }
                 var v2604 = dataPosition;
                 dataPosition = dataPosition + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   data$$85[v2604] = data1[sourcePosition]
                 }
                 var v2605 = dataPosition;
                 dataPosition = dataPosition + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   data$$85[v2605] = data2[sourcePosition]
                 }
                 var v2606 = dataPosition;
                 dataPosition = dataPosition + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   data$$85[v2606] = data3[sourcePosition]
                 }
                 sourcePosition = sourcePosition + 1;
@@ -7870,61 +7870,61 @@ function pdfjsWrapper() {
         var i$$inline_122 = 0;
         var v2627 = i$$inline_122 < maxBytesScanned$$inline_121;
         for(;v2627;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21410 = bytes$$inline_120[i$$inline_122]
           }
           var v7027 = v21410 == 255;
           if(v7027) {
             var v22971 = i$$inline_122 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22529 = bytes$$inline_120[v22971]
             }
             var v21411 = v22529 == 238;
             if(v21411) {
               var v23127 = i$$inline_122 + 2;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v22972 = bytes$$inline_120[v23127]
               }
               var v22530 = v22972 == 0;
               if(v22530) {
                 var v23185 = i$$inline_122 + 3;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v23128 = bytes$$inline_120[v23185]
                 }
                 var v22973 = v23128 == 14;
                 if(v22973) {
                   var v23216 = i$$inline_122 + 4;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v23186 = bytes$$inline_120[v23216]
                   }
                   var v23129 = v23186 == 65;
                   if(v23129) {
                     var v23241 = i$$inline_122 + 5;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v23217 = bytes$$inline_120[v23241]
                     }
                     var v23187 = v23217 == 100;
                     if(v23187) {
                       var v23258 = i$$inline_122 + 6;
-                      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                      introspect(JAM.policy.p1) {
                         var v23242 = bytes$$inline_120[v23258]
                       }
                       var v23218 = v23242 == 111;
                       if(v23218) {
                         var v23270 = i$$inline_122 + 7;
-                        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                        introspect(JAM.policy.p1) {
                           var v23259 = bytes$$inline_120[v23270]
                         }
                         var v23243 = v23259 == 98;
                         if(v23243) {
                           var v23282 = i$$inline_122 + 8;
-                          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                          introspect(JAM.policy.p1) {
                             var v23271 = bytes$$inline_120[v23282]
                           }
                           var v23260 = v23271 == 101;
                           if(v23260) {
                             var v23283 = i$$inline_122 + 9;
-                            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                            introspect(JAM.policy.p1) {
                               var v23272 = bytes$$inline_120[v23283]
                             }
                             v23260 = v23272 == 0
@@ -7949,13 +7949,13 @@ function pdfjsWrapper() {
             JSCompiler_inline_result$$9 = true;
             break JSCompiler_inline_label_isAdobeImage_123
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21412 = bytes$$inline_120[i$$inline_122]
           }
           var v7028 = v21412 == 255;
           if(v7028) {
             var v22531 = i$$inline_122 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21413 = bytes$$inline_120[v22531]
             }
             v7028 = v21413 == 192
@@ -8032,10 +8032,10 @@ function pdfjsWrapper() {
           var v2647 = i$$153 < rowBytes$$3;
           for(;v2647;) {
             var v21414 = j$$51 - pixBytes;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7033 = buffer$$22[v21414]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7034 = rawBytes$$1[i$$153]
             }
             JAM.set(buffer$$22, j$$51, v7033 + v7034 & 255);
@@ -8050,10 +8050,10 @@ function pdfjsWrapper() {
           for(;v2649;) {
             var v2648 = j$$51;
             j$$51 = j$$51 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21415 = prevRow[i$$153]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21416 = rawBytes$$1[i$$153]
             }
             JAM.set(buffer$$22, v2648, v21415 + v21416 & 255);
@@ -8067,11 +8067,11 @@ function pdfjsWrapper() {
           for(;v2651;) {
             var v2650 = j$$51;
             j$$51 = j$$51 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21417 = prevRow[i$$153]
             }
             var v7036 = v21417 >> 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7037 = rawBytes$$1[i$$153]
             }
             JAM.set(buffer$$22, v2650, v7036 + v7037);
@@ -8080,15 +8080,15 @@ function pdfjsWrapper() {
           }
           var v2653 = i$$153 < rowBytes$$3;
           for(;v2653;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22532 = prevRow[i$$153]
             }
             var v22974 = j$$51 - pixBytes;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22533 = buffer$$22[v22974]
             }
             var v7038 = v22532 + v22533 >> 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7039 = rawBytes$$1[i$$153]
             }
             JAM.set(buffer$$22, j$$51, v7038 + v7039 & 255);
@@ -8101,10 +8101,10 @@ function pdfjsWrapper() {
           i$$153 = 0;
           var v2655 = i$$153 < pixBytes;
           for(;v2655;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var up$$1 = prevRow[i$$153]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var c$$20 = rawBytes$$1[i$$153]
             }
             var v2654 = j$$51;
@@ -8117,11 +8117,11 @@ function pdfjsWrapper() {
           for(;v2667;) {
             up$$1 = prevRow[i$$153];
             var v2656 = i$$153 - pixBytes;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var upLeft = prevRow[v2656]
             }
             var v2657 = j$$51 - pixBytes;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var left$$3 = buffer$$22[v2657]
             }
             var p$$3 = left$$3 + up$$1 - upLeft;
@@ -8184,7 +8184,7 @@ function pdfjsWrapper() {
         var i$$152 = 0;
         var v2673 = i$$152 < rowBytes$$2;
         for(;v2673;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var c$$19 = rawBytes[i$$152]
           }
           inbuf = inbuf << 8 | c$$19;
@@ -8209,10 +8209,10 @@ function pdfjsWrapper() {
           var v2678 = i$$152 < rowBytes$$2;
           for(;v2678;) {
             var v7043 = pos$$18 - colors$$1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v2676 = buffer$$21[v7043]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v2677 = rawBytes[i$$152]
             }
             JAM.set(buffer$$21, pos$$18, v2676 + v2677);
@@ -8236,19 +8236,19 @@ function pdfjsWrapper() {
                 var v2681 = inbuf << 8;
                 var v21420 = j$$50;
                 j$$50 = j$$50 + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v7044 = rawBytes[v21420]
                 }
                 inbuf = v2681 | v7044 & 255;
                 inbits = inbits + 8
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v7045 = compArray[kk$$2]
               }
               compArray[kk$$2] = v7045 + (inbuf >> inbits - bits$$8) & bitMask;
               inbits = inbits - bits$$8;
               var v2685 = outbuf << bits$$8;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v2686 = compArray[kk$$2]
               }
               outbuf = v2685 | v2686;
@@ -8342,7 +8342,7 @@ function pdfjsWrapper() {
         var b$$27;
         var v22536 = bytesPos$$3;
         bytesPos$$3 = bytesPos$$3 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21427 = b$$27 = bytes$$16[v22536]
         }
         if(typeof v21427 == "undefined") {
@@ -8351,7 +8351,7 @@ function pdfjsWrapper() {
         var blockLen = b$$27;
         var v22537 = bytesPos$$3;
         bytesPos$$3 = bytesPos$$3 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21428 = b$$27 = bytes$$16[v22537]
         }
         if(typeof v21428 == "undefined") {
@@ -8360,7 +8360,7 @@ function pdfjsWrapper() {
         blockLen = blockLen | b$$27 << 8;
         var v22538 = bytesPos$$3;
         bytesPos$$3 = bytesPos$$3 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21429 = b$$27 = bytes$$16[v22538]
         }
         if(typeof v21429 == "undefined") {
@@ -8369,7 +8369,7 @@ function pdfjsWrapper() {
         var check = b$$27;
         var v22539 = bytesPos$$3;
         bytesPos$$3 = bytesPos$$3 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21430 = b$$27 = bytes$$16[v22539]
         }
         if(typeof v21430 == "undefined") {
@@ -8390,7 +8390,7 @@ function pdfjsWrapper() {
         for(;v2716;) {
           var v22540 = bytesPos$$3;
           bytesPos$$3 = bytesPos$$3 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21432 = b$$27 = bytes$$16[v22540]
           }
           if(typeof v21432 == "undefined") {
@@ -8419,7 +8419,7 @@ function pdfjsWrapper() {
           var v2724 = i$$151 < numCodeLenCodes;
           for(;v2724;) {
             var v2722 = codeLenCodeLengths;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v2723 = codeLenCodeMap[i$$151]
             }
             var v23435 = JAM.call(this.getBits, this, [3]);
@@ -8504,7 +8504,7 @@ function pdfjsWrapper() {
           return
         }
         code1 = code1 - 257;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           code1 = lengthDecode[code1]
         }
         var code2$$1 = code1 >> 16;
@@ -8513,7 +8513,7 @@ function pdfjsWrapper() {
         }
         len$$2 = (code1 & 65535) + code2$$1;
         code1 = JAM.call(this.getCode, this, [distCodeTable]);
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           code1 = distDecode[code1]
         }
         code2$$1 = code1 >> 16;
@@ -8542,7 +8542,7 @@ function pdfjsWrapper() {
       var i$$150 = 0;
       var v2752 = i$$150 < n$$31;
       for(;v2752;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7071 = lengths[i$$150]
         }
         if(v7071 > maxLen$$1) {
@@ -8561,7 +8561,7 @@ function pdfjsWrapper() {
         var val = 0;
         var v2759 = val < n$$31;
         for(;v2759;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7072 = lengths[val]
           }
           if(v7072 == len$$1) {
@@ -8606,7 +8606,7 @@ function pdfjsWrapper() {
         var b$$26;
         var v22541 = bytesPos$$2;
         bytesPos$$2 = bytesPos$$2 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21433 = b$$26 = bytes$$15[v22541]
         }
         if(typeof v21433 == "undefined") {
@@ -8617,7 +8617,7 @@ function pdfjsWrapper() {
         v2762 = codeSize$$2 < maxLen
       }
       var v2763 = codeBuf$$2 & (1 << maxLen) - 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var code$$16 = codes$$2[v2763]
       }
       var codeLen = code$$16 >> 16;
@@ -8648,7 +8648,7 @@ function pdfjsWrapper() {
       for(;v2766;) {
         var v22543 = bytesPos$$1;
         bytesPos$$1 = bytesPos$$1 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21437 = b$$25 = bytes$$14[v22543]
         }
         if(typeof v21437 == "undefined") {
@@ -8670,12 +8670,12 @@ function pdfjsWrapper() {
       this.dict = stream$$34.dict;
       var v2768 = bytesPos;
       bytesPos = bytesPos + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var cmf = bytes$$13[v2768]
       }
       var v2769 = bytesPos;
       bytesPos = bytesPos + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var flg = bytes$$13[v2769]
       }
       var v7080 = cmf == -1;
@@ -8843,7 +8843,7 @@ function pdfjsWrapper() {
       var v7100 = this.buffer;
       var v7101 = this.pos;
       this.pos = this.pos + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v2804 = v7100[v7101]
       }
       return String.fromCharCode(v2804)
@@ -8860,7 +8860,7 @@ function pdfjsWrapper() {
       }
       var v7104 = this.buffer;
       var v7105 = this.pos;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v2807 = v7104[v7105]
       }
       return String.fromCharCode(v2807)
@@ -8916,7 +8916,7 @@ function pdfjsWrapper() {
       var v2816 = this.buffer;
       var v2817 = this.pos;
       this.pos = this.pos + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         return v2816[v2817]
       }
     }
@@ -9004,7 +9004,7 @@ function pdfjsWrapper() {
       var v7116 = this.bytes;
       var v7117 = this.pos;
       this.pos = this.pos + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v2828 = v7116[v7117]
       }
       return String.fromCharCode(v2828)
@@ -9015,7 +9015,7 @@ function pdfjsWrapper() {
       }
       var v7120 = this.bytes;
       var v7121 = this.pos;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v2830 = v7120[v7121]
       }
       return String.fromCharCode(v2830)
@@ -9041,7 +9041,7 @@ function pdfjsWrapper() {
       var v2834 = this.bytes;
       var v2835 = this.pos;
       this.pos = this.pos + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         return v2834[v2835]
       }
     }
@@ -9235,7 +9235,7 @@ function pdfjsWrapper() {
         var ii$$65 = colorStops$$1.length;
         var v2889 = i$$148 < ii$$65;
         for(;v2889;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var c$$18 = colorStops$$1[i$$148]
           }
           grad.addColorStop(c$$18[0], c$$18[1]);
@@ -9350,7 +9350,7 @@ function pdfjsWrapper() {
     }
     function Pattern_shadingFromIR(raw$$7) {
       var v7139 = raw$$7[0];
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v2907 = Shadings[v7139]
       }
       return JAM.call(v2907.fromIR, v2907, [raw$$7])
@@ -9379,7 +9379,7 @@ function pdfjsWrapper() {
         if(v21466) {
           var v22549 = obj1$$2.length >= 2;
           if(v22549) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v23130 = obj2$$2 = obj1$$2[index$$60]
             }
             var v22977 = isInt(v23130);
@@ -9542,7 +9542,7 @@ function pdfjsWrapper() {
           }else {
             var v21493 = specialChars;
             var v21494 = ch$$12.charCodeAt(0);
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7160 = v21493[v21494]
             }
             if(v7160 != 1) {
@@ -9612,7 +9612,7 @@ function pdfjsWrapper() {
       if(v7161) {
         var v22553 = specialChars;
         var v22554 = ch$$12.charCodeAt(0);
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21496 = v22553[v22554]
         }
         v7161 = !v21496
@@ -9628,7 +9628,7 @@ function pdfjsWrapper() {
         if(v7164) {
           var v22556 = specialChars;
           var v22557 = ch$$12.charCodeAt(0);
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21498 = v22556[v22557]
           }
           v7164 = !v21498
@@ -9660,7 +9660,7 @@ function pdfjsWrapper() {
         }
         var v21499 = specialChars;
         var v21500 = ch$$11.charCodeAt(0);
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7165 = v21499[v21500]
         }
         if(v7165 != 1) {
@@ -9672,7 +9672,7 @@ function pdfjsWrapper() {
           ch$$11 = stream$$28.getChar();
           var v21501 = specialChars;
           var v21502 = ch$$11.charCodeAt(0);
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7167 = v21501[v21502]
           }
           var v2944 = v7167 == 1;
@@ -9680,7 +9680,7 @@ function pdfjsWrapper() {
             ch$$11 = stream$$28.getChar();
             var v21503 = specialChars;
             var v21504 = ch$$11.charCodeAt(0);
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7168 = v21503[v21504]
             }
             v2944 = v7168 == 1
@@ -9700,7 +9700,7 @@ function pdfjsWrapper() {
       if(v7172) {
         var v22560 = specialChars;
         var v22561 = ch$$10.charCodeAt(0);
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21507 = v22560[v22561]
         }
         v7172 = !v21507
@@ -9729,7 +9729,7 @@ function pdfjsWrapper() {
         if(v7175) {
           var v22564 = specialChars;
           var v22565 = ch$$10.charCodeAt(0);
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21510 = v22564[v22565]
           }
           v7175 = !v21510
@@ -10314,7 +10314,7 @@ function pdfjsWrapper() {
       var i$$145 = 0;
       var v3050 = i$$145 < length$$53;
       for(;v3050;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7236 = comps$$1[i$$145]
         }
         buffer$$16[i$$145] = scale$$10 * v7236 | 0;
@@ -10477,14 +10477,14 @@ function pdfjsWrapper() {
         var v3082 = i$$141 < ii$$62;
         for(;v3082;) {
           var compIndex = i$$141 % numComps$$7;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var value$$67 = buffer$$13[i$$141]
           }
           var value$$inline_107 = value$$67;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3079 = decodeAddends[compIndex]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7247 = decodeCoefficients[compIndex]
           }
           value$$inline_107 = v3079 + value$$inline_107 * v7247;
@@ -10569,7 +10569,7 @@ function pdfjsWrapper() {
               var v3091 = buf$$2 << 8;
               var v7255 = bufferPos$$1;
               bufferPos$$1 = bufferPos$$1 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v3092 = buffer$$13[v7255]
               }
               buf$$2 = v3091 | v3092;
@@ -10581,10 +10581,10 @@ function pdfjsWrapper() {
             if(needsDecode) {
               compIndex = i$$141 % numComps$$7;
               var value$$inline_112 = value$$67;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v3094 = decodeAddends[compIndex]
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v7256 = decodeCoefficients[compIndex]
               }
               value$$inline_112 = v3094 + value$$inline_112 * v7256;
@@ -10644,12 +10644,12 @@ function pdfjsWrapper() {
           newIndex = i$$140 * w2 + j$$48;
           oldIndex = py * w1 + px;
           if(components$$1 === 1) {
-            JAM.set(temp, newIndex, JAM.get(pixels$$3, oldIndex, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074))
+            JAM.set(temp, newIndex, JAM.get(pixels$$3, oldIndex, JAM.policy.p1))
           }else {
             if(components$$1 === 3) {
               newIndex = newIndex * 3;
               oldIndex = oldIndex * 3;
-              JAM.set(temp, newIndex, JAM.get(pixels$$3, oldIndex, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+              JAM.set(temp, newIndex, JAM.get(pixels$$3, oldIndex, JAM.policy.p1));
               temp[newIndex + 1] = pixels$$3[oldIndex + 1];
               temp[newIndex + 2] = pixels$$3[oldIndex + 2]
             }
@@ -10777,12 +10777,12 @@ function pdfjsWrapper() {
         var v3137 = i$$139 < this.decode.length;
         for(;v3137;) {
           var v3132 = this.decode;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var dmin$$1 = v3132[i$$139]
           }
           var v3133 = this.decode;
           var v3134 = i$$139 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var dmax$$1 = v3133[v3134]
           }
           this.decodeCoefficients[j$$47] = dmax$$1 - dmin$$1;
@@ -10836,7 +10836,7 @@ function pdfjsWrapper() {
       var i$$138 = 0;
       var v3149 = i$$138 < count$$20;
       for(;v3149;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21562 = objects$$1[i$$138]
         }
         lastOffset$$1 = lastOffset$$1 + v21562.length;
@@ -10875,11 +10875,11 @@ function pdfjsWrapper() {
             }
           }
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v3166 = objects$$1[i$$138]
         }
         if(v3166) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21563 = objects$$1[i$$138]
           }
           relativeOffset$$2 = relativeOffset$$2 + v21563.length
@@ -10891,26 +10891,26 @@ function pdfjsWrapper() {
       i$$138 = 0;
       var v3174 = i$$138 < count$$20;
       for(;v3174;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v3170 = trackers$$1[i$$138]
         }
         if(v3170) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3168 = trackers$$1[i$$138]
           }
           JAM.call(v3168.offset, v3168, [data$$82.length])
         }
         var j$$46 = 0;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v3171 = objects$$1[i$$138]
         }
         var jj$$12 = v3171.length;
         var v3173 = j$$46 < jj$$12;
         for(;v3173;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7294 = objects$$1[i$$138]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3172 = v7294[j$$46]
           }
           JAM.call(data$$82.push, data$$82, [v3172]);
@@ -10958,7 +10958,7 @@ function pdfjsWrapper() {
       var ii$$60 = strings$$10.length;
       var v3182 = i$$136 < ii$$60;
       for(;v3182;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7295 = strings$$10[i$$136]
         }
         JAM.call(stringIndex$$2.add, stringIndex$$2, [stringToArray$$1(v7295)]);
@@ -10973,7 +10973,7 @@ function pdfjsWrapper() {
       var i$$135 = 0;
       var v3200 = i$$135 < order$$1.length;
       for(;v3200;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var key$$45 = order$$1[i$$135]
         }
         if(!(key$$45 in dict$$20.values)) {
@@ -10982,11 +10982,11 @@ function pdfjsWrapper() {
           continue
         }
         var v3184 = dict$$20.values;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var values$$5 = v3184[key$$45]
         }
         var v3185 = dict$$20.types;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var types$$2 = v3185[key$$45]
         }
         if(!isArray(types$$2)) {
@@ -11004,10 +11004,10 @@ function pdfjsWrapper() {
         var jj$$11 = types$$2.length;
         var v3198 = j$$45 < jj$$11;
         for(;v3198;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var type$$41 = types$$2[j$$45]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var value$$65 = values$$5[j$$45]
           }
           switch(type$$41) {
@@ -11018,7 +11018,7 @@ function pdfjsWrapper() {
               break;
             case "offset":
               var v3190 = dict$$20.keyToNameMap;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var name$$65 = v3190[key$$45]
               }
               if(!JAM.call(offsetTracker.isTracking, offsetTracker, [name$$65])) {
@@ -11034,7 +11034,7 @@ function pdfjsWrapper() {
               var kk$$1 = values$$5.length;
               var v3196 = k$$10 < kk$$1;
               for(;v3196;) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v7304 = values$$5[k$$10]
                 }
                 out$$5 = out$$5.concat(JAM.call(this.encodeNumber, this, [v7304]));
@@ -11049,7 +11049,7 @@ function pdfjsWrapper() {
           v3198 = j$$45 < jj$$11
         }
         var v7305 = dict$$20.opcodes;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v3199 = v7305[key$$45]
         }
         out$$5 = out$$5.concat(v3199);
@@ -11063,7 +11063,7 @@ function pdfjsWrapper() {
       var ii$$59 = dicts$$1.length;
       var v3208 = i$$134 < ii$$59;
       for(;v3208;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var fontDict$$2 = dicts$$1[i$$134]
         }
         var v7307 = !fontDict$$2.privateDict;
@@ -11079,7 +11079,7 @@ function pdfjsWrapper() {
         var privateDictTracker = new CFFOffsetTracker;
         var privateDictData = JAM.call(this.compileDict, this, [privateDict$$1, privateDictTracker]);
         JAM.call(privateDictTracker.offset, privateDictTracker, [output$$4.length]);
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v3203 = trackers[i$$134]
         }
         JAM.call(v3203.setEntryLocation, v3203, ["Private", [privateDictData.length, output$$4.length], output$$4]);
@@ -11105,7 +11105,7 @@ function pdfjsWrapper() {
       var ii$$58 = dicts.length;
       var v3209 = i$$133 < ii$$58;
       for(;v3209;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var fontDict$$1 = dicts[i$$133]
         }
         var fontDictTracker = new CFFOffsetTracker;
@@ -11125,7 +11125,7 @@ function pdfjsWrapper() {
       var ii$$57 = names$$6.length;
       var v3211 = i$$132 < ii$$57;
       for(;v3211;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7312 = names$$6[i$$132]
         }
         JAM.call(nameIndex$$2.add, nameIndex$$2, [stringToArray$$1(v7312)]);
@@ -11228,12 +11228,12 @@ function pdfjsWrapper() {
       ii$$56 = nibbles.length;
       var v3244 = i$$131 < ii$$56;
       for(;v3244;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21568 = nibbles[i$$131]
         }
         var v7327 = v21568 << 4;
         var v21569 = i$$131 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7328 = nibbles[v21569]
         }
         JAM.call(out$$4.push, out$$4, [v7327 | v7328]);
@@ -11348,7 +11348,7 @@ function pdfjsWrapper() {
       }
       var data$$79 = output$$2.data;
       var v3283 = this.offsets;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var dataOffset = v3283[key$$44]
       }
       var size$$11 = 5;
@@ -11361,27 +11361,27 @@ function pdfjsWrapper() {
         var offset2 = offset0$$1 + 2;
         var offset3 = offset0$$1 + 3;
         var offset4 = offset0$$1 + 4;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21578 = data$$79[offset0$$1]
         }
         var v7346 = v21578 !== 29;
         if(!v7346) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22582 = data$$79[offset1$$1]
           }
           var v21579 = v22582 !== 0;
           if(!v21579) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22981 = data$$79[offset2]
             }
             var v22583 = v22981 !== 0;
             if(!v22583) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v23131 = data$$79[offset3]
               }
               var v22982 = v23131 !== 0;
               if(!v22982) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v23132 = data$$79[offset4]
                 }
                 v22982 = v23132 !== 0
@@ -11395,7 +11395,7 @@ function pdfjsWrapper() {
         if(v7346) {
           error$$3("writing to an offset that is not empty")
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var value$$61 = values$$4[i$$129]
         }
         JAM.set(data$$79, offset0$$1, 29);
@@ -11412,7 +11412,7 @@ function pdfjsWrapper() {
       var key$$43;
       for(key$$43 in this.offsets) {
         var v3290 = this.offsets;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21581 = v3290[key$$43]
         }
         JAM.set(v3290, key$$43, v21581 + value$$60)
@@ -11506,7 +11506,7 @@ function pdfjsWrapper() {
       var ii$$53 = layout.length;
       var v3361 = i$$128 < ii$$53;
       for(;v3361;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var entry$$2 = layout[i$$128]
         }
         var v3352;
@@ -11539,7 +11539,7 @@ function pdfjsWrapper() {
     function CFFDict_removeByName(name$$64) {
       var v3362 = this.values;
       var v7391 = this.nameToKeyMap;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v3363 = v7391[name$$64]
       }
       delete v3362[v3363];
@@ -11550,23 +11550,23 @@ function pdfjsWrapper() {
         error$$3('Invalid dictionary name "' + name$$63 + '"')
       }
       var v3366 = this.nameToKeyMap;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var key$$39 = v3366[name$$63]
       }
       if(!(key$$39 in this.values)) {
         var v3367 = this.defaults;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           return v3367[key$$39]
         }
       }
       var v3369 = this.values;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         return v3369[key$$39]
       }
     }
     function CFFDict_hasName(name$$62) {
       var v7395 = this.nameToKeyMap;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v3370 = v7395[name$$62]
       }
       return v3370 in this.values
@@ -11579,7 +11579,7 @@ function pdfjsWrapper() {
         return true
       }
       var v3374 = this.types;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var type$$40 = v3374[key$$38]
       }
       var v7398 = type$$40 === "num";
@@ -11614,7 +11614,7 @@ function pdfjsWrapper() {
   function CFFIndexClosure() {
     function CFFIndex_get(index$$58) {
       var v3377 = this.objects;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         return v3377[index$$58]
       }
     }
@@ -11648,14 +11648,14 @@ function pdfjsWrapper() {
         v7403 = index$$57 <= 390
       }
       if(v7403) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           return CFFStandardStrings[index$$57]
         }
       }
       if(index$$57 - 391 <= this.strings.length) {
         var v3383 = this.strings;
         var v3384 = index$$57 - 391;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           return v3383[v3384]
         }
       }
@@ -11706,7 +11706,7 @@ function pdfjsWrapper() {
       var bytes$$9 = this.bytes;
       var v3388 = pos$$9;
       pos$$9 = pos$$9 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var format$$10 = bytes$$9[v3388]
       }
       var fdSelect = [];
@@ -11717,7 +11717,7 @@ function pdfjsWrapper() {
           for(;v3390;) {
             var v3389 = pos$$9;
             pos$$9 = pos$$9 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var id$$4 = bytes$$9[v3389]
             }
             JAM.call(fdSelect.push, fdSelect, [id$$4]);
@@ -11728,13 +11728,13 @@ function pdfjsWrapper() {
         case 3:
           var v21593 = pos$$9;
           pos$$9 = pos$$9 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7408 = bytes$$9[v21593]
           }
           var v3391 = v7408 << 8;
           var v7409 = pos$$9;
           pos$$9 = pos$$9 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3392 = bytes$$9[v7409]
           }
           var rangesCount$$1 = v3391 | v3392;
@@ -11743,27 +11743,27 @@ function pdfjsWrapper() {
           for(;v3399;) {
             var v21594 = pos$$9;
             pos$$9 = pos$$9 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7410 = bytes$$9[v21594]
             }
             var v3393 = v7410 << 8;
             var v7411 = pos$$9;
             pos$$9 = pos$$9 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3394 = bytes$$9[v7411]
             }
             var first$$4 = v3393 | v3394;
             var v3395 = pos$$9;
             pos$$9 = pos$$9 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var fdIndex = bytes$$9[v3395]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7412 = bytes$$9[pos$$9]
             }
             var v3396 = v7412 << 8;
             var v7413 = pos$$9 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3397 = bytes$$9[v7413]
             }
             var next$$2 = v3396 | v3397;
@@ -11811,7 +11811,7 @@ function pdfjsWrapper() {
         var ii$$52 = charset$$4.length;
         var v3405 = i$$125 < ii$$52;
         for(;v3405;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3403 = charset$$4[i$$125]
           }
           var index$$56 = baseEncoding$$1.indexOf(v3403);
@@ -11826,14 +11826,14 @@ function pdfjsWrapper() {
         var dataStart = pos$$8;
         var v3406 = pos$$8;
         pos$$8 = pos$$8 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           format$$9 = bytes$$8[v3406]
         }
         switch(format$$9 & 127) {
           case 0:
             var v3407 = pos$$8;
             pos$$8 = pos$$8 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var glyphsCount = bytes$$8[v3407]
             }
             i$$125 = 1;
@@ -11841,7 +11841,7 @@ function pdfjsWrapper() {
             for(;v3409;) {
               var v7415 = pos$$8;
               pos$$8 = pos$$8 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v3408 = bytes$$8[v7415]
               }
               JAM.set(encoding$$9, v3408, i$$125);
@@ -11852,7 +11852,7 @@ function pdfjsWrapper() {
           case 1:
             var v3410 = pos$$8;
             pos$$8 = pos$$8 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var rangesCount = bytes$$8[v3410]
             }
             gid$$1 = 1;
@@ -11861,12 +11861,12 @@ function pdfjsWrapper() {
             for(;v3414;) {
               var v3411 = pos$$8;
               pos$$8 = pos$$8 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var start$$15 = bytes$$8[v3411]
               }
               var v3412 = pos$$8;
               pos$$8 = pos$$8 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var left$$2 = bytes$$8[v3412]
               }
               var j$$43 = start$$15;
@@ -11886,13 +11886,13 @@ function pdfjsWrapper() {
         }
         var dataEnd = pos$$8;
         if(format$$9 & 128) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7419 = bytes$$8[dataStart]
           }
           JAM.set(bytes$$8, dataStart, v7419 & 127);
           var v3417 = pos$$8;
           pos$$8 = pos$$8 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var supplementsCount$$inline_102 = bytes$$8[v3417]
           }
           var i$$inline_103 = 0;
@@ -11900,18 +11900,18 @@ function pdfjsWrapper() {
           for(;v3423;) {
             var v3418 = pos$$8;
             pos$$8 = pos$$8 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var code$$inline_104 = bytes$$8[v3418]
             }
             var v21596 = pos$$8;
             pos$$8 = pos$$8 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7420 = bytes$$8[v21596]
             }
             var v3419 = v7420 << 8;
             var v21597 = pos$$8;
             pos$$8 = pos$$8 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7421 = bytes$$8[v21597]
             }
             var sid$$inline_105 = v3419 + (v7421 & 255);
@@ -11945,7 +11945,7 @@ function pdfjsWrapper() {
       var start$$14 = pos$$7;
       var v3432 = pos$$7;
       pos$$7 = pos$$7 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var format$$8 = bytes$$7[v3432]
       }
       var charset$$3 = [".notdef"];
@@ -11957,13 +11957,13 @@ function pdfjsWrapper() {
           for(;v3436;) {
             var v21598 = pos$$7;
             pos$$7 = pos$$7 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7424 = bytes$$7[v21598]
             }
             var v3433 = v7424 << 8;
             var v7425 = pos$$7;
             pos$$7 = pos$$7 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3434 = bytes$$7[v7425]
             }
             var id$$3 = v3433 | v3434;
@@ -11983,19 +11983,19 @@ function pdfjsWrapper() {
           for(;v3442;) {
             var v21599 = pos$$7;
             pos$$7 = pos$$7 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7428 = bytes$$7[v21599]
             }
             var v3437 = v7428 << 8;
             var v7429 = pos$$7;
             pos$$7 = pos$$7 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3438 = bytes$$7[v7429]
             }
             id$$3 = v3437 | v3438;
             var v3439 = pos$$7;
             pos$$7 = pos$$7 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var count$$19 = bytes$$7[v3439]
             }
             i$$124 = 0;
@@ -12022,25 +12022,25 @@ function pdfjsWrapper() {
           for(;v3449;) {
             var v21601 = pos$$7;
             pos$$7 = pos$$7 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7433 = bytes$$7[v21601]
             }
             var v3443 = v7433 << 8;
             var v7434 = pos$$7;
             pos$$7 = pos$$7 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3444 = bytes$$7[v7434]
             }
             id$$3 = v3443 | v3444;
             var v21602 = pos$$7;
             pos$$7 = pos$$7 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7435 = bytes$$7[v21602]
             }
             var v3445 = v7435 << 8;
             var v7436 = pos$$7;
             pos$$7 = pos$$7 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3446 = bytes$$7[v7436]
             }
             count$$19 = v3445 | v3446;
@@ -12129,14 +12129,14 @@ function pdfjsWrapper() {
         for(;v3465;) {
           var v3458 = j$$42;
           j$$42 = j$$42 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var value$$57 = data$$77[v3458]
           }
           var v7444 = value$$57 == 12;
           if(v7444) {
             var v22590 = j$$42;
             j$$42 = j$$42 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21611 = data$$77[v22590]
             }
             v7444 = v21611 == 0
@@ -12175,7 +12175,7 @@ function pdfjsWrapper() {
       var ii$$51 = dict$$18.length;
       var v3467 = i$$122 < ii$$51;
       for(;v3467;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var pair = dict$$18[i$$122]
         }
         var key$$37 = pair[0];
@@ -12212,7 +12212,7 @@ function pdfjsWrapper() {
         var j$$41 = 0;
         var v3473 = j$$41 < length$$45;
         for(;v3473;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var c$$17 = name$$61[j$$41]
           }
           var v7447 = j$$41 === 0;
@@ -12291,13 +12291,13 @@ function pdfjsWrapper() {
       var bytes$$6 = this.bytes;
       var v21615 = pos$$6;
       pos$$6 = pos$$6 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v7450 = bytes$$6[v21615]
       }
       var v3476 = v7450 << 8;
       var v7451 = pos$$6;
       pos$$6 = pos$$6 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v3477 = bytes$$6[v7451]
       }
       var count$$17 = v3476 | v3477;
@@ -12307,7 +12307,7 @@ function pdfjsWrapper() {
       if(count$$17 != 0) {
         var v3478 = pos$$6;
         pos$$6 = pos$$6 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var offsetSize = bytes$$6[v3478]
         }
         var startPos = pos$$6 + (count$$17 + 1) * offsetSize - 1;
@@ -12322,7 +12322,7 @@ function pdfjsWrapper() {
             offset$$29 = offset$$29 << 8;
             var v21617 = pos$$6;
             pos$$6 = pos$$6 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7453 = bytes$$6[v21617]
             }
             offset$$29 = offset$$29 + v7453;
@@ -12339,11 +12339,11 @@ function pdfjsWrapper() {
       ii$$48 = offsets$$1.length - 1;
       var v3487 = i$$119 < ii$$48;
       for(;v3487;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var offsetStart = offsets$$1[i$$119]
         }
         var v3485 = i$$119 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var offsetEnd = offsets$$1[v3485]
         }
         JAM.call(cffIndex.add, cffIndex, [bytes$$6.subarray(offsetStart, offsetEnd)]);
@@ -12356,7 +12356,7 @@ function pdfjsWrapper() {
       function parseOperand() {
         var v3488 = pos$$5;
         pos$$5 = pos$$5 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var value$$55 = dict$$17[v3488]
         }
         if(value$$55 === 30) {
@@ -12369,7 +12369,7 @@ function pdfjsWrapper() {
           for(;v3492;) {
             var v3489 = pos$$5;
             pos$$5 = pos$$5 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var b$$inline_97 = dict$$17[v3489]
             }
             var b1$$inline_98 = b$$inline_97 >> 4;
@@ -12377,14 +12377,14 @@ function pdfjsWrapper() {
             if(b1$$inline_98 == eof$$inline_94) {
               break
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7454 = lookup$$inline_95[b1$$inline_98]
             }
             str$$inline_93 = str$$inline_93 + v7454;
             if(b2$$inline_99 == eof$$inline_94) {
               break
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7455 = lookup$$inline_95[b2$$inline_99]
             }
             str$$inline_93 = str$$inline_93 + v7455;
@@ -12396,13 +12396,13 @@ function pdfjsWrapper() {
           if(value$$55 === 28) {
             var v3493 = pos$$5;
             pos$$5 = pos$$5 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               value$$55 = dict$$17[v3493]
             }
             var v3494 = value$$55 << 8;
             var v7456 = pos$$5;
             pos$$5 = pos$$5 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3495 = dict$$17[v7456]
             }
             value$$55 = v3494 | v3495;
@@ -12411,27 +12411,27 @@ function pdfjsWrapper() {
             if(value$$55 === 29) {
               var v3496 = pos$$5;
               pos$$5 = pos$$5 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 value$$55 = dict$$17[v3496]
               }
               var v3497 = value$$55 << 8;
               var v7457 = pos$$5;
               pos$$5 = pos$$5 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v3498 = dict$$17[v7457]
               }
               value$$55 = v3497 | v3498;
               var v3499 = value$$55 << 8;
               var v7458 = pos$$5;
               pos$$5 = pos$$5 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v3500 = dict$$17[v7458]
               }
               value$$55 = v3499 | v3500;
               var v3501 = value$$55 << 8;
               var v7459 = pos$$5;
               pos$$5 = pos$$5 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v3502 = dict$$17[v7459]
               }
               value$$55 = v3501 | v3502;
@@ -12452,7 +12452,7 @@ function pdfjsWrapper() {
                   var v7462 = (value$$55 - 247) * 256;
                   var v21619 = pos$$5;
                   pos$$5 = pos$$5 + 1;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v7463 = dict$$17[v21619]
                   }
                   return v7462 + v7463 + 108
@@ -12465,7 +12465,7 @@ function pdfjsWrapper() {
                     var v7465 = -((value$$55 - 251) * 256);
                     var v21621 = pos$$5;
                     pos$$5 = pos$$5 + 1;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var v7466 = dict$$17[v21621]
                     }
                     return v7465 - v7466 - 108
@@ -12486,14 +12486,14 @@ function pdfjsWrapper() {
       var end$$7 = dict$$17.length;
       var v3517 = pos$$5 < end$$7;
       for(;v3517;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var b$$22 = dict$$17[pos$$5]
         }
         if(b$$22 <= 21) {
           if(b$$22 === 12) {
             var v3511 = b$$22 << 8;
             var v7467 = pos$$5 = pos$$5 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3512 = dict$$17[v7467]
             }
             b$$22 = v3511 | v3512
@@ -12511,13 +12511,13 @@ function pdfjsWrapper() {
     function CFFParser_parseHeader() {
       var bytes$$5 = this.bytes;
       var offset$$28 = 0;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v7468 = bytes$$5[offset$$28]
       }
       var v3518 = v7468 != 1;
       for(;v3518;) {
         offset$$28 = offset$$28 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7469 = bytes$$5[offset$$28]
         }
         v3518 = v7469 != 1
@@ -12613,7 +12613,7 @@ function pdfjsWrapper() {
       if(encoding$$7 !== null) {
         var charcode$$3;
         for(charcode$$3 in encoding$$7) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3549 = encoding$$7[charcode$$3]
           }
           JAM.set(inverseEncoding, v3549, charcode$$3 | 0)
@@ -12625,7 +12625,7 @@ function pdfjsWrapper() {
       var ii$$46 = charsets.length;
       var v3554 = i$$117 < ii$$46;
       for(;v3554;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var glyph$$5 = charsets[i$$117]
         }
         if(glyph$$5 == ".notdef") {
@@ -12633,7 +12633,7 @@ function pdfjsWrapper() {
           v3554 = i$$117 < ii$$46;
           continue
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var code$$13 = inverseEncoding[i$$117]
         }
         var v7478 = !code$$13;
@@ -12664,14 +12664,14 @@ function pdfjsWrapper() {
         }
         var unicode$$6 = nextUnusedUnicode;
         nextUnusedUnicode = nextUnusedUnicode + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21624 = inverseEncoding[i$$117]
         }
         if(!v21624) {
           v21624 = 0
         }
         var v7479 = v21624;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7480 = charsets[i$$117]
         }
         JAM.call(charstrings$$6.push, charstrings$$6, [{unicode:unicode$$6, code:v7479, gid:i$$117, glyph:v7480}]);
@@ -12696,7 +12696,7 @@ function pdfjsWrapper() {
       var ii$$45 = charstrings$$5.length;
       var v3561 = i$$116 < ii$$45;
       for(;v3561;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7483 = charstrings$$5[i$$116]
         }
         JAM.call(glyphIds.push, glyphIds, [v7483.gid]);
@@ -12735,7 +12735,7 @@ function pdfjsWrapper() {
           continue
         }
         var v3564 = properties$$19.privateData;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var value$$54 = v3564[field$$2]
         }
         if(isArray(value$$54)) {
@@ -12745,11 +12745,11 @@ function pdfjsWrapper() {
           var v3565 = i$$115 < ii$$44;
           for(;v3565;) {
             var v7488 = data$$74;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22596 = value$$54[i$$115]
             }
             var v22986 = i$$115 - 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22597 = value$$54[v22986]
             }
             data$$74 = v7488 + JAM.call(self$$8.encodeNumber, self$$8, [v22596 - v22597]);
@@ -12759,7 +12759,7 @@ function pdfjsWrapper() {
         }else {
           data$$74 = data$$74 + JAM.call(self$$8.encodeNumber, self$$8, [value$$54])
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7492 = fieldMap[field$$2]
         }
         data$$74 = data$$74 + v7492
@@ -12773,7 +12773,7 @@ function pdfjsWrapper() {
       var i$$114 = 0;
       var v3569 = i$$114 < count$$16;
       for(;v3569;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7495 = charstrings$$4[i$$114]
         }
         var index$$53 = CFFStandardStrings.indexOf(v7495.glyph);
@@ -12800,7 +12800,7 @@ function pdfjsWrapper() {
         var v3571 = i$$113 < ii$$43;
         for(;v3571;) {
           var v7499 = dict$$16;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21632 = boundingBox[i$$113]
           }
           dict$$16 = v7499 + JAM.call(self$$5.encodeNumber, self$$5, [v21632]);
@@ -12831,7 +12831,7 @@ function pdfjsWrapper() {
     var cff$$1 = [];
     var index$$52;
     for(index$$52 in fields$$1) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var field$$1 = fields$$1[index$$52]
       }
       var i$$112 = 0;
@@ -12849,11 +12849,11 @@ function pdfjsWrapper() {
     var i$$111 = 0;
     var v3602 = i$$111 < charstring$$4.length;
     for(;v3602;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var command$$1 = charstring$$4[i$$111]
       }
       if(command$$1.charAt) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var cmd$$5 = map$$2[command$$1]
         }
         if(!cmd$$5) {
@@ -12869,7 +12869,7 @@ function pdfjsWrapper() {
       }else {
         if(command$$1 > 32E3) {
           var v3595 = i$$111 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var divisor = charstring$$4[v3595]
           }
           command$$1 = command$$1 / divisor;
@@ -12907,7 +12907,7 @@ function pdfjsWrapper() {
     i$$110 = 0;
     var v3609 = i$$110 < count$$15;
     for(;v3609;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var subr = type1Subrs[i$$110]
       }
       if(!subr) {
@@ -12925,7 +12925,7 @@ function pdfjsWrapper() {
     var i$$109 = 0;
     var v3612 = i$$109 < count$$14;
     for(;v3612;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v3610 = type1Charstrings[i$$109]
       }
       var charstring$$3 = v3610.charstring;
@@ -12948,13 +12948,13 @@ function pdfjsWrapper() {
     length$$43 = glyphs$$8.length;
     var v3617 = i$$108 < length$$43;
     for(;v3617;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var item$$3 = glyphs$$8[i$$108]
       }
       glyphName$$4 = item$$3.glyph;
       var v3615;
       if(glyphName$$4 in GlyphsUnicode) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           v3615 = GlyphsUnicode[glyphName$$4]
         }
       }else {
@@ -12994,11 +12994,11 @@ function pdfjsWrapper() {
     var v3627 = i$$107 < count$$13 + 1;
     for(;v3627;) {
       data$$73 = data$$73 + String.fromCharCode(relativeOffset >>> 24 & 255, relativeOffset >> 16 & 255, relativeOffset >> 8 & 255, relativeOffset & 255);
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v3626 = objects[i$$107]
       }
       if(v3626) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21652 = objects[i$$107]
         }
         relativeOffset = relativeOffset + v21652.length
@@ -13010,7 +13010,7 @@ function pdfjsWrapper() {
     var v3630 = i$$107 < count$$13;
     for(;v3630;) {
       var j$$38 = 0;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v3628 = objects[i$$107]
       }
       var jj$$9 = v3628.length;
@@ -13019,15 +13019,15 @@ function pdfjsWrapper() {
         var v7540 = data$$73;
         var v21653;
         if(isByte) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v23139 = objects[i$$107]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22993 = v23139[j$$38]
           }
           v21653 = String.fromCharCode(v22993 & 255)
         }else {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22616 = objects[i$$107]
           }
           v21653 = v22616[j$$38]
@@ -13046,7 +13046,7 @@ function pdfjsWrapper() {
       var charsCache = this.charsCache;
       var glyphs$$7;
       if(charsCache) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           glyphs$$7 = charsCache[chars]
         }
         if(glyphs$$7) {
@@ -13097,7 +13097,7 @@ function pdfjsWrapper() {
       var operatorList$$4;
       var disabled;
       var v3639 = this.widths;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         width$$22 = v3639[charcode$$1]
       }
       switch(this.type) {
@@ -13105,21 +13105,21 @@ function pdfjsWrapper() {
           if(this.noUnicodeAdaptation) {
             var v3640 = this.widths;
             var v21655 = this.unicodeToCID;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7544 = v21655[charcode$$1]
             }
             if(!v7544) {
               v7544 = charcode$$1
             }
             var v3641 = v7544;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               width$$22 = v3640[v3641]
             }
             fontCharCode$$2 = mapPrivateUseChars(charcode$$1);
             break
           }
           var v7545 = this.toFontChar;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3643 = v7545[charcode$$1]
           }
           if(!v3643) {
@@ -13131,21 +13131,21 @@ function pdfjsWrapper() {
           if(this.noUnicodeAdaptation) {
             var v3644 = this.widths;
             var v21657 = this.unicodeToCID;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7547 = v21657[charcode$$1]
             }
             if(!v7547) {
               v7547 = charcode$$1
             }
             var v3645 = v7547;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               width$$22 = v3644[v3645]
             }
             fontCharCode$$2 = mapPrivateUseChars(charcode$$1);
             break
           }
           var v7548 = this.toFontChar;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3647 = v7548[charcode$$1]
           }
           if(!v3647) {
@@ -13155,24 +13155,24 @@ function pdfjsWrapper() {
           break;
         case "Type1":
           var v7550 = this.differences;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3648 = v7550[charcode$$1]
           }
           if(!v3648) {
             var v7551 = this.encoding;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               v3648 = v7551[charcode$$1]
             }
           }
           var glyphName$$3 = v3648;
           if(!isNum(width$$22)) {
             var v3649 = this.widths;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               width$$22 = v3649[glyphName$$3]
             }
           }
           if(this.noUnicodeAdaptation) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7554 = GlyphsUnicode[glyphName$$3]
             }
             if(!v7554) {
@@ -13182,11 +13182,11 @@ function pdfjsWrapper() {
             break
           }
           var v7555 = this.glyphNameMap;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3653 = v7555[glyphName$$3]
           }
           if(!v3653) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7556 = GlyphsUnicode[glyphName$$3]
             }
             if(!v7556) {
@@ -13198,18 +13198,18 @@ function pdfjsWrapper() {
           break;
         case "Type3":
           var v7558 = this.differences;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3654 = v7558[charcode$$1]
           }
           if(!v3654) {
             var v7559 = this.encoding;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               v3654 = v7559[charcode$$1]
             }
           }
           glyphName$$3 = v3654;
           var v3655 = this.charProcOperatorList;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             operatorList$$4 = v3655[glyphName$$3]
           }
           fontCharCode$$2 = charcode$$1;
@@ -13217,7 +13217,7 @@ function pdfjsWrapper() {
         case "TrueType":
           if(this.useToFontChar) {
             var v7561 = this.toFontChar;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3656 = v7561[charcode$$1]
             }
             if(!v3656) {
@@ -13227,30 +13227,30 @@ function pdfjsWrapper() {
             break
           }
           var v7563 = this.differences;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3658 = v7563[charcode$$1]
           }
           if(!v3658) {
             var v7564 = this.encoding;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               v3658 = v7564[charcode$$1]
             }
           }
           glyphName$$3 = v3658;
           if(!glyphName$$3) {
             var v3659 = Encodings.StandardEncoding;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               glyphName$$3 = v3659[charcode$$1]
             }
           }
           if(!isNum(width$$22)) {
             var v3661 = this.widths;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               width$$22 = v3661[glyphName$$3]
             }
           }
           if(this.noUnicodeAdaptation) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3663 = GlyphsUnicode[glyphName$$3]
             }
             if(!v3663) {
@@ -13267,7 +13267,7 @@ function pdfjsWrapper() {
             var v3665;
             if(this.useToFontChar) {
               var v7569 = this.toFontChar;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 v3665 = v7569[charcode$$1]
               }
             }else {
@@ -13279,11 +13279,11 @@ function pdfjsWrapper() {
           var v3667;
           if(glyphName$$3 in this.glyphNameMap) {
             var v7571 = this.glyphNameMap;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               v3667 = v7571[glyphName$$3]
             }
           }else {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               v3667 = GlyphsUnicode[glyphName$$3]
             }
           }
@@ -13297,7 +13297,7 @@ function pdfjsWrapper() {
         v3670 = charcode$$1
       }else {
         var v21665 = this.toUnicode;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7574 = v21665[charcode$$1]
         }
         if(!v7574) {
@@ -13319,7 +13319,7 @@ function pdfjsWrapper() {
       var v3674;
       if(this.unicodeIsEnabled) {
         var v21668 = this.unicodeIsEnabled;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7578 = v21668[fontCharCode$$2]
         }
         v3674 = !v7578
@@ -13361,7 +13361,7 @@ function pdfjsWrapper() {
       var cidToUnicode;
       if(cidSystemInfo$$1) {
         var v3683 = cidSystemInfo$$1.registry + "-" + cidSystemInfo$$1.ordering;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           cidToUnicode = CIDToUnicodeMaps[v3683]
         }
       }
@@ -13377,7 +13377,7 @@ function pdfjsWrapper() {
       ii$$36 = cidToUnicode.length;
       var v3690 = i$$99 < ii$$36;
       for(;v3690;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var unicode$$4 = cidToUnicode[i$$99]
         }
         if(isArray(unicode$$4)) {
@@ -13385,8 +13385,8 @@ function pdfjsWrapper() {
           j$$34 = 0;
           var v3686 = j$$34 < length$$40;
           for(;v3686;) {
-            JAM.set(cidToUnicodeMap, cid$$2, JAM.get(unicode$$4, j$$34, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            JAM.set(cidToUnicodeMap, cid$$2, JAM.get(unicode$$4, j$$34, JAM.policy.p1));
+            introspect(JAM.policy.p1) {
               var v3685 = unicode$$4[j$$34]
             }
             JAM.set(unicodeToCIDMap, v3685, cid$$2);
@@ -13443,7 +13443,7 @@ function pdfjsWrapper() {
             v3692 = cid$$1
           }else {
             var v7592 = this.cidToUnicode;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               v3692 = v7592[cid$$1]
             }
           }
@@ -13457,12 +13457,12 @@ function pdfjsWrapper() {
         var v3698 = i$$98 <= ii$$35;
         for(;v3698;) {
           var v3694 = properties$$14.differences;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var glyph$$1 = v3694[i$$98]
           }
           if(!glyph$$1) {
             var v3695 = properties$$14.baseEncoding;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               glyph$$1 = v3695[i$$98]
             }
           }
@@ -13471,7 +13471,7 @@ function pdfjsWrapper() {
             v7593 = glyph$$1 in GlyphsUnicode
           }
           if(v7593) {
-            JAM.set(map$$1, i$$98, JAM.get(GlyphsUnicode, glyph$$1, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074))
+            JAM.set(map$$1, i$$98, JAM.get(GlyphsUnicode, glyph$$1, JAM.policy.p1))
           }
           i$$98 = i$$98 + 1;
           v3698 = i$$98 <= ii$$35
@@ -13487,7 +13487,7 @@ function pdfjsWrapper() {
       var ii$$34 = toUnicode$$2.length;
       var v3702 = i$$97 < ii$$34;
       for(;v3702;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var unicode$$3 = toUnicode$$2[i$$97]
         }
         var v3700;
@@ -13513,7 +13513,7 @@ function pdfjsWrapper() {
         var ii$$33 = charstrings$$1.length;
         var v3704 = i$$96 < ii$$33;
         for(;v3704;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var charstring$$1 = charstrings$$1[i$$96]
           }
           var v3703;
@@ -13534,11 +13534,11 @@ function pdfjsWrapper() {
         var ii$$32 = glyphs$$6.length - 1;
         var v3707 = i$$95 < ii$$32;
         for(;v3707;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7599 = glyphs$$6[i$$95]
           }
           var v21678 = i$$95 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7600 = glyphs$$6[v21678]
           }
           if(v7599 != v7600) {
@@ -13560,7 +13560,7 @@ function pdfjsWrapper() {
       var i$$94 = 0;
       var v3711 = i$$94 < charstrings$$1.length;
       for(;v3711;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var charstring = charstrings$$1[i$$94]
         }
         JAM.set(glyphNameMap$$1, charstring.glyph, charstring.unicode);
@@ -13621,13 +13621,13 @@ function pdfjsWrapper() {
       "\x00\x00" + "\x00\x00" + "\x00\x00" + string16(charstrings$$1.length + 1)), "hmtx":fontFieldsHmtx(), "maxp":stringToArray("\x00\x00P\x00" + string16(charstrings$$1.length + 1)), "name":stringToArray(createNameTable(fontName$$3)), "post":stringToArray(createPostTable(properties$$13))};
       var field;
       for(field in fields) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v3727 = fields[field]
         }
         createTableEntry(otf, field, v3727)
       }
       for(field in fields) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var table$$2 = fields[field]
         }
         var v3728 = otf;
@@ -13674,10 +13674,10 @@ function pdfjsWrapper() {
         var i$$87 = 0;
         var v3744 = i$$87 < glyphsLength$$1;
         for(;v3744;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3740 = ids$$1[i$$87]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var glyphName$$1 = glyphNames$$1[v3740]
           }
           if(!glyphName$$1) {
@@ -13685,12 +13685,12 @@ function pdfjsWrapper() {
             v3744 = i$$87 < glyphsLength$$1;
             continue
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3742 = glyphs$$4[i$$87]
           }
           var unicode$$2 = v3742.unicode;
           JAM.set(glyphNameMap, glyphName$$1, unicode$$2);
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3743 = glyphs$$4[i$$87]
           }
           var code$$11 = v3743.code;
@@ -13731,11 +13731,11 @@ function pdfjsWrapper() {
         i$$88 = 1;
         var v3757 = i$$88 < numRecords;
         for(;v3757;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var current$$5 = records[i$$88]
           }
           var v3755 = i$$88 - 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var previous = records[v3755]
           }
           if((current$$5.platformID << 16) + current$$5.encodingID <= (previous.platformID << 16) + previous.encodingID) {
@@ -13754,7 +13754,7 @@ function pdfjsWrapper() {
           i$$88 = 0;
           var v3761 = i$$88 < numRecords;
           for(;v3761;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var table$$1 = tables$$1[i$$88]
             }
             data$$61 = data$$61 + (string16(table$$1.platformID) + string16(table$$1.encodingID) + string32(table$$1.offset));
@@ -13813,7 +13813,7 @@ function pdfjsWrapper() {
               segIndex = 0;
               var v3775 = segIndex < segCount$$1;
               for(;v3775;) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v3774 = segments[segIndex]
                 }
                 var v23472 = int16(JAM.call(font$$8.getBytes, font$$8, [2]));
@@ -13824,7 +13824,7 @@ function pdfjsWrapper() {
               segIndex = 0;
               var v3777 = segIndex < segCount$$1;
               for(;v3777;) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v3776 = segments[segIndex]
                 }
                 var v23473 = int16(JAM.call(font$$8.getBytes, font$$8, [2]));
@@ -13836,7 +13836,7 @@ function pdfjsWrapper() {
               segIndex = 0;
               var v3783 = segIndex < segCount$$1;
               for(;v3783;) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var segment = segments[segIndex]
                 }
                 var rangeOffset = int16(JAM.call(font$$8.getBytes, font$$8, [2]));
@@ -13865,7 +13865,7 @@ function pdfjsWrapper() {
               segIndex = 0;
               var v3792 = segIndex < segCount$$1;
               for(;v3792;) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   segment = segments[segIndex]
                 }
                 start$$9 = segment.start;
@@ -14000,12 +14000,12 @@ function pdfjsWrapper() {
         var i$$90 = 0;
         var v3820 = i$$90 < contoursCount;
         for(;v3820;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7659 = glyf$$1[j$$30]
           }
           var v3818 = v7659 << 8;
           var v7660 = j$$30 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3819 = glyf$$1[v7660]
           }
           var endPoint = v3818 | v3819;
@@ -14014,12 +14014,12 @@ function pdfjsWrapper() {
           i$$90 = i$$90 + 1;
           v3820 = i$$90 < contoursCount
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7661 = glyf$$1[j$$30]
         }
         var v3821 = v7661 << 8;
         var v7662 = j$$30 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v3822 = glyf$$1[v7662]
         }
         var instructionsLength = v3821 | v3822;
@@ -14030,7 +14030,7 @@ function pdfjsWrapper() {
         for(;v3829;) {
           var v3823 = j$$30;
           j$$30 = j$$30 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var flag$$1 = glyf$$1[v3823]
           }
           if(flag$$1 & 192) {
@@ -14066,7 +14066,7 @@ function pdfjsWrapper() {
           if(flag$$1 & 8) {
             var v3827 = j$$30;
             j$$30 = j$$30 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var repeat = glyf$$1[v3827]
             }
             i$$90 = i$$90 + repeat;
@@ -14094,12 +14094,12 @@ function pdfjsWrapper() {
           return
         }
         function fontItemDecode(data$$64, offset$$22) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7670 = data$$64[offset$$22]
           }
           var v3837 = v7670 << 9;
           var v21718 = offset$$22 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7671 = data$$64[v21718]
           }
           return v3837 | v7671 << 1
@@ -14112,22 +14112,22 @@ function pdfjsWrapper() {
           return
         }
         function fontItemDecodeLong(data$$62, offset$$20) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22637 = data$$62[offset$$20]
           }
           var v21719 = v22637 << 24;
           var v23000 = offset$$20 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22638 = data$$62[v23000]
           }
           var v7674 = v21719 | v22638 << 16;
           var v22639 = offset$$20 + 2;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21721 = data$$62[v22639]
           }
           var v3843 = v7674 | v21721 << 8;
           var v7676 = offset$$20 + 3;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3844 = data$$62[v7676]
           }
           return v3843 | v3844
@@ -14193,33 +14193,33 @@ function pdfjsWrapper() {
       }
       function findEmptyGlyphs(locaTable, isGlyphLocationsLong$$2, emptyGlyphIds$$1) {
         function fontItemDecode$$1(data$$68, offset$$26) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7677 = data$$68[offset$$26]
           }
           var v3852 = v7677 << 9;
           var v21722 = offset$$26 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7678 = data$$68[v21722]
           }
           return v3852 | v7678 << 1
         }
         function fontItemDecodeLong$$1(data$$67, offset$$25) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22640 = data$$67[offset$$25]
           }
           var v21723 = v22640 << 24;
           var v23001 = offset$$25 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22641 = data$$67[v23001]
           }
           var v7679 = v21723 | v22641 << 16;
           var v22642 = offset$$25 + 2;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21725 = data$$67[v22642]
           }
           var v3854 = v7679 | v21725 << 8;
           var v7681 = offset$$25 + 3;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3855 = data$$67[v7681]
           }
           return v3854 | v3855
@@ -14298,11 +14298,11 @@ function pdfjsWrapper() {
             i$$93 = 0;
             var v3869 = i$$93 < numGlyphs$$3;
             for(;v3869;) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var j$$33 = glyphNameIndexes[i$$93]
               }
               if(j$$33 < 258) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v3866 = MacStandardGlyphOrdering[j$$33]
                 }
                 JAM.call(glyphNames$$2.push, glyphNames$$2, [v3866]);
@@ -14311,7 +14311,7 @@ function pdfjsWrapper() {
                 continue
               }
               var v7688 = j$$33 - 258;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v3868 = customNames[v7688]
               }
               JAM.call(glyphNames$$2.push, glyphNames$$2, [v3868]);
@@ -14469,7 +14469,7 @@ function pdfjsWrapper() {
           var j$$28 = cidToGidMap$$1.length - 1;
           var v3910 = j$$28 >= 0;
           for(;v3910;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var gid = cidToGidMap$$1[j$$28]
             }
             if(gid) {
@@ -14482,7 +14482,7 @@ function pdfjsWrapper() {
           i$$86 = 1;
           var v3912 = i$$86 < numGlyphs;
           for(;v3912;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7711 = gidToCidMap[i$$86]
             }
             if(!v7711) {
@@ -14500,7 +14500,7 @@ function pdfjsWrapper() {
         i$$86 = 1;
         var v3918 = i$$86 < numGlyphs;
         for(;v3918;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3914 = gidToCidMap[i$$86]
           }
           if(!v3914) {
@@ -14508,7 +14508,7 @@ function pdfjsWrapper() {
           }
           var cid = v3914;
           var v3915 = this.toFontChar;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var unicode$$1 = v3915[cid]
           }
           var v7713 = !unicode$$1;
@@ -14541,7 +14541,7 @@ function pdfjsWrapper() {
         var v3924 = j$$28 < jj$$7;
         for(;v3924;) {
           i$$86 = unassignedUnicodeItems[j$$28];
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3919 = gidToCidMap[i$$86]
           }
           if(!v3919) {
@@ -14603,7 +14603,7 @@ function pdfjsWrapper() {
           ii$$29 = glyphs$$3.length;
           var v3930 = i$$86 < ii$$29;
           for(;v3930;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21737 = glyphs$$3[i$$86]
             }
             if(v21737.unicode != i$$86 + 1) {
@@ -14639,7 +14639,7 @@ function pdfjsWrapper() {
                 v3934 = i$$86 < ii$$29;
                 continue
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v3933 = glyphs$$3[i$$86]
               }
               v3933.unicode = unicode$$1;
@@ -14661,7 +14661,7 @@ function pdfjsWrapper() {
               if(!(cid in toFontChar)) {
                 JAM.set(toFontChar, cid, unusedUnicode)
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v3937 = glyphs$$3[i$$86]
               }
               v3937.unicode = unusedUnicode;
@@ -14676,15 +14676,15 @@ function pdfjsWrapper() {
         i$$86 = ids.length - 1;
         var v3943 = i$$86 >= 0;
         for(;v3943;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21741 = ids[i$$86]
           }
           var v7725 = v21741 < numGlyphs;
           if(v7725) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v23003 = ids[i$$86]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22650 = emptyGlyphIds[v23003]
             }
             var v21742 = !v22650;
@@ -14711,7 +14711,7 @@ function pdfjsWrapper() {
           ii$$29 = glyphs$$3.length;
           var v3945 = i$$86 < ii$$29;
           for(;v3945;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3944 = glyphs$$3[i$$86]
             }
             unicode$$1 = v3944.unicode;
@@ -14742,32 +14742,32 @@ function pdfjsWrapper() {
           ii$$29 = glyphs$$3.length;
           var v3957 = i$$86 < ii$$29;
           for(;v3957;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3950 = glyphs$$3[i$$86]
             }
             var code$$10 = v3950.unicode;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               gid = ids[i$$86]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3951 = glyphs$$3[i$$86]
             }
             v3951.unicode = v3951.unicode + kCmapGlyphOffset;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3952 = glyphs$$3[i$$86]
             }
             JAM.set(toFontChar, code$$10, v3952.unicode);
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3953 = glyphNames[gid]
             }
             if(!v3953) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 v3953 = encoding$$2[code$$10]
               }
             }
             var glyphName = v3953;
             if(glyphName in GlyphsUnicode) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 unicode$$1 = GlyphsUnicode[glyphName]
               }
               if(unicode$$1 in usedUnicodes) {
@@ -14776,7 +14776,7 @@ function pdfjsWrapper() {
                 continue
               }
               JAM.set(usedUnicodes, unicode$$1, true);
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v21746 = glyphs$$3[i$$86]
               }
               JAM.call(glyphs$$3.push, glyphs$$3, [{unicode:unicode$$1, code:v21746.code}]);
@@ -14806,7 +14806,7 @@ function pdfjsWrapper() {
             ii$$29 = glyphs$$3.length;
             var v3959 = i$$86 < ii$$29;
             for(;v3959;) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v7733 = glyphs$$3[i$$86]
               }
               JAM.set(reverseMap, v7733.unicode, i$$86);
@@ -14818,23 +14818,23 @@ function pdfjsWrapper() {
             ii$$29 = glyphs$$3.length;
             var v3965 = i$$86 < ii$$29;
             for(;v3965;) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v3960 = glyphs$$3[i$$86]
               }
               code$$10 = v3960.unicode;
               var changeCode = false;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 gid = ids[i$$86]
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 glyphName = glyphNames[gid]
               }
               if(!glyphName) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v3961 = differences$$1[code$$10]
                 }
                 if(!v3961) {
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     v3961 = encoding$$2[code$$10]
                   }
                 }
@@ -14842,12 +14842,12 @@ function pdfjsWrapper() {
                 changeCode = true
               }
               if(glyphName in GlyphsUnicode) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   unicode$$1 = GlyphsUnicode[glyphName]
                 }
                 var v7735 = !unicode$$1;
                 if(!v7735) {
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v21749 = reverseMap[unicode$$1]
                   }
                   v7735 = v21749 === i$$86
@@ -14867,21 +14867,21 @@ function pdfjsWrapper() {
               v3965 = i$$86 < ii$$29
             }
             for(index$$45 in newGlyphUnicodes) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 unicode$$1 = newGlyphUnicodes[index$$45]
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v3967 = reverseMap[unicode$$1]
               }
               if(v3967) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v3966 = glyphs$$3[index$$45]
                 }
                 v3966.unicode = unusedUnicode;
                 unusedUnicode = unusedUnicode + 1;
                 continue
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v3968 = glyphs$$3[index$$45]
               }
               v3968.unicode = unicode$$1;
@@ -14895,12 +14895,12 @@ function pdfjsWrapper() {
           ii$$29 = glyphs$$3.length;
           var v3973 = i$$86 < ii$$29;
           for(;v3973;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v7736 = glyphs$$3[i$$86]
             }
             code$$10 = v7736.unicode & 255;
             var fontCharCode = kSymbolicFontGlyphOffset | code$$10;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v3972 = glyphs$$3[i$$86]
             }
             v3972.unicode = JAM.set(toFontChar, code$$10, fontCharCode);
@@ -14920,7 +14920,7 @@ function pdfjsWrapper() {
       ii$$29 = glyphs$$3.length;
       var v3978 = i$$86 < ii$$29;
       for(;v3978;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7737 = glyphs$$3[i$$86]
         }
         JAM.set(unicodeIsEnabled, v7737.unicode, true);
@@ -14943,7 +14943,7 @@ function pdfjsWrapper() {
       ii$$29 = tables.length;
       var v3993 = i$$86 < ii$$29;
       for(;v3993;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           table = tables[i$$86]
         }
         var data$$59 = [];
@@ -14952,7 +14952,7 @@ function pdfjsWrapper() {
         jj$$7 = tableData.length;
         var v3991 = j$$28 < jj$$7;
         for(;v3991;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v3990 = tableData[j$$28]
           }
           JAM.call(data$$59.push, data$$59, [v3990]);
@@ -14967,7 +14967,7 @@ function pdfjsWrapper() {
       ii$$29 = tables.length;
       var v3997 = i$$86 < ii$$29;
       for(;v3997;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           table = tables[i$$86]
         }
         tableData = table.data;
@@ -15035,11 +15035,11 @@ function pdfjsWrapper() {
       this.toFontChar = v23477;
       if(!file$$1) {
         var fontName$$2 = name$$56.replace(/[,_]/g, "-");
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4008 = stdFontMap[fontName$$2]
         }
         if(!v4008) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7755 = nonStdFontMap[fontName$$2]
           }
           if(!v7755) {
@@ -15126,7 +15126,7 @@ function pdfjsWrapper() {
       var v4020 = i$$80 < ii$$27;
       for(;v4020;) {
         var v7764 = str$$21;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21778 = arr$$12[i$$80]
         }
         str$$21 = v7764 + String.fromCharCode(v21778);
@@ -15216,19 +15216,19 @@ function pdfjsWrapper() {
       var v4038 = i$$82 < n$$26;
       for(;v4038;) {
         var v7796 = checksum;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v22675 = data$$58[i$$82]
         }
         var v23012 = i$$82 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v22676 = data$$58[v23012]
         }
         var v23013 = i$$82 + 2;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v22677 = data$$58[v23013]
         }
         var v23014 = i$$82 + 3;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v22678 = data$$58[v23014]
         }
         checksum = v7796 + int32([v22675, v22676, v22677, v22678]) | 0;
@@ -15249,7 +15249,7 @@ function pdfjsWrapper() {
       var n$$27 = 0;
       var v4044 = n$$27 < length$$35;
       for(;v4044;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21793 = glyphs$$1[n$$27]
         }
         JAM.call(codes.push, codes, [{unicode:v21793.unicode, code:n$$27}]);
@@ -15261,11 +15261,11 @@ function pdfjsWrapper() {
       n$$27 = 0;
       var v4050 = n$$27 < length$$35;
       for(;v4050;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4045 = codes[n$$27]
         }
         var start$$7 = v4045.unicode;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7804 = codes[n$$27]
         }
         var codeIndices = [v7804.code];
@@ -15274,14 +15274,14 @@ function pdfjsWrapper() {
         var v7805 = n$$27 < length$$35;
         if(v7805) {
           var v21794 = end$$3 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22679 = codes[n$$27]
           }
           v7805 = v21794 == v22679.unicode
         }
         var v4048 = v7805;
         for(;v4048;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7806 = codes[n$$27]
           }
           JAM.call(codeIndices.push, codeIndices, [v7806.code]);
@@ -15290,7 +15290,7 @@ function pdfjsWrapper() {
           var v7807 = n$$27 < length$$35;
           if(v7807) {
             var v21796 = end$$3 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22680 = codes[n$$27]
             }
             v7807 = v21796 == v22680.unicode
@@ -15321,7 +15321,7 @@ function pdfjsWrapper() {
         var i$$83 = 0;
         var v4061 = i$$83 < segCount - 1;
         for(;v4061;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var range$$14 = ranges$$1[i$$83]
           }
           var start$$8 = range$$14[0];
@@ -15338,10 +15338,10 @@ function pdfjsWrapper() {
           var v4060 = j$$26 < jj$$5;
           for(;v4060;) {
             var v7821 = glyphsIds;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22682 = codes$$1[j$$26]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21801 = deltas[v22682]
             }
             glyphsIds = v7821 + string16(v21801);
@@ -15390,7 +15390,7 @@ function pdfjsWrapper() {
         var i$$84 = 0;
         var v4076 = i$$84 < charstrings.length;
         for(;v4076;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v4067 = charstrings[i$$84]
           }
           var code$$9 = v4067.unicode;
@@ -15410,7 +15410,7 @@ function pdfjsWrapper() {
             var ii$$inline_87 = UnicodeRanges.length;
             var v4071 = i$$inline_86 < ii$$inline_87;
             for(;v4071;) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var range$$inline_88 = UnicodeRanges[i$$inline_86]
               }
               var v7839 = code$$9 >= range$$inline_88.begin;
@@ -15527,7 +15527,7 @@ function pdfjsWrapper() {
       var ii$$28 = strings.length;
       var v4089 = i$$85 < ii$$28;
       for(;v4089;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var str$$22 = strings[i$$85]
         }
         var strUnicode = "";
@@ -15554,7 +15554,7 @@ function pdfjsWrapper() {
       ii$$28 = platforms.length;
       var v4097 = i$$85 < ii$$28;
       for(;v4097;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var strs = names$$4[i$$85]
         }
         j$$27 = 0;
@@ -15562,14 +15562,14 @@ function pdfjsWrapper() {
         var v4096 = j$$27 < jj$$6;
         for(;v4096;) {
           str$$22 = strs[j$$27];
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v23024 = platforms[i$$85]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v23025 = encodings[i$$85]
           }
           var v22691 = v23024 + v23025;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22692 = languages[i$$85]
           }
           var nameRecord = v22691 + v22692 + string16(j$$27) + string16(str$$22.length) + string16(strOffset);
@@ -15591,23 +15591,23 @@ function pdfjsWrapper() {
       var ii$$37 = possibleSpaceReplacements.length;
       var v4106 = i$$100 < ii$$37;
       for(;v4106;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var glyphName$$2 = possibleSpaceReplacements[i$$100]
         }
         if(glyphName$$2 in this.widths) {
           var v4098 = this.widths;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             width$$21 = v4098[glyphName$$2]
           }
           break
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var glyphUnicode$$1 = GlyphsUnicode[glyphName$$2]
         }
         var charcode = 0;
         if(this.composite) {
           var v4100 = this.unicodeToCID;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             charcode = v4100[glyphUnicode$$1]
           }
         }
@@ -15622,7 +15622,7 @@ function pdfjsWrapper() {
           charcode = glyphUnicode$$1
         }
         var v4105 = this.widths;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           width$$21 = v4105[charcode]
         }
         if(width$$21) {
@@ -15651,7 +15651,7 @@ function pdfjsWrapper() {
       var ii$$25 = fonts$$3.length;
       var v4111 = i$$78 < ii$$25;
       for(;v4111;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var font$$6 = fonts$$3[i$$78]
         }
         font$$6.loading = false;
@@ -15677,7 +15677,7 @@ function pdfjsWrapper() {
     var ii$$24 = names$$2.length;
     var v4118 = i$$77 < ii$$24;
     for(;v4118;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v22693 = names$$2[i$$77]
       }
       html = html + ('<span style="font-family:' + v22693 + '">Hi</span>');
@@ -15698,7 +15698,7 @@ function pdfjsWrapper() {
     ii$$24 = rules$$1.length;
     var v4122 = i$$77 < ii$$24;
     for(;v4122;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v7880 = rules$$1[i$$77]
       }
       src$$2 = src$$2 + v7880;
@@ -15712,7 +15712,7 @@ function pdfjsWrapper() {
     ii$$24 = names$$2.length;
     var v4123 = i$$77 < ii$$24;
     for(;v4123;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v22694 = names$$2[i$$77]
       }
       fontNamesArray = fontNamesArray + ('"' + v22694 + '", ');
@@ -15728,7 +15728,7 @@ function pdfjsWrapper() {
     ii$$24 = names$$2.length;
     var v4124 = i$$77 < ii$$24;
     for(;v4124;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v22695 = names$$2[i$$77]
       }
       src$$2 = src$$2 + ("<p style=\"font-family:'" + v22695 + "'\">Hi</p>");
@@ -15750,7 +15750,7 @@ function pdfjsWrapper() {
       var ii$$23 = fonts$$2.length;
       var v4129 = i$$76 < ii$$23;
       for(;v4129;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var fontObj$$1 = fonts$$2[i$$76]
         }
         if(fontObj$$1.loading) {
@@ -15772,7 +15772,7 @@ function pdfjsWrapper() {
     var ii$$22 = fonts$$2.length;
     var v4134 = i$$75 < ii$$22;
     for(;v4134;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var font$$5 = fonts$$2[i$$75]
       }
       var v7888 = font$$5.attached;
@@ -15794,7 +15794,7 @@ function pdfjsWrapper() {
         var v4132 = j$$25 < length$$33;
         for(;v4132;) {
           var v7889 = str$$19;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21834 = data$$56[j$$25]
           }
           str$$19 = v7889 + String.fromCharCode(v21834);
@@ -15885,7 +15885,7 @@ function pdfjsWrapper() {
           var metrics$$1 = JAM.call(this.getBaseFontMetrics, this, [baseFontName$$1]);
           var fontNameWoStyle = baseFontName$$1.split("-")[0];
           var v7900;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22696 = serifFonts[fontNameWoStyle]
           }
           if(!v22696) {
@@ -15898,7 +15898,7 @@ function pdfjsWrapper() {
           }
           var v4148 = v7900;
           var v7901;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21836 = symbolsFonts[fontNameWoStyle]
           }
           if(v21836) {
@@ -15961,7 +15961,7 @@ function pdfjsWrapper() {
         properties$$6.charProcOperatorList = {};
         var key$$35;
         for(key$$35 in charProcs) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var glyphStream = charProcs[key$$35]
           }
           var v4176 = properties$$6.charProcOperatorList;
@@ -15975,14 +15975,14 @@ function pdfjsWrapper() {
     function PartialEvaluator_getBaseFontMetrics(name$$55) {
       var defaultWidth$$1 = 0;
       var widths$$1 = [];
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v7907 = stdFontMap[name$$55]
       }
       if(!v7907) {
         v7907 = name$$55
       }
       var v4180 = v7907;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var glyphWidths = Metrics[v4180]
       }
       if(isNum(glyphWidths)) {
@@ -16009,7 +16009,7 @@ function pdfjsWrapper() {
           var ii$$21 = widths.length;
           var v4188 = i$$74 < ii$$21;
           for(;v4188;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var code$$8 = widths[i$$74]
             }
             if(isArray(code$$8)) {
@@ -16019,7 +16019,7 @@ function pdfjsWrapper() {
               for(;v4184;) {
                 var v4183 = start$$6;
                 start$$6 = start$$6 + 1;
-                JAM.set(glyphsWidths, v4183, JAM.get(code$$8, j$$24, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+                JAM.set(glyphsWidths, v4183, JAM.get(code$$8, j$$24, JAM.policy.p1));
                 j$$24 = j$$24 + 1;
                 v4184 = j$$24 < jj$$4
               }
@@ -16027,7 +16027,7 @@ function pdfjsWrapper() {
             }else {
               if(start$$6) {
                 var v4185 = i$$74 = i$$74 + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var width$$19 = widths[v4185]
                 }
                 j$$24 = start$$6;
@@ -16088,11 +16088,11 @@ function pdfjsWrapper() {
       for(;v4198;) {
         var v21839 = j$$23;
         j$$23 = j$$23 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7911 = glyphsData[v21839]
         }
         var v4195 = v7911 << 8;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4196 = glyphsData[j$$23]
         }
         var glyphID = v4195 | v4196;
@@ -16126,7 +16126,7 @@ function pdfjsWrapper() {
           var ii$$20 = cmap.length;
           var v4228 = i$$73 < ii$$20;
           for(;v4228;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var octet = cmap[i$$73]
             }
             var v7913 = octet == 32;
@@ -16171,15 +16171,15 @@ function pdfjsWrapper() {
                   var jj$$2 = tokens.length;
                   var v4209 = j$$22 < jj$$2;
                   for(;v4209;) {
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var startRange = tokens[j$$22]
                     }
                     var v4202 = j$$22 + 1;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var endRange = tokens[v4202]
                     }
                     var v4203 = j$$22 + 2;
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var code$$6 = tokens[v4203]
                     }
                     if(code$$6 == 65535) {
@@ -16215,7 +16215,7 @@ function pdfjsWrapper() {
                   jj$$2 = tokens.length;
                   var v4211 = j$$22 < jj$$2;
                   for(;v4211;) {
-                    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                    introspect(JAM.policy.p1) {
                       var index$$44 = tokens[j$$22]
                     }
                     code$$6 = tokens[j$$22 + 1];
@@ -16346,7 +16346,7 @@ function pdfjsWrapper() {
           var baseName = JAM.call(encoding$$1.get, encoding$$1, ["BaseEncoding"]);
           if(baseName) {
             var v4239 = baseName.name;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               baseEncoding = Encodings[v4239]
             }
           }else {
@@ -16359,7 +16359,7 @@ function pdfjsWrapper() {
             var jj$$1 = diffEncoding.length;
             var v4242 = j$$21 < jj$$1;
             for(;v4242;) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var data$$55 = diffEncoding[j$$21]
               }
               if(isNum(data$$55)) {
@@ -16376,7 +16376,7 @@ function pdfjsWrapper() {
         }else {
           if(isName(encoding$$1)) {
             var v4244 = encoding$$1.name;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               baseEncoding = Encodings[v4244]
             }
           }else {
@@ -16461,11 +16461,11 @@ function pdfjsWrapper() {
         var ii$$19 = depList.length;
         var v4253 = i$$72 < ii$$19;
         for(;v4253;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var dep = depList[i$$72]
           }
           if(dependency$$1.indexOf(dep) == -1) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v4251 = depList[i$$72]
             }
             JAM.call(dependency$$1.push, dependency$$1, [v4251])
@@ -16631,14 +16631,14 @@ function pdfjsWrapper() {
         }
         if(isCmd(obj$$31)) {
           var cmd$$4 = obj$$31.cmd;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var fn$$4 = OP_MAP[cmd$$4]
           }
           if(!fn$$4) {
             var cmds = splitCombinedOperations(cmd$$4);
             if(cmds) {
               cmd$$4 = cmds[0];
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 fn$$4 = OP_MAP[cmd$$4]
               }
               hasNextObj = true;
@@ -16653,14 +16653,14 @@ function pdfjsWrapper() {
           var v7958 = v21853;
           if(v7958) {
             var v23031 = args$$5.length - 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22701 = args$$5[v23031]
             }
             v7958 = !v22701.code
           }
           if(v7958) {
             var v4294 = args$$5.length - 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var patternName = args$$5[v4294]
             }
             if(isName(patternName)) {
@@ -16935,7 +16935,7 @@ function pdfjsWrapper() {
       for(;v4351;) {
         var v4350 = i$$inline_71;
         i$$inline_71 = i$$inline_71 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           hashData$$inline_70[v4350] = ownerPassword$$inline_63[j$$inline_72]
         }
         j$$inline_72 = j$$inline_72 + 1;
@@ -16959,7 +16959,7 @@ function pdfjsWrapper() {
       for(;v4357;) {
         var v4356 = i$$inline_71;
         i$$inline_71 = i$$inline_71 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           hashData$$inline_70[v4356] = fileId$$inline_61[j$$inline_72]
         }
         j$$inline_72 = j$$inline_72 + 1;
@@ -17005,7 +17005,7 @@ function pdfjsWrapper() {
         for(;v4366;) {
           var v4365 = i$$inline_71;
           i$$inline_71 = i$$inline_71 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             hashData$$inline_70[v4365] = fileId$$inline_61[j$$inline_72]
           }
           j$$inline_72 = j$$inline_72 + 1;
@@ -17022,7 +17022,7 @@ function pdfjsWrapper() {
           k$$inline_80 = 0;
           var v4369 = k$$inline_80 < n$$inline_73;
           for(;v4369;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v4368 = encryptionKey$$inline_76[k$$inline_80]
             }
             JAM.set(derivedKey$$inline_79, k$$inline_80, v4368 ^ j$$inline_72);
@@ -17042,10 +17042,10 @@ function pdfjsWrapper() {
       n$$inline_73 = checkData$$inline_78.length;
       var v4374 = j$$inline_72 < n$$inline_73;
       for(;v4374;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7990 = userPassword$$inline_64[j$$inline_72]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v7991 = checkData$$inline_78[j$$inline_72]
         }
         if(v7990 != v7991) {
@@ -17085,7 +17085,7 @@ function pdfjsWrapper() {
       n$$25 = encryptionKey$$1.length;
       var v4380 = i$$70 < n$$25;
       for(;v4380;) {
-        JAM.set(key$$31, i$$70, JAM.get(encryptionKey$$1, i$$70, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+        JAM.set(key$$31, i$$70, JAM.get(encryptionKey$$1, i$$70, JAM.policy.p1));
         i$$70 = i$$70 + 1;
         v4380 = i$$70 < n$$25
       }
@@ -17191,7 +17191,7 @@ function pdfjsWrapper() {
       }
       var v4400 = v8003;
       for(;v4400;) {
-        JAM.set(buffer$$12, bufferLength$$1, JAM.get(data$$52, i$$68, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+        JAM.set(buffer$$12, bufferLength$$1, JAM.get(data$$52, i$$68, JAM.policy.p1));
         i$$68 = i$$68 + 1;
         bufferLength$$1 = bufferLength$$1 + 1;
         var v8004 = bufferLength$$1 < 16;
@@ -17222,34 +17222,34 @@ function pdfjsWrapper() {
       var v4409 = j$$inline_39 < b$$inline_37;
       for(;v4409;) {
         var v4403 = j$$inline_39 - 3;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var t1$$inline_41 = result$$inline_38[v4403]
         }
         var v4404 = j$$inline_39 - 2;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var t2$$inline_42 = result$$inline_38[v4404]
         }
         var v4405 = j$$inline_39 - 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var t3$$inline_43 = result$$inline_38[v4405]
         }
         var v4406 = j$$inline_39 - 4;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var t4$$inline_44 = result$$inline_38[v4406]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           t1$$inline_41 = s$$11[t1$$inline_41]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           t2$$inline_42 = s$$11[t2$$inline_42]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           t3$$inline_43 = s$$11[t3$$inline_43]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           t4$$inline_44 = s$$11[t4$$inline_44]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4407 = rcon[i$$inline_40]
         }
         t1$$inline_41 = t1$$inline_41 ^ v4407;
@@ -17257,25 +17257,25 @@ function pdfjsWrapper() {
         var v4408 = n$$inline_45 < 4;
         for(;v4408;) {
           var v21876 = j$$inline_39 - 16;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8005 = result$$inline_38[v21876]
           }
           result$$inline_38[j$$inline_39] = t1$$inline_41 = t1$$inline_41 ^ v8005;
           j$$inline_39 = j$$inline_39 + 1;
           var v21877 = j$$inline_39 - 16;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8006 = result$$inline_38[v21877]
           }
           result$$inline_38[j$$inline_39] = t2$$inline_42 = t2$$inline_42 ^ v8006;
           j$$inline_39 = j$$inline_39 + 1;
           var v21878 = j$$inline_39 - 16;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8007 = result$$inline_38[v21878]
           }
           result$$inline_38[j$$inline_39] = t3$$inline_43 = t3$$inline_43 ^ v8007;
           j$$inline_39 = j$$inline_39 + 1;
           var v21879 = j$$inline_39 - 16;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8008 = result$$inline_38[v21879]
           }
           result$$inline_38[j$$inline_39] = t4$$inline_44 = t4$$inline_44 ^ v8008;
@@ -17305,7 +17305,7 @@ function pdfjsWrapper() {
       i$$67 = 0;
       var v4430 = i$$67 < sourceLength;
       for(;v4430;) {
-        JAM.set(buffer$$11, bufferLength, JAM.get(data$$51, i$$67, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+        JAM.set(buffer$$11, bufferLength, JAM.get(data$$51, i$$67, JAM.policy.p1));
         bufferLength = bufferLength + 1;
         if(bufferLength < 16) {
           i$$67 = i$$67 + 1;
@@ -17327,10 +17327,10 @@ function pdfjsWrapper() {
         k$$inline_52 = 160;
         var v4411 = j$$inline_51 < 16;
         for(;v4411;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8009 = state$$inline_49[j$$inline_51]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8010 = key$$inline_48[k$$inline_52]
           }
           JAM.set(state$$inline_49, j$$inline_51, v8009 ^ v8010);
@@ -17362,10 +17362,10 @@ function pdfjsWrapper() {
           j$$inline_51 = 0;
           var v4413 = j$$inline_51 < 16;
           for(;v4413;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v4412 = state$$inline_49[j$$inline_51]
             }
-            JAM.set(state$$inline_49, j$$inline_51, JAM.get(inv_s, v4412, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+            JAM.set(state$$inline_49, j$$inline_51, JAM.get(inv_s, v4412, JAM.policy.p1));
             j$$inline_51 = j$$inline_51 + 1;
             v4413 = j$$inline_51 < 16
           }
@@ -17373,10 +17373,10 @@ function pdfjsWrapper() {
           k$$inline_52 = i$$inline_50 * 16;
           var v4414 = j$$inline_51 < 16;
           for(;v4414;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v8011 = state$$inline_49[j$$inline_51]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v8012 = key$$inline_48[k$$inline_52]
             }
             JAM.set(state$$inline_49, j$$inline_51, v8011 ^ v8012);
@@ -17387,31 +17387,31 @@ function pdfjsWrapper() {
           j$$inline_51 = 0;
           var v4425 = j$$inline_51 < 16;
           for(;v4425;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v4415 = state$$inline_49[j$$inline_51]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var s0$$inline_56 = mix[v4415]
             }
             var v8013 = j$$inline_51 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v4416 = state$$inline_49[v8013]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var s1$$inline_57 = mix[v4416]
             }
             var v8014 = j$$inline_51 + 2;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v4417 = state$$inline_49[v8014]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var s2$$inline_58 = mix[v4417]
             }
             var v8015 = j$$inline_51 + 3;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v4418 = state$$inline_49[v8015]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var s3$$inline_59 = mix[v4418]
             }
             t$$inline_53 = s0$$inline_56 ^ s1$$inline_57 >>> 8 ^ s1$$inline_57 << 24 ^ s2$$inline_58 >>> 16 ^ s2$$inline_58 << 16 ^ s3$$inline_59 >>> 24 ^ s3$$inline_59 << 8;
@@ -17446,14 +17446,14 @@ function pdfjsWrapper() {
         j$$inline_51 = 0;
         var v4428 = j$$inline_51 < 16;
         for(;v4428;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v4427 = state$$inline_49[j$$inline_51]
           }
-          JAM.set(state$$inline_49, j$$inline_51, JAM.get(inv_s, v4427, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          JAM.set(state$$inline_49, j$$inline_51, JAM.get(inv_s, v4427, JAM.policy.p1));
+          introspect(JAM.policy.p1) {
             var v8020 = state$$inline_49[j$$inline_51]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8021 = key$$inline_48[j$$inline_51]
           }
           JAM.set(state$$inline_49, j$$inline_51, v8020 ^ v8021);
@@ -17464,10 +17464,10 @@ function pdfjsWrapper() {
         j$$19 = 0;
         var v4429 = j$$19 < 16;
         for(;v4429;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8022 = plain[j$$19]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8023 = iv[j$$19]
           }
           JAM.set(plain, j$$19, v8022 ^ v8023);
@@ -17496,7 +17496,7 @@ function pdfjsWrapper() {
       ii$$18 = result$$6.length;
       var v4435 = i$$67 < ii$$18;
       for(;v4435;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4434 = result$$6[i$$67]
         }
         JAM.call(output$$1.set, output$$1, [v4434, j$$19]);
@@ -17551,7 +17551,7 @@ function pdfjsWrapper() {
       for(;v4443;) {
         var v4442 = offset$$16;
         offset$$16 = offset$$16 + 1;
-        JAM.set(padded, i$$64, JAM.get(data$$49, v4442, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+        JAM.set(padded, i$$64, JAM.get(data$$49, v4442, JAM.policy.p1));
         i$$64 = i$$64 + 1;
         v4443 = i$$64 < length$$32
       }
@@ -17597,21 +17597,21 @@ function pdfjsWrapper() {
         j$$16 = 0;
         var v4457 = j$$16 < 16;
         for(;v4457;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21882 = padded[i$$64]
           }
           var v23034 = i$$64 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22709 = padded[v23034]
           }
           var v8032 = v21882 | v22709 << 8;
           var v22710 = i$$64 + 2;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21884 = padded[v22710]
           }
           var v4455 = v8032 | v21884 << 16;
           var v21885 = i$$64 + 3;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8034 = padded[v21885]
           }
           JAM.set(w$$15, j$$16, v4455 | v8034 << 24);
@@ -17647,15 +17647,15 @@ function pdfjsWrapper() {
           }
           var tmp$$2 = d$$7;
           var v21886 = a$$11 + f$$5;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21887 = k$$5[j$$16]
           }
           var v8040 = v21886 + v21887;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8041 = w$$15[g$$6]
           }
           var rotateArg = v8040 + v8041 | 0;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var rotate$$3 = r$$7[j$$16]
           }
           d$$7 = c$$13;
@@ -17692,20 +17692,20 @@ function pdfjsWrapper() {
       var v4485 = i$$63 < n$$21;
       for(;v4485;) {
         a$$10 = a$$10 + 1 & 255;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           tmp$$1 = s$$10[a$$10]
         }
         b$$13 = b$$13 + tmp$$1 & 255;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           tmp2 = s$$10[b$$13]
         }
         JAM.set(s$$10, a$$10, tmp2);
         JAM.set(s$$10, b$$13, tmp$$1);
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4483 = data$$48[i$$63]
         }
         var v8059 = tmp$$1 + tmp2 & 255;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4484 = s$$10[v8059]
         }
         JAM.set(output, i$$63, v4483 ^ v4484);
@@ -17734,12 +17734,12 @@ function pdfjsWrapper() {
       i$$62 = 0;
       var v4488 = i$$62 < 256;
       for(;v4488;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           tmp = s$$9[i$$62]
         }
         var v8060 = j$$15 + tmp;
         var v21903 = i$$62 % keyLength;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8061 = key$$28[v21903]
         }
         j$$15 = v8060 + v8061 & 255;
@@ -17796,15 +17796,15 @@ function pdfjsWrapper() {
       i$$61 = 0;
       var v4498 = i$$61 < length$$31;
       for(;v4498;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8065 = input$$5[i$$61]
         }
         var v21906 = i$$61 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8066 = input$$5[v21906]
         }
         var v21907 = i$$61 + 2;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8067 = input$$5[v21907]
         }
         var rgb$$1 = JAM.call(this.getRgb, this, [[v8065, v8066, v8067]]);
@@ -17956,7 +17956,7 @@ function pdfjsWrapper() {
         for(;v4528;) {
           var v21923 = colorBufPos;
           colorBufPos = colorBufPos + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8080 = colorBuf[v21923]
           }
           JAM.call(cmyk.push, cmyk, [scale$$8 * v8080]);
@@ -17970,7 +17970,7 @@ function pdfjsWrapper() {
           var v4529 = rgbBuf$$2;
           var v4530 = rgbBufPos;
           rgbBufPos = rgbBufPos + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21924 = rgb[j$$13]
           }
           var v23490 = Math.round(v21924 * 255);
@@ -18020,7 +18020,7 @@ function pdfjsWrapper() {
       i$$59 = 0;
       var v4540 = i$$59 < length$$29;
       for(;v4540;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8086 = input$$4[i$$59]
         }
         JAM.set(rgbBuf$$1, i$$59, scale$$7 * v8086 | 0);
@@ -18053,7 +18053,7 @@ function pdfjsWrapper() {
       var j$$12 = 0;
       var v4548 = i$$58 < length$$28;
       for(;v4548;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8088 = input$$3[i$$58]
         }
         var c$$11 = scale$$6 * v8088 | 0;
@@ -18098,7 +18098,7 @@ function pdfjsWrapper() {
       var i$$57 = 0;
       var v4553 = i$$57 < length$$27;
       for(;v4553;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4550 = input$$2[i$$57]
         }
         var lookupPos = v4550 * numComps$$5;
@@ -18125,7 +18125,7 @@ function pdfjsWrapper() {
       var v4557 = i$$56 < ii$$17;
       for(;v4557;) {
         var v8090 = this.lookup;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4556 = v8090[i$$56]
         }
         JAM.call(c$$9.push, c$$9, [v4556]);
@@ -18199,7 +18199,7 @@ function pdfjsWrapper() {
         var v4569 = z$$2 < numComps$$3;
         for(;v4569;) {
           var v8092 = i$$54 + z$$2;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v4568 = input$$1[v8092]
           }
           scaled[z$$2] = v4568 * scale$$5;
@@ -18212,7 +18212,7 @@ function pdfjsWrapper() {
         for(;v4571;) {
           var v4570 = pos$$4;
           pos$$4 = pos$$4 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8093 = tinted$$1[j$$10]
           }
           baseBuf[v4570] = 255 * v8093;
@@ -18261,13 +18261,13 @@ function pdfjsWrapper() {
       var ii$$16 = decode$$2.length;
       var v4579 = i$$52 < ii$$16;
       for(;v4579;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21925 = decode$$2[i$$52]
         }
         var v8096 = v21925 != 0;
         if(!v8096) {
           var v22720 = i$$52 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21926 = decode$$2[v22720]
           }
           v8096 = v21926 != 1
@@ -18582,7 +18582,7 @@ function pdfjsWrapper() {
   }
   function PostScriptTokenClosure() {
     function PostScriptToken_getOperator(op) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var opValue = opCache[op]
       }
       if(opValue) {
@@ -18711,7 +18711,7 @@ function pdfjsWrapper() {
       for(;v4706;) {
         var v4661 = counter;
         counter = counter + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           operator = operators$$1[v4661]
         }
         if(typeof operator == "number") {
@@ -18973,10 +18973,10 @@ function pdfjsWrapper() {
       j$$9 = r$$5;
       var v4711 = i$$51 < j$$9;
       for(;v4711;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           t = stack$$2[i$$51]
         }
-        JAM.set(stack$$2, i$$51, JAM.get(stack$$2, j$$9, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+        JAM.set(stack$$2, i$$51, JAM.get(stack$$2, j$$9, JAM.policy.p1));
         JAM.set(stack$$2, j$$9, t);
         i$$51 = i$$51 + 1;
         j$$9 = j$$9 - 1;
@@ -18986,10 +18986,10 @@ function pdfjsWrapper() {
       j$$9 = c$$8 - 1;
       var v4712 = i$$51 < j$$9;
       for(;v4712;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           t = stack$$2[i$$51]
         }
-        JAM.set(stack$$2, i$$51, JAM.get(stack$$2, j$$9, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+        JAM.set(stack$$2, i$$51, JAM.get(stack$$2, j$$9, JAM.policy.p1));
         JAM.set(stack$$2, j$$9, t);
         i$$51 = i$$51 + 1;
         j$$9 = j$$9 - 1;
@@ -18999,10 +18999,10 @@ function pdfjsWrapper() {
       j$$9 = r$$5;
       var v4713 = i$$51 < j$$9;
       for(;v4713;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           t = stack$$2[i$$51]
         }
-        JAM.set(stack$$2, i$$51, JAM.get(stack$$2, j$$9, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+        JAM.set(stack$$2, i$$51, JAM.get(stack$$2, j$$9, JAM.policy.p1));
         JAM.set(stack$$2, j$$9, t);
         i$$51 = i$$51 + 1;
         j$$9 = j$$9 - 1;
@@ -19013,7 +19013,7 @@ function pdfjsWrapper() {
     function PostScriptStack_index(n$$18) {
       var v8133 = this.stack;
       var v8134 = this.stack.length - n$$18 - 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v4714 = v8133[v8134]
       }
       JAM.call(this.push, this, [v4714]);
@@ -19028,7 +19028,7 @@ function pdfjsWrapper() {
       var j$$8 = n$$17 - 1;
       var v4718 = j$$8 >= 0;
       for(;v4718;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4717 = stack$$1[i$$50]
         }
         JAM.call(stack$$1.push, stack$$1, [v4717]);
@@ -19070,7 +19070,7 @@ function pdfjsWrapper() {
     }
     function FunctionCache_get(key$$26) {
       var v4725 = this.cache;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         return v4725[key$$26]
       }
     }
@@ -19094,7 +19094,7 @@ function pdfjsWrapper() {
         var ii$$15 = domain$$5.length / 2;
         var v4729 = i$$49 < ii$$15;
         for(;v4729;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v4728 = args$$4[i$$49]
           }
           JAM.call(initialStack.push, initialStack, [v4728]);
@@ -19112,14 +19112,14 @@ function pdfjsWrapper() {
         for(;v4734;) {
           var out$$3 = stack.pop();
           var rangeIndex = 2 * i$$49;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8140 = range$$11[rangeIndex]
           }
           if(out$$3 < v8140) {
             out$$3 = range$$11[rangeIndex]
           }else {
             var v21939 = rangeIndex + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v8141 = range$$11[v21939]
             }
             if(out$$3 > v8141) {
@@ -19173,7 +19173,7 @@ function pdfjsWrapper() {
         var ii$$14 = bounds$$1.length;
         var v4741 = i$$48 < ii$$14;
         for(;v4741;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8142 = bounds$$1[i$$48]
           }
           if(v$$15 < v8142) {
@@ -19191,15 +19191,15 @@ function pdfjsWrapper() {
           dmax = bounds$$1[i$$48]
         }
         var v4745 = 2 * i$$48;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var rmin = encode$$3[v4745]
         }
         var v4746 = 2 * i$$48 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var rmax = encode$$3[v4746]
         }
         var v2 = rmin + (v$$15 - dmin) * (rmax - rmin) / (dmax - dmin);
-        return JAM.call(JAM.get(fns$$1, i$$48, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074), fns$$1, [[v2]])
+        return JAM.call(JAM.get(fns$$1, i$$48, JAM.policy.p1), fns$$1, [[v2]])
       }
       var domain$$3 = IR$$5[1];
       var bounds$$1 = IR$$5[2];
@@ -19210,7 +19210,7 @@ function pdfjsWrapper() {
       var ii$$13 = fnsIR.length;
       var v4750 = i$$47 < ii$$13;
       for(;v4750;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8147 = fnsIR[i$$47]
         }
         JAM.call(fns$$1.push, fns$$1, [JAM.call(PDFFunction.fromIR, PDFFunction, [v8147])]);
@@ -19234,7 +19234,7 @@ function pdfjsWrapper() {
       var ii$$12 = fnRefs.length;
       var v4755 = i$$46 < ii$$12;
       for(;v4755;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v21942 = fnRefs[i$$46]
         }
         JAM.call(fns.push, fns, [JAM.call(PDFFunction.getIR, PDFFunction, [xref$$11, JAM.call(xref$$11.fetchIfRef, xref$$11, [v21942])])]);
@@ -19258,10 +19258,10 @@ function pdfjsWrapper() {
         var j$$7 = 0;
         var v4758 = j$$7 < length$$23;
         for(;v4758;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8151 = c0$$1[j$$7]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21943 = diff$$1[j$$7]
           }
           JAM.call(out$$2.push, out$$2, [v8151 + x$$74 * v21943]);
@@ -19300,10 +19300,10 @@ function pdfjsWrapper() {
       var i$$45 = 0;
       var v4763 = i$$45 < length$$22;
       for(;v4763;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8156 = c1[i$$45]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8157 = c0[i$$45]
         }
         JAM.call(diff.push, diff, [v8156 - v8157]);
@@ -19342,32 +19342,32 @@ function pdfjsWrapper() {
         var i$$44 = 0;
         var v4778 = i$$44 < m$$15;
         for(;v4778;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v4767 = domain$$1[i$$44]
           }
           var domain_2i = v4767[0];
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v4768 = domain$$1[i$$44]
           }
           var domain_2i_1 = v4768[1];
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8161 = x$$73[i$$44]
           }
           var xi = Math.min(Math.max(v8161, domain_2i), domain_2i_1);
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8162 = encode$$1[i$$44]
           }
           var v4770 = v8162[0];
           var v8163 = xi - domain_2i;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v23040 = encode$$1[i$$44]
           }
           var v22726 = v23040[1];
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v23041 = encode$$1[i$$44]
           }
           var e$$22 = v4770 + v8163 * ((v22726 - v23041[0]) / (domain_2i_1 - domain_2i));
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var size_i = size$$8[i$$44]
           }
           e$$22 = Math.min(Math.max(e$$22, 0), size_i - 1);
@@ -19386,20 +19386,20 @@ function pdfjsWrapper() {
           var v4777 = j$$6 < cubeVertices;
           for(;v4777;) {
             if(j$$6 & pos$$3) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v8166 = cubeN[j$$6]
               }
               cubeN[j$$6] = v8166 * n1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v8167 = cubeVertex[j$$6]
               }
               cubeVertex[j$$6] = v8167 + offset1
             }else {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v8168 = cubeN[j$$6]
               }
               cubeN[j$$6] = v8168 * n0;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v8169 = cubeVertex[j$$6]
               }
               cubeVertex[j$$6] = v8169 + offset0
@@ -19420,40 +19420,40 @@ function pdfjsWrapper() {
           i$$44 = 0;
           var v4779 = i$$44 < cubeVertices;
           for(;v4779;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v23042 = cubeVertex[i$$44]
             }
             var v22728 = v23042 + j$$6;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21951 = samples$$1[v22728]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21952 = cubeN[i$$44]
             }
             rj = rj + v21951 * v21952;
             i$$44 = i$$44 + 1;
             v4779 = i$$44 < cubeVertices
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8171 = decode$$1[j$$6]
           }
           var v4780 = v8171[0];
           var v8172 = rj - 0;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v23043 = decode$$1[j$$6]
           }
           var v22729 = v23043[1];
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v23044 = decode$$1[j$$6]
           }
           rj = v4780 + v8172 * ((v22729 - v23044[0]) / (1 - 0));
           var v4782 = y$$56;
           var v4783 = j$$6;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22731 = range$$9[j$$6]
           }
           var v8174 = Math.max(rj, v22731[0]);
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v21956 = range$$9[j$$6]
           }
           var v23498 = Math.min(v8174, v21956[1]);
@@ -19474,11 +19474,11 @@ function pdfjsWrapper() {
         var i$$43 = 0;
         var v4788 = i$$43 < inputLength;
         for(;v4788;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v4786 = arr$$11[i$$43]
           }
           var v8176 = i$$43 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v4787 = arr$$11[v8176]
           }
           out$$1[index$$42] = [v4786, v4787];
@@ -19517,7 +19517,7 @@ function pdfjsWrapper() {
         var v4796 = i$$42 < inputSize$$1;
         for(;v4796;) {
           JAM.call(encode.push, encode, [0]);
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8178 = size$$7[i$$42]
           }
           JAM.call(encode.push, encode, [v8178 - 1]);
@@ -19562,7 +19562,7 @@ function pdfjsWrapper() {
       }
       var types = [this.constructSampled, null, this.constructInterpolated, this.constructStiched, this.constructPostScript];
       var typeNum = JAM.call(dict$$4.get, dict$$4, ["FunctionType"]);
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var typeFn = types[typeNum]
       }
       if(!typeFn) {
@@ -19576,7 +19576,7 @@ function pdfjsWrapper() {
       var ii$$11 = size$$6.length;
       var v4806 = i$$41 < ii$$11;
       for(;v4806;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8180 = size$$6[i$$41]
         }
         length$$21 = length$$21 * v8180;
@@ -19598,7 +19598,7 @@ function pdfjsWrapper() {
           codeBuf = codeBuf << 8;
           var v21959 = strIdx;
           strIdx = strIdx + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8183 = strBytes[v21959]
           }
           codeBuf = codeBuf | v8183;
@@ -19627,13 +19627,13 @@ function pdfjsWrapper() {
     }
     function PDFObjects_hasData(objId$$7) {
       var objs$$5 = this.objs;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v8186 = objs$$5[objId$$7]
       }
       if(!v8186) {
         return false
       }else {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4813 = objs$$5[objId$$7]
         }
         return v4813.hasData
@@ -19642,13 +19642,13 @@ function pdfjsWrapper() {
     }
     function PDFObjects_isResolved(objId$$6) {
       var objs$$4 = this.objs;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v8187 = objs$$4[objId$$6]
       }
       if(!v8187) {
         return false
       }else {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4815 = objs$$4[objId$$6]
         }
         return v4815.isResolved
@@ -19662,11 +19662,11 @@ function pdfjsWrapper() {
     }
     function PDFObjects_resolve(objId$$4, data$$46) {
       var objs$$3 = this.objs;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v4819 = objs$$3[objId$$4]
       }
       if(v4819) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4818 = objs$$3[objId$$4]
         }
         JAM.call(v4818.resolve, v4818, [data$$46])
@@ -19682,7 +19682,7 @@ function pdfjsWrapper() {
         return null
       }
       var v4821 = this.objs;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var obj$$30 = v4821[objId$$3]
       }
       var v8188 = !obj$$30;
@@ -19696,12 +19696,12 @@ function pdfjsWrapper() {
     }
     function PDFObjects_ensureObj(objId$$2, data$$45) {
       var v8189 = this.objs;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v4825 = v8189[objId$$2]
       }
       if(v4825) {
         var v4824 = this.objs;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           return v4824[objId$$2]
         }
       }
@@ -19726,7 +19726,7 @@ function pdfjsWrapper() {
       var num$$7 = ref$$6.num;
       if(num$$7 in this.cache) {
         var v4829 = this.cache;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           return v4829[num$$7]
         }
       }
@@ -19837,15 +19837,15 @@ function pdfjsWrapper() {
       for(;v4861;) {
         JAM.call(entries.push, entries, [parser$$3.getObj()]);
         var v4859 = this.cache;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4860 = nums[i$$40]
         }
-        JAM.set(v4859, v4860, JAM.get(entries, i$$40, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+        JAM.set(v4859, v4860, JAM.get(entries, i$$40, JAM.policy.p1));
         i$$40 = i$$40 + 1;
         v4861 = i$$40 < n$$13
       }
       var v4862 = e$$21.gen;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         e$$21 = entries[v4862]
       }
       if(!e$$21) {
@@ -19861,7 +19861,7 @@ function pdfjsWrapper() {
     }
     function XRef_getEntry(i$$39) {
       var v4865 = this.entries;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var e$$20 = v4865[i$$39]
       }
       if(e$$20 === null) {
@@ -19932,7 +19932,7 @@ function pdfjsWrapper() {
     function XRef_indexObjects() {
       function readToken(data$$43, offset$$13) {
         var token$$5 = "";
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var ch$$2 = data$$43[offset$$13]
         }
         var v8209 = ch$$2 !== 13;
@@ -19945,7 +19945,7 @@ function pdfjsWrapper() {
             break
           }
           token$$5 = token$$5 + String.fromCharCode(ch$$2);
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             ch$$2 = data$$43[offset$$13]
           }
           var v8214 = ch$$2 !== 13;
@@ -19966,10 +19966,10 @@ function pdfjsWrapper() {
           var v8215 = i$$38 < length$$20;
           if(v8215) {
             var v22738 = offset$$14 + i$$38;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21976 = data$$44[v22738]
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v21977 = what$$1[i$$38]
             }
             v8215 = v21976 == v21977
@@ -19980,10 +19980,10 @@ function pdfjsWrapper() {
             var v8216 = i$$38 < length$$20;
             if(v8216) {
               var v22739 = offset$$14 + i$$38;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v21978 = data$$44[v22739]
               }
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v21979 = what$$1[i$$38]
               }
               v8216 = v21978 == v21979
@@ -20014,7 +20014,7 @@ function pdfjsWrapper() {
       var currentToken;
       var v4900 = position < length$$19;
       for(;v4900;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var ch$$1 = buffer$$10[position]
         }
         var v8217 = ch$$1 === 32;
@@ -20042,7 +20042,7 @@ function pdfjsWrapper() {
           var v4890 = v8218;
           do {
             position = position + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               ch$$1 = buffer$$10[position]
             }
             var v8219 = ch$$1 !== 13;
@@ -20069,7 +20069,7 @@ function pdfjsWrapper() {
             var v8225 = xrefTagOffset < contentLength;
             if(v8225) {
               var v22742 = xrefTagOffset + 5;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v21983 = content$$2[v22742]
               }
               v8225 = v21983 < 64
@@ -20089,7 +20089,7 @@ function pdfjsWrapper() {
       var ii$$10 = xrefStms.length;
       var v4902 = i$$37 < ii$$10;
       for(;v4902;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v4901 = xrefStms[i$$37]
         }
         JAM.call(this.readXRef, this, [v4901, true]);
@@ -20207,7 +20207,7 @@ function pdfjsWrapper() {
           }
           var v21994 = this.entries;
           var v21995 = first$$2 + i$$36;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8234 = v21994[v21995]
           }
           if(!v8234) {
@@ -20269,7 +20269,7 @@ function pdfjsWrapper() {
           }
           var v22004 = this.entries;
           var v22005 = i$$35 + first$$1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8240 = v22004[v22005]
           }
           if(!v8240) {
@@ -20328,7 +20328,7 @@ function pdfjsWrapper() {
       }
       var v4949 = this.pageCache;
       var v4950 = n$$11 - 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         return v4949[v4950]
       }
     }
@@ -20340,7 +20340,7 @@ function pdfjsWrapper() {
       var ii$$9 = kids$$1.length;
       var v4957 = i$$33 < ii$$9;
       for(;v4957;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var kid = kids$$1[i$$33]
         }
         assertWellFormed(isRef(kid), "page dictionary kid is not a reference");
@@ -20540,7 +20540,7 @@ function pdfjsWrapper() {
             n$$10 = kids$$2.length;
             var v4997 = i$$34 < n$$10;
             for(;v4997;) {
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var kid$$1 = kids$$2[i$$34]
               }
               if(JAM.call(processed$$1.has, processed$$1, [kid$$1])) {
@@ -20560,11 +20560,11 @@ function pdfjsWrapper() {
           var v5001 = i$$34 < n$$10;
           for(;v5001;) {
             var v4999 = dests;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v5000 = names[i$$34]
             }
             var v22756 = i$$34 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22019 = names[v22756]
             }
             var v23505 = fetchDestination(JAM.call(xref$$8.fetchIfRef, xref$$8, [v22019]));
@@ -20594,7 +20594,7 @@ function pdfjsWrapper() {
     function RefSet_has(ref$$4) {
       var v22031 = this.dict;
       var v22032 = "R" + ref$$4.num + "." + ref$$4.gen;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v8277 = v22031[v22032]
       }
       return!!v8277
@@ -20649,13 +20649,13 @@ function pdfjsWrapper() {
         return all
       }
       function Dict_getRaw(key$$18) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           return map[key$$18]
         }
       }
       function Dict_get(key1, key2, key3) {
         var value$$37;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v22760 = value$$37 = map[key1]
         }
         var v8279 = typeof v22760 != "undefined";
@@ -20675,7 +20675,7 @@ function pdfjsWrapper() {
           }
           return v5010
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v22763 = value$$37 = map[key2]
         }
         var v8280 = typeof v22763 != "undefined";
@@ -20695,7 +20695,7 @@ function pdfjsWrapper() {
           }
           return v5012
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v5014 = map[key3]
         }
         if(!v5014) {
@@ -20728,7 +20728,7 @@ function pdfjsWrapper() {
   }
   function CmdClosure() {
     function Cmd_get(cmd$$3) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var cmdValue = cmdCache[cmd$$3]
       }
       if(cmdValue) {
@@ -20761,7 +20761,7 @@ function pdfjsWrapper() {
     var v5017 = len;
     len = len - 1;
     for(;v5017;) {
-      JAM.set(tmpImgDataPixels, len, JAM.get(imgData$$3.data, len, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+      JAM.set(tmpImgDataPixels, len, JAM.get(imgData$$3.data, len, JAM.policy.p1));
       v5017 = len;
       len = len - 1
     }
@@ -21109,7 +21109,7 @@ function pdfjsWrapper() {
           var i$$30 = 0;
           var v5123 = i$$30 < baseComps;
           for(;v5123;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v5122 = args[i$$30]
             }
             JAM.call(color$$3.push, color$$3, [v5122]);
@@ -21214,7 +21214,7 @@ function pdfjsWrapper() {
       var i$$29 = 0;
       var v5155 = i$$29 < arrLength;
       for(;v5155;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var e$$17 = arr$$10[i$$29]
         }
         if(isNum(e$$17)) {
@@ -21307,7 +21307,7 @@ function pdfjsWrapper() {
         var i$$28 = 0;
         var v5173 = i$$28 < glyphsLength;
         for(;v5173;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var glyph = glyphs[i$$28]
           }
           if(glyph === null) {
@@ -21433,7 +21433,7 @@ function pdfjsWrapper() {
             var v5186 = ii$$8 >= 0;
             for(;v5186;) {
               var v8342 = text$$7.str;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v8343 = glyphUnicode[ii$$8]
               }
               text$$7.str = v8342 + v8343;
@@ -21832,7 +21832,7 @@ function pdfjsWrapper() {
       var ii$$7 = states.length;
       var v5281 = i$$27 < ii$$7;
       for(;v5281;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var state = states[i$$27]
         }
         var key$$17 = state[0];
@@ -21895,14 +21895,14 @@ function pdfjsWrapper() {
     }
     function CanvasGraphics_setLineJoin(style$$1) {
       var v5289 = this.ctx;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         v5289.lineJoin = LINE_JOIN_STYLES[style$$1]
       }
       return
     }
     function CanvasGraphics_setLineCap(style) {
       var v5290 = this.ctx;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         v5290.lineCap = LINE_CAP_STYLES[style]
       }
       return
@@ -21941,26 +21941,26 @@ function pdfjsWrapper() {
           JAM.call(stepper$$1.breakIt, stepper$$1, [i$$26, continueCallback]);
           return i$$26
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           fnName = fnArray[i$$26]
         }
         if(fnName !== "dependency") {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v5299 = this[fnName]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v5300 = argsArray[i$$26]
           }
           JAM.call(v5299.apply, v5299, [this, v5300])
         }else {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var deps = argsArray[i$$26]
           }
           var n$$9 = 0;
           var nn = deps.length;
           var v5302 = n$$9 < nn;
           for(;v5302;) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var depObjId = deps[n$$9]
             }
             if(!JAM.call(objs$$2.isResolved, objs$$2, [depObjId])) {
@@ -21977,7 +21977,7 @@ function pdfjsWrapper() {
         }
         var v8377 = continueCallback;
         if(v8377) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22085 = slowCommands[fnName]
           }
           if(v22085) {
@@ -22086,7 +22086,7 @@ function pdfjsWrapper() {
       var pageIndex = pageNumber$$1 - 1;
       if(pageIndex in this.pagePromises) {
         var v5314 = this.pagePromises;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           return v5314[pageIndex]
         }
       }
@@ -22161,7 +22161,7 @@ function pdfjsWrapper() {
       function transportError(data$$39) {
         var v5334 = this.pageCache;
         var v5335 = data$$39.pageNum - 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var page$$3 = v5334[v5335]
         }
         if(page$$3.displayReadyPromise) {
@@ -22209,7 +22209,7 @@ function pdfjsWrapper() {
       function transportRender(data$$37) {
         var v5346 = this.pageCache;
         var v5347 = data$$37.pageIndex;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var page$$2 = v5346[v5347]
         }
         var depFonts = data$$37.depFonts;
@@ -22222,7 +22222,7 @@ function pdfjsWrapper() {
         var annotations$$2 = data$$36.annotations;
         var v8386 = this.pageCache;
         var v8387 = data$$36.pageIndex;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v5350 = v8386[v8387]
         }
         var promise$$12 = v5350.annotationsPromise;
@@ -22235,7 +22235,7 @@ function pdfjsWrapper() {
         JAM.set(this.pageCache, pageInfo$$1.pageIndex, page$$1);
         var v5353 = this.pagePromises;
         var v5354 = pageInfo$$1.pageIndex;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var promise$$11 = v5353[v5354]
         }
         JAM.call(promise$$11.resolve, promise$$11, [page$$1]);
@@ -22405,10 +22405,10 @@ function pdfjsWrapper() {
       var v5379 = i$$24 < ii$$6;
       for(;v5379;) {
         var v8396 = this.objs.objs;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8397 = fonts$$1[i$$24]
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v5378 = v8396[v8397]
         }
         fonts$$1[i$$24] = v5378.data;
@@ -22613,7 +22613,7 @@ function pdfjsWrapper() {
       var ii$$5 = times.length;
       var v5432 = i$$23 < ii$$5;
       for(;v5432;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v5430 = times[i$$23]
         }
         var name$$47 = v5430["name"];
@@ -22627,7 +22627,7 @@ function pdfjsWrapper() {
       ii$$5 = times.length;
       var v5437 = i$$23 < ii$$5;
       for(;v5437;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var span = times[i$$23]
         }
         var duration = span.end - span.start;
@@ -22655,7 +22655,7 @@ function pdfjsWrapper() {
       }
       var v5440 = this.times;
       var v22096 = this.started;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v8428 = v22096[name$$46]
       }
       JAM.call(v5440.push, v5440, [{"name":name$$46, "start":v8428, "end":Date.now()}]);
@@ -22729,7 +22729,7 @@ function pdfjsWrapper() {
       var ii$$4 = errbacks.length;
       var v5459 = i$$22 < ii$$4;
       for(;v5459;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v5458 = errbacks[i$$22]
         }
         JAM.call(v5458.call, v5458, [null, reason]);
@@ -22744,7 +22744,7 @@ function pdfjsWrapper() {
       var ii$$3 = callbacks$$2.length;
       var v5461 = i$$21 < ii$$3;
       for(;v5461;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v5460 = callbacks$$2[i$$21]
         }
         JAM.call(v5460.call, v5460, [null, data$$31]);
@@ -22767,7 +22767,7 @@ function pdfjsWrapper() {
       var ii$$2 = callbacks$$1.length;
       var v5467 = i$$20 < ii$$2;
       for(;v5467;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v5466 = callbacks$$1[i$$20]
         }
         JAM.call(v5466.call, v5466, [null, data$$30]);
@@ -22807,7 +22807,7 @@ function pdfjsWrapper() {
       var ii$$1 = promises.length;
       var v5473 = i$$18 < ii$$1;
       for(;v5473;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var promise$$1 = promises[i$$18]
         }
         JAM.call(promise$$1.then, promise$$1, [v82(i$$18)]);
@@ -23085,7 +23085,7 @@ function pdfjsWrapper() {
         var v5552 = i$$17 < length$$16;
         for(;v5552;) {
           var v8518 = fileID;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22846 = hash$$1[i$$17]
           }
           var v22160 = Number(v22846);
@@ -23341,7 +23341,7 @@ function pdfjsWrapper() {
       i$$16 = 0;
       var v5611 = i$$16 < n$$6;
       for(;v5611;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var annotationRef = annotations$$1[i$$16]
         }
         var annotation = JAM.call(xref$$2.fetch, xref$$2, [annotationRef]);
@@ -23417,7 +23417,7 @@ function pdfjsWrapper() {
                 jj = kids.length;
                 var v5598 = j$$2 < jj;
                 for(;v5598;) {
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var kidRef = kids[j$$2]
                   }
                   var v8550 = kidRef.num == ref$$3.num;
@@ -23500,7 +23500,7 @@ function pdfjsWrapper() {
       i$$15 = 0;
       var v5614 = i$$15 < n$$5;
       for(;v5614;) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v22185 = annotations[i$$15]
         }
         if(v22185.type != "Link") {
@@ -23508,7 +23508,7 @@ function pdfjsWrapper() {
           v5614 = i$$15 < n$$5;
           continue
         }
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v5613 = annotations[i$$15]
         }
         JAM.call(links.push, links, [v5613]);
@@ -23528,7 +23528,7 @@ function pdfjsWrapper() {
         i$$14 = 0;
         var v5616 = i$$14 < n$$4;
         for(;v5616;) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8560 = content[i$$14]
           }
           JAM.call(streams.push, streams, [JAM.call(xref$$1.fetchIfRef, xref$$1, [v8560])]);
@@ -23647,7 +23647,7 @@ function pdfjsWrapper() {
     var data$$72 = JAM.call(type1Parser.extractFontProgram, type1Parser, [eexecBlock]);
     var info$$2;
     for(info$$2 in data$$72.properties) {
-      JAM.set(properties$$17, info$$2, JAM.get(data$$72.properties, info$$2, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074))
+      JAM.set(properties$$17, info$$2, JAM.get(data$$72.properties, info$$2, JAM.policy.p1))
     }
     var charstrings$$2 = JAM.call(this.getOrderedCharStrings, this, [data$$72.charstrings, properties$$17]);
     var type2Charstrings = JAM.call(this.getType2Charstrings, this, [charstrings$$2]);
@@ -23660,7 +23660,7 @@ function pdfjsWrapper() {
   function Type1Parser() {
     function Type1Parser_extractFontHeader(stream$$18, properties$$16) {
       function getToken$$3() {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var character$$1 = headerString[i$$106]
         }
         var v8573 = i$$106 < count$$12;
@@ -23674,7 +23674,7 @@ function pdfjsWrapper() {
         var v5645 = v8573;
         for(;v5645;) {
           var v5644 = i$$106 = i$$106 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             character$$1 = headerString[v5644]
           }
           var v8574 = i$$106 < count$$12;
@@ -23700,7 +23700,7 @@ function pdfjsWrapper() {
         for(;v5647;) {
           token$$10 = token$$10 + character$$1;
           var v5646 = i$$106 = i$$106 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             character$$1 = headerString[v5646]
           }
           var v8576 = i$$106 < count$$12;
@@ -23721,7 +23721,7 @@ function pdfjsWrapper() {
       var v5648 = i$$106 < ii$$41;
       for(;v5648;) {
         var v8577 = headerString;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v22209 = stream$$18[i$$106]
         }
         headerString = v8577 + String.fromCharCode(v22209);
@@ -23734,7 +23734,7 @@ function pdfjsWrapper() {
       var v5657 = i$$106 < count$$12;
       for(;v5657;) {
         var getToken$$2 = getToken$$3;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var c$$16 = headerString[i$$106]
         }
         if(isSeparator(c$$16)) {
@@ -23745,7 +23745,7 @@ function pdfjsWrapper() {
               var jj$$8 = matrix$$2.length;
               var v5650 = j$$37 < jj$$8;
               for(;v5650;) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v8579 = matrix$$2[j$$37]
                 }
                 matrix$$2[j$$37] = v8579 * 1E3;
@@ -23759,7 +23759,7 @@ function pdfjsWrapper() {
               var encodingArg = getToken$$2();
               var encoding$$5;
               if(!/^\d+$/.test(encodingArg)) {
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   encoding$$5 = Encodings[encodingArg]
                 }
               }else {
@@ -23801,7 +23801,7 @@ function pdfjsWrapper() {
       function getToken$$1() {
         var v8583 = i$$105 < count$$11;
         if(v8583) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22211 = eexecStr[i$$105]
           }
           v8583 = isSeparator(v22211)
@@ -23811,7 +23811,7 @@ function pdfjsWrapper() {
           i$$105 = i$$105 + 1;
           var v8584 = i$$105 < count$$11;
           if(v8584) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22212 = eexecStr[i$$105]
             }
             v8584 = isSeparator(v22212)
@@ -23821,7 +23821,7 @@ function pdfjsWrapper() {
         var token$$8 = "";
         var v8585 = i$$105 < count$$11;
         if(v8585) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22853 = eexecStr[i$$105]
           }
           v8585 = !isSeparator(v22853)
@@ -23830,13 +23830,13 @@ function pdfjsWrapper() {
         for(;v5659;) {
           var v22214 = i$$105;
           i$$105 = i$$105 + 1;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v8586 = eexecStr[v22214]
           }
           token$$8 = token$$8 + v8586;
           var v8587 = i$$105 < count$$11;
           if(v8587) {
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var v22854 = eexecStr[i$$105]
             }
             v8587 = !isSeparator(v22854)
@@ -23852,7 +23852,7 @@ function pdfjsWrapper() {
       var v5660 = i$$105 < ii$$40;
       for(;v5660;) {
         var v8588 = eexecStr;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v22216 = eexec[i$$105]
         }
         eexecStr = v8588 + String.fromCharCode(v22216);
@@ -23871,7 +23871,7 @@ function pdfjsWrapper() {
       var v5691 = i$$105 < count$$11;
       for(;v5691;) {
         var getToken = getToken$$1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           c$$15 = eexecStr[i$$105]
         }
         var v8591 = glyphsSection || subrsSection;
@@ -23988,14 +23988,14 @@ function pdfjsWrapper() {
               if(c$$15 == "/") {
                 token$$7 = glyph$$3 = "";
                 var v22221 = i$$105 = i$$105 + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v8605 = c$$15 = eexecStr[v22221]
                 }
                 var v5686 = v8605 != " ";
                 for(;v5686;) {
                   glyph$$3 = glyph$$3 + c$$15;
                   var v22222 = i$$105 = i$$105 + 1;
-                  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                  introspect(JAM.policy.p1) {
                     var v8606 = c$$15 = eexecStr[v22222]
                   }
                   v5686 = v8606 != " "
@@ -24042,7 +24042,7 @@ function pdfjsWrapper() {
           var command = null;
           if(value$$52 == kEscapeCommand) {
             var v5696 = i$$103 = i$$103 + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               var escape$$1 = array$$11[v5696]
             }
             if(escape$$1 == 16) {
@@ -24094,7 +24094,7 @@ function pdfjsWrapper() {
               }
             }
             var v5703 = charStringDictionary["12"];
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               command = v5703[escape$$1]
             }
           }else {
@@ -24133,7 +24133,7 @@ function pdfjsWrapper() {
             }else {
               if(value$$52 == 10) {
                 var v22230 = charstring$$2.length - 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v8614 = charstring$$2[v22230]
                 }
                 if(v8614 < 3) {
@@ -24184,7 +24184,7 @@ function pdfjsWrapper() {
                 }
               }
             }
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               command = charStringDictionary[value$$52]
             }
           }
@@ -24227,7 +24227,7 @@ function pdfjsWrapper() {
             if(value$$52 <= 250) {
               var v8619 = (value$$52 - 247) * 256;
               var v22234 = i$$103 = i$$103 + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 var v8620 = array$$11[v22234]
               }
               value$$52 = v8619 + v8620 + 108
@@ -24235,28 +24235,28 @@ function pdfjsWrapper() {
               if(value$$52 <= 254) {
                 var v8621 = -((value$$52 - 251) * 256);
                 var v22236 = i$$103 = i$$103 + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v8622 = array$$11[v22236]
                 }
                 value$$52 = v8621 - v8622 - 108
               }else {
                 var v23161 = i$$103 = i$$103 + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v23074 = array$$11[v23161]
                 }
                 var v22237 = (v23074 & 255) << 24;
                 var v23162 = i$$103 = i$$103 + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v23075 = array$$11[v23162]
                 }
                 var v8623 = v22237 | (v23075 & 255) << 16;
                 var v23076 = i$$103 = i$$103 + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v22864 = array$$11[v23076]
                 }
                 var v5726 = v8623 | (v22864 & 255) << 8;
                 var v22865 = i$$103 = i$$103 + 1;
-                introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+                introspect(JAM.policy.p1) {
                   var v22240 = array$$11[v22865]
                 }
                 value$$52 = v5726 | (v22240 & 255) << 0
@@ -24274,7 +24274,7 @@ function pdfjsWrapper() {
       var start$$11 = index$$48;
       var v22241 = index$$48;
       index$$48 = index$$48 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v8626 = str$$23[v22241]
       }
       var v5733 = v8626 != "[";
@@ -24282,7 +24282,7 @@ function pdfjsWrapper() {
         start$$11 = start$$11 + 1;
         var v22242 = index$$48;
         index$$48 = index$$48 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8627 = str$$23[v22242]
         }
         v5733 = v8627 != "["
@@ -24291,7 +24291,7 @@ function pdfjsWrapper() {
       var count$$9 = 0;
       var v22243 = index$$48;
       index$$48 = index$$48 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v8628 = str$$23[v22243]
       }
       var v5734 = v8628 != "]";
@@ -24299,7 +24299,7 @@ function pdfjsWrapper() {
         count$$9 = count$$9 + 1;
         var v22244 = index$$48;
         index$$48 = index$$48 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8629 = str$$23[v22244]
         }
         v5734 = v8629 != "]"
@@ -24314,7 +24314,7 @@ function pdfjsWrapper() {
       for(;v5737;) {
         var v5735 = array$$12;
         var v5736 = i$$104;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v22245 = array$$12[i$$104]
         }
         if(!v22245) {
@@ -24328,13 +24328,13 @@ function pdfjsWrapper() {
       return array$$12
     }
     function readNumber(str$$24, index$$49) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v8631 = str$$24[index$$49]
       }
       var v5738 = v8631 == " ";
       for(;v5738;) {
         index$$49 = index$$49 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8632 = str$$24[index$$49]
         }
         v5738 = v8632 == " "
@@ -24343,7 +24343,7 @@ function pdfjsWrapper() {
       var count$$10 = 0;
       var v22246 = index$$49;
       index$$49 = index$$49 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v8633 = str$$24[v22246]
       }
       var v5739 = v8633 != " ";
@@ -24351,7 +24351,7 @@ function pdfjsWrapper() {
         count$$10 = count$$10 + 1;
         var v22247 = index$$49;
         index$$49 = index$$49 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v8634 = str$$24[v22247]
         }
         v5739 = v8634 != " "
@@ -24412,7 +24412,7 @@ function pdfjsWrapper() {
       params = {url:arg$$5}
     }
     var xhr = new PdfJS_window.XMLHttpRequest;
-    JAM.call(JAM.get(xhr, "open", JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074), xhr, ["GET", params.url]);
+    JAM.call(JAM.get(xhr, "open", JAM.policy.p1), xhr, ["GET", params.url]);
     xhr.mozResponseType = xhr.responseType = "arraybuffer";
     var v5750;
     if(params.url.indexOf(":") < 0) {
@@ -24513,7 +24513,7 @@ function pdfjsWrapper() {
     var v5767 = n$$1 < length$$13;
     for(;v5767;) {
       var v8654 = str$$6;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v22258 = bytes[n$$1]
       }
       str$$6 = v8654 + String.fromCharCode(v22258);
@@ -24556,7 +24556,7 @@ function pdfjsWrapper() {
       for(;v5774;) {
         var v5772 = PDFStringTranslateTable;
         var v5773 = str$$8.charCodeAt(i$$12);
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var code$$2 = v5772[v5773]
         }
         var v8660 = str2;
@@ -24771,7 +24771,7 @@ function pdfjsWrapper() {
       if(data$$27.isReply) {
         var callbackId = data$$27.callbackId;
         if(data$$27.callbackId in callbacks) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var callback$$26 = callbacks[callbackId]
           }
           delete callbacks[callbackId];
@@ -24782,7 +24782,7 @@ function pdfjsWrapper() {
       }else {
         if(data$$27.action in ah) {
           var v5825 = data$$27.action;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var action = ah[v5825]
           }
           if(data$$27.callbackId) {
@@ -38599,7 +38599,7 @@ function v43(type$$26) {
   }
   function v37(event$$1) {
     var v6041 = this.__listeners__;
-    JAM.call(JAM.get(v6041, event$$1.name, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074), v6041, [event$$1]);
+    JAM.call(JAM.get(v6041, event$$1.name, JAM.policy.p1), v6041, [event$$1]);
     return
   }
   function v36(name$$36) {
@@ -38640,7 +38640,7 @@ function v30() {
   function v29() {
     var v6045 = PdfJS_window.__resources__;
     var v6046 = this.url;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       this.response = v6045[v6046]
     }
     this.readyState = 4;
@@ -38721,40 +38721,40 @@ function v25(data$$21) {
       var b3 = data$$21.charCodeAt(v22307) & 255;
       var v22308 = PdfJS_window.__to64__;
       var v22309 = b1 >> 2;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v20873 = v22308[v22309]
       }
       result$$2 = result$$2 + v20873;
       if(i$$10 === data$$21.length + 2) {
         var v22887 = PdfJS_window.__to64__;
         var v22888 = (b1 & 3) << 4;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v22311 = v22887[v22888]
         }
         result$$2 = result$$2 + (v22311 + "==")
       }else {
         var v22312 = PdfJS_window.__to64__;
         var v22313 = (b1 & 3) << 4 | b2 >> 4;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v20876 = v22312[v22313]
         }
         result$$2 = result$$2 + v20876;
         if(i$$10 === data$$21.length + 1) {
           var v22891 = PdfJS_window.__to64__;
           var v22892 = (b2 & 15) << 2;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22315 = v22891[v22892]
           }
           result$$2 = result$$2 + (v22315 + "=")
         }else {
           var v22893 = PdfJS_window.__to64__;
           var v22894 = (b2 & 15) << 2 | b3 >> 6;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22316 = v22893[v22894]
           }
           var v22895 = PdfJS_window.__to64__;
           var v22896 = b3 & 63;
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v22317 = v22895[v22896]
           }
           result$$2 = result$$2 + (v22316 + v22317)
@@ -38792,7 +38792,7 @@ function v22(runner$$2) {
     if(index$$40 < length$$12) {
       try {
         var v20884 = suite$$1.benchmarks;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v6070 = v20884[index$$40]
         }
         v6070.Setup()
@@ -38808,7 +38808,7 @@ function v22(runner$$2) {
   function RunNextBenchmark() {
     try {
       var v20885 = suite$$1.benchmarks;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v6072 = v20885[index$$40]
       }
       data$$20 = JAM.call(suite$$1.RunSingleBenchmark, suite$$1, [v6072, data$$20])
@@ -38829,7 +38829,7 @@ function v22(runner$$2) {
       var v20887 = suite$$1.benchmarks;
       var v20888 = index$$40;
       index$$40 = index$$40 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v6074 = v20887[v20888]
       }
       v6074.TearDown()
@@ -38988,12 +38988,12 @@ function v15(measurements$$1) {
   var i$$4 = 0;
   var v6119 = i$$4 < measurements$$1.length;
   for(;v6119;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v22326 = measurements$$1[i$$4]
     }
     if(v22326.latency != 0) {
       var v20912 = log$$2;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v22897 = measurements$$1[i$$4]
       }
       log$$2 = v20912 + JAM.call(Math.log, Math, [v22897.latency]);
@@ -39015,7 +39015,7 @@ function v14(measurements) {
   var v6122 = i$$3 < measurements.length;
   for(;v6122;) {
     var v20917 = log$$1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v22898 = measurements[i$$3]
     }
     log$$1 = v20917 + JAM.call(Math.log, Math, [v22898.time]);
@@ -39030,7 +39030,7 @@ function v13(numbers) {
   var v6125 = i$$2 < numbers.length;
   for(;v6125;) {
     var v20922 = log;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v22329 = numbers[i$$2]
     }
     log = v20922 + JAM.call(Math.log, Math, [v22329]);
@@ -39045,7 +39045,7 @@ function v12() {
   var i$$1 = 0;
   var v6128 = i$$1 < suites$$1.length;
   for(;v6128;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v22899 = suites$$1[i$$1]
     }
     result = result + v22899.benchmarks.length;
@@ -39067,7 +39067,7 @@ function v11(runner, skipBenchmarks$$1) {
       }else {
         var v6129 = index$$39;
         index$$39 = index$$39 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var suite = suites[v6129]
         }
         if(runner.NotifyStart) {
@@ -39279,11 +39279,11 @@ function tearDownPdfJS() {
   var i$$7 = 0;
   var v6174 = i$$7 < canvas_logs.length;
   for(;v6174;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v6169 = canvas_logs[i$$7]
     }
     var log_length = v6169.length;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v20952 = canvas_logs[i$$7]
     }
     var log_hash = hash(v20952.join(" "));

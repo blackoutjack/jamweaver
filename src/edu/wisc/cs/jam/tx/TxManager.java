@@ -32,6 +32,7 @@ import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.Transform;
 import edu.wisc.cs.jam.Dbg;
 
+import edu.wisc.cs.jam.js.NodeUtil;
 import edu.wisc.cs.jam.js.JSExp;
 
 // This class coordinates the creation and composition of all the
@@ -66,6 +67,9 @@ public class TxManager implements CheckManager, Callback {
   private Map<Predicate,Evaluator> evaluatorMap;
   private Map<Policy.Edge,PolicyTransition> transitionMap;
 
+  protected Map<String,Introspector> introspectorNameMap;
+  private static int NEXT_INTROSPECTOR_ID = 0;
+
   // Construct a TxManager for the given JAM analysis.
   public TxManager(SourceFile src, Policy pol) {
     sourceFile = src;
@@ -81,6 +85,7 @@ public class TxManager implements CheckManager, Callback {
     // Use LinkedHashMap for consistent ordering between runs.
     evaluatorMap = new LinkedHashMap<Predicate,Evaluator>();
     transitionMap = new HashMap<Policy.Edge,PolicyTransition>();
+    introspectorNameMap = new HashMap<String,Introspector>();
     introspectorMap = new IntrospectorMap(policy);
   }
 
@@ -317,9 +322,7 @@ public class TxManager implements CheckManager, Callback {
       if (objstr.equals(hdlrbank)) {
         Exp prop = ispect.getChild(1);
         if (prop.isString()) {
-          String propstr = prop.toCode();
-          // %%% Create utility |removeQuotes| function
-          propstr = propstr.substring(1, propstr.length() - 1);
+          String propstr = NodeUtil.unquote(prop.toCode());
           if (propstr.equals(JAMConfig.COMPREHENSIVE_INTROSPECTOR)) {
             introspect = introspectorMap.getComprehensive();
           } else if (propstr.startsWith(JAMConfig.INTROSPECTOR_PREFIX)) {
@@ -428,6 +431,16 @@ public class TxManager implements CheckManager, Callback {
     sb.append(processAll.getName());
     sb.append("\n");
   }
+
+  protected void appendWovenFlag(StringBuilder sb, boolean woven) {
+    sb.append(", woven: ");
+    if (woven) {
+      sb.append("true");
+    } else {
+      sb.append("false");
+    }
+    sb.append("\n");
+  }
   
   protected void appendPolicyClosing(StringBuilder sb) {
     sb.append("  };\n");
@@ -502,25 +515,33 @@ public class TxManager implements CheckManager, Callback {
 
     appendPolicyObjectOpening(sb);
     appendIntrospectorMap(sb, hdlrs);
+    appendWovenFlag(sb, true);
     appendPolicyClosing(sb);
 
     Node node = sourceFile.nodeFromCode(sb.toString());
     return JSExp.create(sourceFile, node);
   }
 
-  public Set<PolicyType> getPolicyTypes(String ispect) {
-    String hash = ispect.substring(JAMConfig.INTROSPECTOR_PREFIX.length());
-    
+  public Set<PolicyType> getPolicyTypes(String ispectId) {
     Introspector i = null;
-    if (hash.equals("Full")) {
-      i = introspectorMap.getComprehensive();
+    if (introspectorNameMap.containsKey(ispectId)) {
+      i = introspectorNameMap.get(ispectId);
     } else {
-      List<Policy.Edge> edges = policy.getEdgesByHash(hash);
-      if (edges == null) {
-        Dbg.warn("No edges for hash: " + hash);
-        return null;
+      String hash = ispectId.substring(JAMConfig.INTROSPECTOR_PREFIX.length());
+      if (hash.equals("Full")) {
+        i = introspectorMap.getComprehensive();
+      } else {
+        List<Policy.Edge> edges = policy.getEdgesByHash(hash);
+        if (edges == null) {
+          Dbg.warn("No edges for hash: " + hash);
+          return null;
+        }
+        i = introspectorMap.get(edges);
       }
-      i = introspectorMap.get(edges);
+    }
+    if (i == null) {
+      Dbg.warn("No introspector found for id: " + ispectId);
+      return null;
     }
     return i.getPolicyTypes();
   }
@@ -547,6 +568,7 @@ public class TxManager implements CheckManager, Callback {
       comprehensive = get(compEdges);
       comprehensive.setComprehensive(true);
       comprehensive.setName(JAMConfig.COMPREHENSIVE_INTROSPECTOR);
+      introspectorNameMap.put(JAMConfig.COMPREHENSIVE_INTROSPECTOR, comprehensive);
       // Remove this from the general introspectors list, so another
       // introspector checking all predicates can be generated use
       // with woven transactions.
@@ -613,7 +635,13 @@ public class TxManager implements CheckManager, Callback {
         for (Policy.Edge pe : match.getPolicyEdges()) {
           sb.append(policy.getHash(pe));
         }
-        match.setName(sb.toString());
+        match.setHash(sb.toString());
+        // Use a short name for now.
+        // %%% There needs to be a retrievable mapping from source code.
+        String iname = JAMConfig.INTROSPECTOR_PREFIX + NEXT_INTROSPECTOR_ID;
+        match.setName(iname);
+        introspectorNameMap.put(iname, match);
+        NEXT_INTROSPECTOR_ID++;
 
         LinkedHashSet<Policy.Edge> keys = new LinkedHashSet<Policy.Edge>(edges);
         introspectors.put(keys, match);

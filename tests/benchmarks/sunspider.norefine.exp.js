@@ -26,9 +26,9 @@ function next() {
   if((testIndex = testIndex + 1) < tests.length) {
     warmup();
     var v5 = testFrame.contentDocument;
-    JAM.call(JAM.get(v5, "open", JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074), v5, []);
+    JAM.call(JAM.get(v5, "open", JAM.policy.p1), v5, []);
     var v6 = testFrame.contentDocument;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v7 = testContents[testIndex]
     }
     JAM.call(v6.write, v6, [v7]);
@@ -47,10 +47,10 @@ function next() {
 }
 function recordResult(time) {
   if(currentRepeat >= 0) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v12 = output[currentRepeat]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v13 = tests[testIndex]
     }
     JAM.set(v12, v13, time)
@@ -66,10 +66,10 @@ function finish() {
     var i$$3 = 0;
     var v17 = i$$3 < output.length;
     for(;v17;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v15 = output[i$$3]
       }
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var time$$1 = v15[test]
       }
       if(time$$1 != time$$1) {

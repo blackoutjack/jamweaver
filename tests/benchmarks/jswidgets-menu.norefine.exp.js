@@ -30,7 +30,7 @@ function getNSLayer(inNode, inName) {
 function getLayer(inNode$$1, inName$$1) {
   var node$$3;
   if(inNode$$1.getElementById) {
-    node$$3 = JAM.call(inNode$$1.getElementById, inNode$$1, [inName$$1], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C)
+    node$$3 = JAM.call(inNode$$1.getElementById, inNode$$1, [inName$$1], JAM.policy.p1)
   }else {
     if(inNode$$1.all) {
       node$$3 = inNode$$1.all[inName$$1]
@@ -268,7 +268,7 @@ function Is() {
   }
   this.ns6 = v44;
   if(this.ns6) {
-    var v695 = JAM.call(agent.slice, agent, [agent.indexOf("netscape6/") + 10, agent.length], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+    var v695 = JAM.call(agent.slice, agent, [agent.indexOf("netscape6/") + 10, agent.length], JAM.policy.p1);
     this.version = v695
   }
   var v48 = appName.indexOf("internet explorer") != -1;
@@ -317,7 +317,7 @@ function Is() {
     v320 = v514
   }
   if(v320) {
-    var v696 = JAM.call(agent.slice, agent, [agent.indexOf("msie ") + 5, agent.length], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+    var v696 = JAM.call(agent.slice, agent, [agent.indexOf("msie ") + 5, agent.length], JAM.policy.p1);
     this.version = v696;
     var v697 = this.version.slice(0, this.version.indexOf(";"));
     this.version = v697
@@ -364,14 +364,14 @@ function Is() {
     this.ie4 = false;
     this.ie5 = false;
     this.ie6 = false;
-    var v698 = JAM.call(agent.slice, agent, [agent.indexOf("opera") + 6, agent.length], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+    var v698 = JAM.call(agent.slice, agent, [agent.indexOf("opera") + 6, agent.length], JAM.policy.p1);
     this.version = v698;
     var v699 = parseFloat(this.version);
     this.version = v699
   }
   this.kq = agent.indexOf("konqueror") != -1;
   if(this.kq) {
-    var v700 = JAM.call(agent.substring, agent, [agent.indexOf("konqueror/") + 10, agent.length], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+    var v700 = JAM.call(agent.substring, agent, [agent.indexOf("konqueror/") + 10, agent.length], JAM.policy.p1);
     this.version = v700;
     var v701 = this.version.substring(0, this.version.indexOf(";"));
     this.version = v701;
@@ -764,7 +764,7 @@ function estLabelWidth(label$$3) {
   i$$3 = 0;
   var v119 = i$$3 < label$$3.length;
   for(;v119;) {
-    lWidth = lWidth + alphaWidth[JAM.call(label$$3.charAt, label$$3, [i$$3], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C)];
+    lWidth = lWidth + alphaWidth[JAM.call(label$$3.charAt, label$$3, [i$$3], JAM.policy.p1)];
     i$$3 = i$$3 + 1;
     v119 = i$$3 < label$$3.length
   }
@@ -840,35 +840,35 @@ function buildMenuCell(index$$39, left$$5, top$$5, width$$12, height$$10) {
   mHeight = height$$10;
   mLabel$$2 = window.menuCells[index$$39].label;
   mAction$$1 = window.menuCells[index$$39].action;
-  JAM.call(document.write, document, ["<" + blInfo.divType + ' id="' + mName$$1], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
-  JAM.call(document.write, document, ['" class="' + mClass + '" '], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
-  JAM.call(document.write, document, [setStyle(blInfo.divType, blInfo.fontSize, mLeft, mTop, mWidth$$1, mHeight, 0, window.mbPassive, "inherit")], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
-  JAM.call(document.write, document, [' onclick="' + mAction$$1 + '" '], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+  JAM.call(document.write, document, ["<" + blInfo.divType + ' id="' + mName$$1], JAM.policy.p1);
+  JAM.call(document.write, document, ['" class="' + mClass + '" '], JAM.policy.p1);
+  JAM.call(document.write, document, [setStyle(blInfo.divType, blInfo.fontSize, mLeft, mTop, mWidth$$1, mHeight, 0, window.mbPassive, "inherit")], JAM.policy.p1);
+  JAM.call(document.write, document, [' onclick="' + mAction$$1 + '" '], JAM.policy.p1);
   mPopup = window.menuCells[index$$39].popup;
   if(mPopup) {
-    JAM.call(document.write, document, ['onmouseover="popMenu(' + mLevel$$2 + ",'" + mName$$1 + "','" + mPopup + "'" + ');" '], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
-    JAM.call(document.write, document, ['onmouseout="setColorPassive(' + "'" + mName$$1 + "'" + ');">'], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C)
+    JAM.call(document.write, document, ['onmouseover="popMenu(' + mLevel$$2 + ",'" + mName$$1 + "','" + mPopup + "'" + ');" '], JAM.policy.p1);
+    JAM.call(document.write, document, ['onmouseout="setColorPassive(' + "'" + mName$$1 + "'" + ');">'], JAM.policy.p1)
   }else {
-    JAM.call(document.write, document, ['onmouseover="unPopMenus(' + mLevel$$2 + ",'" + mName$$1 + "'" + ');" '], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
-    JAM.call(document.write, document, ['onmouseout="setColorPassive(' + "'" + mName$$1 + "'" + ');">'], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C)
+    JAM.call(document.write, document, ['onmouseover="unPopMenus(' + mLevel$$2 + ",'" + mName$$1 + "'" + ');" '], JAM.policy.p1);
+    JAM.call(document.write, document, ['onmouseout="setColorPassive(' + "'" + mName$$1 + "'" + ');">'], JAM.policy.p1)
   }
   var v141 = window.menuLayers;
   var v142 = mName$$1;
   var v709 = new menuLayer(mLabel$$2, mAction$$1);
   JAM.set(v141, v142, v709);
   if(blInfo.divType == "layer") {
-    JAM.call(document.write, document, [JAM.call(mLabel$$2.fontcolor, mLabel$$2, [mtPassive], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C)], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C)
+    JAM.call(document.write, document, [JAM.call(mLabel$$2.fontcolor, mLabel$$2, [mtPassive], JAM.policy.p1)], JAM.policy.p1)
   }else {
-    JAM.call(document.write, document, [mLabel$$2], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C)
+    JAM.call(document.write, document, [mLabel$$2], JAM.policy.p1)
   }
   var v374 = mPopup;
   if(v374) {
     v374 = mLevel$$2 >= 1
   }
   if(v374) {
-    JAM.call(document.write, document, ['&nbsp;<img src="' + window.menuPntr + '" border="0">'], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C)
+    JAM.call(document.write, document, ['&nbsp;<img src="' + window.menuPntr + '" border="0">'], JAM.policy.p1)
   }
-  JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+  JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.p1);
   return
 }
 function buildMenuBody(cQueue, bName, bLevel$$1, bLeft$$1, bTop$$1, bWidth$$1, bHeight$$1) {
@@ -885,8 +885,8 @@ function buildMenuBody(cQueue, bName, bLevel$$1, bLeft$$1, bTop$$1, bWidth$$1, b
   bClass = "menuBody";
   lWidth$$1 = bWidth$$1 + blInfo.bwPadding;
   lHeight = bHeight$$1 + blInfo.bhPadding;
-  JAM.call(document.write, document, ["<" + blInfo.divType + ' id="' + bName + '" class="' + bClass + '" '], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
-  JAM.call(document.write, document, [setStyle(blInfo.divType, blInfo.fontSize, bLeft$$1, bTop$$1, lWidth$$1, lHeight, bLevel$$1 + 1, "#000000", "hidden")], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+  JAM.call(document.write, document, ["<" + blInfo.divType + ' id="' + bName + '" class="' + bClass + '" '], JAM.policy.p1);
+  JAM.call(document.write, document, [setStyle(blInfo.divType, blInfo.fontSize, bLeft$$1, bTop$$1, lWidth$$1, lHeight, bLevel$$1 + 1, "#000000", "hidden")], JAM.policy.p1);
   JAM.call(document.writeln, document, [">"]);
   mLeft$$1 = blInfo.leftOffset;
   mTop$$1 = blInfo.mTopOffset;
@@ -908,7 +908,7 @@ function buildMenuBody(cQueue, bName, bLevel$$1, bLeft$$1, bTop$$1, bWidth$$1, b
     i$$4 = i$$4 + 1;
     v156 = i$$4 < cQueue.length
   }
-  JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+  JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.p1);
   return
 }
 function buildMenuBodies() {
@@ -977,7 +977,7 @@ function queueMenuBuilds(mIndex, mLevel$$3, mPopup$$2, mLeft$$2, mTop$$2) {
   var v170 = v401;
   for(;v170;) {
     if(window.menuCells[i$$6].level == mLevel$$3) {
-      sWidth = JAM.call(Math.max, Math, [sWidth, window.menuCells[i$$6].width], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C)
+      sWidth = JAM.call(Math.max, Math, [sWidth, window.menuCells[i$$6].width], JAM.policy.p1)
     }
     i$$6 = i$$6 + 1;
     var v404 = i$$6 < window.menuCells.length;
@@ -1046,10 +1046,10 @@ function drawHMenuBar(left$$6, top$$6, width$$13, height$$11, padding, graphic) 
   bHeight$$3 = height$$11 + blInfo.itemHeight + blInfo.hBarPadding;
   iPadding = padding + blInfo.itemPadding;
   bGraphic = graphic;
-  JAM.call(document.write, document, ["<" + blInfo.divType + ' id="menuBar" class="menuBar" '], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
-  JAM.call(document.write, document, [setStyle(blInfo.divType, blInfo.fontSize, bLeft$$3, bTop$$3, bWidth$$3, bHeight$$3, 0, null, "visible")], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+  JAM.call(document.write, document, ["<" + blInfo.divType + ' id="menuBar" class="menuBar" '], JAM.policy.p1);
+  JAM.call(document.write, document, [setStyle(blInfo.divType, blInfo.fontSize, bLeft$$3, bTop$$3, bWidth$$3, bHeight$$3, 0, null, "visible")], JAM.policy.p1);
   JAM.call(document.writeln, document, [">"]);
-  JAM.call(document.writeln, document, ['<img name="menuImage" src="' + bGraphic + '" class="menuBar" border="1" width="' + width$$13 + '" height="' + height$$11 + '">'], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+  JAM.call(document.writeln, document, ['<img name="menuImage" src="' + bGraphic + '" class="menuBar" border="1" width="' + width$$13 + '" height="' + height$$11 + '">'], JAM.policy.p1);
   iLeft = blInfo.leftOffset;
   mTop$$3 = height$$11 + blInfo.mBarOffset;
   bTop$$3 = bTop$$3 + blInfo.bBarOffset;
@@ -1057,7 +1057,7 @@ function drawHMenuBar(left$$6, top$$6, width$$13, height$$11, padding, graphic) 
   var v194 = i$$7 < window.menuCells.length;
   for(;v194;) {
     iWidth = window.menuCells[i$$7].width + iPadding;
-    iWidth = JAM.call(Math.min, Math, [iWidth, bWidth$$3 - iLeft + blInfo.menuPadding], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+    iWidth = JAM.call(Math.min, Math, [iWidth, bWidth$$3 - iLeft + blInfo.menuPadding], JAM.policy.p1);
     buildMenuCell(i$$7, iLeft, mTop$$3, iWidth, blInfo.itemHeight);
     if(window.menuCells[i$$7].popup) {
       mPopup = window.menuCells[i$$7].popup;
@@ -1068,7 +1068,7 @@ function drawHMenuBar(left$$6, top$$6, width$$13, height$$11, padding, graphic) 
     iLeft = iLeft + (iWidth + blInfo.itemSpacing);
     v194 = i$$7 < window.menuCells.length
   }
-  JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+  JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.p1);
   buildMenuBodies();
   document.close();
   return
@@ -1106,17 +1106,17 @@ function drawVMenuBar(left$$7, top$$7, width$$14, height$$12, padding$$1, graphi
   i$$8 = 0;
   iPadding$$1 = padding$$1 + blInfo.itemPadding;
   bGraphic$$1 = graphic$$1;
-  JAM.call(document.write, document, ["<" + blInfo.divType + ' id="menuBar" class="menuBar" '], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
-  JAM.call(document.write, document, [setStyle(blInfo.divType, blInfo.fontSize, bLeft$$4, bTop$$4, bWidth$$4, bHeight$$4 + mHeight$$1, 0, null, "visible")], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+  JAM.call(document.write, document, ["<" + blInfo.divType + ' id="menuBar" class="menuBar" '], JAM.policy.p1);
+  JAM.call(document.write, document, [setStyle(blInfo.divType, blInfo.fontSize, bLeft$$4, bTop$$4, bWidth$$4, bHeight$$4 + mHeight$$1, 0, null, "visible")], JAM.policy.p1);
   JAM.call(document.writeln, document, [">"]);
-  JAM.call(document.writeln, document, ['<img name="menuImage" src="' + bGraphic$$1 + '"class="menuBar" border="1" width="' + width$$14 + '" height="' + height$$12 + '">'], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+  JAM.call(document.writeln, document, ['<img name="menuImage" src="' + bGraphic$$1 + '"class="menuBar" border="1" width="' + width$$14 + '" height="' + height$$12 + '">'], JAM.policy.p1);
   iLeft$$1 = blInfo.leftOffset;
   mTop$$4 = height$$12 + blInfo.mBarOffset;
   bTop$$4 = bTop$$4 + blInfo.bBarOffset;
   var v212 = i$$8 < window.menuCells.length;
   for(;v212;) {
     iWidth$$1 = window.menuCells[i$$8].width + iPadding$$1;
-    iWidth$$1 = JAM.call(Math.min, Math, [iWidth$$1, bWidth$$4 - iLeft$$1 + blInfo.menuPadding], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+    iWidth$$1 = JAM.call(Math.min, Math, [iWidth$$1, bWidth$$4 - iLeft$$1 + blInfo.menuPadding], JAM.policy.p1);
     buildMenuCell(i$$8, iLeft$$1, mTop$$4, iWidth$$1, blInfo.itemHeight);
     if(window.menuCells[i$$8].popup) {
       mPopup = window.menuCells[i$$8].popup;
@@ -1127,7 +1127,7 @@ function drawVMenuBar(left$$7, top$$7, width$$14, height$$12, padding$$1, graphi
     bTop$$4 = bTop$$4 + (blInfo.itemHeight + blInfo.cellOffset);
     v212 = i$$8 < window.menuCells.length
   }
-  JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+  JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.p1);
   buildMenuBodies();
   document.close();
   return
@@ -1155,7 +1155,7 @@ function activateMenus() {
   for(mName$$2 in window.menuLayers) {
     mAction$$2 = window.menuLayers[mName$$2].action;
     mNode$$7 = getLayer(document, mName$$2);
-    JAM.call(mNode$$7.captureEvents, mNode$$7, [Event.MOUSEDOWN], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+    JAM.call(mNode$$7.captureEvents, mNode$$7, [Event.MOUSEDOWN], JAM.policy.p1);
     JAM.set(mNode$$7, "onmousedown", loadMe);
     mNode$$7.action = mAction$$2;
     mNode$$7.fgColor = window.mtPassive
@@ -1198,14 +1198,14 @@ function unPopMenus(mNum$$1, tag$$3) {
   setLayerColor(tag$$3, window.mbActive, window.mtActive);
   clearMenus(mNum$$1);
   if(is.ns4) {
-    JAM.call(document.releaseEvents, document, [Event.MOUSEDOWN], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C)
+    JAM.call(document.releaseEvents, document, [Event.MOUSEDOWN], JAM.policy.p1)
   }
   return
 }
 function setColorPassive(tag$$4) {
   setLayerColor(tag$$4, window.mbPassive, window.mtPassive);
   if(is.ns4) {
-    JAM.call(document.captureEvents, document, [Event.MOUSEDOWN], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C)
+    JAM.call(document.captureEvents, document, [Event.MOUSEDOWN], JAM.policy.p1)
   }
   return
 }
@@ -1222,7 +1222,7 @@ function popMenu(mNum$$2, tag$$5, mName$$4) {
     stackDepth = stackDepth + 1
   }
   if(is.ns4) {
-    JAM.call(document.releaseEvents, document, [Event.MOUSEDOWN], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C)
+    JAM.call(document.releaseEvents, document, [Event.MOUSEDOWN], JAM.policy.p1)
   }
   return
 }
@@ -1240,11 +1240,11 @@ NSVisType["hidden"] = "hide";
 NSVisType["inherit"] = "inherit";
 var is = new Is;
 var blInfo = new BrowserMenuInfo;
-JAM.call(document.write, document, ["<" + blInfo.divType + ' id="test.cell"'], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+JAM.call(document.write, document, ["<" + blInfo.divType + ' id="test.cell"'], JAM.policy.p1);
 JAM.call(document.write, document, ['" class="menuItem" ']);
-JAM.call(document.write, document, [setStyle(blInfo.divType, blInfo.fontSize, 0, 0, 100, 20, null, null, "hidden") + ">"], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+JAM.call(document.write, document, [setStyle(blInfo.divType, blInfo.fontSize, 0, 0, 100, 20, null, null, "hidden") + ">"], JAM.policy.p1);
 JAM.call(document.write, document, ["test.cell"]);
-JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.p1);
 var alphaWidth = Array();
 alphaWidth["a"] = blInfo.charWidth;
 alphaWidth["b"] = blInfo.charWidth;
@@ -1255,17 +1255,17 @@ alphaWidth["f"] = blInfo.charWidth;
 alphaWidth["g"] = blInfo.charWidth;
 alphaWidth["h"] = blInfo.charWidth;
 var v239 = alphaWidth;
-var v710 = JAM.call(Math.floor, Math, [blInfo.charWidth * 0.4], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v710 = JAM.call(Math.floor, Math, [blInfo.charWidth * 0.4], JAM.policy.p1);
 v239["i"] = v710;
 var v240 = alphaWidth;
-var v711 = JAM.call(Math.floor, Math, [blInfo.charWidth * 0.7], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v711 = JAM.call(Math.floor, Math, [blInfo.charWidth * 0.7], JAM.policy.p1);
 v240["j"] = v711;
 alphaWidth["k"] = blInfo.charWidth;
 var v241 = alphaWidth;
-var v712 = JAM.call(Math.floor, Math, [blInfo.charWidth * 0.4], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v712 = JAM.call(Math.floor, Math, [blInfo.charWidth * 0.4], JAM.policy.p1);
 v241["l"] = v712;
 var v242 = alphaWidth;
-var v713 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v713 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v242["m"] = v713;
 alphaWidth["n"] = blInfo.charWidth;
 alphaWidth["o"] = blInfo.charWidth;
@@ -1277,88 +1277,88 @@ alphaWidth["t"] = blInfo.charWidth;
 alphaWidth["u"] = blInfo.charWidth;
 alphaWidth["v"] = blInfo.charWidth;
 var v243 = alphaWidth;
-var v714 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.8], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v714 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.8], JAM.policy.p1);
 v243["w"] = v714;
 alphaWidth["x"] = blInfo.charWidth;
 alphaWidth["y"] = blInfo.charWidth;
 alphaWidth["z"] = blInfo.charWidth;
 var v244 = alphaWidth;
-var v715 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v715 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v244["A"] = v715;
 var v245 = alphaWidth;
-var v716 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v716 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v245["B"] = v716;
 var v246 = alphaWidth;
-var v717 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v717 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v246["C"] = v717;
 var v247 = alphaWidth;
-var v718 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v718 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v247["D"] = v718;
 var v248 = alphaWidth;
-var v719 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v719 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v248["E"] = v719;
 var v249 = alphaWidth;
-var v720 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v720 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v249["F"] = v720;
 var v250 = alphaWidth;
-var v721 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v721 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v250["G"] = v721;
 var v251 = alphaWidth;
-var v722 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v722 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v251["H"] = v722;
 var v252 = alphaWidth;
-var v723 = JAM.call(Math.floor, Math, [blInfo.charWidth], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v723 = JAM.call(Math.floor, Math, [blInfo.charWidth], JAM.policy.p1);
 v252["I"] = v723;
 var v253 = alphaWidth;
-var v724 = JAM.call(Math.floor, Math, [blInfo.charWidth], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v724 = JAM.call(Math.floor, Math, [blInfo.charWidth], JAM.policy.p1);
 v253["J"] = v724;
 var v254 = alphaWidth;
-var v725 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v725 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v254["K"] = v725;
 var v255 = alphaWidth;
-var v726 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v726 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v255["L"] = v726;
 var v256 = alphaWidth;
-var v727 = JAM.call(Math.floor, Math, [blInfo.charWidth * 2], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v727 = JAM.call(Math.floor, Math, [blInfo.charWidth * 2], JAM.policy.p1);
 v256["M"] = v727;
 var v257 = alphaWidth;
-var v728 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v728 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v257["N"] = v728;
 var v258 = alphaWidth;
-var v729 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v729 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v258["O"] = v729;
 var v259 = alphaWidth;
-var v730 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v730 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v259["P"] = v730;
 var v260 = alphaWidth;
-var v731 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v731 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v260["Q"] = v731;
 var v261 = alphaWidth;
-var v732 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v732 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v261["R"] = v732;
 var v262 = alphaWidth;
-var v733 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v733 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v262["S"] = v733;
 var v263 = alphaWidth;
-var v734 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v734 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v263["T"] = v734;
 var v264 = alphaWidth;
-var v735 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v735 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v264["U"] = v735;
 var v265 = alphaWidth;
-var v736 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v736 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v265["V"] = v736;
 var v266 = alphaWidth;
-var v737 = JAM.call(Math.floor, Math, [blInfo.charWidth * 3], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v737 = JAM.call(Math.floor, Math, [blInfo.charWidth * 3], JAM.policy.p1);
 v266["W"] = v737;
 var v267 = alphaWidth;
-var v738 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v738 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v267["X"] = v738;
 var v268 = alphaWidth;
-var v739 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v739 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v268["Y"] = v739;
 var v269 = alphaWidth;
-var v740 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+var v740 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
 v269["Z"] = v740;
 alphaWidth["0"] = blInfo.charWidth;
 alphaWidth["1"] = blInfo.charWidth;
@@ -1405,7 +1405,7 @@ var nameStack = new Array;
 var nodeStack = new Array;
 var stackDepth = 0;
 if(is.ns4) {
-  JAM.call(document.captureEvents, document, [Event.MOUSEDOWN], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+  JAM.call(document.captureEvents, document, [Event.MOUSEDOWN], JAM.policy.p1);
   JAM.set(document, "onmousedown", clearAll)
 }
 startSiteMap("Menu", "_top");
@@ -1478,12 +1478,12 @@ if(v493) {
 }
 if(is.w3c) {
   JAM.call(document.writeln, document, ['<div style="position : relative; top : 15px; float : right; padding-right : 42px; text-align : right">']);
-  JAM.call(document.writeln, document, ['<a href="http://sourceforge.net/projects/jswidgets"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=33495&type=15" width="150" height="40" border="0" alt="Get Browser-Independent Javascript Widgets at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>'], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+  JAM.call(document.writeln, document, ['<a href="http://sourceforge.net/projects/jswidgets"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=33495&type=15" width="150" height="40" border="0" alt="Get Browser-Independent Javascript Widgets at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>'], JAM.policy.p1);
   JAM.call(document.writeln, document, ["</div>"])
 }else {
   if(is.ns4) {
     JAM.call(document.writeln, document, ['<layer top="20" left="400">']);
-    JAM.call(document.writeln, document, ['<a href="http://sourceforge.net/projects/jswidgets"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=33495&type=15" width="150" height="40" border="0" alt="Get Browser-Independent Javascript Widgets at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>'], JAM.policy.pBEAFBB2FD8125A1CE4C97F75106BD93D0D091F0C);
+    JAM.call(document.writeln, document, ['<a href="http://sourceforge.net/projects/jswidgets"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=33495&type=15" width="150" height="40" border="0" alt="Get Browser-Independent Javascript Widgets at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>'], JAM.policy.p1);
     JAM.call(document.writeln, document, ["</layer>"])
   }
 }

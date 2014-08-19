@@ -15,7 +15,7 @@ function v20(runner$$2) {
     if(index$$40 < length$$12) {
       try {
         var v815 = suite$$1.benchmarks;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v25 = v815[index$$40]
         }
         v25.Setup()
@@ -31,7 +31,7 @@ function v20(runner$$2) {
   function RunNextBenchmark() {
     try {
       var v816 = suite$$1.benchmarks;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v27 = v816[index$$40]
       }
       data$$20 = JAM.call(suite$$1.RunSingleBenchmark, suite$$1, [v27, data$$20])
@@ -52,7 +52,7 @@ function v20(runner$$2) {
       var v818 = suite$$1.benchmarks;
       var v819 = index$$40;
       index$$40 = index$$40 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v29 = v818[v819]
       }
       v29.TearDown()
@@ -207,12 +207,12 @@ function v13(measurements$$1) {
   var i$$4 = 0;
   var v74 = i$$4 < measurements$$1.length;
   for(;v74;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1321 = measurements$$1[i$$4]
     }
     if(v1321.latency != 0) {
       var v843 = log$$2;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1553 = measurements$$1[i$$4]
       }
       log$$2 = v843 + Math.log(v1553.latency);
@@ -234,7 +234,7 @@ function v12(measurements) {
   var v77 = i$$3 < measurements.length;
   for(;v77;) {
     var v848 = log$$1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1554 = measurements[i$$3]
     }
     log$$1 = v848 + Math.log(v1554.time);
@@ -249,7 +249,7 @@ function v11(numbers) {
   var v80 = i$$2 < numbers.length;
   for(;v80;) {
     var v853 = log;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1324 = numbers[i$$2]
     }
     log = v853 + Math.log(v1324);
@@ -264,7 +264,7 @@ function v10() {
   var i$$1 = 0;
   var v83 = i$$1 < suites$$1.length;
   for(;v83;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1555 = suites$$1[i$$1]
     }
     result = result + v1555.benchmarks.length;
@@ -286,7 +286,7 @@ function v9(runner, skipBenchmarks$$1) {
       }else {
         var v84 = index$$39;
         index$$39 = index$$39 + 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var suite = suites[v84]
         }
         if(runner.NotifyStart) {
@@ -471,11 +471,11 @@ function am1(i$$6, x$$48, w$$5, j, c$$1, n$$1) {
   for(;v114;) {
     var v1559 = i$$6;
     i$$6 = i$$6 + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1334 = this_array$$1[v1559]
     }
     var v882 = x$$48 * v1334;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v883 = w_array[j]
     }
     var v = v882 + v883 + c$$1;
@@ -494,19 +494,19 @@ function am2(i$$7, x$$49, w$$6, j$$1, c$$2, n$$2) {
   var xh = x$$49 >> 15;
   var v124 = (n$$2 = n$$2 - 1) >= 0;
   for(;v124;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v115 = this_array$$2[i$$7]
     }
     var l = v115 & 32767;
     var v886 = i$$7;
     i$$7 = i$$7 + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v116 = this_array$$2[v886]
     }
     var h$$4 = v116 >> 15;
     var m = xh * l + h$$4 * xl;
     var v887 = xl * l + ((m & 32767) << 15);
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v888 = w_array$$1[j$$1]
     }
     l = v887 + v888 + (c$$2 & 1073741823);
@@ -525,19 +525,19 @@ function am3(i$$8, x$$50, w$$7, j$$2, c$$3, n$$3) {
   var xh$$1 = x$$50 >> 14;
   var v133 = (n$$3 = n$$3 - 1) >= 0;
   for(;v133;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v125 = this_array$$3[i$$8]
     }
     var l$$1 = v125 & 16383;
     var v893 = i$$8;
     i$$8 = i$$8 + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v126 = this_array$$3[v893]
     }
     var h$$5 = v126 >> 14;
     var m$$1 = xh$$1 * l$$1 + h$$5 * xl$$1;
     var v894 = xl$$1 * l$$1 + ((m$$1 & 16383) << 14);
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v895 = w_array$$2[j$$2]
     }
     l$$1 = v894 + v895 + c$$3;
@@ -556,19 +556,19 @@ function am4(i$$9, x$$51, w$$8, j$$3, c$$4, n$$4) {
   var xh$$2 = x$$51 >> 13;
   var v142 = (n$$4 = n$$4 - 1) >= 0;
   for(;v142;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v134 = this_array$$4[i$$9]
     }
     var l$$2 = v134 & 8191;
     var v900 = i$$9;
     i$$9 = i$$9 + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v135 = this_array$$4[v900]
     }
     var h$$6 = v135 >> 13;
     var m$$2 = xh$$2 * l$$2 + h$$6 * xl$$2;
     var v901 = xl$$2 * l$$2 + ((m$$2 & 8191) << 13);
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v902 = w_array$$3[j$$3]
     }
     l$$2 = v901 + v902 + c$$4;
@@ -586,7 +586,7 @@ function int2char(n$$5) {
 function intAt(s$$3, i$$10) {
   var v143 = BI_RC;
   var v144 = s$$3.charCodeAt(i$$10);
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var c$$5 = v143[v144]
   }
   var v145;
@@ -675,7 +675,7 @@ function bnpFromString(s$$4, b$$1) {
   for(;v167;) {
     var v157;
     if(k == 8) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v909 = s$$4[i$$13]
       }
       v157 = v909 & 255
@@ -698,7 +698,7 @@ function bnpFromString(s$$4, b$$1) {
     }else {
       if(sh$$2 + k > BI_DB) {
         var v161 = this.t - 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1344 = this_array$$7[v161]
         }
         this_array$$7[v161] = v1344 | (x$$53 & (1 << BI_DB - sh$$2) - 1) << sh$$2;
@@ -707,7 +707,7 @@ function bnpFromString(s$$4, b$$1) {
         this_array$$7[v162] = x$$53 >> BI_DB - sh$$2
       }else {
         var v163 = this.t - 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1347 = this_array$$7[v163]
         }
         this_array$$7[v163] = v1347 | x$$53 << sh$$2
@@ -727,7 +727,7 @@ function bnpFromString(s$$4, b$$1) {
     this.s = -1;
     if(sh$$2 > 0) {
       var v168 = this.t - 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1350 = this_array$$7[v168]
       }
       this_array$$7[v168] = v1350 | (1 << BI_DB - sh$$2) - 1 << sh$$2
@@ -746,7 +746,7 @@ function bnpClamp() {
   var v920 = this.t > 0;
   if(v920) {
     var v1566 = this.t - 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1353 = this_array$$8[v1566]
     }
     v920 = v1353 == c$$6
@@ -757,7 +757,7 @@ function bnpClamp() {
     var v922 = this.t > 0;
     if(v922) {
       var v1567 = this.t - 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1355 = this_array$$8[v1567]
       }
       v922 = v1355 == c$$6
@@ -805,7 +805,7 @@ function bnToString(b$$2) {
   if(v926 > 0) {
     var v927 = p < BI_DB;
     if(v927) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1568 = this_array$$9[i$$14]
       }
       v927 = (d = v1568 >> p) > 0
@@ -817,17 +817,17 @@ function bnToString(b$$2) {
     var v190 = i$$14 >= 0;
     for(;v190;) {
       if(p < k$$1) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v928 = this_array$$9[i$$14]
         }
         d = (v928 & (1 << p) - 1) << k$$1 - p;
         var v1569 = i$$14 = i$$14 - 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1358 = this_array$$9[v1569]
         }
         d = d | v1358 >> (p = p + (BI_DB - k$$1))
       }else {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v931 = this_array$$9[i$$14]
         }
         d = v931 >> (p = p - k$$1) & km;
@@ -882,10 +882,10 @@ function bnCompareTo(a$$1) {
   }
   var v201 = (i$$15 = i$$15 - 1) >= 0;
   for(;v201;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1361 = this_array$$10[i$$15]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1362 = a_array[i$$15]
     }
     if((r$$4 = v1361 - v1362) != 0) {
@@ -927,7 +927,7 @@ function bnBitLength() {
   }
   var v208 = BI_DB * (this.t - 1);
   var v1570 = this.t - 1;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1364 = this_array$$11[v1570]
   }
   return v208 + nbits(v1364 ^ this.s & BI_DM)
@@ -939,7 +939,7 @@ function bnpDLShiftTo(n$$6, r$$6) {
   i$$16 = this.t - 1;
   var v212 = i$$16 >= 0;
   for(;v212;) {
-    JAM.set(r_array$$1, i$$16 + n$$6, JAM.get(this_array$$12, i$$16, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+    JAM.set(r_array$$1, i$$16 + n$$6, JAM.get(this_array$$12, i$$16, JAM.policy.p1));
     i$$16 = i$$16 - 1;
     v212 = i$$16 >= 0
   }
@@ -961,7 +961,7 @@ function bnpDRShiftTo(n$$7, r$$7) {
   var v216 = i$$17 < this.t;
   for(;v216;) {
     var v215 = i$$17 - n$$7;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       r_array$$2[v215] = this_array$$13[i$$17]
     }
     i$$17 = i$$17 + 1;
@@ -986,11 +986,11 @@ function bnpLShiftTo(n$$8, r$$8) {
   var v224 = i$$18 >= 0;
   for(;v224;) {
     var v222 = i$$18 + ds + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1367 = this_array$$14[i$$18]
     }
     r_array$$3[v222] = v1367 >> cbs | c$$7;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v953 = this_array$$14[i$$18]
     }
     c$$7 = (v953 & bm) << bs;
@@ -1022,7 +1022,7 @@ function bnpRShiftTo(n$$9, r$$9) {
   var bs$$1 = n$$9 % BI_DB;
   var cbs$$1 = BI_DB - bs$$1;
   var bm$$1 = (1 << bs$$1) - 1;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v230 = this_array$$15[ds$$1]
   }
   r_array$$4[0] = v230 >> bs$$1;
@@ -1030,15 +1030,15 @@ function bnpRShiftTo(n$$9, r$$9) {
   var v233 = i$$19 < this.t;
   for(;v233;) {
     var v231 = i$$19 - ds$$1 - 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1368 = r_array$$4[v231]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1651 = this_array$$15[i$$19]
     }
     r_array$$4[v231] = v1368 | (v1651 & bm$$1) << cbs$$1;
     var v232 = i$$19 - ds$$1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v958 = this_array$$15[i$$19]
     }
     r_array$$4[v232] = v958 >> bs$$1;
@@ -1047,7 +1047,7 @@ function bnpRShiftTo(n$$9, r$$9) {
   }
   if(bs$$1 > 0) {
     var v234 = this.t - ds$$1 - 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1371 = r_array$$4[v234]
     }
     r_array$$4[v234] = v1371 | (this.s & bm$$1) << cbs$$1
@@ -1065,10 +1065,10 @@ function bnpSubTo(a$$2, r$$10) {
   var m$$4 = JAM.call(Math.min, Math, [a$$2.t, this.t]);
   var v240 = i$$20 < m$$4;
   for(;v240;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1373 = this_array$$16[i$$20]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1374 = a_array$$1[i$$20]
     }
     c$$8 = c$$8 + (v1373 - v1374);
@@ -1082,7 +1082,7 @@ function bnpSubTo(a$$2, r$$10) {
     c$$8 = c$$8 - a$$2.s;
     var v242 = i$$20 < this.t;
     for(;v242;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v966 = this_array$$16[i$$20]
       }
       c$$8 = c$$8 + v966;
@@ -1097,7 +1097,7 @@ function bnpSubTo(a$$2, r$$10) {
     c$$8 = c$$8 + this.s;
     var v244 = i$$20 < a$$2.t;
     for(;v244;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v971 = a_array$$1[i$$20]
       }
       c$$8 = c$$8 - v971;
@@ -1149,7 +1149,7 @@ function bnpMultiplyTo(a$$3, r$$11) {
   for(;v255;) {
     var v253 = r_array$$6;
     var v254 = i$$21 + x$$55.t;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v979 = y_array[i$$21]
     }
     var v1701 = JAM.call(x$$55.am, x$$55, [0, v979, r$$11, i$$21, 0, x$$55.t]);
@@ -1178,22 +1178,22 @@ function bnpSquareTo(r$$12) {
   i$$22 = 0;
   var v265 = i$$22 < x$$56.t - 1;
   for(;v265;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v260 = x_array[i$$22]
     }
     var c$$9 = JAM.call(x$$56.am, x$$56, [i$$22, v260, r$$12, 2 * i$$22, 0, 1]);
     var v1376 = r_array$$7;
     var v1377 = i$$22 + x$$56.t;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1653 = v1376[v1377]
     }
     var v1680 = i$$22 + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1693 = x_array[i$$22]
     }
     if(JAM.set(v1376, v1377, v1653 + JAM.call(x$$56.am, x$$56, [v1680, 2 * v1693, r$$12, 2 * i$$22 + 1, c$$9, x$$56.t - i$$22 - 1])) >= BI_DV) {
       var v262 = i$$22 + x$$56.t;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1378 = r_array$$7[v262]
       }
       JAM.set(r_array$$7, v262, v1378 - BI_DV);
@@ -1205,10 +1205,10 @@ function bnpSquareTo(r$$12) {
   if(r$$12.t > 0) {
     var v266 = r_array$$7;
     var v267 = r$$12.t - 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1381 = v266[v267]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1575 = x_array[i$$22]
     }
     v266[v267] = v1381 + JAM.call(x$$56.am, x$$56, [i$$22, v1575, r$$12, 2 * i$$22, 0, 1])
@@ -1241,7 +1241,7 @@ function bnpDivRemTo(m$$5, q, r$$13) {
   var pm_array = pm.array;
   var v274 = BI_DB;
   var v1383 = pm.t - 1;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v996 = pm_array[v1383]
   }
   var nsh = v274 - nbits(v996);
@@ -1255,7 +1255,7 @@ function bnpDivRemTo(m$$5, q, r$$13) {
   var ys = y$$32.t;
   var y_array$$1 = y$$32.array;
   var v277 = ys - 1;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var y0$$2 = y_array$$1[v277]
   }
   if(y0$$2 == 0) {
@@ -1265,7 +1265,7 @@ function bnpDivRemTo(m$$5, q, r$$13) {
   var v998;
   if(ys > 1) {
     var v1578 = ys - 2;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1384 = y_array$$1[v1578]
     }
     v998 = v1384 >> BI_F2
@@ -1307,18 +1307,18 @@ function bnpDivRemTo(m$$5, q, r$$13) {
   for(;v291;) {
     var v288;
     var v1579 = i$$23 = i$$23 - 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1388 = r_array$$8[v1579]
     }
     if(v1388 == y0$$2) {
       v288 = BI_DM
     }else {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1580 = r_array$$8[i$$23]
       }
       var v1389 = v1580 * d1;
       var v1684 = i$$23 - 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1655 = r_array$$8[v1684]
       }
       v288 = Math.floor(v1389 + (v1655 + e$$7) * d2)
@@ -1326,19 +1326,19 @@ function bnpDivRemTo(m$$5, q, r$$13) {
     var qd = v288;
     var v1391 = r_array$$8;
     var v1392 = i$$23;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1656 = v1391[v1392]
     }
     if((v1391[v1392] = v1656 + JAM.call(y$$32.am, y$$32, [0, qd, r$$13, j$$4, 0, ys])) < qd) {
       JAM.call(y$$32.dlShiftTo, y$$32, [j$$4, t$$2]);
       JAM.call(r$$13.subTo, r$$13, [t$$2, r$$13]);
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1007 = r_array$$8[i$$23]
       }
       var v289 = v1007 < (qd = qd - 1);
       for(;v289;) {
         JAM.call(r$$13.subTo, r$$13, [t$$2, r$$13]);
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1009 = r_array$$8[i$$23]
         }
         v289 = v1009 < (qd = qd - 1)
@@ -1475,40 +1475,40 @@ function montReduce(x$$65) {
   var i$$24 = 0;
   var v327 = i$$24 < this.m.t;
   for(;v327;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v321 = x_array$$1[i$$24]
     }
     var j$$5 = v321 & 32767;
     var v1029 = j$$5 * this.mpl;
     var v1659 = j$$5 * this.mph;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1696 = x_array$$1[i$$24]
     }
     var u0 = v1029 + ((v1659 + (v1696 >> 15) * this.mpl & this.um) << 15) & BI_DM;
     j$$5 = i$$24 + this.m.t;
     var v324 = x_array$$1;
     var v325 = j$$5;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1408 = v324[v325]
     }
     var v1591 = this.m;
     JAM.set(v324, v325, v1408 + JAM.call(v1591.am, v1591, [0, u0, x$$65, i$$24, 0, this.m.t]));
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1032 = x_array$$1[j$$5]
     }
     var v326 = v1032 >= BI_DV;
     for(;v326;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1033 = x_array$$1[j$$5]
       }
       JAM.set(x_array$$1, j$$5, v1033 - BI_DV);
       var v1034 = j$$5 = j$$5 + 1;
       var v1593 = j$$5 = j$$5 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1410 = x_array$$1[v1593]
       }
       JAM.set(x_array$$1, v1034, v1410 + 1);
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1035 = x_array$$1[j$$5]
       }
       v326 = v1035 >= BI_DV
@@ -1781,7 +1781,7 @@ function bnToByteArray() {
   if(v1081 > 0) {
     var v1082 = p$$1 < BI_DB;
     if(v1082) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1601 = this_array$$24[i$$27]
       }
       v1082 = (d$$3 = v1601 >> p$$1) != (this.s & BI_DM) >> p$$1
@@ -1794,17 +1794,17 @@ function bnToByteArray() {
     var v386 = i$$27 >= 0;
     for(;v386;) {
       if(p$$1 < 8) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1084 = this_array$$24[i$$27]
         }
         d$$3 = (v1084 & (1 << p$$1) - 1) << 8 - p$$1;
         var v1603 = i$$27 = i$$27 - 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1441 = this_array$$24[v1603]
         }
         d$$3 = d$$3 | v1441 >> (p$$1 = p$$1 + (BI_DB - 8))
       }else {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1087 = this_array$$24[i$$27]
         }
         d$$3 = v1087 >> (p$$1 = p$$1 - 8) & 255;
@@ -1870,10 +1870,10 @@ function bnpBitwiseTo(a$$10, op, r$$26) {
   for(;v395;) {
     var v393 = r_array$$9;
     var v394 = i$$28;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1094 = this_array$$25[i$$28]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1095 = a_array$$2[i$$28]
     }
     var v1703 = JAM.call(op, null, [v1094, v1095]);
@@ -1888,7 +1888,7 @@ function bnpBitwiseTo(a$$10, op, r$$26) {
     for(;v399;) {
       var v397 = r_array$$9;
       var v398 = i$$28;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1099 = this_array$$25[i$$28]
       }
       var v1704 = JAM.call(op, null, [v1099, f]);
@@ -1904,7 +1904,7 @@ function bnpBitwiseTo(a$$10, op, r$$26) {
     for(;v403;) {
       var v401 = r_array$$9;
       var v402 = i$$28;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1102 = a_array$$2[i$$28]
       }
       var v1705 = JAM.call(op, null, [f, v1102]);
@@ -1959,7 +1959,7 @@ function bnNot() {
   var i$$29 = 0;
   var v408 = i$$29 < this.t;
   for(;v408;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1107 = this_array$$26[i$$29]
     }
     r_array$$10[i$$29] = BI_DM & ~v1107;
@@ -2019,12 +2019,12 @@ function bnGetLowestSetBit() {
   var i$$30 = 0;
   var v423 = i$$30 < this.t;
   for(;v423;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1115 = this_array$$27[i$$30]
     }
     if(v1115 != 0) {
       var v420 = i$$30 * BI_DB;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1116 = this_array$$27[i$$30]
       }
       return v420 + lbit(v1116)
@@ -2054,7 +2054,7 @@ function bnBitCount() {
   var v428 = i$$31 < this.t;
   for(;v428;) {
     var v1121 = r$$36;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1605 = this_array[i$$31]
     }
     r$$36 = v1121 + cbit(v1605 ^ x$$76);
@@ -2069,7 +2069,7 @@ function bnTestBit(n$$12) {
   if(j$$7 >= this.t) {
     return this.s != 0
   }
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1125 = this_array$$28[j$$7]
   }
   return(v1125 & 1 << n$$12 % BI_DB) != 0
@@ -2098,10 +2098,10 @@ function bnpAddTo(a$$15, r$$38) {
   var m$$10 = JAM.call(Math.min, Math, [a$$15.t, this.t]);
   var v437 = i$$32 < m$$10;
   for(;v437;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1451 = this_array$$29[i$$32]
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1452 = a_array$$3[i$$32]
     }
     c$$11 = c$$11 + (v1451 + v1452);
@@ -2115,7 +2115,7 @@ function bnpAddTo(a$$15, r$$38) {
     c$$11 = c$$11 + a$$15.s;
     var v439 = i$$32 < this.t;
     for(;v439;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1132 = this_array$$29[i$$32]
       }
       c$$11 = c$$11 + v1132;
@@ -2130,7 +2130,7 @@ function bnpAddTo(a$$15, r$$38) {
     c$$11 = c$$11 + this.s;
     var v441 = i$$32 < a$$15.t;
     for(;v441;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1137 = a_array$$3[i$$32]
       }
       c$$11 = c$$11 + v1137;
@@ -2214,16 +2214,16 @@ function bnpDAddOffset(n$$18, w$$10) {
     JAM.set(this_array$$31, v450, 0);
     v451 = this.t <= w$$10
   }
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1146 = this_array$$31[w$$10]
   }
   JAM.set(this_array$$31, w$$10, v1146 + n$$18);
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1147 = this_array$$31[w$$10]
   }
   var v454 = v1147 >= BI_DV;
   for(;v454;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1148 = this_array$$31[w$$10]
     }
     JAM.set(this_array$$31, w$$10, v1148 - BI_DV);
@@ -2232,11 +2232,11 @@ function bnpDAddOffset(n$$18, w$$10) {
       this.t = this.t + 1;
       JAM.set(this_array$$31, v452, 0)
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1151 = this_array$$31[w$$10]
     }
     JAM.set(this_array$$31, w$$10, v1151 + 1);
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1152 = this_array$$31[w$$10]
     }
     v454 = v1152 >= BI_DV
@@ -2277,7 +2277,7 @@ function bnpMultiplyLowerTo(a$$22, n$$19, r$$47) {
   for(;v463;) {
     var v461 = r_array$$12;
     var v462 = i$$33 + this.t;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1156 = a_array$$4[i$$33]
     }
     var v1708 = JAM.call(this.am, this, [0, v1156, r$$47, i$$33, 0, this.t]);
@@ -2288,7 +2288,7 @@ function bnpMultiplyLowerTo(a$$22, n$$19, r$$47) {
   j$$8 = JAM.call(Math.min, Math, [a$$22.t, n$$19]);
   var v467 = i$$33 < j$$8;
   for(;v467;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v465 = a_array$$4[i$$33]
     }
     JAM.call(this.am, this, [0, v465, r$$47, i$$33, 0, n$$19 - i$$33]);
@@ -2315,7 +2315,7 @@ function bnpMultiplyUpperTo(a$$23, n$$20, r$$48) {
     var v471 = r_array$$13;
     var v472 = this.t + i$$34 - n$$20;
     var v1165 = n$$20 - i$$34;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1166 = a_array$$5[i$$34]
     }
     var v1709 = JAM.call(this.am, this, [v1165, v1166, r$$48, 0, 0, this.t + i$$34 - n$$20]);
@@ -2446,10 +2446,10 @@ function bnModPow(e$$11, m$$12) {
       var v1714 = nbi();
       g$$1[n$$21] = v1714;
       var v1183 = n$$21 - 2;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v508 = g$$1[v1183]
       }
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v509 = g$$1[n$$21]
       }
       JAM.call(z$$5.mulTo, z$$5, [g2, v508, v509]);
@@ -2462,25 +2462,25 @@ function bnModPow(e$$11, m$$12) {
   var is1 = true;
   var r2$$1 = nbi();
   var t$$5;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1184 = e_array[j$$9]
   }
   i$$35 = nbits(v1184) - 1;
   var v527 = j$$9 >= 0;
   for(;v527;) {
     if(i$$35 >= k1) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1185 = e_array[j$$9]
       }
       w$$11 = v1185 >> i$$35 - k1 & km$$1
     }else {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1187 = e_array[j$$9]
       }
       w$$11 = (v1187 & (1 << i$$35 + 1) - 1) << k1 - i$$35;
       if(j$$9 > 0) {
         var v1610 = j$$9 - 1;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1472 = e_array[v1610]
         }
         w$$11 = w$$11 | v1472 >> BI_DB + i$$35 - k1
@@ -2498,7 +2498,7 @@ function bnModPow(e$$11, m$$12) {
       j$$9 = j$$9 - 1
     }
     if(is1) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v521 = g$$1[w$$11]
       }
       JAM.call(v521.copyTo, v521, [r$$52]);
@@ -2518,14 +2518,14 @@ function bnModPow(e$$11, m$$12) {
         r$$52 = r2$$1;
         r2$$1 = t$$5
       }
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v524 = g$$1[w$$11]
       }
       JAM.call(z$$5.mulTo, z$$5, [r2$$1, v524, r$$52])
     }
     var v1193 = j$$9 >= 0;
     if(v1193) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1612 = e_array[j$$9]
       }
       v1193 = (v1612 & 1 << i$$35) == 0
@@ -2542,7 +2542,7 @@ function bnModPow(e$$11, m$$12) {
       }
       var v1195 = j$$9 >= 0;
       if(v1195) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1614 = e_array[j$$9]
         }
         v1195 = (v1614 & 1 << i$$35) == 0
@@ -2628,7 +2628,7 @@ function bnpModInt(n$$22) {
       var v544 = i$$37 >= 0;
       for(;v544;) {
         var v1206 = d$$4 * r$$53;
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+        introspect(JAM.policy.p1) {
           var v1207 = this_array$$32[i$$37]
         }
         r$$53 = (v1206 + v1207) % n$$22;
@@ -2743,7 +2743,7 @@ function bnIsProbablePrime(t$$7) {
   if(v1220) {
     var v1490 = x_array$$2[0];
     var v1616 = lowprimes.length - 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1491 = lowprimes[v1616]
     }
     v1220 = v1490 <= v1491
@@ -2753,7 +2753,7 @@ function bnIsProbablePrime(t$$7) {
     var v561 = i$$38 < lowprimes.length;
     for(;v561;) {
       var v1222 = x_array$$2[0];
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1223 = lowprimes[i$$38]
       }
       if(v1222 == v1223) {
@@ -2770,7 +2770,7 @@ function bnIsProbablePrime(t$$7) {
   i$$38 = 1;
   var v567 = i$$38 < lowprimes.length;
   for(;v567;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var m$$14 = lowprimes[i$$38]
     }
     var j$$10 = i$$38 + 1;
@@ -2782,7 +2782,7 @@ function bnIsProbablePrime(t$$7) {
     for(;v564;) {
       var v1493 = j$$10;
       j$$10 = j$$10 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1227 = lowprimes[v1493]
       }
       m$$14 = m$$14 * v1227;
@@ -2797,7 +2797,7 @@ function bnIsProbablePrime(t$$7) {
     for(;v566;) {
       var v1617 = i$$38;
       i$$38 = i$$38 + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1495 = lowprimes[v1617]
       }
       if(m$$14 % v1495 == 0) {
@@ -2824,7 +2824,7 @@ function bnpMillerRabin(t$$8) {
   var i$$39 = 0;
   var v577 = i$$39 < t$$8;
   for(;v577;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v572 = lowprimes[i$$39]
     }
     JAM.call(a$$26.fromInt, a$$26, [v572]);
@@ -2887,20 +2887,20 @@ function ARC4init(key$$14) {
   var v584 = i$$40 < 256;
   for(;v584;) {
     var v1619 = this.S;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1503 = v1619[i$$40]
     }
     var v1237 = j$$12 + v1503;
     var v1504 = i$$40 % key$$14.length;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1238 = key$$14[v1504]
     }
     j$$12 = v1237 + v1238 & 255;
     var v581 = this.S;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       t$$9 = v581[i$$40]
     }
-    JAM.set(this.S, i$$40, JAM.get(this.S, j$$12, JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074));
+    JAM.set(this.S, i$$40, JAM.get(this.S, j$$12, JAM.policy.p1));
     JAM.set(this.S, j$$12, t$$9);
     i$$40 = i$$40 + 1;
     v584 = i$$40 < 256
@@ -2915,7 +2915,7 @@ function ARC4next() {
   var v1241 = this.j;
   var v1505 = this.S;
   var v1506 = this.i;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1242 = v1505[v1506]
   }
   this.j = v1241 + v1242 & 255;
@@ -2925,11 +2925,11 @@ function ARC4next() {
   var v593 = this.S;
   var v1621 = this.S;
   var v1622 = this.i;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1507 = v1621[v1622]
   }
   var v594 = t$$10 + v1507 & 255;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     return v593[v594]
   }
 }
@@ -2939,25 +2939,25 @@ function prng_newstate() {
 function rng_seed_int(x$$87) {
   var v595 = rng_pptr;
   rng_pptr = rng_pptr + 1;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1508 = rng_pool[v595]
   }
   JAM.set(rng_pool, v595, v1508 ^ x$$87 & 255);
   var v596 = rng_pptr;
   rng_pptr = rng_pptr + 1;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1510 = rng_pool[v596]
   }
   JAM.set(rng_pool, v596, v1510 ^ x$$87 >> 8 & 255);
   var v597 = rng_pptr;
   rng_pptr = rng_pptr + 1;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1512 = rng_pool[v597]
   }
   JAM.set(rng_pool, v597, v1512 ^ x$$87 >> 16 & 255);
   var v598 = rng_pptr;
   rng_pptr = rng_pptr + 1;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1514 = rng_pool[v598]
   }
   JAM.set(rng_pool, v598, v1514 ^ x$$87 >> 24 & 255);
@@ -3125,7 +3125,7 @@ function pkcs1unpad2(d$$6, n$$25) {
   var i$$44 = 0;
   var v1266 = i$$44 < b$$8.length;
   if(v1266) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1522 = b$$8[i$$44]
     }
     v1266 = v1522 == 0
@@ -3135,7 +3135,7 @@ function pkcs1unpad2(d$$6, n$$25) {
     i$$44 = i$$44 + 1;
     var v1267 = i$$44 < b$$8.length;
     if(v1267) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+      introspect(JAM.policy.p1) {
         var v1524 = b$$8[i$$44]
       }
       v1267 = v1524 == 0
@@ -3144,7 +3144,7 @@ function pkcs1unpad2(d$$6, n$$25) {
   }
   var v1268 = b$$8.length - i$$44 != n$$25 - 1;
   if(!v1268) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1527 = b$$8[i$$44]
     }
     v1268 = v1527 != 2
@@ -3153,7 +3153,7 @@ function pkcs1unpad2(d$$6, n$$25) {
     return null
   }
   i$$44 = i$$44 + 1;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+  introspect(JAM.policy.p1) {
     var v1269 = b$$8[i$$44]
   }
   var v629 = v1269 != 0;
@@ -3161,7 +3161,7 @@ function pkcs1unpad2(d$$6, n$$25) {
     if((i$$44 = i$$44 + 1) >= b$$8.length) {
       return null
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1272 = b$$8[i$$44]
     }
     v629 = v1272 != 0
@@ -3170,7 +3170,7 @@ function pkcs1unpad2(d$$6, n$$25) {
   var v630 = (i$$44 = i$$44 + 1) < b$$8.length;
   for(;v630;) {
     var v1275 = ret$$1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       var v1529 = b$$8[i$$44]
     }
     ret$$1 = v1275 + String.fromCharCode(v1529);
@@ -3558,7 +3558,7 @@ Barrett.prototype.sqrTo = barrettSqrTo;
 var lowprimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509];
 var v750 = 1 << 26;
 var v1312 = lowprimes.length - 1;
-introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+introspect(JAM.policy.p1) {
   var v751 = lowprimes[v1312]
 }
 var lplim = v750 / v751;

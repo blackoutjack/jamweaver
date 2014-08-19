@@ -6898,7 +6898,7 @@ function v43() {
     var v3382 = f628201837_521.returns;
     var v3383 = f628201837_521.inst;
     f628201837_521.inst = f628201837_521.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3382[v3383]
     }
   }
@@ -6906,7 +6906,7 @@ function v43() {
     var v3384 = f628201837_517.returns;
     var v3385 = f628201837_517.inst;
     f628201837_517.inst = f628201837_517.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3384[v3385]
     }
   }
@@ -6914,7 +6914,7 @@ function v43() {
     var v3386 = f628201837_507.returns;
     var v3387 = f628201837_507.inst;
     f628201837_507.inst = f628201837_507.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3386[v3387]
     }
   }
@@ -6922,7 +6922,7 @@ function v43() {
     var v3388 = f628201837_503.returns;
     var v3389 = f628201837_503.inst;
     f628201837_503.inst = f628201837_503.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3388[v3389]
     }
   }
@@ -6930,7 +6930,7 @@ function v43() {
     var v3390 = f628201837_497.returns;
     var v3391 = f628201837_497.inst;
     f628201837_497.inst = f628201837_497.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3390[v3391]
     }
   }
@@ -6938,7 +6938,7 @@ function v43() {
     var v3392 = f628201837_496.returns;
     var v3393 = f628201837_496.inst;
     f628201837_496.inst = f628201837_496.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3392[v3393]
     }
   }
@@ -6946,7 +6946,7 @@ function v43() {
     var v3394 = f628201837_495.returns;
     var v3395 = f628201837_495.inst;
     f628201837_495.inst = f628201837_495.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3394[v3395]
     }
   }
@@ -6954,7 +6954,7 @@ function v43() {
     var v3396 = f628201837_490.returns;
     var v3397 = f628201837_490.inst;
     f628201837_490.inst = f628201837_490.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3396[v3397]
     }
   }
@@ -6962,7 +6962,7 @@ function v43() {
     var v3398 = f628201837_481.returns;
     var v3399 = f628201837_481.inst;
     f628201837_481.inst = f628201837_481.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3398[v3399]
     }
   }
@@ -6970,7 +6970,7 @@ function v43() {
     var v3400 = f628201837_479.returns;
     var v3401 = f628201837_479.inst;
     f628201837_479.inst = f628201837_479.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3400[v3401]
     }
   }
@@ -6978,7 +6978,7 @@ function v43() {
     var v3402 = f628201837_477.returns;
     var v3403 = f628201837_477.inst;
     f628201837_477.inst = f628201837_477.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3402[v3403]
     }
   }
@@ -6986,7 +6986,7 @@ function v43() {
     var v3404 = f628201837_420.returns;
     var v3405 = f628201837_420.inst;
     f628201837_420.inst = f628201837_420.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3404[v3405]
     }
   }
@@ -6994,7 +6994,7 @@ function v43() {
     var v3406 = f628201837_157.returns;
     var v3407 = f628201837_157.inst;
     f628201837_157.inst = f628201837_157.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3406[v3407]
     }
   }
@@ -7002,7 +7002,7 @@ function v43() {
     var v3408 = f628201837_71.returns;
     var v3409 = f628201837_71.inst;
     f628201837_71.inst = f628201837_71.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3408[v3409]
     }
   }
@@ -7010,7 +7010,7 @@ function v43() {
     var v3410 = f628201837_62.returns;
     var v3411 = f628201837_62.inst;
     f628201837_62.inst = f628201837_62.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3410[v3411]
     }
   }
@@ -7018,7 +7018,7 @@ function v43() {
     var v3412 = f628201837_61.returns;
     var v3413 = f628201837_61.inst;
     f628201837_61.inst = f628201837_61.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3412[v3413]
     }
   }
@@ -7026,7 +7026,7 @@ function v43() {
     var v3414 = f628201837_60.returns;
     var v3415 = f628201837_60.inst;
     f628201837_60.inst = f628201837_60.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3414[v3415]
     }
   }
@@ -7034,7 +7034,7 @@ function v43() {
     var v3416 = f628201837_59.returns;
     var v3417 = f628201837_59.inst;
     f628201837_59.inst = f628201837_59.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3416[v3417]
     }
   }
@@ -7042,7 +7042,7 @@ function v43() {
     var v3418 = f628201837_57.returns;
     var v3419 = f628201837_57.inst;
     f628201837_57.inst = f628201837_57.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3418[v3419]
     }
   }
@@ -7050,7 +7050,7 @@ function v43() {
     var v3420 = f628201837_54.returns;
     var v3421 = f628201837_54.inst;
     f628201837_54.inst = f628201837_54.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3420[v3421]
     }
   }
@@ -7058,7 +7058,7 @@ function v43() {
     var v3422 = f628201837_53.returns;
     var v3423 = f628201837_53.inst;
     f628201837_53.inst = f628201837_53.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3422[v3423]
     }
   }
@@ -7066,7 +7066,7 @@ function v43() {
     var v3424 = f628201837_51.returns;
     var v3425 = f628201837_51.inst;
     f628201837_51.inst = f628201837_51.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3424[v3425]
     }
   }
@@ -7074,7 +7074,7 @@ function v43() {
     var v3426 = f628201837_49.returns;
     var v3427 = f628201837_49.inst;
     f628201837_49.inst = f628201837_49.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3426[v3427]
     }
   }
@@ -7082,7 +7082,7 @@ function v43() {
     var v3428 = f628201837_13.returns;
     var v3429 = f628201837_13.inst;
     f628201837_13.inst = f628201837_13.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3428[v3429]
     }
   }
@@ -7090,7 +7090,7 @@ function v43() {
     var v3430 = f628201837_12.returns;
     var v3431 = f628201837_12.inst;
     f628201837_12.inst = f628201837_12.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3430[v3431]
     }
   }
@@ -7098,7 +7098,7 @@ function v43() {
     var v3432 = f628201837_7.returns;
     var v3433 = f628201837_7.inst;
     f628201837_7.inst = f628201837_7.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3432[v3433]
     }
   }
@@ -7106,7 +7106,7 @@ function v43() {
     var v3434 = f628201837_0.returns;
     var v3435 = f628201837_0.inst;
     f628201837_0.inst = f628201837_0.inst + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+    introspect(JAM.policy.p1) {
       return v3434[v3435]
     }
   }
@@ -7263,7 +7263,7 @@ function v43() {
       var msg$$inline_0 = msg$$2;
       if(inbrowser) {
         if(firstMessage) {
-          JAM.call(JAM.get(document, "open", JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074), document, [])
+          JAM.call(JAM.get(document, "open", JAM.policy.p1), document, [])
         }
         firstMessage = false;
         JAM.call(document.write, document, [msg$$inline_0])
@@ -14858,10 +14858,10 @@ function v1() {
           v7028 = ri < e$$4
         }
         if(v7028) {
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7064 = arr$$11[li]
           }
-          introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+          introspect(JAM.policy.p1) {
             var v7065 = arr$$11[ri]
           }
           if(JAM.call(comp$$1, null, [v7064, v7065]) <= 0) {
@@ -14875,7 +14875,7 @@ function v1() {
             i$$2 = i$$2 + 1;
             var v7031 = ri;
             ri = ri + 1;
-            introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+            introspect(JAM.policy.p1) {
               result[v6997] = arr$$11[v7031]
             }
           }
@@ -14892,7 +14892,7 @@ function v1() {
               i$$2 = i$$2 + 1;
               var v7033 = ri;
               ri = ri + 1;
-              introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074) {
+              introspect(JAM.policy.p1) {
                 result[v7000] = arr$$11[v7033]
               }
             }else {

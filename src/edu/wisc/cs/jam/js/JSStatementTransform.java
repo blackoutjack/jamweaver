@@ -610,15 +610,93 @@ public class JSStatementTransform extends JSTransform {
       return chng;
     }
 
+    protected Node expandLogicalFirst(NodeTraversal t, Node n, Node parent) {
+      Node op0 = n.getFirstChild().detachFromParent();
+      
+      // Create a temporary variable to hold the value that the
+      // first operand evaluates to.
+      Node tmp = createNameNode(t.getScope());
+
+      // Create a var initializer for the new variable, and assign it
+      // the value of the first operand.
+      Node tmpInit = tmp.cloneTree();
+      tmpDefs.add(tmpInit);
+      Node op0Assign = new Node(Token.VAR, tmpInit);
+      op0Assign.getFirstChild().addChildToBack(op0);
+
+      // And insert it into the program prior to the enclosing statement.
+      Node enclosing = NodeUtil.getEnclosingStatement(n);
+      enclosing.getParent().addChildBefore(op0Assign, enclosing);
+
+      return tmp;
+    }
+
+    protected void insertLogicalConditional(NodeTraversal t, Node n, Node parent, Node cond, Node thenBlock) {
+      // Generate a new if/then framework node.
+      Node stmt = createConditionalNode(false);
+
+      // Fill in the new conditional.
+      stmt.replaceChild(stmt.getFirstChild(), cond);
+      stmt.replaceChild(stmt.getChildAtIndex(1), thenBlock);
+
+      // Insert the new if/then/else statement.
+      Node enclosing = NodeUtil.getEnclosingStatement(n);
+      enclosing.getParent().addChildBefore(stmt, enclosing);
+    }
+
+    // Convert an AND expression to a conditional statement.
+    //
+    // var x = y && z;
+    // ==>
+    // var tmp = y;
+    // if (tmp) {
+    //   tmp = z;
+    // }
+    // var x = tmp;
+    protected void expandAndValue(NodeTraversal t, Node n, Node parent) {
+      // Extract the first operand into a temporary.
+      Node cond = expandLogicalFirst(t, n, parent);
+
+      // Get the second operand (which is now the first).
+      Node op1 = n.getChildAtIndex(0).detachFromParent();
+
+      // The value of the first operand determines the control flow.
+      // That is, the second operand is only evaluated if the first
+      // one is true.
+      Node tmpRef = cond.cloneTree();
+
+      // Create an assignment statement capturing the value of the
+      // second operand to be placed within the conditional block.
+      Node tmpOp1 = cond.cloneTree();
+      Node op1Assign = new Node(Token.ASSIGN, tmpOp1, op1);
+      tmpUses.add(tmpOp1);
+      op1Assign = new Node(Token.EXPR_RESULT, op1Assign);
+      Node thenBlock = new Node(Token.BLOCK, op1Assign);
+
+      // Create and insert the conditional before the statement.
+      insertLogicalConditional(t, n, parent, cond, thenBlock);
+      tmpUses.add(cond);
+
+      // Replace the original logical AND statement with the result
+      // value.
+      parent.replaceChild(n, tmpRef);
+      tmpUses.add(tmpRef);
+    }
+
+    // Convert a stand-alone AND expression with a simple first operand
+    // to a conditional statement.
+    //
+    // x || g();
+    // ==>
+    // if (x) {
+    //   g();
+    // }
     protected void expandAndSimple(NodeTraversal t, Node n, Node parent) {
       Node enclosing = NodeUtil.getEnclosingStatement(n);
 
       // Extract the two operands.
       Node op1 = n.getChildAtIndex(1).detachFromParent();
       Node op0 = n.getFirstChild().detachFromParent();
-
-      // Generate a new if/then/else framework node.
-      Node stmt = createConditionalNode(false);
 
       // The value of the first operand determines the control flow.
       // That is, the second operand is only evaluated if the first
@@ -630,162 +708,89 @@ public class JSStatementTransform extends JSTransform {
       Node op1Stmt = new Node(Token.EXPR_RESULT, op1);
       Node thenBlock = new Node(Token.BLOCK, op1Stmt);
 
-      // Fill in the new conditional.
-      stmt.replaceChild(stmt.getFirstChild(), cond);
-      stmt.replaceChild(stmt.getChildAtIndex(1), thenBlock);
-
-      // Insert the new if/then/else statement.
-      enclosing.getParent().addChildBefore(stmt, enclosing);
+      // Create and insert a conditional before the original statement.
+      insertLogicalConditional(t, n, parent, cond, thenBlock);
 
       // Remove the original logical AND expression and it's wrapper. 
       parent.getParent().removeChild(parent);
-      
     }
 
-    protected void expandAndValue(NodeTraversal t, Node n, Node parent) {
-      // Extract the two operands.
-      Node op1 = n.getChildAtIndex(1).detachFromParent();
-      Node op0 = n.getFirstChild().detachFromParent();
-
-      // Create a temporary variable to hold the value that the
-      // first operand evaluates to.
-      Node tmp = createNameNode(t.getScope());
-
-      // Create a var initializer for the new variable, and assign it
-      // the value of the first operand.
-      Node tmpInit = tmp.cloneTree();
-      tmpDefs.add(tmpInit);
-      Node op0Assign = new Node(Token.VAR, tmpInit);
-      op0Assign.getFirstChild().addChildToBack(op0);
-      // And insert it into the program prior to the enclosing statement.
-      Node enclosing = NodeUtil.getEnclosingStatement(n);
-      enclosing.getParent().addChildBefore(op0Assign, enclosing);
-
-      // Generate a new if/then/else framework node.
-      Node stmt = createConditionalNode(false);
-
-      // The value of the first operand determines the control flow.
-      // That is, the second operand is only evaluated if the first
-      // one is true.
-      Node cond = tmp.cloneTree();
-      tmpUses.add(cond);
-
-      // Create an assignment statement capturing the value of the
-      // second operand to be placed within the conditional block.
-      Node tmpOp1 = tmp.cloneTree();
-      tmpUses.add(tmpOp1);
-      Node op1Assign = new Node(Token.ASSIGN, tmpOp1, op1);
-      op1Assign = new Node(Token.EXPR_RESULT, op1Assign);
-      Node thenBlock = new Node(Token.BLOCK, op1Assign);
-
-      // Fill in the new conditional.
-      stmt.replaceChild(stmt.getFirstChild(), cond);
-      stmt.replaceChild(stmt.getChildAtIndex(1), thenBlock);
-
-      // Replace the original logical AND statement with the result
-      // value.
-      parent.replaceChild(n, tmp);
-      tmpUses.add(tmp);
-
-      // And finally, insert the new if/then/else statement.
-      enclosing.getParent().addChildBefore(stmt, enclosing);
-      
-    }
-
+    // Convert a stand-alone AND expression to a conditional statement.
+    //
+    // f() && g();
+    // ==>
+    // var tmp = f();
+    // if (tmp) {
+    //   g();
+    // }
     protected void expandAnd(NodeTraversal t, Node n, Node parent) {
-      // Extract the two operands.
-      Node op1 = n.getChildAtIndex(1).detachFromParent();
-      Node op0 = n.getFirstChild().detachFromParent();
+      // Extract the first operand into a temporary.
+      Node cond = expandLogicalFirst(t, n, parent);
 
-      // Create a temporary variable to hold the value that the
-      // first operand evaluates to.
-      Node tmp = createNameNode(t.getScope());
-
-      // Create a var initializer for the new variable, and assign it
-      // the value of the first operand.
-      Node tmpInit = tmp.cloneTree();
-      tmpDefs.add(tmpInit);
-      Node op0Assign = new Node(Token.VAR, tmpInit);
-      op0Assign.getFirstChild().addChildToBack(op0);
-      // And insert it into the program prior to the enclosing statement.
-      Node enclosing = NodeUtil.getEnclosingStatement(n);
-      enclosing.getParent().addChildBefore(op0Assign, enclosing);
-
-      // Generate a new if/then/else framework node.
-      Node stmt = createConditionalNode(false);
-
-      // The value of the first operand determines the control flow.
-      // That is, the second operand is only evaluated if the first
-      // one is true.
-      Node cond = tmp;
-      tmpUses.add(cond);
+      // Get the second operand (which is now the first).
+      Node op1 = n.getChildAtIndex(0).detachFromParent();
 
       // Create an assignment statement capturing the value of the
       // second operand to be placed within the conditional block.
       Node op1Stmt = new Node(Token.EXPR_RESULT, op1);
       Node thenBlock = new Node(Token.BLOCK, op1Stmt);
 
-      // Fill in the new conditional.
-      stmt.replaceChild(stmt.getFirstChild(), cond);
-      stmt.replaceChild(stmt.getChildAtIndex(1), thenBlock);
-
-      // Insert the new if/then/else statement.
-      enclosing.getParent().addChildBefore(stmt, enclosing);
+      // Create and insert a conditional before the original statement.
+      insertLogicalConditional(t, n, parent, cond, thenBlock);
+      tmpUses.add(cond);
 
       // Remove the original logical AND expression and its wrapper. 
       parent.getParent().removeChild(parent);
     }
 
+    // Convert an OR expression to a conditional statement.
+    //
+    // var x = y || z;
+    // ==>
+    // var tmp = y;
+    // if (!tmp) {
+    //   tmp = z;
+    // }
+    // var x = tmp;
     protected void expandOrValue(NodeTraversal t, Node n, Node parent) {
-      // Extract the two operands.
-      Node op1 = n.getChildAtIndex(1).detachFromParent();
-      Node op0 = n.getFirstChild().detachFromParent();
+      // Extract the first operand into a temporary.
+      Node cond = expandLogicalFirst(t, n, parent);
 
-      // Create a temporary variable to hold the value that the
-      // first operand evaluates to.
-      Node tmp = createNameNode(t.getScope());
-
-      // Create a var initializer for the new variable, and assign it
-      // the value of the first operand.
-      Node tmpInit = tmp.cloneTree();
-      tmpDefs.add(tmpInit);
-      Node op0Assign = new Node(Token.VAR, tmpInit);
-      op0Assign.getFirstChild().addChildToBack(op0);
-      // And insert it into the program prior to the enclosing statement.
-      Node enclosing = NodeUtil.getEnclosingStatement(n);
-      enclosing.getParent().addChildBefore(op0Assign, enclosing);
-
-      // Generate a new if/then/else framework node.
-      Node stmt = createConditionalNode(false);
+      // Get the second operand (which is now the first).
+      Node op1 = n.getChildAtIndex(0).detachFromParent();
 
       // The value of the first operand determines the control flow.
       // That is, the second operand is only evaluated if the first
       // one is false.
-      Node tmpCond = tmp.cloneTree();
-      Node cond = new Node(Token.NOT, tmpCond);
-      tmpUses.add(tmpCond);
+      Node tmpRef = cond.cloneTree();
+      Node notCond = new Node(Token.NOT, cond);
 
       // Create an assignment statement capturing the value of the
       // second operand to be placed within the conditional block.
-      Node tmpOp1 = tmp.cloneTree();
+      Node tmpOp1 = cond.cloneTree();
       Node op1Assign = new Node(Token.ASSIGN, tmpOp1, op1);
       tmpUses.add(tmpOp1);
       op1Assign = new Node(Token.EXPR_RESULT, op1Assign);
       Node thenBlock = new Node(Token.BLOCK, op1Assign);
 
-      // Fill in the new conditional.
-      stmt.replaceChild(stmt.getFirstChild(), cond);
-      stmt.replaceChild(stmt.getChildAtIndex(1), thenBlock);
+      // Create and insert a conditional before the original statement.
+      insertLogicalConditional(t, n, parent, notCond, thenBlock);
+      tmpUses.add(cond);
 
-      // Replace the original logical AND statement with the result
+      // Replace the original logical OR statement with the result
       // value.
-      parent.replaceChild(n, tmp);
-      tmpUses.add(tmp);
-
-      // And finally, insert the new if/then/else statement.
-      enclosing.getParent().addChildBefore(stmt, enclosing);
+      parent.replaceChild(n, tmpRef);
+      tmpUses.add(tmpRef);
     }
 
+    // Convert a stand-alone OR expression with a simple first operand
+    // to a conditional statement.
+    //
+    // x || g();
+    // ==>
+    // if (!x) {
+    //   g();
+    // }
     protected void expandOrSimple(NodeTraversal t, Node n, Node parent) {
       Node enclosing = NodeUtil.getEnclosingStatement(n);
 
@@ -793,70 +798,48 @@ public class JSStatementTransform extends JSTransform {
       Node op1 = n.getChildAtIndex(1).detachFromParent();
       Node op0 = n.getFirstChild().detachFromParent();
 
-      // Generate a new if/then/else framework node.
-      Node stmt = createConditionalNode(false);
-
       // The value of the first operand determines the control flow.
       // That is, the second operand is only evaluated if the first
       // one is false.
-      Node cond = new Node(Token.NOT, op0);
+      Node notCond = new Node(Token.NOT, op0);
 
       // Wrap the second operand to be placed within the conditional.
       Node op1Stmt = new Node(Token.EXPR_RESULT, op1);
       Node thenBlock = new Node(Token.BLOCK, op1Stmt);
 
-      // Fill in the new conditional.
-      stmt.replaceChild(stmt.getFirstChild(), cond);
-      stmt.replaceChild(stmt.getChildAtIndex(1), thenBlock);
-
-      // Insert the new if/then/else statement.
-      enclosing.getParent().addChildBefore(stmt, enclosing);
+      // Create and insert a conditional before the original statement.
+      insertLogicalConditional(t, n, parent, notCond, thenBlock);
 
       // Remove the original logical OR statement;
       parent.getParent().removeChild(parent);
     }
 
+    // Convert a stand-alone OR expression to a conditional statement.
+    //
+    // f() || g();
+    // ==>
+    // var tmp = f();
+    // if (!tmp) {
+    //   g();
+    // }
     protected void expandOr(NodeTraversal t, Node n, Node parent) {
-      // Extract the two operands.
-      Node op1 = n.getChildAtIndex(1).detachFromParent();
-      Node op0 = n.getFirstChild().detachFromParent();
+      // Extract the first operand into a temporary.
+      Node cond = expandLogicalFirst(t, n, parent);
+      Node notCond = new Node(Token.NOT, cond);
 
-      // Create a temporary variable to hold the value that the
-      // first operand evaluates to.
-      Node tmp = createNameNode(t.getScope());
-
-      // Create a var initializer for the new variable, and assign it
-      // the value of the first operand.
-      Node tmpInit = tmp.cloneTree();
-      tmpDefs.add(tmpInit);
-      Node op0Assign = new Node(Token.VAR, tmpInit);
-      op0Assign.getFirstChild().addChildToBack(op0);
-      // And insert it into the program prior to the enclosing statement.
-      Node enclosing = NodeUtil.getEnclosingStatement(n);
-      enclosing.getParent().addChildBefore(op0Assign, enclosing);
-
-      // Generate a new if/then/else framework node.
-      Node stmt = createConditionalNode(false);
-
-      // The value of the first operand determines the control flow.
-      // That is, the second operand is only evaluated if the first
-      // one is true.
-      Node cond = new Node(Token.NOT, tmp);
-      tmpUses.add(tmp);
+      // Get the second operand (which is now the first).
+      Node op1 = n.getChildAtIndex(0).detachFromParent();
 
       // Create an assignment statement capturing the value of the
       // second operand to be placed within the conditional block.
       Node op1Stmt = new Node(Token.EXPR_RESULT, op1);
       Node thenBlock = new Node(Token.BLOCK, op1Stmt);
 
-      // Fill in the new conditional.
-      stmt.replaceChild(stmt.getFirstChild(), cond);
-      stmt.replaceChild(stmt.getChildAtIndex(1), thenBlock);
+      // Create and insert a conditional before the original statement.
+      insertLogicalConditional(t, n, parent, notCond, thenBlock);
+      tmpUses.add(cond);
 
-      // Insert the new if/then/else statement.
-      enclosing.getParent().addChildBefore(stmt, enclosing);
-
-      // Remove the original logical OR expression and its wrapper. 
+      // Remove the original logical AND expression and its wrapper. 
       parent.getParent().removeChild(parent);
     }
 

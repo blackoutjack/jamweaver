@@ -391,11 +391,11 @@ public class CartesianAutomaton extends RelationAutomaton {
 
     Dbg.out("Loading data relations", 3);
 
-    if (true || JAM.Opts.queryThreads > 1) {
+    //if (JAM.Opts.queryThreads > 1) {
       loadInternalRelationsBatch(preStateCube, postStateCubes);
-    } else {
-      //loadInternalRelations(preStateCube, postStateCubes);
-    }
+    //} else {
+    //  loadInternalRelations(preStateCube, postStateCubes);
+    //}
 
     // %%% Calling this after loadInternalRelations to avoid
     // %%% overwriting relation. Could be smarter.

@@ -262,8 +262,8 @@ public class JSExp extends Exp {
   public boolean isNoOp() {
     if (isVarDeclaration()) return true;
     int t = node.getType();
-    return (t == BLOCK || t == FUNCTION || t == EMPTY || t == BREAK
-        || t == CONTINUE || t == TRANSACTION);
+    return t == BLOCK || t == FUNCTION || t == EMPTY || t == BREAK
+        || t == CONTINUE || t == TRANSACTION;
   }
 
   @Override
@@ -313,74 +313,11 @@ public class JSExp extends Exp {
     return isControlNode(node);
   }
 
-  // Helper for member function toQueryAST()
-  protected void toAST(Node n, StringBuilder sb) {
-    sb.append("[");
-
-    int t = n.getType();
-    String nodetype = Token.name(t);
-
-    if (t == INC || t == DEC) {
-      int prop = n.getIntProp(Node.INCRDECR_PROP);
-      if (prop == Node.DECR_FLAG) {
-        nodetype = "POST" + nodetype;
-      }
-    }
-
-    sb.append("'");
-    sb.append(nodetype);
-    sb.append("'");
-
-    if (t == NAME) {
-      sb.append(",'\"");
-      sb.append(n.getString());
-      sb.append("\"'");
-      
-      String type = source.getType(n.getString());
-      if (type != null) {
-        // %%% Somewhat conservative.
-        if (NodeUtil.getEnclosingStatement(n).isExprResult()) {
-          sb.append(",'");
-          sb.append(type);
-          sb.append("'");
-        }
-      }
-
-    } else if (t == STRING || t == STRING_KEY) {
-      // Don't use |Node.getString| here since that will be the raw
-      // format with evaluated control characters.
-      sb.append(",'\"");
-
-      // This unescapes quotes in the body of the string also.
-      String strval = NodeUtil.unquote(source.codeFromNode(n));
-
-      String escval = XSBInterface.escapeString(strval);
-      sb.append(escval);
-      sb.append("\"'");
-    } else if (t == NUMBER) {
-      // %%% Kind of hacky ... we don't handle JS floats very well.
-      String num = "" + n.getDouble();
-      // Convert to an int if allowable.
-      if (num.endsWith(".0")) num = num.substring(0, num.length() - 2);
-
-      sb.append(",'");
-      sb.append(num);
-      sb.append("'");
-    }
-
-    // Recurse.
-    for (int i=0; i<n.getChildCount(); i++) {
-      sb.append(",");
-      Node c = n.getChildAtIndex(i);
-      toAST(c, sb);
-    }
-    sb.append("]");
-  }
-
   @Override
   public String toAST() {
     StringBuilder sb = new StringBuilder();
-    toAST(node, sb);
+    // A null |nameMap| indicates that no normalization should occur.
+    toAST(node, null, sb);
     return sb.toString();
   }
 
@@ -459,15 +396,15 @@ public class JSExp extends Exp {
       sb.append("['EMPTY']");
     } else if (isControl()) {
       Node n = getControlQueryNode();
-      toAST(n, sb);
+      toAST(n, null, sb);
     } else {
-      // Call to the static recursive AST printing function.
-      toAST(node, sb);
+      // Call to the recursive AST printing function.
+      toAST(node, null, sb);
     }
     return sb.toString();
   }
 
-  protected void toNormalizedAST(Node n, Map<String,String> nameMap, StringBuilder sb) {
+  protected void toAST(Node n, Map<String,String> nameMap, StringBuilder sb) {
     sb.append("[");
 
     int t = n.getType();
@@ -487,7 +424,9 @@ public class JSExp extends Exp {
     if (t == NAME) {
       String name = n.getString();
       String norm = null;
-      if (nameMap.containsKey(name)) {
+      if (nameMap == null) {
+        norm = name;
+      } else if (nameMap.containsKey(name)) {
         norm = nameMap.get(name);
       } else {
         int vsuf = nameMap.size();
@@ -501,13 +440,12 @@ public class JSExp extends Exp {
       sb.append("\"'");
       
       String type = source.getType(name);
-      if (type != null) {
+      if (type != null
+          && NodeUtil.getEnclosingStatement(n).isExprResult()) {
         // %%% Somewhat conservative.
-        if (NodeUtil.getEnclosingStatement(n).isExprResult()) {
-          sb.append(",'");
-          sb.append(type);
-          sb.append("'");
-        }
+        sb.append(",'");
+        sb.append(type);
+        sb.append("'");
       }
 
     } else if (t == STRING || t == STRING_KEY) {
@@ -536,7 +474,7 @@ public class JSExp extends Exp {
     for (int i=0; i<n.getChildCount(); i++) {
       sb.append(",");
       Node c = n.getChildAtIndex(i);
-      toNormalizedAST(c, nameMap, sb);
+      toAST(c, nameMap, sb);
     }
     sb.append("]");
   }
@@ -568,7 +506,7 @@ public class JSExp extends Exp {
     }
 
     StringBuilder sb = new StringBuilder();
-    toNormalizedAST(n, nameMap, sb);
+    toAST(n, nameMap, sb);
     return sb.toString();
   }
 

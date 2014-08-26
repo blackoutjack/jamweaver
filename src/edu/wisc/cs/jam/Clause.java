@@ -59,7 +59,7 @@ public class Clause {
 		this("");
 		for (Clause c : clauses) {
 			String nextText = c.getText();
-			boolean hasOr = (nextText.indexOf(";") > -1);
+			boolean hasOr = nextText.indexOf(";") > -1;
 
 			// Encapsulate the previously accumulated text.
 			if (!text.equals("")) {

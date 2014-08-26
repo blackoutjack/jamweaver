@@ -177,24 +177,22 @@ public class JSCollapseTransform extends JSTransform {
 
     @Override
     public void visit(NodeTraversal t, Node n, Node parent) {
-      if (n.isName()) {
-        if (temporaries.contains(n.getString())) {
-          Scope s = t.getScope();
-          Node root = s.getRootNode();
-          ScopeInfo si = tmpVars.get(root);
-          if (parent.isVar()) {
-            Node decl = si.getDeclaration(n.getString());
-            if (decl != n) {
-              // There is a duplicate declaration. This can happen with
-              // the direct eval transformation. Mark it as a use.
-              si.addUse(n); 
-            }
-            return;
+      if (n.isName() && temporaries.contains(n.getString())) {
+        Scope s = t.getScope();
+        Node root = s.getRootNode();
+        ScopeInfo si = tmpVars.get(root);
+        if (parent.isVar()) {
+          Node decl = si.getDeclaration(n.getString());
+          if (decl != n) {
+            // There is a duplicate declaration. This can happen with
+            // the direct eval transformation. Mark it as a use.
+            si.addUse(n); 
           }
-          assert !parent.isFunction() && !parent.isParamList() && !parent.isCatch();
-          assert si != null : "Null scope info: " + root;
-          si.addUse(n); 
+          return;
         }
+        assert !parent.isFunction() && !parent.isParamList() && !parent.isCatch();
+        assert si != null : "Null scope info: " + root;
+        si.addUse(n); 
       }
     }
   }

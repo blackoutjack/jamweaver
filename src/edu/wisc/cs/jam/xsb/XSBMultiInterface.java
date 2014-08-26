@@ -148,7 +148,7 @@ public class XSBMultiInterface extends XSBInterface {
       }
 
       putProcess(xsb);
-      return new Boolean(ret);
+      return Boolean.valueOf(ret);
     }
 
     public synchronized void kill() {
@@ -254,26 +254,26 @@ public class XSBMultiInterface extends XSBInterface {
         if (sat == null) {
           // This indicates that there was an error within the Querier.
           // Use the |onError| value. Don't add the result to the cache.
-          sat = new Boolean(onError);
+          sat = Boolean.valueOf(onError);
           queryCache.removePending(clause);
         } else {
           queryCache.set(clause, sat, clause.isConcrete());
         }
       } catch (TimeoutException ex) {
         Dbg.err("Timeout waiting for query " + clause.getQueryId());
-        sat = new Boolean(onError);
+        sat = Boolean.valueOf(onError);
         queryCache.removePending(clause);
         Querier q = queriers.get(i);
         if (q != null) q.kill();
       } catch (InterruptedException ex) {
         Dbg.err("Interrupted while retrieving result " + clause.getQueryId() + ": " + ex.getMessage());
-        sat = new Boolean(onError);
+        sat = Boolean.valueOf(onError);
         queryCache.removePending(clause);
         Querier q = queriers.get(i);
         if (q != null) q.kill();
       } catch (ExecutionException ex) {
         Dbg.err("ExecutionException while retrieving result " + clause.getQueryId() + ": " + ex.getMessage());
-        sat = new Boolean(onError);
+        sat = Boolean.valueOf(onError);
         queryCache.removePending(clause);
         Querier q = queriers.get(i);
         if (q != null) q.kill();

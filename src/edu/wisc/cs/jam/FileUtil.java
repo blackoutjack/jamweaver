@@ -169,11 +169,9 @@ public class FileUtil {
     FilenameFilter ff = new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
-        if (name.length() >= plen && name.substring(0, plen).equals(prefix)) {
-          if (name.substring(name.length() - slen).equals(suffix)) {
-            return true;
-          }
-        }
+        if (name.length() >= plen && name.substring(0, plen).equals(prefix)
+            && name.substring(name.length() - slen).equals(suffix))
+          return true;
         return false;
       } 
     };

@@ -22,9 +22,9 @@ public class ProgramModel {
       raut = new DisjointAutomaton(jam, policyPath);
     } else if (true || JAM.Opts.cartesian) {
       raut = new CartesianAutomaton(jam, policyPath);
-    } else {
-      //raut = new BooleanAutomaton(jam, policyPath);
-    }
+    }// else {
+    //  raut = new BooleanAutomaton(jam, policyPath);
+    //}
 
     // Only instantiate this when needed.
     faut = null;
@@ -133,7 +133,7 @@ public class ProgramModel {
   }
 
   public FocusAutomaton getFocusAutomaton() {
-    assert(faut != null);
+    assert faut != null;
     return faut;
   }
 

@@ -156,4 +156,8 @@ wala:
 	# Retrieve IBM Wala source code.
 	git clone git://github.org/wala/WALA.git
 
+# Utility for extracting JS from HTML.
+jsunpack:
+	svn co http://jsunpack-n.googlecode.com/svn/trunk $(JAMPKG)/util/jsunpack
+
 

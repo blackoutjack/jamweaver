@@ -177,4 +177,12 @@ public class TypeFacts {
     return hash;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) return false;
+    if (!(o instanceof TypeFacts)) return false;
+    if (this == o) return true;
+    TypeFacts other = (TypeFacts)o;
+    return this.hashCode() == other.hashCode();
+  }
 }

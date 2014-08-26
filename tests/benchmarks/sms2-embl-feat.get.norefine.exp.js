@@ -30,17 +30,17 @@ function checkAlign(arrayOfTitles, arrayOfSequences) {
   var i$$1 = 0;
   var v11 = i$$1 < arrayOfTitles.length;
   for(;v11;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v636 = arrayOfTitles[i$$1]
     }
     var v337 = v636.search(/\S/) == -1;
     if(!v337) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+      introspect(JAM.policy.p5) {
         var v692 = arrayOfSequences[i$$1]
       }
       var v543 = v692.search(/\S/) == -1;
       if(!v543) {
-        introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+        introspect(JAM.policy.p5) {
           var v693 = arrayOfSequences[i$$1]
         }
         v543 = v693.length != lengthOfAlign
@@ -93,14 +93,14 @@ function checkGeneticCode(arrayOfPatterns) {
   var testSequence = "gggggaggtggcgaggaagatgacgtggtagttgtcgcggcagctgccaggagaagtagcaagaaaaataacatgataattatcacgacaactacctggtgatgttgctagtaatattacttgttatttttctcgtcatcttcccggcgacgtcgccagcaacatcacctgctacttctcccgccacctccc";
   var v16 = z$$2 < arrayOfPatterns.length;
   for(;v16;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v549 = arrayOfPatterns[z$$2]
     }
     if(v549.search(/^\s*\/[a-zA-Z\|\[\]]+\/=[a-zA-Z\*]/) == -1) {
       alert("Genetic code error: one or more patterns have been entered incorrectly.");
       return false
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v550 = arrayOfPatterns[z$$2]
     }
     if(moreExpressionCheck(v550) == false) {
@@ -117,7 +117,7 @@ function checkGeneticCode(arrayOfPatterns) {
   for(;v25;) {
     var v19 = geneticCodeMatchExp;
     var v20 = j;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v643 = arrayOfPatterns[j]
     }
     var v346 = v643.match(/\/.+\//) + "gi";
@@ -129,14 +129,14 @@ function checkGeneticCode(arrayOfPatterns) {
     v19[v20] = v821;
     var v21 = geneticCodeMatchResult;
     var v22 = j;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v552 = arrayOfPatterns[j]
     }
     var v822 = v552.match(/=[a-zA-Z\*]/).toString();
     v21[v22] = v822;
     var v23 = geneticCodeMatchResult;
     var v24 = j;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v348 = geneticCodeMatchResult[j]
     }
     var v823 = v348.replace(/=/g, "");
@@ -151,7 +151,7 @@ function checkGeneticCode(arrayOfPatterns) {
     j = 0;
     var v30 = j < geneticCodeMatchExp.length;
     for(;v30;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+      introspect(JAM.policy.p5) {
         var v554 = geneticCodeMatchExp[j]
       }
       if(codon.search(v554) != -1) {
@@ -178,7 +178,7 @@ function checkGroupInput(arrayOfPatterns$$1) {
   var z$$3 = 0;
   var v34 = z$$3 < arrayOfPatterns$$1.length;
   for(;v34;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v556 = arrayOfPatterns$$1[z$$3]
     }
     if(v556.search(/[^acdefghiklmnpqrstvwyz]/i) != -1) {
@@ -191,14 +191,14 @@ function checkGroupInput(arrayOfPatterns$$1) {
   var i$$3 = 0;
   var v38 = i$$3 < arrayOfPatterns$$1.length;
   for(;v38;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v557 = arrayOfPatterns$$1[i$$3]
     }
     var re = new RegExp("[" + v557 + "]", "gi");
     var j$$1 = i$$3 + 1;
     var v37 = j$$1 < arrayOfPatterns$$1.length;
     for(;v37;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+      introspect(JAM.policy.p5) {
         var v558 = arrayOfPatterns$$1[j$$1]
       }
       if(v558.search(re) != -1) {
@@ -217,14 +217,14 @@ function checkRestPatterns(arrayOfPatterns$$2) {
   var z$$4 = 0;
   var v41 = z$$4 < arrayOfPatterns$$2.length;
   for(;v41;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v559 = arrayOfPatterns$$2[z$$4]
     }
     if(v559.search(/^\s*\/[acgturyswkmbdhvn\[\]]+\/\s+\([^\/]+\)\d+/i) == -1) {
       alert("One or more patterns have been entered incorrectly.");
       return false
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v560 = arrayOfPatterns$$2[z$$4]
     }
     if(moreExpressionCheck(v560) == false) {
@@ -355,7 +355,7 @@ function earlyCheckAlign(alignArray) {
   var i$$4 = 1;
   var v54 = i$$4 < alignArray.length;
   for(;v54;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v562 = alignArray[i$$4]
     }
     if(v562.search(/[^\s]+\s/) == -1) {
@@ -420,7 +420,7 @@ function getGeneticCodeMatchExp(arrayOfPatterns$$3) {
   for(;v74;) {
     var v72 = geneticCodeMatchExp$$1;
     var v73 = j$$2;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v645 = arrayOfPatterns$$3[j$$2]
     }
     var v395 = v645.match(/\/.+\//) + "gi";
@@ -442,14 +442,14 @@ function getGeneticCodeMatchResult(arrayOfPatterns$$4) {
   for(;v80;) {
     var v76 = geneticCodeMatchResult$$1;
     var v77 = j$$3;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v564 = arrayOfPatterns$$4[j$$3]
     }
     var v825 = v564.match(/=[a-zA-Z\*]/).toString();
     v76[v77] = v825;
     var v78 = geneticCodeMatchResult$$1;
     var v79 = j$$3;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v399 = geneticCodeMatchResult$$1[j$$3]
     }
     var v826 = v399.replace(/=/g, "");
@@ -587,7 +587,7 @@ function openWindow(title$$5) {
   return
 }
 function _openWindow(title$$6, isColor) {
-  outputWindow = JAM.call(JAM.get(window, "open", JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074), window, ["", "my_new_window", "toolbar=no, location=no, directories=no, status=yes, menubar=yes, scrollbars=yes, resizable=yes, copyhistory=no, width=800, height=400"]);
+  outputWindow = JAM.call(JAM.get(window, "open", JAM.policy.p1), window, ["", "my_new_window", "toolbar=no, location=no, directories=no, status=yes, menubar=yes, scrollbars=yes, resizable=yes, copyhistory=no, width=800, height=400"]);
   outputWindow.focus();
   var v110 = outputWindow.document;
   JAM.call(v110.write, v110, ['<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n' + '<html lang="en">\n' + "<head>\n" + "<title>Sequence Manipulation Suite</title>\n" + '<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />\n']);
@@ -612,7 +612,7 @@ function openWindowAlign(title$$7) {
   return
 }
 function _openWindowAlign(title$$8, isBackground) {
-  outputWindow = JAM.call(JAM.get(window, "open", JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B074), window, ["", "my_new_window", "toolbar=no, location=no, directories=no, status=yes, menubar=yes, scrollbars=yes, resizable=yes, copyhistory=no, width=800, height=400"]);
+  outputWindow = JAM.call(JAM.get(window, "open", JAM.policy.p1), window, ["", "my_new_window", "toolbar=no, location=no, directories=no, status=yes, menubar=yes, scrollbars=yes, resizable=yes, copyhistory=no, width=800, height=400"]);
   outputWindow.focus();
   var v118 = outputWindow.document;
   JAM.call(v118.write, v118, ['<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n' + '<html lang="en">\n' + "<head>\n" + "<title>Sequence Manipulation Suite</title>\n" + '<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />\n']);
@@ -1068,7 +1068,7 @@ function writeMutatedSequence(sequence$$13, components$$1, numMut, firstIndexToM
       if(componentsIndex == components$$1.length) {
         componentsIndex = 0
       }
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+      introspect(JAM.policy.p5) {
         var v478 = components$$1[componentsIndex]
       }
       if(v478 != currentChar) {
@@ -1076,7 +1076,7 @@ function writeMutatedSequence(sequence$$13, components$$1, numMut, firstIndexToM
       }
     }
     var v479 = sequence$$13.substring(0, randNum);
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v480 = components$$1[componentsIndex]
     }
     sequence$$13 = v479 + v480 + sequence$$13.substring(randNum + 1, sequence$$13.length);
@@ -1137,7 +1137,7 @@ function writeRestrictionSites(sequence$$15, arrayOfItems, dnaConformation) {
   for(;v251;) {
     tempString$$1 = "none";
     backGroundClass = "many";
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v489 = arrayOfItems[i$$9]
     }
     matchExp = v489.match(/\/.+\//) + "gi";
@@ -1147,7 +1147,7 @@ function writeRestrictionSites(sequence$$15, arrayOfItems, dnaConformation) {
     }else {
       matchExp = JAM.call(eval, null, [matchExp])
     }
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v674 = arrayOfItems[i$$9]
     }
     cutDistance = parseFloat(v674.match(/\)\D*\d+/).toString().replace(/\)\D*/, ""));
@@ -1187,7 +1187,7 @@ function writeRestrictionSites(sequence$$15, arrayOfItems, dnaConformation) {
     }
     var v249 = outputWindow.document;
     var v752 = '<tr><td class="' + backGroundClass + '">';
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v790 = arrayOfItems[i$$9]
     }
     JAM.call(v249.write, v249, [v752 + v790.match(/\([^\(]+\)/).toString().replace(/\(|\)/g, "") + '</td><td class="' + backGroundClass + '">' + tempString$$1 + "</td></tr>\n"]);
@@ -1209,7 +1209,7 @@ function writeSequenceStats(sequence$$16, arrayOfItems$$1) {
   var v264 = i$$10 < arrayOfItems$$1.length;
   for(;v264;) {
     var tempNumber = 0;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v500 = arrayOfItems$$1[i$$10]
     }
     var matchExp$$1 = v500.match(/\/[^\/]+\//) + "gi";
@@ -1223,19 +1223,19 @@ function writeSequenceStats(sequence$$16, arrayOfItems$$1) {
     }
     var percentage = 0;
     var v608 = originalLength + 1;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v718 = arrayOfItems$$1[i$$10]
     }
     if(v608 - parseFloat(v718.match(/\d+/)) > 0) {
       var v259 = 100 * tempNumber;
       var v503 = originalLength + 1;
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+      introspect(JAM.policy.p5) {
         var v678 = arrayOfItems$$1[i$$10]
       }
       percentage = v259 / (v503 - parseFloat(v678.match(/\d+/)))
     }
     var v262 = outputWindow.document;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v791 = arrayOfItems$$1[i$$10]
     }
     JAM.call(v262.write, v262, ["<tr><td>" + v791.match(/\([^\(]+\)\b/).toString().replace(/\(|\)/g, "") + "</td><td>" + tempNumber + "</td><td>" + percentage.toFixed(2) + "</td></tr>\n"]);
@@ -1294,7 +1294,7 @@ function emblFeat(theDocument) {
   var v277 = theDocument.forms[0].elements[0].value;
   var v617 = theDocument.forms[0].elements[4].options;
   var v618 = theDocument.forms[0].elements[4].selectedIndex;
-  introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+  introspect(JAM.policy.p5) {
     var v514 = v617[v618]
   }
   emblFeatExtract(v277, v514.value);
@@ -1309,7 +1309,7 @@ function emblFeatExtract(emblFile$$2, outputType) {
   var i$$11 = 1;
   var v290 = i$$11 < recordArray.length;
   for(;v290;) {
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v280 = recordArray[i$$11]
     }
     var mainArray = v280.split(/[\f\n\r]\s*FH   Key             Location\/Qualifiers[\f\n\r]+\s*FH|[\f\n\r]\s*XX[\s]*[\f\n\r]\s*SQ[^\f\n\r]*/);
@@ -1347,25 +1347,25 @@ function prepareFeatures(arrayOfFeatures, dnaSequence$$4, outputType$$1) {
   for(;v301;) {
     var v291 = arrayOfFeatures;
     var v292 = i$$12;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v522 = arrayOfFeatures[i$$12]
     }
     var v827 = v522.replace(/[\[\]\*]/g, "");
     v291[v292] = v827;
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v523 = arrayOfFeatures[i$$12]
     }
     featureTitle = v523.match(/[^ \f\n\r\t\v]+ /).toString();
     theTitle = new RegExp(featureTitle);
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v294 = arrayOfFeatures[i$$12]
     }
     removedTitle = v294.replace(theTitle, "");
-    introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+    introspect(JAM.policy.p5) {
       var v621 = arrayOfFeatures[i$$12]
     }
     if(v621.search(/\/[^\f\n\r]+/) != -1) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+      introspect(JAM.policy.p5) {
         var v525 = arrayOfFeatures[i$$12]
       }
       firstQualifier = v525.match(/\/[^\f\n\r]+/).toString()
@@ -1425,7 +1425,7 @@ function printFeature(featurePos, dnaSequence$$5, outputType$$2) {
     var j$$10 = 0;
     var v321 = j$$10 < pairArray.length;
     for(;v321;) {
-      introspect(JAM.policy.pC545F199BE443C5FB0DC91C55134FB746FD8B0743DEE6A5A275B5D091C2C08764ED6875FB9CEF4A863AC168D7E4E5726382E87A6C5519EBB224F310826AD12417C5C1A4403544617DC12D12B77070FFE01B202FEF2A1FF3D4E691FF617A7A762C66E4CFB) {
+      introspect(JAM.policy.p5) {
         var v308 = pairArray[j$$10]
       }
       digitArray = v308.split(/\.\./);

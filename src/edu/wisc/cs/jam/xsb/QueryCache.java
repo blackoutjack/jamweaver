@@ -33,15 +33,6 @@ public class QueryCache {
   private Map<String,Boolean> symbolicCache;
   private Map<String,Future<Boolean>> pending;
 
-  // Reuse value tokens rather than repeatedly creating new ones.
-  private static Boolean yes;
-  private static Boolean no;
-
-  static {
-    yes = new Boolean(true);
-    no = new Boolean(false);
-  }
-
   public QueryCache(Semantics s) {
     try {
       hasher = MessageDigest.getInstance(CACHE_HASH);
@@ -86,10 +77,10 @@ public class QueryCache {
       // read() returns int rather than byte to allow -1 to be EOF.
       int val = 0;
       byte[] qbytes = new byte[hasher.getDigestLength()];
-      while ((r.read(qbytes)) != -1) {
+      while (r.read(qbytes) != -1) {
         val = r.read();
         //String key = new String(qbytes, "ISO-8859-1");
-        cache.put(DatatypeConverter.printHexBinary(qbytes), (val == 1 ? yes : no));
+        cache.put(DatatypeConverter.printHexBinary(qbytes), (val == 1 ? Boolean.TRUE : Boolean.FALSE));
       }
       r.close();
     } catch (IOException ex) {
@@ -106,11 +97,11 @@ public class QueryCache {
   }
 
   public Boolean getYes() {
-    return yes;
+    return Boolean.TRUE;
   }
 
   public Boolean getNo() {
-    return no;
+    return Boolean.FALSE;
   }
 
   public Boolean get(Clause clause, boolean concrete) {
@@ -142,7 +133,7 @@ public class QueryCache {
   public void set(Clause clause, Boolean result, boolean concrete) {
     String key = getKey(clause);
     Map<String,Boolean> cache = concrete ? concreteCache : symbolicCache;
-    cache.put(key, result.booleanValue() ? yes : no);
+    cache.put(key, result.booleanValue() ? Boolean.TRUE : Boolean.FALSE);
     // Clear the pending entry; otherwise the Future is leaked.
     pending.remove(key);
     try {

@@ -106,10 +106,11 @@ public class JAMControlFlowGraph {
     DiGraphNode<Node,Branch> dest = null;
     for (DiGraphEdge<Node,Branch> outEdge : entry.getOutEdges()) {
       // Skip synthetic blocks.
-      if (outEdge.getValue() == Branch.SYN_BLOCK) continue;
-      // There's only one successor, so break after it's found.
-      dest = outEdge.getDestination();
-      break;
+      if (outEdge.getValue() != Branch.SYN_BLOCK) {
+        // There's only one successor, so break after it's found.
+        dest = outEdge.getDestination();
+        break;
+      }
     }
 
     // The initial state of this function's control automaton
@@ -125,7 +126,7 @@ public class JAMControlFlowGraph {
       // Traverse the graph one more step to get to the program that we're
       // actually going to be analyzing.
       List<DiGraphEdge<Node,Branch>> oes = dest.getOutEdges();
-      assert(oes.size() == 1) : "Corrupt entry node for function: " + f.getName();
+      assert oes.size() == 1 : "Corrupt entry node for function: " + f.getName();
       dest = oes.get(0).getDestination();
     } else {
       // For functions other than the global one, the first node is

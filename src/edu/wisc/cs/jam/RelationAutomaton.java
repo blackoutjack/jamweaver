@@ -1162,9 +1162,9 @@ public class RelationAutomaton extends ControlAutomaton {
 
     // Don't output any policy-transitioning edge if this symbol
     // cannot transition the policy on this predicate.
-    if (p != null && !p.equals(Predicate.TRUE)) {
-      if (!getTransitioningSymbols(p.getNegative()).contains(ns)) return;
-    }
+    if (p != null && !p.equals(Predicate.TRUE)
+        && !getTransitioningSymbols(p.getNegative()).contains(ns))
+      return;
 
     Relation rel = getRelation(p, cedge);
 

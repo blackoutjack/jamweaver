@@ -32,7 +32,7 @@ public class FocusAutomaton extends RelationAutomaton {
   public FocusAutomaton(JAM j, RelationAutomaton r) {
     super(j, r.policyPath);
 
-    assert(r.loaded);
+    assert r.loaded;
 
     // The global check manager
     this.cm = j.getCheckManager();
@@ -74,16 +74,10 @@ public class FocusAutomaton extends RelationAutomaton {
     } else {
       // Should this edge be removed due to focus elsewhere?
       Predicate fpred = focusTransition.getSymbol().getPredicate();
-      if (fpred != null) {
-        if (p != fpred) {
-          return relationDomain.getFalseRelation();
-        }
-      }
-      if (focusNode != null) {
-        if (focusNode != ce.getSymbol().getExp()) {
-          return relationDomain.getFalseRelation();
-        }
-      }
+      if (fpred != null && p != fpred)
+        return relationDomain.getFalseRelation();
+      if (focusNode != null && focusNode != ce.getSymbol().getExp())
+        return relationDomain.getFalseRelation();
     }
 
     // Get the stored relation.
@@ -154,56 +148,6 @@ public class FocusAutomaton extends RelationAutomaton {
         out.append("\n");
       }
     }
-  }
-
-  protected void edgeSerialize(Appendable out, Edge cedge, PolicyPath.Edge pedge, ComboState<State,State> callSource) throws IOException {
-    Predicate p = pedge.getSymbol().getPredicate();
-    ExpSymbol ns = cedge.getSymbol();
-
-    // Don't output any policy-transitioning edge if this symbol
-    // cannot transition the policy on this predicate.
-    if (p != null && !p.equals(Predicate.TRUE)) {
-      if (!getTransitioningSymbols(p.getNegative()).contains(ns)) return;
-    }
-
-    Relation rel = getRelation(p, cedge);
-
-    // No point in adding edges that cannot be traversed.
-    if (rel.isEmpty()) return;
-
-    if (cedge.isCallEdge()) {
-      out.append("@");
-    } else if (cedge.isReturnEdge()) {
-      out.append("&");
-    }
-
-    out.append(pedge.getSource().toString());
-    out.append(".");
-    out.append(cedge.getSource().toString());
-    out.append("|");
-
-    if (callSource != null) {
-      out.append(callSource.toString());
-      out.append("|");
-    }
-
-    out.append(pedge.getDestination().toString());
-    out.append(".");
-    out.append(cedge.getDestination().toString());
-    out.append("|");
-
-    ComboSymbol<PredicateSymbol,ExpSymbol> combo = new ComboSymbol<PredicateSymbol,ExpSymbol>(pedge.getSymbol(), ns);
-    String symText = combo.serialize();
-    // Map the serialized representation of the symbol to the symbol
-    // itself. This is used to recognize the symbol after it's
-    // returned from an outside source.
-    serialSymbolMap.put(symText, combo);
-
-    out.append(symText);
-    out.append("|");
-
-    out.append(Integer.toString(rel.hashCode()));
-    out.append("\n");
   }
 
   @Override

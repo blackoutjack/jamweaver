@@ -201,7 +201,7 @@ public class FunctionFacts {
         Node n = s.getRootNode();
         if (NodeUtil.isFunction(n)) {
           Function f = cg.getFunctionForAstNode(n);
-          assert(f != null);
+          assert f != null;
           ret += "'##" + f.getName() + "'";
         } else {
           ret += "'#Global'";
@@ -218,7 +218,7 @@ public class FunctionFacts {
     Node n = parent.getRootNode();
     if (NodeUtil.isFunction(n)) {
       Function f = cg.getFunctionForAstNode(n);
-      assert(f != null);
+      assert f != null;
       return f.getName();
     }
     return "#Global";
@@ -531,11 +531,9 @@ public class FunctionFacts {
       }
 
       Node containing = t.getScopeRoot();
-      if (containing.equals(cg.getMainFunction().getAstNode())) {
-
-      } else {
+      if (!containing.equals(cg.getMainFunction().getAstNode())) {
         Function containingFunction = cg.getFunctionForAstNode(containing);
-        assert(containingFunction != null);
+        assert containingFunction != null;
         if (!scopeMap.keySet().contains(containingFunction)) {
           scopeMap.put(containingFunction, t.getScope());
         }

@@ -108,6 +108,20 @@ public class EvaluatorNode {
     return boundExpr;
   }
 
+  protected String parseNativeLocation(Exp nat) {
+    if (!language.isNativeLocation(nat)) return null;
+
+    String natloc = nat.toCode();
+    String expr = NodeUtil.nativeLocationToExpression.get(natloc);
+    if (expr == null) {
+      // %%% Handle this more gracefully.
+      throw new UnsupportedOperationException("Unknown native location: " + natloc);
+    }
+
+    String natexp = getClosedOverExpression(expr);
+    return natexp;
+  }
+
   protected String loadWild(String wildRef, String concRef) {
     String jsRef = null;
     if (wilds.containsKey(wildRef)) {
@@ -118,14 +132,91 @@ public class EvaluatorNode {
       // sequence).
       jsRef = wilds.get(wildRef);
       assert jsRef != null : "Null wild mapping encountered: " + wildRef;
-    } else {
-      if (concRef != null) {
-        // Unify the wildcard property name with the concrete reference.
-        wilds.put(wildRef, concRef);
-        jsRef = concRef;
-      }
+    } else if (concRef != null) {
+      // Unify the wildcard property name with the concrete reference.
+      wilds.put(wildRef, concRef);
+      jsRef = concRef;
     }
     return jsRef;
+  }
+
+  protected String parseWild(Exp w, String val) {
+    if (!language.isWild(w)) return null;
+    String wildstr = w.toCode();
+    String ret = loadWild(wildstr, val);
+    if (ret == null) {
+      throw new UnsupportedOperationException("Wildcard " + wildstr + " is not unified: " + w.toCode());
+    }
+    return ret;
+  }
+
+  protected String parseArgClause(Exp clause, StringBuilder sb) {
+    if (!clause.isCall()) return null;
+    String callName = clause.getFirstChild().toCode();
+    if (!callName.equals("jam#arg")) return null;
+
+    // 1 argument
+    assert clause.getChildCount() == 2 : "Malformed jam#arg clause: " + clause.toCode();
+
+    Exp argidx = clause.getChild(1);
+    String argidxstr = argidx.toCode();
+    int idx = Integer.valueOf(argidxstr); 
+    // Short-circuit if there is no corresponding argument.
+    sb.append("node.argc > " + idx + " && ");
+
+    String ret = "node.args[" + idx + "]";
+    return ret;
+  }
+
+  protected String parseAccessorClause(Exp clause) {
+    if (!clause.isAccessor()) return null;
+
+    Exp obj = clause.getFirstChild();
+    Exp prop = clause.getChild(1);
+
+    String objid = null;
+    if ((objid = parseWild(obj, null)) != null) {
+      // |objid| gets the value unified to the wildcard.
+    } else {
+      // %%% Output code that compares |varname === native| where
+      // %%% |native| is the native object corresponding to the
+      // %%% location cited in the policy predicate.
+      throw new UnsupportedOperationException("This case hasn't been implemented yet: " + exp.toCode());
+    }
+
+    String objstr = obj.toCode();
+
+    String propid = null;
+    String propstr = prop.toCode();
+    if ((propid = parseWild(prop, "node.id")) != null) {
+      // |propid| gets the value unified to the wildcard.
+    } else {
+      assert prop.isString() : "Invalid property identifier: " + prop.toCode();
+      propid = propstr;
+    }
+
+    // If the object/property pair is found in |setProperties|, then
+    // we want the value |node.value| rather than |node.obj[prop]|.
+    boolean isSetProp = false;
+    for (String[] objprop : setProperties) {
+      assert objprop.length == 2;
+      if (objprop[0].equals(objstr) && objprop[1].equals(propstr)) {
+        isSetProp = true;
+        break;
+      }
+    }
+   
+    String ret = null;
+    if (isSetProp) {
+      ret = "node.value";
+    } else {
+      // Get the value directly from the object.
+      // %%% What if this value had been overwritten by a previous
+      // %%% write within the transaction? Need to track updates to
+      // %%% this value throughout evaluation.
+      ret = objid + "[" + propid + "]";
+    }
+    return ret;  
   }
 
   protected void makeBinaryConjunct(StringBuilder sb) {
@@ -140,62 +231,11 @@ public class EvaluatorNode {
     Exp rhs = exp.getChild(1);
 
     String lop = null;
-    if (lhs.isAccessor()) {
-      Exp obj = lhs.getFirstChild();
-      Exp prop = lhs.getChild(1);
-
-      String objid = null;
-      String objstr = obj.toCode();
-      if (language.isWild(obj)) {
-        // %%% Could perhaps a concrete ref be provided?
-        objid = loadWild(objstr, null);
-        if (objid == null) {
-          throw new UnsupportedOperationException("Wildcard " + objstr + " is not unified: " + exp.toCode());
-        }
-      } else {
-        // %%% Output code that compares |varname === native| where
-        // %%% |native| is the native object corresponding to the
-        // %%% location cited in the policy predicate.
-        throw new UnsupportedOperationException("This case hasn't been implemented yet: " + exp.toCode());
-      }
-
-      String propname = null;
-      String propstr = prop.toCode();
-      if (language.isWild(prop)) {
-        propname = loadWild(propstr, "node.id");
-      } else {
-        assert prop.isString() : "Invalid property identifier: " + propstr;
-        propname = propstr;
-      }
-
-      // If the object/property pair is found in |setProperties|, then
-      // we want the value |node.value| rather than |node.obj[prop]|.
-      boolean isSetProp = false;
-      for (String[] objprop : setProperties) {
-        assert objprop.length == 2;
-        if (objprop[0].equals(objstr) && objprop[1].equals(propstr)) {
-          isSetProp = true;
-          break;
-        }
-      }
-      
-      if (isSetProp) {
-        lop = "node.value";
-      } else {
-        // Get the value directly from the object.
-        // %%% What if this value had been overwritten by a previous
-        // %%% write within the transaction? Need to track updates to
-        // %%% this value throughout evaluation.
-        lop = objid + "[" + propname + "]";
-      }
+    if ((lop = parseAccessorClause(lhs)) != null) {
+      // |lop| gets the (new, if set) value of the referenced property.
     } else if (lhs.isName()) {
-
-      if (language.isWild(lhs)) {
-        String wildstr = lhs.toCode();
-        lop = loadWild(wildstr, null);
-        if (lop == null) {
-          throw new UnsupportedOperationException("Wildcard " + wildstr + " is not unified: " + exp.toCode());
-        }
+      if ((lop = parseWild(lhs, null)) != null) {
+        // |lop| gets the value unified to the wildcard.
       } else {
         // Close over the global object.
         // %%% This doesn't work since the global object for the script
@@ -212,6 +252,8 @@ public class EvaluatorNode {
         sb.append("node.id === \"" + name + "\" && ");
         lop = "node.value";
       }
+    } else if ((lop = parseArgClause(lhs, sb)) != null) {
+      // |lop| gets the specified argument.
     } else if (lhs.isCall()) {
       String callName = lhs.getFirstChild().toCode();
       if (callName.equals("jam#getValue")) {
@@ -221,17 +263,10 @@ public class EvaluatorNode {
         Exp arg0 = lhs.getChild(1);
         Exp arg1 = lhs.getChild(2);
         String objname = null;
-        if (language.isWild(arg0)) {
-          String wildstr = arg0.toCode();
-          objname = loadWild(wildstr, "node.obj");
-        } else if (language.isNativeLocation(arg0)) {
-          String objloc = arg0.toCode();
-          String objexpr = NodeUtil.nativeLocationToExpression.get(objloc);
-          if (objexpr == null) {
-            // %%% Handle this more gracefully.
-            throw new UnsupportedOperationException("Unknown native location: " + objloc);
-          }
-          objname = getClosedOverExpression(objexpr);
+        if ((objname = parseWild(arg0, "node.obj")) != null) {
+          // |objname| gets the value unified to the wildcard.
+        } else if ((objname = parseNativeLocation(arg0)) != null) {
+          // |objname| gets the closed-over native reference.
         } else {
           throw new UnsupportedOperationException();
         }
@@ -243,44 +278,6 @@ public class EvaluatorNode {
 
         String valstr = objname + "[" + propname + "]";
         lop = valstr;
-      } else if (callName.equals("jam#arg")) {
-        // 1 argument
-        assert lhs.getChildCount() == 2;
-
-        Exp argidx = lhs.getChild(1);
-        String argidxstr = argidx.toCode();
-        int idx = Integer.valueOf(argidxstr); 
-        lop = "node.args[" + argidxstr + "]";
-       
-      } else if (callName.equals("jam#obj")) {
-        // 1 argument
-        assert lhs.getChildCount() == 2;
-
-        Exp objnode = lhs.getChild(1);
-        if (language.isNativeLocation(objnode)) {
-          String objloc = objnode.toCode();
-          String objexpr = NodeUtil.nativeLocationToExpression.get(objloc);
-          if (objexpr == null) {
-            // %%% Handle this more gracefully.
-            throw new UnsupportedOperationException("Unknown native location: " + objloc);
-          }
-          String privateExpr = getClosedOverExpression(objexpr);
-          
-          lop = privateExpr;
-        } else {
-          throw new UnsupportedOperationException("Only native locations supported for obj retrieval: " + objnode.toCode());
-        }
-      } else if (callName.equals("jam#str")) {
-        // 1 argument
-        assert lhs.getChildCount() == 2;
-
-        Exp strnode = lhs.getChild(1);
-        if (strnode.isString()) {
-          // %%% Need to escape?
-          lop = strnode.toCode();
-        } else {
-          throw new UnsupportedOperationException("Non-string argument for call to str: " + strnode.toCode());
-        }
       } else {
         throw new UnsupportedOperationException("Unknown predicate call: " + callName);
       }
@@ -311,21 +308,11 @@ public class EvaluatorNode {
     String rop = null;
     if (rhs.isAccessor()) {
       throw new UnsupportedOperationException();  
+    } else if ((rop = parseNativeLocation(rhs)) != null) {
+      // |rop| gets the closed-over native reference.
     } else {
-      if (language.isNativeLocation(rhs)) {
-        String loc = rhs.toCode();
-        String expr = NodeUtil.nativeLocationToExpression.get(loc);
-        if (expr == null) {
-          // %%% Handle this more gracefully.
-          throw new UnsupportedOperationException("Unknown native location: " + loc);
-        }
-
-        String privateExpr = getClosedOverExpression(expr);
-        rop = privateExpr;
-      } else {
-        // %%% Make this the case for isLiteral.
-        rop = rhs.toCode();
-      }
+      // %%% Make this the case for isLiteral.
+      rop = rhs.toCode();
     }
 
     if (isInfix) {
@@ -363,71 +350,10 @@ public class EvaluatorNode {
     }
 
     String arg1 = null;
-    if (val.isCall()) {
-      String callName = val.getFirstChild().toCode();
-      if (callName.equals("jam#arg")) {
-        // 1 argument
-        assert val.getChildCount() == 2;
-
-        Exp argidx = val.getChild(1);
-        String argidxstr = argidx.toCode();
-        int idx = Integer.valueOf(argidxstr); 
-        arg1 = "node.args[" + idx + "]";
-        // Short-circuit if there is no corresponding argument.
-        sb.append("node.argc > " + idx + " && ");
-      } else {
-        throw new UnsupportedOperationException("Unsupported receiver type for regex operation: " + val.toCode());
-      }
-    } else if (val.isAccessor()) {
-      // %%% Factor this out, as it reoccurs several places.
-      Exp obj = val.getFirstChild();
-      Exp prop = val.getChild(1);
-
-      String objid = null;
-      String objstr = obj.toCode();
-      if (language.isWild(obj)) {
-        // %%% Can a concrete reference be provided?
-        objid = loadWild(objstr, null);
-        if (objid == null) {
-          throw new UnsupportedOperationException("Wildcard " + objstr + " is not unified: " + exp.toCode());
-        }
-      } else {
-        // %%% Output code that compares |varname === native| where
-        // %%% |native| is the native object corresponding to the
-        // %%% location cited in the policy predicate.
-        throw new UnsupportedOperationException();
-      }
-
-      String propname = null;
-      String propstr = prop.toCode();
-      if (language.isWild(prop)) {
-        propname = loadWild(propstr, "node.id");
-      } else {
-        assert prop.isString() : "Invalid property identifier: " + prop.toCode();
-        propname = propstr;
-      }
-
-      // If the object/property pair is found in |setProperties|, then
-      // we want the value |node.value| rather than |node.obj[prop]|.
-      boolean isSetProp = false;
-      for (String[] objprop : setProperties) {
-        assert objprop.length == 2;
-        if (objprop[0].equals(objstr) && objprop[1].equals(propstr)) {
-          isSetProp = true;
-          break;
-        }
-      }
-      
-      if (isSetProp) {
-        arg1 = "node.value";
-      } else {
-        // Get the value directly from the object.
-        // %%% What if this value had been overwritten by a previous
-        // %%% write within the transaction? Need to track updates to
-        // %%% this value throughout evaluation.
-        arg1 = objid + "[" + propname + "]";
-      }
-
+    if ((arg1 = parseArgClause(val, sb)) != null) {
+      // |arg1| gets the specified argument.
+    } else if ((arg1 = parseAccessorClause(val)) != null) {
+      // |arg1| gets the (new, if set) value of the referenced property.
     } else {
       throw new UnsupportedOperationException("Unsupported receiver for regex operation: " + val.toCode());
     }
@@ -470,71 +396,11 @@ public class EvaluatorNode {
     Exp sub = exp.getChild(2);
 
     String arg0 = null;
-    if (full.isCall() ) {
-      String callName = full.getFirstChild().toCode();
-      if (callName.equals("jam#arg")) {
-        // 1 argument
-        assert full.getChildCount() == 2;
-
-        Exp argidx = full.getChild(1);
-        String argidxstr = argidx.toCode();
-        int idx = Integer.valueOf(argidxstr); 
-        arg0 = "node.args[" + idx + "]";
-        // Short-circuit if there is no corresponding argument, or if
-        // the argument is not a string.
-        sb.append("node.argc > " + idx + " && typeof " + arg0 + " === \"string\" && ");
-      } else {
-        throw new UnsupportedOperationException("Unsupported receiver type for string operation: " + full.toCode());
-      }
-    } else if (full.isAccessor()) {
-      Exp obj = full.getFirstChild();
-      Exp prop = full.getChild(1);
-
-      String objid = null;
-      String objstr = obj.toCode();
-      if (language.isWild(obj)) {
-        // %%% Could a concrete value be provided?
-        objid = loadWild(objstr, null);
-        if (objid == null) {
-          throw new UnsupportedOperationException("Wildcard " + objstr + " is not unified: " + exp.toCode());
-        }
-      } else {
-        // %%% Output code that compares |varname === native| where
-        // %%% |native| is the native object corresponding to the
-        // %%% location cited in the policy predicate.
-        throw new UnsupportedOperationException();
-      }
-
-      String propname = null;
-      String propstr = prop.toCode();
-      if (language.isWild(prop)) {
-        propname = loadWild(propstr, "node.id");
-      } else {
-        assert prop.isString() : "Invalid property identifier: " + prop.toCode();
-        propname = propstr;
-      }
-
-      // If the object/property pair is found in |setProperties|, then
-      // we want the value |node.value| rather than |node.obj[prop]|.
-      boolean isSetProp = false;
-      for (String[] objprop : setProperties) {
-        assert objprop.length == 2;
-        if (objprop[0].equals(objstr) && objprop[1].equals(propstr)) {
-          isSetProp = true;
-          break;
-        }
-      }
-      
-      if (isSetProp) {
-        arg0 = "node.value";
-      } else {
-        // Get the value directly from the object.
-        // %%% What if this value had been overwritten by a previous
-        // %%% write within the transaction? Need to track updates to
-        // %%% this value throughout evaluation.
-        arg0 = objid + "[" + propname + "]";
-      }
-      
+    if ((arg0 = parseArgClause(full, sb)) != null) {
+      // Short-circuit if the argument is not a string.
+      sb.append("typeof " + arg0 + " === \"string\" && ");
+    } else if ((arg0 = parseAccessorClause(full)) != null) {
+      // |arg0| gets the (new, if set) value of the referenced property.
     } else {
       throw new UnsupportedOperationException("Unsupported receiver for string operation: " + full.toCode());
     }
@@ -594,31 +460,14 @@ public class EvaluatorNode {
     assert exp.getChildCount() == 2 : "Invalid child count for call conjunct: " + exp.toCode();
 
     Exp fn = exp.getChild(1);
-    if (language.isNativeLocation(fn)) {
-      String fnloc = fn.toCode();
-      String expr = NodeUtil.nativeLocationToExpression.get(fnloc);
-      if (expr == null) {
-        // %%% Handle this more gracefully.
-        throw new UnsupportedOperationException("Unknown native location: " + fnloc);
-      }
-      String privateExpr = null;
-      if (natives.containsKey(expr)) {
-        privateExpr = natives.get(expr);
-      } else {
-        // %%% Do something more creative than adding an underscore.
-        // %%% or else factor this out altogether.
-        privateExpr = "_" + expr.replace('.', '_');
-        // Communicate back to the Evaluator about use of the native.
-        natives.put(expr, privateExpr);
-      }
-
+    String loc = null;
+    if ((loc = parseNativeLocation(fn)) != null) {
       sb.append("JAM.identical(node.value,");
-      sb.append(privateExpr);
+      sb.append(loc);
       sb.append(")");
     } else {
       throw new UnsupportedOperationException();  
     }
-    
   }
 
   protected void makeTypeConjunct(StringBuilder sb) {
@@ -627,23 +476,8 @@ public class EvaluatorNode {
 
     Exp val = exp.getChild(1);
     String valstr = null;
-    if (val.isCall()) {
-      String callName = val.getFirstChild().toCode();
-      if (callName.equals("jam#arg")) {
-        // 1 argument
-        assert val.getChildCount() == 2;
-
-        Exp argidx = val.getChild(1);
-        String argidxstr = argidx.toCode();
-        int idx = Integer.valueOf(argidxstr); 
-        valstr = "node.args[" + idx + "]";
-        // Short-circuit if there is no corresponding argument.
-        sb.append("node.argc > " + idx + " && ");
-      } else {
-        throw new UnsupportedOperationException("Unsupported value for type predicate: " + val.toCode());
-      }
-    } else {
-      throw new UnsupportedOperationException();  
+    if ((valstr = parseArgClause(val, sb)) == null) {
+      throw new UnsupportedOperationException("Unsupported value for type predicate: " + val.toCode());
     }
 
     Exp typenode = exp.getChild(2);
@@ -687,27 +521,11 @@ public class EvaluatorNode {
     boolean hasObjClause = false;
     String objid = null;
     String objstr = obj.toCode();
-    if (language.isWild(obj)) {
-      objid = loadWild(objstr, "node.obj");
-    } else if (language.isNativeLocation(obj)) {
-      String loc = objstr;
-      String nativeObj = NodeUtil.nativeLocationToExpression.get(loc);
-      if (nativeObj == null) {
-        throw new UnsupportedOperationException("Unknown native location: " + loc);
-      }
-      String privateExpr = null;
-      if (natives.containsKey(nativeObj)) {
-        privateExpr = natives.get(nativeObj);
-      } else {
-        // %%% Do something more creative than adding an underscore.
-        // %%% or else factor this out altogether.
-        privateExpr = "_" + nativeObj.replace('.', '_');
-        // Communicate back to the Evaluator about use of the native.
-        natives.put(nativeObj, privateExpr);
-      }
-
+    if ((objid = parseWild(obj, "node.obj")) != null) {
+      // |objid| gets the value unified with the wildcard.
+    } else if ((objid = parseNativeLocation(obj)) != null) {
       sb.append("JAM.identical(node.obj,");
-      sb.append(privateExpr);
+      sb.append(objid);
       sb.append(")");
       hasObjClause = true;
     } else {
@@ -719,8 +537,8 @@ public class EvaluatorNode {
 
     String propname = null;
     String propstr = prop.toCode();
-    if (language.isWild(prop)) {
-      propname = loadWild(propstr, "node.id");
+    if ((propname = parseWild(prop, "node.id")) != null) {
+      // |propname| gets the value unified with the wildcard.
     } else {
       if (hasObjClause) {
         sb.append(" && ");

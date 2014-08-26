@@ -184,7 +184,6 @@ public abstract class JSTransform implements Transform {
           sourceFile.reportCodeChange();
         }
       }
-      return;
     }
 
   }
@@ -257,7 +256,6 @@ public abstract class JSTransform implements Transform {
       if (n.isArrayLit() && n.getChildCount() > MAX_ENTRIES) {
         convertArrayLiteral(t, n, parent);
       }
-      return;
     }
 
   }
@@ -321,7 +319,6 @@ public abstract class JSTransform implements Transform {
         String s = n.getString();
         convertString(t, n, parent);
       }
-      return;
     }
 
   }
@@ -369,7 +366,6 @@ public abstract class JSTransform implements Transform {
           splitSetCall(t, lhs, rhs, n);
         }
       }
-      return;
     }
 
   }

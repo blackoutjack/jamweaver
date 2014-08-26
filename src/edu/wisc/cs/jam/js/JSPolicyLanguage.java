@@ -112,15 +112,13 @@ public class JSPolicyLanguage extends PolicyLanguage {
 
   protected boolean findStringsOfInterest(Exp e, Exp parent, Set<String> strs) {
     boolean ret = false;
-    if (e.is(JSExp.STRING)) {
-      if (parent.is(JSExp.CALL) && parent.getChildCount() == 3
-          && parent.getChild(2) == e) {
-        String callName = parent.getFirstChild().toCode();
-        if (callName.equals("jam#stringcontains") || callName.equals("jam#stringstartswith")) {
-          String str = NodeUtil.unquote(e.toCode());
-          strs.add(str);
-          ret = true;
-        }
+    if (e.is(JSExp.STRING) && parent.is(JSExp.CALL)
+        && parent.getChildCount() == 3 && parent.getChild(2) == e) {
+      String callName = parent.getFirstChild().toCode();
+      if (callName.equals("jam#stringcontains") || callName.equals("jam#stringstartswith")) {
+        String str = NodeUtil.unquote(e.toCode());
+        strs.add(str);
+        ret = true;
       }
     }
 

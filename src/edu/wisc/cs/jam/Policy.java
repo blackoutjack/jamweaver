@@ -356,14 +356,17 @@ public class Policy extends Automaton<State,PredicateSymbol> {
 
     for (Edge prevedge : getEdges()) {
       State prevsrc = prevedge.getSource();
-      if (!prevsrc.equals(src)) continue;
-      State prevdest = prevedge.getDestination();
-      if (!prevdest.equals(dest)) continue;
-      Predicate prevpred = prevedge.getSymbol().getPredicate();
-      if (!prevpred.matches(pred)) continue;
-      // We've found a match.
-      ret = prevedge;
-      break;
+      if (prevsrc.equals(src)) {
+        State prevdest = prevedge.getDestination();
+        if (prevdest.equals(dest)) {
+          Predicate prevpred = prevedge.getSymbol().getPredicate();
+          if (prevpred.matches(pred)) {
+            // We've found a match.
+            ret = prevedge;
+            break;
+          }
+        }
+      }
     }
 
     return ret;

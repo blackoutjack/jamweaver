@@ -138,9 +138,9 @@ public class PolicyPath extends Automaton<State,PredicateSymbol> {
     State checkDest = checkEdge.getDestination();
     Predicate checkPred = checkEdge.getSymbol().getPredicate();
     for (Edge outedge : outedges) {
-      if (!outedge.getDestination().equals(checkDest)) break;
-      if (!outedge.getSymbol().getPredicate().equals(checkPred)) break;
-      return true;
+      if (outedge.getDestination().equals(checkDest)
+          && outedge.getSymbol().getPredicate().equals(checkPred))
+        return true;
     }
 
     return false;

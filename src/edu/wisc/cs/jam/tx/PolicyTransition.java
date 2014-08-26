@@ -56,47 +56,6 @@ public class PolicyTransition {
   public String getEvaluatorClause() {
     return "( " + evaluator.toString() + " )";
   }
-
-  /*
-  public String toString(boolean transform) {
-    Predicate pred = edge.getSymbol().getPredicate();
-    State s0 = edge.getSource();
-    State s1 = edge.getDestination();
-
-    // Return the edge specification in the following format.
-    // {pred: 'set(x)', pre: 2, post: -1, evaluator: setX}
-
-    StringBuilder sb = new StringBuilder();
-    sb.append("{");
-    // The predicate representation should not really be required, but
-    // may be useful for readability.
-    sb.append("pred: '");
-
-    String condtext = pred.getPositive().toString().replace("\"", "\\\"");
-    // %%% Use a more robust escaping mechanism.
-    sb.append(pred.getPositive().toString().replace("'", "\\'"));
-    sb.append("', ");
-    sb.append("pre: ");
-    sb.append(s0.getId());
-    sb.append(", ");
-    sb.append("post: ");
-    sb.append(s1.getId());
-    sb.append(", ");
-    sb.append("evaluator: ");
-    sb.append(evaluator.getName(transform));
-    sb.append("}");
-
-    return sb.toString();
-
-  }
-  */
-
-  // Generate the JavaScript source code of the edge specification.
-  @Override
-  public String toString() {
-    //return toString(true);
-    return super.toString();
-  }
 }
 
 

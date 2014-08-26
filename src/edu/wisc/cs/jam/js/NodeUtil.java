@@ -314,13 +314,10 @@ public class NodeUtil {
   public static boolean isInIntrospectorExpression(Node n) {
     Node c = null;
     while (n != null) {
-      if (c != null) {
-        // Check identity with the first child to avoid nodes in the
-        // transaction block rather than the introspector expression.
-        if (isTransaction(n) && c == n.getFirstChild()) {
-          return true;
-        }
-      }
+      // Check identity with the first child to avoid nodes in the
+      // transaction block rather than the introspector expression.
+      if (c != null && isTransaction(n) && c == n.getFirstChild())
+        return true;
       c = n;
       n = n.getParent();
     }
@@ -648,9 +645,9 @@ public class NodeUtil {
   public static boolean isMemberDeclaration(Node n) {
     if (n == null) return false;
     if (n.getParent() == null) return false;
-    if (n.getType() == Token.STRING_KEY || n.isGetterDef() || n.isSetterDef())
-      if (isObjectLiteral(n.getParent()))
-        return true;
+    if ((n.getType() == Token.STRING_KEY || n.isGetterDef()
+        || n.isSetterDef()) && isObjectLiteral(n.getParent()))
+      return true;
     return false;
   }
 

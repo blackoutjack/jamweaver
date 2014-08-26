@@ -440,11 +440,11 @@ public class DisjointAutomaton extends RelationAutomaton {
     Dbg.writeCubesToFile(predCubes, "predicate-states");
 
     Dbg.out("Loading data relations", 3);
-    if (true || JAM.Opts.queryThreads > 1) {
+    //if (JAM.Opts.queryThreads > 1) {
       loadInternalRelationsBatch(predCubes);
-    } else {
-      //loadInternalRelations(predCubes);
-    }
+    //} else {
+    //  loadInternalRelations(predCubes);
+    //}
 
     // %%% Calling this after loadInternalRelations to avoid
     // %%% overwriting relation. Could be smarter.

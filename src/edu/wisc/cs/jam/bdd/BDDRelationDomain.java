@@ -54,9 +54,6 @@ public class BDDRelationDomain extends RelationDomain {
   // As this is the only constructor, we can guarantee that factory
   // and domain are non-null for all BDDRelationFactory objects.
   public BDDRelationDomain(List<Predicate> preds) {
-    synchronized (getClass()) {
-    }
-
     setVars(preds);
     idRelation = null;
     

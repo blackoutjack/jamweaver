@@ -671,14 +671,12 @@ public class JSSemantics implements Semantics {
     }
 
     // See if the statement is a member invocation.
-    if (objname == null) {
-      if (NodeUtil.isCall(n)) {
-        Node memberexp = n.getFirstChild();
-        if (NodeUtil.isAccessor(memberexp)) {
-          Node obj = memberexp.getFirstChild();
-          if (NodeUtil.isName(obj)) {
-            objname = NodeUtil.codeFromNode(obj);
-          }
+    if (objname == null && NodeUtil.isCall(n)) {
+      Node memberexp = n.getFirstChild();
+      if (NodeUtil.isAccessor(memberexp)) {
+        Node obj = memberexp.getFirstChild();
+        if (NodeUtil.isName(obj)) {
+          objname = NodeUtil.codeFromNode(obj);
         }
       }
     }
@@ -720,5 +718,14 @@ public class JSSemantics implements Semantics {
       }
     }
     return ret;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) return false;
+    if (!(o instanceof JSSemantics)) return false;
+    if (this == o) return true;
+    JSSemantics other = (JSSemantics)o;
+    return this.hashCode() == other.hashCode();
   }
 }

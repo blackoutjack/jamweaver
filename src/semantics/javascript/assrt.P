@@ -98,12 +98,10 @@ assertexp(H,L,E,HP,LP,EP) :-
 	is_id(Func,FuncName),
   % Dispatch based on the extension being called.
   (FuncName='"jam#called"'->assertcall(H,L,Arg,HP,LP,EP);
-  (FuncName='"jam#obj"'->assertobj(H,L,Arg,HP,LP,EP);
-  (FuncName='"jam#str"'->assertstr(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#retval"'->assertretval(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#arg"'->assertarg(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#stringupper"'->assertstringupper(H,L,Args,HP,LP,EP);
-  false)))))).
+  false)))).
 
 % Special predicate extensions
 assertexp(H,L,E,HP,LP,EP) :- 
@@ -145,16 +143,6 @@ assertstringupper(H,L,E,HP,LP,EP) :-
   %%% Could assert a functional relation.
   (is_symbolic(S)->symbolic(EP,'String');
   evaljs(format('String.prototype.toUpperCase.call(~a)',S),EP)).
-
-assertstr(H,L,E,HP,LP,EP) :-
-  assertexp(H,L,E,H1,L1,StrRef),
-  ecgv(H1,L1,StrRef,H2,L2,StrVal),
-  ects(H2,L2,StrVal,HP,LP,EP).
-
-assertobj(H,L,E,HP,LP,EP) :-
-  assertexp(H,L,E,H1,L1,ObjRef),
-  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
-  ecto(H2,L2,ObjVal,HP,LP,EP).
 
 % Get the function address represented by the expression, and 
 % assert that it has been invoked.

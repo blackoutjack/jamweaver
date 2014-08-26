@@ -287,7 +287,7 @@ public class JSIndirectionTransform extends JSTransform {
     assert n.isCall() || n.isNew();
 
     int childCount = n.getChildCount();
-    assert(childCount > 0); 
+    assert childCount > 0; 
 
     Node array = new Node(Token.ARRAYLIT);
 
@@ -678,18 +678,16 @@ public class JSIndirectionTransform extends JSTransform {
           indirectCallsite(t, n, parent, null);
           callTransformCnt++;
         }
-      } else if (n == tx) {
-        // Don't mess with transactions that aren't JAM-woven.
-        if (ptypes != null) {
-          // Move statements outside of the transaction.
-          int stmtCnt = txBlock.getChildCount();
-          for (int i=0; i<stmtCnt; i++) {
-            Node stmt = txBlock.getChildAtIndex(0).detachFromParent();
-            n.getParent().addChildBefore(stmt, n);
-          }
-          // Remove the empty transaction.
-          n.detachFromParent();
+      // Don't mess with transactions that aren't JAM-woven.
+      } else if (n == tx && ptypes != null) {
+        // Move statements outside of the transaction.
+        int stmtCnt = txBlock.getChildCount();
+        for (int i=0; i<stmtCnt; i++) {
+          Node stmt = txBlock.getChildAtIndex(0).detachFromParent();
+          n.getParent().addChildBefore(stmt, n);
         }
+        // Remove the empty transaction.
+        n.detachFromParent();
       }
     }
   }

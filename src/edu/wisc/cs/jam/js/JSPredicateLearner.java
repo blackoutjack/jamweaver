@@ -70,21 +70,19 @@ public class JSPredicateLearner implements PredicateLearner {
       if (newpreds == null || newpreds.size() == 0) continue;
 
       for (Predicate newpred : newpreds) {
-        if (newpred == null) continue;
-
         // Don't collect duplicate predicates.
-        if (newpred.matchesAny(predicates)) continue;
+        if (newpred != null && !newpred.matchesAny(predicates)) {
+          // We've found a new predicate.
+          if (JAM.Opts.debug) {
+            FileUtil.writeToFile(newpred + "\n", "predicate", true);
+          }
+          // In case this learner is reused.
+          predicates.add(newpred);
 
-        // We've found a new predicate.
-        if (JAM.Opts.debug) {
-          FileUtil.writeToFile(newpred + "\n", "predicate", true);
+          //return semantics.getConditionPredicate("y === 3");
+          semantics.addToNamesOfInterest(newpred);
+          return newpred;
         }
-        // In case this learner is reused.
-        predicates.add(newpred);
-
-        //return semantics.getConditionPredicate("y === 3");
-        semantics.addToNamesOfInterest(newpred);
-        return newpred;
       }
     }
 

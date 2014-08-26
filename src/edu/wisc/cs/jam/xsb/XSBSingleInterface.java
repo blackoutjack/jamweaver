@@ -84,10 +84,10 @@ public class XSBSingleInterface extends XSBInterface {
       Clause clause = clauses.get(i);
       try {
         boolean result = query(clause, prereq);
-        ret.add(new Boolean(result));
+        ret.add(Boolean.valueOf(result));
       } catch (IOException ex) {
         Dbg.err("Error during query " + clause.getQueryId() + ": " + ex.getMessage());
-        ret.add(new Boolean(onError));
+        ret.add(Boolean.valueOf(onError));
       }
     }
     return ret;
@@ -99,10 +99,10 @@ public class XSBSingleInterface extends XSBInterface {
     for (Clause clause : clauses) {
       try {
         boolean result = query(clause);
-        ret.add(new Boolean(result));
+        ret.add(Boolean.valueOf(result));
       } catch (IOException ex) {
         Dbg.err("Error during query " + clause.getQueryId() + ": " + ex.getMessage());
-        ret.add(new Boolean(onError));
+        ret.add(Boolean.valueOf(onError));
       }
     }
     return ret;

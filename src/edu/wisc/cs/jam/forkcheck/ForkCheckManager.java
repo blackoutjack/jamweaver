@@ -281,8 +281,6 @@ public class ForkCheckManager implements CheckManager, Callback {
   }
 
   @Override
-  public void transform(SourceFile src, Transform pt) {
-    return;
-  }
+  public void transform(SourceFile src, Transform pt) { }
 }
 

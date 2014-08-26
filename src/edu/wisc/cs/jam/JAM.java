@@ -112,12 +112,12 @@ public class JAM {
       JAMAnalysis ja = null;
       if (Opts.forward) {
         ja = new JAMAnalysis(this, path);
-      } else if (false && Opts.lazy) {
-        // %%%
-        //ja = new LazyAnalysis(this, path);
-      } else if (false && Opts.cexThreads > 1) {
-        // %%%
-        //ja = new MultiAnalysis(this, path);
+      //} else if (false && Opts.lazy) {
+      //  %%%
+      //  ja = new LazyAnalysis(this, path);
+      //} else if (false && Opts.cexThreads > 1) {
+      //  %%%
+      //  ja = new MultiAnalysis(this, path);
       } else {
         // Backward analysis is now the default.
         ja = new BackwardAnalysis(this, path);
@@ -157,9 +157,9 @@ public class JAM {
         ja = new JAMAnalysis(this, path);
       } else if (Opts.lazy) {
         ja = new IncrementalAnalysis(this, path);
-      } else if (false && Opts.cexThreads > 1) {
-        // %%%
-        //ja = new MultiAnalysis(this, path);
+      //} else if (false && Opts.cexThreads > 1) {
+      //  %%%
+      //  ja = new MultiAnalysis(this, path);
       } else {
         ja = new BackwardAnalysis(this, path);
       }

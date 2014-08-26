@@ -3,7 +3,7 @@ import sys
 import string
 
 JAMPKG = os.environ['JAMPKG']
-sys.path.append(os.path.join(os.environ['JAMPKG'], 'tests'))
+sys.path.append(os.path.join(JAMPKG, 'tests'))
 from config import *
 from util import get_base
 from util import load_sources

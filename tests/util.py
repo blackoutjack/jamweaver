@@ -25,7 +25,7 @@ def parse_time_value(timestr):
     for tmpart in timecolonparts:
       timeparts.append(tmpart)
   
-  total = 0.0;
+  total = 0.0
   for i in range(0, len(timeparts)):
     idx = -1 - i
     part = timeparts[idx]
@@ -89,6 +89,33 @@ def parse_time_output(timeout, sep1=" ", sep2=":", element=None):
   else:
     err("Invalid time key: %s" % element)
     return False
+
+def get_output_dir(top, base):
+  parts = base.split('/')
+  dirparts = parts[:-1]
+
+  parent = top
+  for dirpart in dirparts:  
+    parent = os.path.join(parent, dirpart)
+
+  lastpart = parts[-1]
+  nextId = 0
+  if os.path.isdir(parent):
+    for curdir in os.listdir(parent):
+      if curdir.startswith(lastpart + '-'):
+        idx = curdir[len(lastpart)+1:]
+        try:
+          idxnum = int(idx)
+          if idxnum >= nextId:
+            nextId = idxnum + 1
+        except:
+          warn('Non-numeric suffix, ignoring: %s' % idx)
+  dirparts.append(lastpart + '-' + str(nextId))
+
+  ret = top
+  for dirpart in dirparts:
+    ret = os.path.join(ret, dirpart)
+  return ret
 
 def err(txt):
   print >> sys.stderr, "ERROR:", txt

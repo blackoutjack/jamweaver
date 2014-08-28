@@ -12,6 +12,7 @@ import tempfile
 import filecmp
 import fnmatch
 import traceback
+import urlparse
 import urllib2
 import socket
 
@@ -37,6 +38,7 @@ JSUNPACKPKG = os.path.join(JAMPKG, 'util', 'jsunpack')
 sys.path.append(os.path.join(JAMPKG, 'tests'))
 from util import get_base
 from util import get_file_info
+from util import get_output_dir
 from util import err
 from util import warn
 sys.path.append(JSUNPACKPKG)
@@ -47,86 +49,236 @@ from urlattr import urlattr as UrlAttr
 import detection
 import swf
 
+try:
+  from bs4 import BeautifulSoup
+except ImportError:
+  # BeautifulSoup 4.x not installed trying BeautifulSoup 3.x 
+  try:
+    from BeautifulSoup import BeautifulSoup
+  except ImportError:
+    print ('BeautifulSoup not installed')
+    exit(-1)
+
+class CodeSnippet:
+  
+  def __init__(self, tag, url, type, content):
+    self.tag = tag
+    self.url = url
+    self.type = type
+    self.content = content
+
+  def getTag(self):
+    return self.tag
+
+  def getURL(self):
+    return self.url
+
+  def getType(self):
+    return self.type
+
+  def getContent(self):
+    return self.content
+
+  def appendContent(self, extra):
+    self.content = self.content + extra
+    return self.content
+
+class HTMLParser(html.Parser):
+  
+  def jsextract(self, data):
+    headers = []
+    js = []
+    data = re.sub('\x00', '', data)
+
+    try:
+      soup = BeautifulSoup(data)
+    except:
+      err('Fatal error during HTML parsing')
+      sys.exit(1)
+    
+    # Using a strange loop structure to process elements in order.
+    for elt in soup.findAll(True):
+      par = elt.parent
+      removeAttrs = []
+      removeTag = False
+      for tag, attrib, invals, hformat, outvals in self.html_parse_rules:
+
+        # See if this element matches the current rule.
+        if elt not in par.findAll(tag, attrib, recursive=False):
+          continue
+      
+        now = {}
+
+        # Check for negated match
+        ignore = False
+        for val in invals:
+          if val.startswith('!'):
+            val = val[1:]
+            try:
+              v = elt[val]
+              ignore = True
+              break
+            except:
+              # The element contains the key.
+              # For some reason, |val in elt| does not work.
+              pass
+        if ignore: continue
+
+        for val in outvals:
+          if val == '*':
+            now['*'] = ''
+          elif val == 'contents':
+            try: 
+              now['contents'] = ' '.join(map(str, elt.contents))
+            except KeyError: 
+              now['contents'] = ''
+            except UnicodeEncodeError: 
+              now['contents'] = ' '.join(map(str, str(elt.contents)))
+          elif val == 'name':
+            # %%% Unable to reference actual |name| attribute.
+            now['name'] = elt.name
+          elif val == 'id':
+            try: 
+              now[val] = str(elt[val])
+            except KeyError: 
+              now[val] = generateId(soup, elt)
+          else:
+            try: 
+              now[val] = str(elt[val])
+            except KeyError: 
+              warn('Element does not contain expected attribute: %s' % val)
+              now[val] = ''
+
+        # Normalize when assigning to variables.
+        for k in now: 
+          # If this fails, it means that we are trying to get the
+          # result in python.
+          if hformat in self.html_definitions:
+            if not hformat.startswith('raw'):
+              #now[k] = re.sub('([^a-zA-Z0-9])', lambda m: ('\\x%02x' % ord(m.group(1))), now[k])
+              # %%% Probably not sufficient escaping.
+              #now[k] = re.sub('\\', '\\\\', now[k])
+              now[k] = re.sub('\'', '\\\'', now[k])
+              now[k] = "'%s'" % now[k]
+
+        # If this fails, it means that we are trying to get the 
+        # result in python
+        if hformat in self.html_definitions: 
+          myfmt = re.sub('^\s+', '', self.html_definitions[hformat]).split('%s')
+          if len(myfmt) - 1 == len(outvals):
+            lineout = ''
+            for i in range(0, len(outvals)):
+              lineout += myfmt[i]
+              lineout += now[outvals[i]]
+            lineout += myfmt[-1] + '\n'
+
+            if elt.name in self.html_filters:
+              lineout = re.sub(self.html_filters[elt.name], '', lineout)
+            if '*' in self.html_filters:
+              lineout = re.sub(self.html_filters['*'], '', lineout, re.I)
+            if hformat.startswith('header'):
+              headers.append(lineout)
+            else:
+              if 'src' in now:
+                url = now['src']
+              else:
+                url = None
+              js.append(CodeSnippet(elt.name, url, hformat, lineout))
+
+              # Mark some elements for removal.
+              if elt.name == 'script':
+                removeTag = True
+              for attr in ['onclick', 'onload']:
+                if attr in attrib:
+                  removeAttrs.append(attr)
+          else:
+            err('Invalid htmlparse.config hformat, parameter count or definition problem: %s' % hformat)
+            sys.exit(1)
+        else:
+          for i in range(0, len(outvals)):
+            self.storage.append([hformat, now[outvals[i]]])
+
+      # Clean up the HTML.
+      # %%% Should ideally replace with comments.
+      if removeTag:
+        elt.extract()
+      else:
+        for attr in removeAttrs:
+          del elt[attr]
+
+    return soup.prettify(), headers, js
+  # /jsextract
+
 def parseHTML(infile, config):
-  hparser = html.Parser(config)
+  hparser = HTMLParser(config)
 
   fin = open(infile, 'rb')
   data = fin.read()
   fin.close()
 
-  parsed_header, parsed = hparser.htmlparse(data)
-  parsed = parsed_header + parsed
+  newhtml, header, js = hparser.jsextract(data)
 # end parseHTML
 
 class Unpacker(jsunpackn.jsunpack):
 
   # Create an Unpacker.
   def __init__(self, options) :
-    self.start = urlattr.canonicalize(options.getRoot()) #start is the root node in the tree, do not destroy it
-    self.rooturl = {} #this dict contains all information about decodings, continuity between decodings
+    # |start| is the root node in the tree, do not destroy it.
+    self.start = urlattr.canonicalize(options.getRoot())
+    # |rooturl| contains information about decodings, and continuity 
+    # between decodings.
+    self.rooturl = {}
 
     self.url = options.url
 
-    self.forceStreams = False #keep data in streams{} in case we don't end in one of the end_states
+    # Keep data in |streams| in case we don't end in one of the end_states.
+    self.forceStreams = False
     self.streams = {}
-    self.seen = {} #dictionary to avoid repeating information (addressed by unique url)
+    # Dictionary to avoid repeating information (addressed by unique url)
+    self.seen = {} 
 
-    #detection:
+    # Detection rules
     self.SIGS = detection.rules(options.rules)
     self.SIGSalt = detection.rules(options.rulesAscii)
 
-    #options and attributes:
-    self.OPTIONS = options #configuration and user options
-    self.lastModified = '' #http_header lastModified
+    # Options
+
+    # UnpackOpts user options.
+    self.OPTIONS = options 
+    
+    # http_header lastModified
+    self.lastModified = ''
+
+    # Set to true by the MZ case.
+    # %%% Doesn't seem to be used.
     self.binExists = False
+
     if self.OPTIONS.veryverbose:
       self.OPTIONS.verbose = True
     if self.OPTIONS.verbose:
       UrlAttr.verbose = True
 
-    self.hparser = html.Parser(self.OPTIONS.htmlparseconfig)
-    if not os.path.isdir(os.path.abspath(self.OPTIONS.tmpdir)):
-      try:
-        os.makedirs(os.path.abspath(self.OPTIONS.tmpdir))
-      except Exception, e:
-        print(e)
-        exit(1)
-    if not os.path.isdir(os.path.abspath(self.OPTIONS.outdir)):
-      try:
-        os.makedirs(os.path.abspath(self.OPTIONS.outdir))
-      except Exception, e:
-        print(e)
-        exit(1)
-    if not os.path.isdir(os.path.abspath(os.path.dirname(self.OPTIONS.log_ips))):
-      try:
-        os.makedirs(os.path.abspath(os.path.dirname(self.OPTIONS.log_ips)))
-      except Exception, e:
-        print(e)
-        exit(1)
-    if not os.path.isdir(os.path.abspath(os.path.dirname(self.OPTIONS.decodelog))):
-      try:
-        os.makedirs(os.path.abspath(os.path.dirname(self.OPTIONS.decodelog)))
-      except Exception, e:
-        print(e)
-        exit(1)
+    self.hparser = HTMLParser(self.OPTIONS.htmlparseconfig)
 
-    #done setup, now initialize the decoding
+    loadDir(self.OPTIONS.tmpdir)
+    loadDir(self.OPTIONS.ipslog)
+    loadDir(self.OPTIONS.decodelog)
+
+    # Done setup, now initialize the decoding.
     self.startTime = time.time()
-    self.NIDS_INIALIZED = False #don't initialize nids twice!
 
-    if self.OPTIONS.interface:
-      nids.param('device', self.OPTIONS.interface)
-      self.run_nids()
+    # Don't initialize nids twice!
+    self.NIDS_INIALIZED = False
 
-    elif self.url:
+    if self.url:
       if not self.OPTIONS.quiet:
         print 'Root URL: %s' % (self.url)
       status, fname = self.fetch(self.url)
       if not self.OPTIONS.quiet:
         print 'Status:', status
-
-    else: # Local file decode
-      if self.file is not None and not self.file in self.rooturl:
+    else:
+      # Local file decode
+      if self.file is not None and self.file not in self.rooturl:
         self.rooturl[self.file] = UrlAttr(self.rooturl, self.start)
 
       if self.data:
@@ -160,7 +312,63 @@ class Unpacker(jsunpackn.jsunpack):
           if self.rooturl[url].malicious == UrlAttr.NOT_ANALYZED:
             if not (self.rooturl[url].type == 'img' or self.rooturl[url].type == 'input' or self.rooturl[url].type == 'link'):
               todo.append(url)
-  # end __init__
+  # /__init__
+
+  def fetchSingle(self, url, referer):
+    if url.startswith('hcp:'):
+      warn('Not fetching hcp url: %s' % url)
+      return None, None
+
+    if self.url.startswith('127.0.0.1'):
+      warn('Not fetching local file: %s', self.url)
+      return None, None
+
+    if not referer:
+      referer = 'http://' + self.defaultReferer
+
+    try:
+      hostname, dstport = self.hostname_from_url(url)
+
+      if self.OPTIONS.proxy and (not self.OPTIONS.currentproxy):
+        proxies = self.OPTIONS.proxy.split(',')
+        self.OPTIONS.currentproxy = proxies[random.randint(0, len(proxies) - 1)]
+        if not self.OPTIONS.quiet:
+          print '[fetch config] random proxy %s' % (self.OPTIONS.currentproxy)
+
+      request = urllib2.Request(url)
+      request.add_header('Referer', referer)
+      request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)')
+
+      if self.OPTIONS.currentproxy:
+        if not self.OPTIONS.quiet:
+          print '[fetch config] currentproxy %s' % (self.OPTIONS.currentproxy)
+        proxyHandler = urllib2.ProxyHandler({'http': 'http://%s' % (self.OPTIONS.currentproxy) })
+        opener = urllib2.build_opener(proxyHandler)
+      else:
+        opener = urllib2.build_opener()
+
+      try:
+        resp = opener.open(request)
+        content = resp.read()
+        status = resp.getcode()
+        respinfo = resp.info()
+        ctype = respinfo.gettype()
+        if ctype not in ['text/javascript', 'application/x-javascript']:
+          warn('Non-JavaScript content type for %s: %s' % (url, ctype))
+      except urllib2.HTTPError, error:
+        warn('Remote file error: %r' % error.getcode())
+        # Don't load 404 error pages.
+        # See http://www.jspell.com/ajax-spell-checker.html
+        status = error.getcode()
+        content = None
+
+    except Exception, e:
+      warn('Failure: ' + str(e))
+      status = 500
+      content = None
+
+    return status, content
+  # /fetchSingle
 
   def fetch(self, url):
     if url.startswith('hcp:'):
@@ -223,7 +431,7 @@ class Unpacker(jsunpackn.jsunpack):
           warn('Not fetching large file: %s' % self.url)
           return None
         try:
-          fname = self.rooturl[self.url].create_sha1file(self.OPTIONS.outdir, remote, 'fetch')
+          fname = self.createFile('fetch', remote)
           self.rooturl[self.url].status += '\tsaved %d bytes %s\n' % (len(remote), fname)
 
           resolved = socket.gethostbyname(hostname)
@@ -245,16 +453,59 @@ class Unpacker(jsunpackn.jsunpack):
 
   def extractJS(self, content):
     #return values are:
-    #(extracted scripts)
+    #([headers], [scripts])
     try:
-      headers, js = self.hparser.htmlparse(content)
+      newhtml, headers, js = self.hparser.jsextract(content)
     except Exception, e:
-      headers, js = '', ''
-      print 'Error in htmlparsing', str(e)
+      newhtml = ''
+      headers = []
+      js = []
+      err('Error in extractJS: %s' % str(e))
+    
+    content = ''
+    for jscode in js:
+      typ = jscode.getType()
+      tag = jscode.getTag()
+      url = jscode.getURL()
+      if url is None:
+        url = self.start
+      else:
+        # Get the absolute URL relative to the starting URL.
+        baseurl = self.start
+        if self.OPTIONS.protocol is not None:
+          baseurl = self.OPTIONS.protocol + '://' + baseurl
+        url = urlparse.urljoin(baseurl, url)
+        
+      if typ in ['rawSCRIPT', 'eventBODYONLOAD', 'eventIMAGEONLOAD', 'eventONCLICK']:
+        content += '// %s, %s: %s\n%s\n' % (typ, tag, url, normalizeText(jscode.getContent()))
+      elif typ in ['rawELEMENT']:
+        content += '// %s, %s: %s\n' % (typ, tag, url)
+        if tag == 'script':
+          if not self.OPTIONS.quiet:
+            print 'Loading URL:', url
+          status, data = self.fetchSingle(url, baseurl)
+          content += '// status: ' + str(status) + '\n'
+          if data is not None:
+            content += normalizeText(data) + '\n'
+      else:
+        content += '// %s, %s: %s\n' % (typ, tag, url)
+      # Separate file content with an additional line.
+      content += '\n'
 
-    if len(js) > 0: #html parse succeeded
-      return (headers, js)
-    return None
+    headerstr = ''
+    for header in headers:
+      # |headers| contains JavaScript for DOM setup.
+      # %%% Not currently used. Could be very useful if improved.
+      headerstr += '// %s\n%s\n' % (self.url, header)
+
+    urlbase = self.getURLBase(self.start)
+    if len(content) > 0:
+      self.createFile('extract_' + urlbase, content)
+    if len(headerstr) > 0:
+      self.createFile('headers_' + urlbase, headerstr)
+    if len(newhtml) > 0:
+      self.createFile('html_' + urlbase, newhtml)
+
   # end extractJS
 
   def main_decoder(self, data, url, tcpaddr=[], lastModified=''):
@@ -264,23 +515,22 @@ class Unpacker(jsunpackn.jsunpack):
     if not self.url in self.rooturl:
       self.rooturl[self.url] = UrlAttr(self.rooturl, self.url, tcpaddr) #initialization
     self.rooturl[self.url].setMalicious(UrlAttr.ANALYZED)
-    predecoded = data
     level = 0
 
-    #Save all file streams
-    #if self.OPTIONS.saveallfiles:
-    #  self.rooturl[self.url].create_sha1file(self.OPTIONS.outdir, data, 'stream')
+    if self.OPTIONS.saveallfiles:
+      # Save all file streams.
+      self.createFile('stream', data)
 
     isMZ = False
     if data.startswith('MZ'):
-      warn('MZ case was hit, don\'t know what thas is.')
+      warn('MZ case was hit, don\'t know what that is.')
       isMZ = True
       self.rooturl[self.url].filetype = 'MZ'
       self.binExists = True
       if self.OPTIONS.saveallexes:
-        sha1exe = self.rooturl[self.url].create_sha1file(self.OPTIONS.outdir, data, 'executable')
+        sha1exe = self.createFile('executable', data)
       else:
-        self.rooturl[self.url].log(self.OPTIONS.verbose, 0, '[%d] executable file' % (level))
+        self.log(0, '[%d] executable file' % level)
 
     swfjs = ''
     if data.startswith('CWS') or data.startswith('FWS'):
@@ -315,91 +565,44 @@ class Unpacker(jsunpackn.jsunpack):
     else:
       isSWF = False
 
-    detect_txt = '' #append all possible decoded data, then run signatures at the end
+    self.extractJS(data)
+  # /main_decoder
 
-    while predecoded and len(predecoded) > 0 and level < 10:
-      try:
-        detect_txt += predecoded
-      except:
-        pass # possibly an encoding problem
+  def createFile(self, base, content, ext='txt'):
+    if len(content) == 0:
+      return None
+    outdir = self.OPTIONS.outdir
+    # No output directory means don't output anything.
+    if not outdir:
+      return None
 
-      self.signature(predecoded, level, tcpaddr, False)
-      jsinurls = self.find_urls(predecoded, tcpaddr)
+    if ext:
+      filename = base + '.' + ext
+    else:
+      filename = base
+    outfile = os.path.join(outdir, filename)
 
-      decoded = False
-      if swfjs:
-        decoded = swfjs
-        path = self.rooturl[self.url].create_sha1file(self.OPTIONS.outdir, decoded, 'decoding')
-        self.rooturl[self.url].log(self.OPTIONS.verbose, 0, '[decodingLevel=%d] JavaScript in SWF %d bytes (%s)' % (level, len(decoded), path))
-        swfjs = '' #only once
+    if not os.path.isdir(outdir):
+      os.mkdir(outdir)
+    if os.path.isdir(outdir):
+      ffile = open(outfile, 'w')
+      print >> ffile, content.encode('utf-8')
+      ffile.close()
+    return outfile
+  # /createFile
 
-      elif self.SIGS.has_javascript(predecoded):
-        self.rooturl[self.url].log(self.OPTIONS.verbose, 0, '[decodingLevel=%d] found JavaScript' % (level))
-        extracted = self.extractJS(predecoded)
+  def getURLBase(self, url):
+    urlparts = urlparse.urlparse(url)
+    # Split the path component.
+    urlbase = urlparts[2].split('/')[-1]
+    return urlbase
+  # /getURLBase
 
-        if extracted is not None:
-          headers, code = extracted
-          # |headers| contains JavaScript for DOM setup.
-          # %%% Not currently used. Could be very useful if improved.
-          #decoded = "// %s\n%s\n%s" % (self.url, headers, code)
-          decoded = "// %s\n%s" % (self.url, code)
-          path = self.rooturl[self.url].create_sha1file(self.OPTIONS.outdir, decoded, 'decoding')
+  def log(self, num, msg):
+    self.rooturl[self.url].log(self.OPTIONS.verbose, num, msg)
+  # /log
 
-      elif self.url in self.rooturl and self.rooturl[self.url].type == 'shellcode':
-        warn('shellcode case hit, don\'t know what this does')
-        if predecoded.startswith('MZ'):
-          self.rooturl[self.url].setMalicious(10)
-          sha1exe = self.rooturl[self.url].create_sha1file(self.OPTIONS.outdir, predecoded, 'incident')
-          self.rooturl[self.url].log(True, 10, 'client download shellcode URL (executable) saved (' + sha1exe + ')')
-        else:
-          self.rooturl[self.url].setMalicious(6)
-          sha1exe = self.rooturl[self.url].create_sha1file(self.OPTIONS.outdir, predecoded, 'attempt')
-          self.rooturl[self.url].log(True, 6, 'client download shellcode URL (non-executable) saved (' + sha1exe + ')')
-
-        try:
-          global ms
-          type = ms.buffer(predecoded)
-          if type:
-            self.rooturl[self.url].log(True, 'download shellcode URL filetype=%s' % (type))
-        except:
-          pass # failure in magic library
-        decoded = '' # don't do any more decoding
-
-      elif isMZ:
-        decoded = '' # don't do any more decoding
-      else:
-        self.rooturl[self.url].log(self.OPTIONS.veryverbose, 0, '[%d] no JavaScript' % (level))
-        decoded = '' # don't do any more decoding
-
-      level += 1
-      if jsinurls:
-        decoded += jsinurls
-      predecoded = decoded
-
-    #this way you can match original content + all decodings in one stream
-    #level is 0 because we want decodedOnly to still work,
-    #you can't write a decodedOnly rule to match across boundaries anyway
-
-    #start output
-    if self.rooturl[self.url].malicious > 0:
-      #save the original sample
-      sha1orig = self.rooturl[self.url].create_sha1file(self.OPTIONS.outdir, data, 'original')
-      self.rooturl[self.url].log(self.OPTIONS.verbose, 0, 'file: saved %s to (%s)' % (self.url, sha1orig))
-
-    if self.OPTIONS.decodelog:
-      if self.OPTIONS.outdir and not os.path.exists(self.OPTIONS.outdir):
-        os.mkdir(self.OPTIONS.outdir)
-
-      flog = open(self.OPTIONS.decodelog, 'a')
-      if flog:
-        flog.write(self.rooturl[self.url].tostring('', False)[0])
-        flog.close()
-        self.rooturl[self.url].seen = {} #reset
-      else:
-        print 'Error: writing to %s' % (self.OPTIONS.decodelog)
-  # end main_decoder
-
-# end Unpacker
+# /Unpacker
  
 class UnpackOpts:
   RULES = None
@@ -431,6 +634,7 @@ class UnpackOpts:
 
     if isURL(infile):
       self.url = getAddress(infile)
+      self.protocol = getProtocol(infile)
       self.file = None
       self.data = None
       self.base = self.url
@@ -442,6 +646,7 @@ class UnpackOpts:
         self.data = fin.read()
         fin.close()
       self.url = None
+      self.protocol = None
       info = get_file_info(infile)
       self.base = info['app']
       self.ext = info['ext']
@@ -449,7 +654,7 @@ class UnpackOpts:
     self.urlfetch = self.url # Used by jsunpackn.py
     self.rules = UnpackOpts.RULES
     self.rulesAscii = UnpackOpts.RULESASCII
-    self.active = True # 
+    self.active = False
     self.quiet = not VERBOSE
     self.verbose = VERBOSE
     self.veryverbose = VERBOSE
@@ -457,7 +662,7 @@ class UnpackOpts:
     self.htmlparse = UnpackOpts.HTMLCFGFILE
     self.htmlparseconfig = UnpackOpts.HTMLPARSECONFIG
     self.interface = False
-    self.outdir = self.getOutputDir(os.path.join(JAMPKG, 'unpacked'), self.base)
+    self.outdir = get_output_dir(os.path.join(JAMPKG, 'unpacked'), self.base)
     self.decodelog = os.path.join(self.outdir, 'decoded.log')
     self.ipslog = os.path.join(self.outdir, 'ip.log')
     self.log_ips = self.ipslog # Used by jsunpackn.py
@@ -473,7 +678,7 @@ class UnpackOpts:
     self.pre = UnpackOpts.PREFILE
     self.post = UnpackOpts.POSTFILE
     self.debug = False
-    #self.nojs = False
+    self.nojs = False
     
   def __str__(self):
     return str(self.__dict__)
@@ -485,21 +690,11 @@ class UnpackOpts:
       assert self.file is not None, 'Neither url nor file is set'
       return self.file
 
-  def getOutputDir(self, parent, base):
-    nextId = 0
-    for curdir in os.listdir(parent):
-      if curdir.startswith(base + '-'):
-        idx = curdir[len(base)+1:]
-        try:
-          idxnum = int(idx)
-          if idxnum >= nextId:
-            nextId = idxnum + 1
-        except:
-          warn('Non-numeric suffix, ignoring: %s' % idx)
-    return os.path.join(parent, base + '-' + str(nextId))
+# end UnpackOpts
 
 def isURL(uri):
   return getProtocol(uri) in ['http', 'https']
+# end isURL
 
 def getProtocol(url):
   parts = re.split('://', url, 1)
@@ -507,6 +702,7 @@ def getProtocol(url):
     return ''
   prot = parts[0].lower()
   return prot
+# end getProtocol
 
 # Return the address part (without the preceding protocol).
 def getAddress(url):
@@ -514,18 +710,32 @@ def getAddress(url):
   prot = getProtocol(url)
   addr = re.sub('^' + prot + '://', '', url, flags=re.IGNORECASE)
   return addr
+# end getAddress
 
 def getDomain(addr):
   # Assumes the protocol prefix has been removed.
   parts = re.split('/', addr)
   dom = parts[0]
   return dom
+# end getDomain
 
 def getExtension(addr):
   parts = re.split('/', addr)
   subparts = re.split('\.', parts[-1])
   ext = subparts[-1]
   return ext
+# end getExtension
+
+def loadDir(filename):
+  absdir = os.path.abspath(os.path.dirname(filename))
+  if not os.path.isdir(absdir):
+    try:
+      os.makedirs(absdir)
+    except Exception, e:
+      err(e)
+      sys.exit(1)
+  return absdir
+# end loadDir
 
 # Load all JavaScript from loaded by a particular HTML file.
 def loadFile(infile):
@@ -556,6 +766,23 @@ def loadFile(infile):
   #return js
 # end loadFile
 
+NEXT_ID = 0
+def generateId(soup, elt):
+  global NEXT_ID
+  newid = 'unpack' + str(NEXT_ID)
+  NEXT_ID += 1
+  while soup.find(id=newid) is not None:
+    newid = 'unpack' + str(NEXT_ID)
+    NEXT_ID += 1
+  elt['id'] = newid
+  return newid
+
+def normalizeText(s):
+  s = re.sub('\r\n', '\n', s)
+  s = re.sub('\r', '\n', s)
+  s = s.decode('utf-8')
+  return s
+
 def main():
   parser = OptionParser(usage="%prog URL|HTML")
   parser.add_option('-f', '--overwrite', action='store_true', default=False, dest='overwrite', help='overwrite existing files')
@@ -574,7 +801,7 @@ def main():
   OVERWRITE = opts.overwrite
   VERBOSE = opts.verbose
 
-  html.Parser.debug = VERBOSE
+  HTMLParser.debug = VERBOSE
 
   output = ""
   for infile in args:

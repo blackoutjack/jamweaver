@@ -15,6 +15,7 @@ import traceback
 import urlparse
 import urllib2
 import socket
+import codecs
 
 #
 # This script interfaces with the jsunpack utility. It can be accessed
@@ -224,7 +225,7 @@ class Unpacker(jsunpackn.jsunpack):
   # Create an Unpacker.
   def __init__(self, options) :
     # |start| is the root node in the tree, do not destroy it.
-    self.start = urlattr.canonicalize(options.getRoot())
+    self.start = options.getRoot()
     # |rooturl| contains information about decodings, and continuity 
     # between decodings.
     self.rooturl = {}
@@ -263,23 +264,23 @@ class Unpacker(jsunpackn.jsunpack):
     loadDir(self.OPTIONS.tmpdir)
     loadDir(self.OPTIONS.ipslog)
     loadDir(self.OPTIONS.decodelog)
+  # /__init__
 
+  def unpack(self):
     # Done setup, now initialize the decoding.
     self.startTime = time.time()
-
-    # Don't initialize nids twice!
-    self.NIDS_INIALIZED = False
 
     if self.url:
       if not self.OPTIONS.quiet:
         print 'Root URL: %s' % (self.url)
-      status, fname = self.fetch(self.url)
-      if not self.OPTIONS.quiet:
-        print 'Status:', status
+      status, ctype, content = self.fetch(self.url, self.OPTIONS.defaultreferer)
+      if ctype not in ['text/html']:
+        warn('Non-HTML content type for %s: %s' % (self.url, ctype))
+      if content is not None:
+        self.main_decoder(content, self.url)
     else:
       # Local file decode
-      if self.file is not None and self.file not in self.rooturl:
-        self.rooturl[self.file] = UrlAttr(self.rooturl, self.start)
+      self.rooturl[self.OPTIONS.file] = UrlAttr(self.rooturl, self.start)
 
       if self.data:
         self.rooturl[self.url].setMalicious(UrlAttr.ANALYZED)
@@ -287,53 +288,28 @@ class Unpacker(jsunpackn.jsunpack):
           warn("Unsupported case: %s" % "pcap")
         else:
           self.main_decoder(self.data, myfile)
+  # /unpack
 
-    if self.OPTIONS.active:
-      todo = []
-      firstTime = True
-
-      while todo or firstTime:
-        firstTime = False
-        if (not self.OPTIONS.quiet) and len(todo) > 0:
-          print 'Actively fetching %d new URLs' % (len(todo))
-        while todo:
-          url = todo.pop()
-          status, fname = self.fetch(url)
-          self.rooturl[url].setMalicious(UrlAttr.ANALYZED)
-
-          if not self.OPTIONS.quiet:
-            type = ''
-            if self.rooturl[url].type:
-              type = '(%s) ' % (self.rooturl[url].type)
-            if not self.OPTIONS.quiet:
-              print '\tFetching %s URL %s (status: %r)' % (type, url, status)
-
-        for url in self.rooturl:
-          if self.rooturl[url].malicious == UrlAttr.NOT_ANALYZED:
-            if not (self.rooturl[url].type == 'img' or self.rooturl[url].type == 'input' or self.rooturl[url].type == 'link'):
-              todo.append(url)
-  # /__init__
-
-  def fetchSingle(self, url, referer):
+  def fetch(self, url, referer):
     if url.startswith('hcp:'):
       warn('Not fetching hcp url: %s' % url)
-      return None, None
+      return None, None, None
 
     if self.url.startswith('127.0.0.1'):
       warn('Not fetching local file: %s', self.url)
-      return None, None
+      return None, None, None
 
     if not referer:
-      referer = 'http://' + self.defaultReferer
+      referer = self.OPTIONS.defaultreferer
 
     try:
       hostname, dstport = self.hostname_from_url(url)
 
-      if self.OPTIONS.proxy and (not self.OPTIONS.currentproxy):
+      if self.OPTIONS.proxy and not self.OPTIONS.currentproxy:
         proxies = self.OPTIONS.proxy.split(',')
         self.OPTIONS.currentproxy = proxies[random.randint(0, len(proxies) - 1)]
         if not self.OPTIONS.quiet:
-          print '[fetch config] random proxy %s' % (self.OPTIONS.currentproxy)
+          warn('Using random proxy: %s' % self.OPTIONS.currentproxy)
 
       request = urllib2.Request(url)
       request.add_header('Referer', referer)
@@ -341,115 +317,41 @@ class Unpacker(jsunpackn.jsunpack):
 
       if self.OPTIONS.currentproxy:
         if not self.OPTIONS.quiet:
-          print '[fetch config] currentproxy %s' % (self.OPTIONS.currentproxy)
-        proxyHandler = urllib2.ProxyHandler({'http': 'http://%s' % (self.OPTIONS.currentproxy) })
+          print 'Using current proxy: %s' % (self.OPTIONS.currentproxy)
+        proxyHandler = urllib2.ProxyHandler({'http': '%s' % (self.OPTIONS.currentproxy) })
         opener = urllib2.build_opener(proxyHandler)
       else:
         opener = urllib2.build_opener()
 
       try:
         resp = opener.open(request)
-        content = resp.read()
+        content = unicode(resp.read(), 'utf-8')
         status = resp.getcode()
         respinfo = resp.info()
         ctype = respinfo.gettype()
-        if ctype not in ['text/javascript', 'application/x-javascript']:
-          warn('Non-JavaScript content type for %s: %s' % (url, ctype))
+        if not self.OPTIONS.quiet:
+          print 'Successfully downloaded %s' % url
+        if self.OPTIONS.veryverbose:
+          print 'Headers:\n', respinfo
       except urllib2.HTTPError, error:
         warn('Remote file error: %r' % error.getcode())
         # Don't load 404 error pages.
         # See http://www.jspell.com/ajax-spell-checker.html
         status = error.getcode()
         content = None
+        ctype = None
 
     except Exception, e:
       warn('Failure: ' + str(e))
       status = 500
       content = None
+      ctype = None
 
-    return status, content
-  # /fetchSingle
+    if content is not None and self.OPTIONS.saveallfiles:
+      fname = self.createFile('fetched', content, getExtension(url))
 
-  def fetch(self, url):
-    if url.startswith('hcp:'):
-      warn('Not fetching hcp url: %s' % url)
-      return None
-
-    self.url = urlattr.canonicalize(url)
-
-    #self.rooturl must already have an entry for url
-    if not self.url in self.rooturl:
-      self.rooturl[self.url] = UrlAttr(self.rooturl, self.url)
-
-    if self.url.startswith('127.0.0.1'):
-      self.rooturl[self.url].malicious = UrlAttr.DONT_ANALYZE
-      warn('Not fetching local file: %s', self.url)
-      return None
-
-    refer = ''
-    for parenturl in self.rooturl:
-      for type, child in self.rooturl[parenturl].children:
-        if url == child:
-          refer = parenturl
-
-    if (not refer) or refer.startswith(self.OPTIONS.outdir):
-      refer = self.defaultReferer
-    self.rooturl[self.url].status = '\t(referer=%s)\n' % (refer)
-    fname = ''
-    try:
-      hostname, dstport = self.hostname_from_url(url)
-
-      if self.OPTIONS.proxy and (not self.OPTIONS.currentproxy):
-        proxies = self.OPTIONS.proxy.split(',')
-        self.OPTIONS.currentproxy = proxies[random.randint(0, len(proxies) - 1)]
-        if not self.OPTIONS.quiet:
-          print '[fetch config] random proxy %s' % (self.OPTIONS.currentproxy)
-
-      request = urllib2.Request('http://' + url)
-      request.add_header('Referer', 'http://' + refer)
-      request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)')
-
-      if self.OPTIONS.currentproxy:
-        if not self.OPTIONS.quiet:
-          print '[fetch config] currentproxy %s' % (self.OPTIONS.currentproxy)
-        proxyHandler = urllib2.ProxyHandler({'http': 'http://%s' % (self.OPTIONS.currentproxy) })
-        opener = urllib2.build_opener(proxyHandler)
-      else:
-        opener = urllib2.build_opener()
-
-      try:
-        remote = opener.open(request).read()
-      except urllib2.HTTPError, error:
-        warn('Remote file error: %r' % error.getcode())
-        # If not suppressed, this causes an infinite regress.
-        # See http://www.jspell.com/ajax-spell-checker.html
-        #remote = error.read()
-        remote = ''
-
-      if len(remote) > 0:
-        if len(remote) > 31457280:
-          warn('Not fetching large file: %s' % self.url)
-          return None
-        try:
-          fname = self.createFile('fetch', remote)
-          self.rooturl[self.url].status += '\tsaved %d bytes %s\n' % (len(remote), fname)
-
-          resolved = socket.gethostbyname(hostname)
-          self.rooturl[self.url].tcpaddr = [['0.0.0.0', 0], [resolved, dstport]]
-        except Exception, e:
-          warn("Lookup failure: %r" % e)
-          warn(traceback.format_exc())
-        self.main_decoder(remote, url)
-      else:
-        self.rooturl[self.url].malicious = UrlAttr.ANALYZED
-
-    except Exception, e:
-      self.rooturl[self.url].status += '\tfailure: ' + str(e) + '\n'
-      self.rooturl[self.url].malicious = UrlAttr.DONT_ANALYZE
-      err(traceback.format_exc())
-
-    return self.rooturl[self.url].status, fname
-  # end fetch
+    return status, ctype, content
+  # /fetch
 
   def extractJS(self, content):
     #return values are:
@@ -472,21 +374,24 @@ class Unpacker(jsunpackn.jsunpack):
       else:
         # Get the absolute URL relative to the starting URL.
         baseurl = self.start
-        if self.OPTIONS.protocol is not None:
-          baseurl = self.OPTIONS.protocol + '://' + baseurl
         url = urlparse.urljoin(baseurl, url)
+        # Some weird URLs have multiple lines.
+        # See http://www.mediamatters.org.
+        url = re.sub('\n', ' ', url)
         
       if typ in ['rawSCRIPT', 'eventBODYONLOAD', 'eventIMAGEONLOAD', 'eventONCLICK']:
-        content += '// %s, %s: %s\n%s\n' % (typ, tag, url, normalizeText(jscode.getContent()))
+        content += '// %s, %s: %s\n%s\n' % (typ, tag, url, jscode.getContent())
       elif typ in ['rawELEMENT']:
         content += '// %s, %s: %s\n' % (typ, tag, url)
         if tag == 'script':
           if not self.OPTIONS.quiet:
             print 'Loading URL:', url
-          status, data = self.fetchSingle(url, baseurl)
-          content += '// status: ' + str(status) + '\n'
+          status, ctype, data = self.fetch(url, baseurl)
+          if ctype not in ['text/javascript', 'application/x-javascript']:
+            warn('Non-JavaScript content type for %s: %s' % (url, ctype))
+          content += '// Status: ' + str(status) + '\n'
           if data is not None:
-            content += normalizeText(data) + '\n'
+            content += data + '\n'
       else:
         content += '// %s, %s: %s\n' % (typ, tag, url)
       # Separate file content with an additional line.
@@ -498,28 +403,23 @@ class Unpacker(jsunpackn.jsunpack):
       # %%% Not currently used. Could be very useful if improved.
       headerstr += '// %s\n%s\n' % (self.url, header)
 
-    urlbase = self.getURLBase(self.start)
+    urlbase = getURLFileName(self.start)
     if len(content) > 0:
-      self.createFile('extract_' + urlbase, content)
+      self.createFile('extract' + urlbase, content, ext='original.js')
     if len(headerstr) > 0:
-      self.createFile('headers_' + urlbase, headerstr)
+      self.createFile('headers' + urlbase, headerstr)
     if len(newhtml) > 0:
       self.createFile('html_' + urlbase, newhtml)
 
   # end extractJS
 
   def main_decoder(self, data, url, tcpaddr=[], lastModified=''):
-    url = urlattr.canonicalize(url)
     self.url = url
     self.lastModified = lastModified
     if not self.url in self.rooturl:
       self.rooturl[self.url] = UrlAttr(self.rooturl, self.url, tcpaddr) #initialization
     self.rooturl[self.url].setMalicious(UrlAttr.ANALYZED)
     level = 0
-
-    if self.OPTIONS.saveallfiles:
-      # Save all file streams.
-      self.createFile('stream', data)
 
     isMZ = False
     if data.startswith('MZ'):
@@ -585,18 +485,13 @@ class Unpacker(jsunpackn.jsunpack):
     if not os.path.isdir(outdir):
       os.mkdir(outdir)
     if os.path.isdir(outdir):
-      ffile = open(outfile, 'w')
-      print >> ffile, content.encode('utf-8')
+      ffile = codecs.open(outfile, 'w', 'utf-8')
+      #ffile = open(outfile, 'w')
+      # Encoding is required for www.jspell.com/ajax-spell-checker.html.
+      print >> ffile, content #.decode('utf-8')
       ffile.close()
     return outfile
   # /createFile
-
-  def getURLBase(self, url):
-    urlparts = urlparse.urlparse(url)
-    # Split the path component.
-    urlbase = urlparts[2].split('/')[-1]
-    return urlbase
-  # /getURLBase
 
   def log(self, num, msg):
     self.rooturl[self.url].log(self.OPTIONS.verbose, num, msg)
@@ -633,15 +528,15 @@ class UnpackOpts:
     UrlAttr.verbose = True 
 
     if isURL(infile):
-      self.url = getAddress(infile)
+      self.url = infile
       self.protocol = getProtocol(infile)
       self.file = None
       self.data = None
-      self.base = self.url
+      self.base = getAddress(self.url)
       self.ext = getExtension(self.url)
     else:
       self.file = infile
-      fin = open(self.file, 'rb')
+      fin = open(self.file, 'r')
       if fin:
         self.data = fin.read()
         fin.close()
@@ -657,7 +552,7 @@ class UnpackOpts:
     self.active = False
     self.quiet = not VERBOSE
     self.verbose = VERBOSE
-    self.veryverbose = VERBOSE
+    self.veryverbose = False
     self.configfile = UnpackOpts.CONFIGFILE
     self.htmlparse = UnpackOpts.HTMLCFGFILE
     self.htmlparseconfig = UnpackOpts.HTMLPARSECONFIG
@@ -668,7 +563,7 @@ class UnpackOpts:
     self.log_ips = self.ipslog # Used by jsunpackn.py
     self.tmpdir = os.path.join(self.outdir, 'tmp')
     self.fasteval = False
-    self.saveallfiles = False
+    self.saveallfiles = True
     self.saveallexes = False
     self.proxy = None
     self.currentproxy = None
@@ -679,6 +574,7 @@ class UnpackOpts:
     self.post = UnpackOpts.POSTFILE
     self.debug = False
     self.nojs = False
+    self.defaultreferer = 'http://www.example.com'
     
   def __str__(self):
     return str(self.__dict__)
@@ -726,6 +622,13 @@ def getExtension(addr):
   return ext
 # end getExtension
 
+def getURLFileName(url):
+  urlparts = urlparse.urlparse(url)
+  # Split the path component and return the filename.
+  urlbase = urlparts[2].split('/')[-1]
+  return urlbase
+# /getURLFileName
+
 def loadDir(filename):
   absdir = os.path.abspath(os.path.dirname(filename))
   if not os.path.isdir(absdir):
@@ -743,27 +646,12 @@ def loadFile(infile):
 
   try:
     js = Unpacker(opts)
+    js.unpack()
+    return True
   except Exception, e:
     err("%s: %s" % (str(e), infile))
     err(traceback.format_exc())
     return False
-
-  #for htmlfile in htmlfiles:
-  #  output += parseHTML(htmlfile, htmlparseconfig)
-
-  #if len(output) > 0:
-  #  if opts.outfile is None:
-  #    outfile = '%s.out' % infile
-  #  else:
-  #    outfile = opts.outfile
-  #  fout = open(outfile, 'wb')
-  #  fout.write(output)
-  #  fout.close()
-  #  print 'Wrote %s.out (%d bytes)' % (infile, len(output))
-  #else:
-  #  print 'Nothing parsed for %s' % infile
-
-  #return js
 # end loadFile
 
 NEXT_ID = 0
@@ -780,7 +668,6 @@ def generateId(soup, elt):
 def normalizeText(s):
   s = re.sub('\r\n', '\n', s)
   s = re.sub('\r', '\n', s)
-  s = s.decode('utf-8')
   return s
 
 def main():

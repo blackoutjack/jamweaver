@@ -295,8 +295,8 @@ class Unpacker(jsunpackn.jsunpack):
       warn('Not fetching hcp url: %s' % url)
       return None, None, None
 
-    if self.url.startswith('127.0.0.1'):
-      warn('Not fetching local file: %s', self.url)
+    if url.startswith('127.0.0.1'):
+      warn('Not fetching local file: %s', url)
       return None, None, None
 
     if not referer:
@@ -325,10 +325,18 @@ class Unpacker(jsunpackn.jsunpack):
 
       try:
         resp = opener.open(request)
-        content = unicode(resp.read(), 'utf-8')
+
         status = resp.getcode()
+        # |respinfo| is a |mimetools.Message| object.
         respinfo = resp.info()
         ctype = respinfo.gettype()
+        plist = respinfo.getplist()
+        encoding = 'utf-8'
+        for p in plist:
+          if p.startswith('charset='):
+            encoding = p[8:]
+
+        content = unicode(resp.read(), encoding)
         if not self.OPTIONS.quiet:
           print 'Successfully downloaded %s' % url
         if self.OPTIONS.veryverbose:
@@ -348,7 +356,10 @@ class Unpacker(jsunpackn.jsunpack):
       ctype = None
 
     if content is not None and self.OPTIONS.saveallfiles:
-      fname = self.createFile('fetched', content, getExtension(url))
+      urlbase = getURLFileName(url)
+      if not urlbase:
+        urlbase = getDomain(url)
+      fname = self.createFile('fetched_' + urlbase, content, getExtension(url))
 
     return status, ctype, content
   # /fetch
@@ -363,6 +374,9 @@ class Unpacker(jsunpackn.jsunpack):
       headers = []
       js = []
       err('Error in extractJS: %s' % str(e))
+
+    if newhtml != '':
+      newhtml = unicode(newhtml, 'utf-8')
     
     content = ''
     for jscode in js:
@@ -387,7 +401,7 @@ class Unpacker(jsunpackn.jsunpack):
           if not self.OPTIONS.quiet:
             print 'Loading URL:', url
           status, ctype, data = self.fetch(url, baseurl)
-          if ctype not in ['text/javascript', 'application/x-javascript']:
+          if ctype not in ['text/javascript', 'application/x-javascript', 'application/javascript']:
             warn('Non-JavaScript content type for %s: %s' % (url, ctype))
           content += '// Status: ' + str(status) + '\n'
           if data is not None:
@@ -401,15 +415,17 @@ class Unpacker(jsunpackn.jsunpack):
     for header in headers:
       # |headers| contains JavaScript for DOM setup.
       # %%% Not currently used. Could be very useful if improved.
-      headerstr += '// %s\n%s\n' % (self.url, header)
+      headerstr += '// %s\n%s\n' % (self.url, unicode(header, 'utf-8'))
 
     urlbase = getURLFileName(self.start)
+    if not urlbase:
+      urlbase = getDomain(self.start)
     if len(content) > 0:
-      self.createFile('extract' + urlbase, content, ext='original.js')
+      self.createFile(urlbase, content, ext='js')
     if len(headerstr) > 0:
-      self.createFile('headers' + urlbase, headerstr)
+      self.createFile(urlbase, headerstr, ext='headers.js')
     if len(newhtml) > 0:
-      self.createFile('html_' + urlbase, newhtml)
+      self.createFile(urlbase, newhtml, ext='html')
 
   # end extractJS
 
@@ -427,10 +443,10 @@ class Unpacker(jsunpackn.jsunpack):
       isMZ = True
       self.rooturl[self.url].filetype = 'MZ'
       self.binExists = True
+      self.log(0, '[%d] executable file' % level)
       if self.OPTIONS.saveallexes:
-        sha1exe = self.createFile('executable', data)
-      else:
-        self.log(0, '[%d] executable file' % level)
+        urlbase = getURLFileName(self.url)
+        sha1exe = self.createFile(urlbase, data, 'bin')
 
     swfjs = ''
     if data.startswith('CWS') or data.startswith('FWS'):
@@ -488,7 +504,10 @@ class Unpacker(jsunpackn.jsunpack):
       ffile = codecs.open(outfile, 'w', 'utf-8')
       #ffile = open(outfile, 'w')
       # Encoding is required for www.jspell.com/ajax-spell-checker.html.
-      print >> ffile, content #.decode('utf-8')
+      try:
+        ffile.write(content) #.decode('utf-8')
+      except UnicodeDecodeError, e:
+        err('Error writing %s (%s, %s) to file: %s' % (self.url, base, ext, str(e)))
       ffile.close()
     return outfile
   # /createFile
@@ -608,8 +627,9 @@ def getAddress(url):
   return addr
 # end getAddress
 
-def getDomain(addr):
-  # Assumes the protocol prefix has been removed.
+def getDomain(url):
+  # Remove the protocol prefix.
+  addr = getAddress(url)
   parts = re.split('/', addr)
   dom = parts[0]
   return dom

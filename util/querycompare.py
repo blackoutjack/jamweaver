@@ -7,8 +7,6 @@ import difflib
 import filecmp
 import sets
 
-JAMPKG = os.getenv('JAMPKG')
-sys.path.append(os.path.join(JAMPKG, "tests"))
 from config import *
 
 def diff_results(fl0, fl1):

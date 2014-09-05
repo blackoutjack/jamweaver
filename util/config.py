@@ -10,7 +10,10 @@ import tempfile
 # that can be imported into other Python scripts.
 #
 
+PYTHON_VERSION = sys.version_info
+
 JAMPKG = os.getenv('JAMPKG')
+JAMSCRIPT_DIR = os.path.join(JAMPKG, 'jamscript')
 
 SRCDIR = os.path.join(JAMPKG,'src')
 LIBDIR = os.path.join(JAMPKG,'lib')
@@ -25,11 +28,22 @@ JSDIR = os.path.join(JAMPKG,'js-1.8.5')
 JSONDIR = os.path.join(JAMPKG,'libjson')
 WALIDIR = os.path.join(JAMPKG,'wali')
 TESTDIR = os.path.join(JAMPKG, 'tests')
+UTILDIR = os.path.join(JAMPKG, 'util')
 PERFDIR = os.path.join(JAMPKG, 'perf')
+UNPACKDIR = os.path.join(JAMPKG, 'unpacked')
 BENCHMARK_DIR = os.path.join(TESTDIR, 'benchmarks')
 MICROBENCHMARK_DIR = os.path.join(TESTDIR, 'micro-benchmarks')
 INTERPRETER_TEST_DIR = os.path.join(TESTDIR, 'interpreter')
-JAMSCRIPT_DIR = os.path.join(JAMPKG, 'jamscript')
+
+JAMSCRIPT_DOCDIR = os.path.join(JAMSCRIPT_DIR, 'doc')
+JSTESTDIR = os.path.join(JAMSCRIPT_DIR, 'tests', 'browser')
+JSLIBDIR = os.path.join(JAMSCRIPT_DIR, 'txjs')
+JAMSCRIPT_LIB = os.path.join(JSLIBDIR, 'libTx.js')
+JAMSCRIPT_DBGLIB = os.path.join(JSLIBDIR, 'libTxDbg.js')
+JAMSCRIPT_TESTDIR = os.path.join(JAMSCRIPT_DIR, 'tests', 'js')
+SMS2DIR = os.path.join(JSTESTDIR, 'bench', 'sms2')
+JAMSCRIPT_BUILDDIR = os.path.join(JAMSCRIPT_DIR, 'mozilla-esr17', 'obj-release', 'browser')
+JS_COMMAND = os.path.join(JAMSCRIPT_BUILDDIR, 'dist', 'bin', 'js')
 
 # The command (minus input arguments) used to invoke JAM.
 # This should be list which can be used with subprocess.
@@ -39,14 +53,22 @@ JAMDBGCOMMAND = os.getenv('JAMDBGCOMMAND', 'java -ea -Xms256m -Xmx3072m -Xdebug 
 JAMUTILJAR = os.path.join(BINDIR, "util.jar")
 JAMUTILCOMMAND = os.getenv('JAMUTILCOMMAND', 'java -jar ' + JAMUTILJAR).split(' ')
 
+# Configure files that are symlinked in woven test case directories. 
+SYMLINK_FILES = [
+  (JSLIBDIR, 'libTx.js', None),
+  (JSTESTDIR, 'test.php', None),
+  (JSTESTDIR, 'index.php', 'testindex.php'),
+  (JSTESTDIR, 'auto.js', None),
+]
+
 # Operating system specific configuration
 # %%% Though JAM certainly only works on Linux currently.
 # %%% Need a test to differentiate Linux and FreeBSD.
 if os.path.exists('/dev/null'):
-	OS = 'Linux'
-	DEVNULL = open('/dev/null', 'w')
+  OS = 'Linux'
+  DEVNULL = open('/dev/null', 'w')
 else:
-	OS = 'Windows'
-	DEVNULL = open('nul', 'w')
-	print >> sys.stderr("JAM is not supported on Windows.")
+  OS = 'Windows'
+  DEVNULL = open('nul', 'w')
+  sys.stderr.write("JAM is not supported on Windows.\n")
 

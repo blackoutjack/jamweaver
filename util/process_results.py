@@ -15,10 +15,6 @@ import grapher
 
 from resultsutil import AppStats, SourceVariant, Action, Section
 
-JAMPKG = os.environ['JAMPKG']
-sys.path.append(os.path.join(os.environ['JAMPKG'], 'tests'))
-import util
-
 def collect_results_from_file(filepath, results):
   fl = open(filepath, 'r')
   lns = fl.readlines()

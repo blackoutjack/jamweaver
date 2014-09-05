@@ -2,8 +2,6 @@ import os
 import sys
 import string
 
-JAMPKG = os.environ['JAMPKG']
-sys.path.append(os.path.join(JAMPKG, 'tests'))
 from config import *
 from util import get_base
 from util import load_sources
@@ -19,10 +17,7 @@ from util import get_variant_bases
 from util import get_descriptors
 from util import overwrite_expected
 from util import validate_output
-
-JSTESTDIR = os.path.join(JAMSCRIPT_DIR, 'tests', 'browser')
-JSLIBDIR = os.path.join(JAMSCRIPT_DIR, 'txjs')
-SMS2DIR = os.path.join(JSTESTDIR, 'bench', 'sms2')
+from util import symlink
 
 ffbases = get_variant_bases(MICROBENCHMARK_DIR)
 fftgt = os.path.join(JSTESTDIR, 'micro')

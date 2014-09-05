@@ -269,19 +269,6 @@ def copy_policy(app, desc, polsrc, tgtdir):
   shutil.copy(polsrc, poltgt)
   print app + "." + desc,
 
-def symlink_relative(srcdir, tgtdir, name, srcname=None): 
-  link = os.path.join(tgtdir, name)
-  # |lexists| is true for broken symbolic links.
-  # %%% Should check to see if the link is correct or needs updating.
-  if not os.path.lexists(link):
-    if srcname is not None:
-      srcpath = os.path.join(srcdir, srcname)
-    else:
-      srcpath = os.path.join(srcdir, name)
-    # Have to get the path relative to the target directory.
-    srcrel = os.path.relpath(srcpath, tgtdir)
-    os.symlink(srcrel, link)
-
 def prepare_dir(tgtdir):
   if not os.path.isdir(tgtdir):
     try:
@@ -290,14 +277,15 @@ def prepare_dir(tgtdir):
       cfg.err("Unable to create target directory: %s" % tgtdir)
       return False
 
-  symlink_relative(cfg.JSLIBDIR, tgtdir, 'libTx.js')
-  symlink_relative(cfg.JSTESTDIR, tgtdir, 'test.php')
-  symlink_relative(cfg.JSTESTDIR, tgtdir, 'index.php', 'testindex.php')
-  symlink_relative(cfg.JSTESTDIR, tgtdir, 'auto.js')
+  for fileattrs in cfg.SYMLINK_FILES:
+    assert len(fileattrs) == 3, 'Invalid SYMLINK_FILES configuration: %r' % fileattrs
+    srcdir, destname, srcname = fileattrs
+    cfg.symlink(srcdir, tgtdir, destname, srcname, relative=True)
+
   tgtbase = os.path.basename(tgtdir)
   if tgtbase.startswith('sms2-'):
-    symlink_relative(cfg.SMS2DIR, tgtdir, 'includes')
-    symlink_relative(cfg.SMS2DIR, tgtdir, tgtbase + '.head.html', 'sms2.head.html')
+    cfg.symlink(cfg.SMS2DIR, tgtdir, 'includes', relative=True)
+    cfg.symlink(cfg.SMS2DIR, tgtdir, tgtbase + '.head.html', 'sms2.head.html', relative=True)
     # %%% Specialness for policy upgrade
     part = None
     if tgtbase.endswith('-newcall'):
@@ -314,7 +302,7 @@ def prepare_dir(tgtdir):
       sms2base = part + 'call-big'
     if part is not None:
       sms2src = cfg.SMS2DIR + sms2base
-      symlink_relative(sms2src, tgtdir, tgtbase + '.html', 'sms2' + sms2base + '.html')
+      cfg.symlink(sms2src, tgtdir, tgtbase + '.html', 'sms2' + sms2base + '.html', relative=True)
   return True
   
 def copy_files(appfiles, tgtdir, wrap=False, iso=False):

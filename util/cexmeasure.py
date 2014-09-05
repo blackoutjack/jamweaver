@@ -11,7 +11,6 @@ from matplotlib import pyplot
 #import rpdb2 
 #rpdb2.start_embedded_debugger('pw')
 
-sys.path.append(os.path.join(os.environ['JAMPKG'], 'tests'))
 import util
 from config import *
 

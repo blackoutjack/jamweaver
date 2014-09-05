@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3.4
 import sys
 import os
 import re
@@ -12,10 +12,13 @@ import tempfile
 import filecmp
 import fnmatch
 import traceback
-import urlparse
-import urllib2
+import urllib.parse
+import urllib.request
+import urllib.error
 import socket
 import codecs
+import gzip
+import cssutils
 
 #
 # This script interfaces with the jsunpack utility. It can be accessed
@@ -34,78 +37,180 @@ import codecs
 # because of complications introduced by the jsunpack interface.
 #
 
-JAMPKG = os.environ['JAMPKG']
-JSUNPACKPKG = os.path.join(JAMPKG, 'util', 'jsunpack')
-sys.path.append(os.path.join(JAMPKG, 'tests'))
+from config import *
 from util import get_base
 from util import get_file_info
 from util import get_output_dir
 from util import err
 from util import warn
-sys.path.append(JSUNPACKPKG)
-import html
-import jsunpackn
-import urlattr
-from urlattr import urlattr as UrlAttr
-import detection
-import swf
+from util import out
+from util import symlink
+
+#JSUNPACKPKG = os.path.join(JAMPKG, 'util', 'jsunpack')
+#sys.path.append(JSUNPACKPKG)
+#import swf
+
+JS_CONTENT_TYPES = [
+  'text/javascript',
+  'application/x-javascript',
+  'application/javascript',
+]
+
+HTML_CONTENT_TYPES = [
+  'text/html',
+]
+
+CSS_CONTENT_TYPES = [
+  'text/css',
+]
+
+IMAGE_CONTENT_TYPES = [
+  'image/gif',
+  'image/png',
+  'image/jpg',
+  'image/vnd.microsoft.icon',
+]
 
 try:
-  from bs4 import BeautifulSoup
-except ImportError:
-  # BeautifulSoup 4.x not installed trying BeautifulSoup 3.x 
-  try:
-    from BeautifulSoup import BeautifulSoup
-  except ImportError:
-    print ('BeautifulSoup not installed')
-    exit(-1)
+  import bs4
+except ImportError as e:
+  err('Unable to import BeautifulSoup: %s' % str(e))
+  err("BeautifulSoup 4 is required. For Ubuntu, use ``apt-get install python3-bs4''")
+  sys.exit(1)
 
-class CodeSnippet:
+class Resource:
   
-  def __init__(self, tag, url, type, content):
-    self.tag = tag
+  def __init__(self, elt, url, type, content):
+    self.element = elt
+    self.tag = elt.name
     self.url = url
     self.type = type
     self.content = content
+    self.filename = None
+  # /Resource.__init__
+
+  def getElement(self):
+    return self.element
 
   def getTag(self):
     return self.tag
+  # /getTag
 
   def getURL(self):
     return self.url
+  # /getURL
 
   def getType(self):
     return self.type
+  # /getType
 
   def getContent(self):
     return self.content
+  # /getContent
 
   def appendContent(self, extra):
     self.content = self.content + extra
     return self.content
+  # /appendContent
 
-class HTMLParser(html.Parser):
+class CSSParser(cssutils.CSSParser):
+
+  def __init__(self):
+    super().__init__(log=None, loglevel=None, raiseExceptions=None, fetcher=None, parseComments=True, validate=True)
+
+  def parse(self, data, encoding, url):
+    if encoding is None:
+      encoding = 'utf-8'
+    text = data.decode(encoding)
+    stylesheet = self.parseString(text, href=url)
+    warn('Unfinished implementation of CSS parsing')
+
+class HTMLParser():
+
+  def __init__(self, htmlparseconfig):
+    self.definitions = {}
+    self.filters = {}
+    self.parse_rules = []
+    
+    htmlrules = htmlparseconfig.splitlines()
+
+    line = 0
+    for htmlrule in htmlrules:
+      line += 1
+      htmlrule = htmlrule.strip()
+
+      # Enable comments and empty lines.
+      if htmlrule.startswith('#'):
+        continue
+      if htmlrule == '':
+        continue
+
+      if htmlrule.startswith('!define'):
+        fields = re.split('[ \t]+', htmlrule, 2)
+        if len(fields) == 3:
+          name = fields[1]
+          value = fields[2]
+          self.definitions[name] = value
+        else:
+          err('Malformed HTML definition: %s' % htmlrule)
+
+      elif htmlrule.startswith('!parse'):
+        fields = re.split('[ \t]+', htmlrule, 3)
+        if len(fields) == 4:
+          tag = fields[1]
+          if tag == '*':
+            tag = True
+          attribs = {}
+          invals = fields[2].split(',')
+          for val in invals:
+            if val == '*' or val.startswith('!'):
+              pass
+            else:
+              attribs[val] = True
+          hformat, outvals = fields[3].split(':')
+          outvals = outvals.split(',')
+          self.parse_rules.append([tag, attribs, invals, hformat, outvals])
+        else:
+          err('Malformed HTML parse rule: %s' % htmlrule)
+
+      elif htmlrule.startswith('!filter'):
+        fields = re.split('[ \t]+', htmlrule, 2)
+        if len(fields) == 3:
+          tag = fields[1]
+          value = fields[2]
+          self.filters[tag] = re.sub('^\s+|\s+$', '', value)
+        else:
+          err('Malformed HTML filter: %s' % htmlrule)
+
+      else:
+        err('Invalid htmlparse.config line: %s' % htmlrule)
+
+    if VERBOSE:
+      out('Done loading HTML config (%d definitions, %d parse rules, %d filters)' % (len(self.parse_rules), len(self.definitions), len(self.filters)))
+  # /HTMLParser.__init__
   
-  def jsextract(self, data):
+  def extractResources(self, unpacker, baseurl, htmltext):
     headers = []
-    js = []
-    data = re.sub('\x00', '', data)
+    resources = []
+    remoteresources = {}
+    js = ''
 
     try:
-      soup = BeautifulSoup(data)
-    except:
-      err('Fatal error during HTML parsing')
+      soup = bs4.BeautifulSoup(htmltext)
+    except Exception as e:
+      err('Unable to initialize HTML: %s' % str(e))
       sys.exit(1)
     
     # Using a strange loop structure to process elements in order.
     for elt in soup.findAll(True):
       par = elt.parent
-      removeAttrs = []
+      attrMods = {}
       removeTag = False
-      for tag, attrib, invals, hformat, outvals in self.html_parse_rules:
+      clearTag = False
+      for tag, attribs, invals, hformat, outvals in self.parse_rules:
 
         # See if this element matches the current rule.
-        if elt not in par.findAll(tag, attrib, recursive=False):
+        if elt not in par.findAll(tag, attribs, recursive=False):
           continue
       
         now = {}
@@ -154,7 +259,7 @@ class HTMLParser(html.Parser):
         for k in now: 
           # If this fails, it means that we are trying to get the
           # result in python.
-          if hformat in self.html_definitions:
+          if hformat in self.definitions:
             if not hformat.startswith('raw'):
               #now[k] = re.sub('([^a-zA-Z0-9])', lambda m: ('\\x%02x' % ord(m.group(1))), now[k])
               # %%% Probably not sufficient escaping.
@@ -162,65 +267,185 @@ class HTMLParser(html.Parser):
               now[k] = re.sub('\'', '\\\'', now[k])
               now[k] = "'%s'" % now[k]
 
-        # If this fails, it means that we are trying to get the 
-        # result in python
-        if hformat in self.html_definitions: 
-          myfmt = re.sub('^\s+', '', self.html_definitions[hformat]).split('%s')
-          if len(myfmt) - 1 == len(outvals):
+        if hformat in self.definitions: 
+          definition = self.definitions[hformat]
+          fmt = definition.split('%s')
+          if len(fmt) - 1 == len(outvals):
             lineout = ''
             for i in range(0, len(outvals)):
-              lineout += myfmt[i]
+              lineout += fmt[i]
               lineout += now[outvals[i]]
-            lineout += myfmt[-1] + '\n'
+            lineout += fmt[-1] + '\n'
 
-            if elt.name in self.html_filters:
-              lineout = re.sub(self.html_filters[elt.name], '', lineout)
-            if '*' in self.html_filters:
-              lineout = re.sub(self.html_filters['*'], '', lineout, re.I)
+            if elt.name in self.filters:
+              lineout = re.sub(self.filters[elt.name], '', lineout)
+            if '*' in self.filters:
+              lineout = re.sub(self.filters['*'], '', lineout, re.I)
             if hformat.startswith('header'):
               headers.append(lineout)
             else:
               if 'src' in now:
                 url = now['src']
+              elif 'href' in now:
+                url = now['href']
               else:
                 url = None
-              js.append(CodeSnippet(elt.name, url, hformat, lineout))
-
-              # Mark some elements for removal.
-              if elt.name == 'script':
-                removeTag = True
+                
               for attr in ['onclick', 'onload']:
-                if attr in attrib:
-                  removeAttrs.append(attr)
+                if attr in attribs:
+                  attrMods[attr] = None
+
+              if url is None:
+                # Gather an embedded resource.
+                resource = Resource(elt, url, hformat, lineout)
+                resources.append(resource)
+
+                # Mark script elements for removal.
+                if elt.name == 'script':
+                  attrlen = len(elt.attrs)
+                  if attrlen == 0 or (attrlen == 1 and 'type' in elt.attrs):
+                    removeTag = True
+                  else:
+                    clearTag = True
+              else:
+                # Pull in a linked file.
+                if url in remoteresources:
+                  resource = remoteresources[url]
+                  isNew = False
+                else:
+                  resource = Resource(elt, url, hformat, lineout)
+                  resources.append(resource)
+                  remoteresources[url] = resource
+                  isNew = True
+
+                if elt.name == 'script' and 'src' in attribs:
+                  # Don't remove the entire element if there are
+                  # additional attributes because it may be referenced
+                  # by the code itself.
+                  # See https://www.coursera.org.
+                  attrlen = len(elt.attrs)
+                  if attrlen == 1 or (attrlen == 2 and 'type' in elt.attrs):
+                    removeTag = True
+                  else:
+                    attrMods['src'] = None
+
+                if SAVEALL:
+                  if 'href' in attribs and elt.name == 'link':
+                    if isNew:
+                      status, ctype, encoding, data, filepath = unpacker.fetch(url, baseurl)
+                      resource.filename = getFileName(filepath)
+                      if ctype in CSS_CONTENT_TYPES:
+                        cssparser = CSSParser()
+                        cssparser.parse(data, encoding, url)
+                      elif ctype in IMAGE_CONTENT_TYPES:
+                        pass
+                      else:
+                        warn('Unsupported link content type for %s: %s' % (url, ctype))
+                    if resource.filename is not None:
+                      attrkey = 'href'
+                      attrMods[attrkey] = resource.filename
+                      if VERBOSE:
+                        out('Replacing %s: %s -> %s' % (attrkey, url, attrMods[attrkey]))
+
+                  elif 'src' in attribs and (elt.name == 'img' or elt.name == 'input'):
+                    if isNew:
+                      status, ctype, encoding, data, filepath = unpacker.fetch(url, baseurl)
+                      resource.filename = getFileName(filepath)
+                    if resource.filename is not None:
+                      attrkey = 'src'
+                      attrMods[attrkey] = resource.filename
+                      if VERBOSE:
+                        out('Replacing %s: %s -> %s' % (attrkey, url, attrMods[attrkey]))
+
           else:
-            err('Invalid htmlparse.config hformat, parameter count or definition problem: %s' % hformat)
-            sys.exit(1)
+            err('Invalid htmlparse.config parameter count: %s' % hformat)
         else:
-          for i in range(0, len(outvals)):
-            self.storage.append([hformat, now[outvals[i]]])
+          warn('Undefined HTML format rule: %s' % hformat)
 
       # Clean up the HTML.
       # %%% Should ideally replace with comments.
       if removeTag:
         elt.extract()
+      elif clearTag:
+        elt.clear()
       else:
-        for attr in removeAttrs:
-          del elt[attr]
+        for attr, val in attrMods.items():
+          if val is None:
+            del elt[attr]
+          else:
+            elt[attr] = val;
+    
+    for res in resources:
+      elem = res.getElement()
+      typ = res.getType()
+      tag = res.getTag()
+      url = res.getURL()
+      # Some weird URLs have multiple lines.
+      # See http://www.mediamatters.org.
+      if url is None: url = baseurl
+      url = re.sub('\n', ' ', url)
+        
+      if typ == 'rawSCRIPT':
+        isjs = True
+        attrs = elem.attrs
+        if 'type' in attrs:
+          if attrs['type'] not in JS_CONTENT_TYPES:
+            warn('Skipping script element with non-JS content type: %s' % attrs['type'])
+            isjs = False
+        else:
+          warn('Script element with no type attribute')
+        if isjs:
+          text = normalizeText(res.getContent())
+          js += '// %s, %s: %s\n%s\n' % (typ, tag, url, text)
+      elif typ in ['eventBODYONLOAD', 'eventIMAGEONLOAD', 'eventONCLICK']:
+        # Remove newlines from attribute values.
+        text = re.sub('\n', '', normalizeText(res.getContent()))
+        js += '// %s, %s: %s\n%s\n' % (typ, tag, url, text)
+      elif typ in ['rawELEMENT']:
+        js += '// %s, %s: %s\n' % (typ, tag, url)
+        if tag == 'script':
+          status, ctype, encoding, data, filepath = unpacker.fetch(url, baseurl)
+          if ctype not in JS_CONTENT_TYPES:
+            warn('Non-JavaScript content type for %s: %s' % (url, ctype))
+          js += '// Status: ' + str(status) + '\n'
+          if data is not None:
+            if encoding is None:
+              encoding = 'utf-8'
+            js += data.decode(encoding) + '\n'
+          
+      else:
+        js += '// %s, %s: %s\n' % (typ, tag, url)
+      # Separate file content with an additional line.
+      js += '\n'
 
-    return soup.prettify(), headers, js
-  # /jsextract
+    headerstr = ''
+    for header in headers:
+      # |headers| contains JavaScript for DOM setup.
+      # %%% Not currently used. Could be very useful if improved.
+      headerstr += '// %s\n%s\n' % (baseurl, header)
 
-def parseHTML(infile, config):
-  hparser = HTMLParser(config)
+    bodyhtml = ''
+    for elt in soup.body.contents:
+      if isinstance(elt, bs4.Comment):
+        bodyhtml += '<!--' + str(elt) + '-->\n'
+      elif isinstance(elt, bs4.NavigableString):
+        bodyhtml += str(elt)
+      else:
+        bodyhtml += elt.prettify()
 
-  fin = open(infile, 'rb')
-  data = fin.read()
-  fin.close()
+    headhtml = ''
+    for elt in soup.head.contents:
+      if isinstance(elt, bs4.Comment):
+        headhtml += '<!--' + str(elt) + '-->\n'
+      elif isinstance(elt, bs4.NavigableString):
+        headhtml += str(elt)
+      else:
+        headhtml += elt.prettify()
 
-  newhtml, header, js = hparser.jsextract(data)
-# end parseHTML
+    return js, headhtml, bodyhtml, headerstr
+  # /extractResources
 
-class Unpacker(jsunpackn.jsunpack):
+class Unpacker():
 
   # Create an Unpacker.
   def __init__(self, options) :
@@ -238,33 +463,20 @@ class Unpacker(jsunpackn.jsunpack):
     # Dictionary to avoid repeating information (addressed by unique url)
     self.seen = {} 
 
-    # Detection rules
-    self.SIGS = detection.rules(options.rules)
-    self.SIGSalt = detection.rules(options.rulesAscii)
-
     # Options
 
     # UnpackOpts user options.
     self.OPTIONS = options 
     
-    # http_header lastModified
-    self.lastModified = ''
-
     # Set to true by the MZ case.
     # %%% Doesn't seem to be used.
     self.binExists = False
 
     if self.OPTIONS.veryverbose:
       self.OPTIONS.verbose = True
-    if self.OPTIONS.verbose:
-      UrlAttr.verbose = True
 
     self.hparser = HTMLParser(self.OPTIONS.htmlparseconfig)
-
-    loadDir(self.OPTIONS.tmpdir)
-    loadDir(self.OPTIONS.ipslog)
-    loadDir(self.OPTIONS.decodelog)
-  # /__init__
+  # /Unpacker.__init__
 
   def unpack(self):
     # Done setup, now initialize the decoding.
@@ -272,219 +484,171 @@ class Unpacker(jsunpackn.jsunpack):
 
     if self.url:
       if not self.OPTIONS.quiet:
-        print 'Root URL: %s' % (self.url)
-      status, ctype, content = self.fetch(self.url, self.OPTIONS.defaultreferer)
-      if ctype not in ['text/html']:
-        warn('Non-HTML content type for %s: %s' % (self.url, ctype))
+        out('Root URL: %s' % self.url)
+      status, ctype, encoding, content, filepath = self.fetch(self.url, self.OPTIONS.defaultreferer)
       if content is not None:
-        self.main_decoder(content, self.url)
+        if ctype not in HTML_CONTENT_TYPES:
+          warn('Non-HTML content type for %s: %s' % (self.url, ctype))
+        if encoding is None:
+          encoding = 'ascii'
+        text = content.decode(encoding)
+        self.extract(self.url, text)
     else:
       # Local file decode
-      self.rooturl[self.OPTIONS.file] = UrlAttr(self.rooturl, self.start)
-
+      # %%% Untested
       if self.data:
-        self.rooturl[self.url].setMalicious(UrlAttr.ANALYZED)
-        if self.data.startswith('\xD4\xC3\xB2\xA1'): #pcap
+        if self.data.startswith('\xD4\xC3\xB2\xA1'): # pcap
           warn("Unsupported case: %s" % "pcap")
         else:
-          self.main_decoder(self.data, myfile)
+          self.extract(self.OPTIONS.file, self.data)
   # /unpack
 
   def fetch(self, url, referer):
+    # Get the absolute URL relative to the starting URL.
+    url = urllib.parse.urljoin(referer, url)
+
+    if VERBOSE:
+      out('Fetching %s' % url)
+
     if url.startswith('hcp:'):
       warn('Not fetching hcp url: %s' % url)
-      return None, None, None
+      return None, None, None, None, None
 
     if url.startswith('127.0.0.1'):
       warn('Not fetching local file: %s', url)
-      return None, None, None
+      return None, None, None, None, None
 
     if not referer:
       referer = self.OPTIONS.defaultreferer
 
     try:
-      hostname, dstport = self.hostname_from_url(url)
-
-      if self.OPTIONS.proxy and not self.OPTIONS.currentproxy:
-        proxies = self.OPTIONS.proxy.split(',')
-        self.OPTIONS.currentproxy = proxies[random.randint(0, len(proxies) - 1)]
-        if not self.OPTIONS.quiet:
-          warn('Using random proxy: %s' % self.OPTIONS.currentproxy)
-
-      request = urllib2.Request(url)
+      request = urllib.request.Request(url)
       request.add_header('Referer', referer)
       request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)')
+      opener = urllib.request.build_opener()
 
-      if self.OPTIONS.currentproxy:
-        if not self.OPTIONS.quiet:
-          print 'Using current proxy: %s' % (self.OPTIONS.currentproxy)
-        proxyHandler = urllib2.ProxyHandler({'http': '%s' % (self.OPTIONS.currentproxy) })
-        opener = urllib2.build_opener(proxyHandler)
-      else:
-        opener = urllib2.build_opener()
-
-      try:
-        resp = opener.open(request)
-
-        status = resp.getcode()
-        # |respinfo| is a |mimetools.Message| object.
-        respinfo = resp.info()
-        ctype = respinfo.gettype()
-        plist = respinfo.getplist()
-        encoding = 'utf-8'
-        for p in plist:
-          if p.startswith('charset='):
-            encoding = p[8:]
-
-        content = unicode(resp.read(), encoding)
-        if not self.OPTIONS.quiet:
-          print 'Successfully downloaded %s' % url
-        if self.OPTIONS.veryverbose:
-          print 'Headers:\n', respinfo
-      except urllib2.HTTPError, error:
-        warn('Remote file error: %r' % error.getcode())
-        # Don't load 404 error pages.
-        # See http://www.jspell.com/ajax-spell-checker.html
-        status = error.getcode()
-        content = None
-        ctype = None
-
-    except Exception, e:
-      warn('Failure: ' + str(e))
+    except Exception as e:
+      err('Failure initializing request for %s: %s' % (url, str(e)))
       status = 500
+      return status, None, None, None, None
+
+    try:
+      resp = opener.open(request)
+    except urllib.error.HTTPError as e:
+      # Don't load 404 error pages.
+      # See http://www.jspell.com/ajax-spell-checker.html
+      status = e.getcode()
+      err('HTTP error while retrieving %s: %r' % (url, status))
       content = None
       ctype = None
+      return status, None, None, None, None
+    except Exception as e:
+      err('Failed to retrieve %s: %s' % (url, str(e)))
+      status = 500
+      return status, None, None, None, None
 
-    if content is not None and self.OPTIONS.saveallfiles:
-      urlbase = getURLFileName(url)
-      if not urlbase:
-        urlbase = getDomain(url)
-      fname = self.createFile('fetched_' + urlbase, content, getExtension(url))
-
-    return status, ctype, content
-  # /fetch
-
-  def extractJS(self, content):
-    #return values are:
-    #([headers], [scripts])
-    try:
-      newhtml, headers, js = self.hparser.jsextract(content)
-    except Exception, e:
-      newhtml = ''
-      headers = []
-      js = []
-      err('Error in extractJS: %s' % str(e))
-
-    if newhtml != '':
-      newhtml = unicode(newhtml, 'utf-8')
+    status = resp.getcode()
+    # In Python 2, |respinfo| is a |mimetools.Message| object.
+    # In Python 3, it is an |HTTPMessage|.
+    respinfo = resp.info()
+    if self.OPTIONS.veryverbose:
+      out('Headers:\n%s\n' % str(respinfo))
+    content = resp.read()
     
-    content = ''
-    for jscode in js:
-      typ = jscode.getType()
-      tag = jscode.getTag()
-      url = jscode.getURL()
-      if url is None:
-        url = self.start
+    compression = respinfo.get('Content-Encoding')
+    if compression is not None:
+      compression = compression.lower()
+      if compression == 'gzip':
+        content = gzip.decompress(content)
       else:
-        # Get the absolute URL relative to the starting URL.
-        baseurl = self.start
-        url = urlparse.urljoin(baseurl, url)
-        # Some weird URLs have multiple lines.
-        # See http://www.mediamatters.org.
-        url = re.sub('\n', ' ', url)
-        
-      if typ in ['rawSCRIPT', 'eventBODYONLOAD', 'eventIMAGEONLOAD', 'eventONCLICK']:
-        content += '// %s, %s: %s\n%s\n' % (typ, tag, url, jscode.getContent())
-      elif typ in ['rawELEMENT']:
-        content += '// %s, %s: %s\n' % (typ, tag, url)
-        if tag == 'script':
-          if not self.OPTIONS.quiet:
-            print 'Loading URL:', url
-          status, ctype, data = self.fetch(url, baseurl)
-          if ctype not in ['text/javascript', 'application/x-javascript', 'application/javascript']:
-            warn('Non-JavaScript content type for %s: %s' % (url, ctype))
-          content += '// Status: ' + str(status) + '\n'
-          if data is not None:
-            content += data + '\n'
-      else:
-        content += '// %s, %s: %s\n' % (typ, tag, url)
-      # Separate file content with an additional line.
-      content += '\n'
+        warn('Unsupported Content-Encoding header: %s' % encoding)
 
-    headerstr = ''
-    for header in headers:
-      # |headers| contains JavaScript for DOM setup.
-      # %%% Not currently used. Could be very useful if improved.
-      headerstr += '// %s\n%s\n' % (self.url, unicode(header, 'utf-8'))
+    plist = None
+    ctypehdr = respinfo.get('Content-Type')
+    ctypeparts = [part.strip() for part in ctypehdr.split(';')]
+    ctype = ctypeparts[0].strip().lower()
+    plist = ctypeparts[1:]
+    encoding = None
+    for p in plist:
+      if p.startswith('charset='):
+        encoding = p[8:].lower()
+        if encoding == 'utf8':
+          encoding = 'utf-8'
 
-    urlbase = getURLFileName(self.start)
-    if not urlbase:
-      urlbase = getDomain(self.start)
-    if len(content) > 0:
-      self.createFile(urlbase, content, ext='js')
-    if len(headerstr) > 0:
-      self.createFile(urlbase, headerstr, ext='headers.js')
-    if len(newhtml) > 0:
-      self.createFile(urlbase, newhtml, ext='html')
+    #out('STATUS:', status, 'ENCODING:', encoding, 'CTYPE:', ctype)
 
-  # end extractJS
+    if content.startswith(b'MZ'):
+      warn('MZ case was hit: %s' % url)
+      if SAVEALL:
+        urlbase = getFileName(url)
+        mz = self.createFile(urlbase, content, 'bin')
 
-  def main_decoder(self, data, url, tcpaddr=[], lastModified=''):
-    self.url = url
-    self.lastModified = lastModified
-    if not self.url in self.rooturl:
-      self.rooturl[self.url] = UrlAttr(self.rooturl, self.url, tcpaddr) #initialization
-    self.rooturl[self.url].setMalicious(UrlAttr.ANALYZED)
-    level = 0
-
-    isMZ = False
-    if data.startswith('MZ'):
-      warn('MZ case was hit, don\'t know what that is.')
-      isMZ = True
-      self.rooturl[self.url].filetype = 'MZ'
-      self.binExists = True
-      self.log(0, '[%d] executable file' % level)
-      if self.OPTIONS.saveallexes:
-        urlbase = getURLFileName(self.url)
-        sha1exe = self.createFile(urlbase, data, 'bin')
-
-    swfjs = ''
-    if data.startswith('CWS') or data.startswith('FWS'):
+    if content.startswith(b'CWS') or content.startswith(b'FWS'):
       # This case is triggered by HTML embed (and object?) tags that
       # pull in Flash scripts.
-      #warn('CWS/FWS case was hit')
-      isSWF = True
-      self.rooturl[self.url].filetype = 'SWF'
+      warn('Flash content not currently supported: %s' % url)
 
-      msgs, urls = swf.swfstream(data)
-      for url in urls:
-        swfjs_obj = re.search('javascript:(.*)', url, re.I)
-        if swfjs_obj:
-          swfjs += swfjs_obj.group(1) + '\n'
-        else:
-          # URL only
-          multi = re.findall('https?:\/\/([^\s<>\'"]+)', url)
-          if multi:
-            for m in multi:
-              self.rooturl[self.url].setChild(m, 'swfurl')
-          else:
-            #no http
-            if url.startswith('/'):
-              #relative root path
-              firstdir = re.sub('([^/])/.*$', '\\1', self.url)
-              m = firstdir + url
-            else:
-              #relative preserve directory path
-              lastdir = re.sub('/[^\/]*$', '/', self.url)
-              m = lastdir + url
-            self.rooturl[self.url].setChild(m, 'swfurl')
-    else:
-      isSWF = False
+      # %%% This code comes from the original jsunpack. I'm not
+      # %%% sure exactly what it does.
+      #msgs, urls = swf.swfstream(content)
+      #for url in urls:
+      #  swfjs_obj = re.search('javascript:(.*)', url, re.I)
+      #  if swfjs_obj:
+      #    swfjs += swfjs_obj.group(1) + '\n'
+      #  else:
+      #    # URL only
+      #    multi = re.findall('https?:\/\/([^\s<>\'"]+)', url)
+      #    if multi:
+      #      for m in multi:
+      #        self.rooturl[self.url].setChild(m, 'swfurl')
+      #    else:
+      #      # No http
+      #      if url.startswith('/'):
+      #        #relative root path
+      #        firstdir = re.sub('([^/])/.*$', '\\1', self.url)
+      #        m = firstdir + url
+      #      else:
+      #        #relative preserve directory path
+      #        lastdir = re.sub('/[^\/]*$', '/', self.url)
+      #        m = lastdir + url
+      #      self.rooturl[self.url].setChild(m, 'swfurl')
 
-    self.extractJS(data)
-  # /main_decoder
+    if not self.OPTIONS.quiet:
+      out('Downloaded %s %s' % (ctype, url))
 
-  def createFile(self, base, content, ext='txt'):
+    filepath = None
+    if SAVEALL:
+      filename = getFileName(url)
+      if not filename:
+        filename = getDomain(url)
+      ext = getExtension(url, ctype)
+      filepath = self.createFile(filename, content, ext)
+
+    return status, ctype, encoding, content, filepath
+  # /fetch
+
+  def extract(self, url, text):
+    if SAVEALL:
+      self.createFile(self.OPTIONS.app, text, 'original.html')
+
+    js, headhtml, bodyhtml, headers = self.hparser.extractResources(self, url, text)
+
+    if len(js) > 0:
+      self.createFile(self.OPTIONS.app, js, 'js')
+    if len(headers) > 0:
+      self.createFile(self.OPTIONS.app, headers, 'headers.js')
+    if len(bodyhtml) > 0:
+      self.createFile(self.OPTIONS.app, bodyhtml, 'html')
+    if len(headhtml) > 0:
+      self.createFile(self.OPTIONS.app, headhtml, 'head.html')
+
+    for fileattrs in SYMLINK_FILES:
+      assert len(fileattrs) == 3, 'Invalid SYMLINK_FILES configuration: %r' % fileattrs
+      srcdir, destname, srcname = fileattrs
+      symlink(srcdir, self.OPTIONS.outdir, destname, srcname)
+  # /extract
+
+  def createFile(self, base, content, ext):
     if len(content) == 0:
       return None
     outdir = self.OPTIONS.outdir
@@ -492,7 +656,7 @@ class Unpacker(jsunpackn.jsunpack):
     if not outdir:
       return None
 
-    if ext:
+    if ext and not base.endswith('.' + ext):
       filename = base + '.' + ext
     else:
       filename = base
@@ -501,58 +665,38 @@ class Unpacker(jsunpackn.jsunpack):
     if not os.path.isdir(outdir):
       os.mkdir(outdir)
     if os.path.isdir(outdir):
-      ffile = codecs.open(outfile, 'w', 'utf-8')
-      #ffile = open(outfile, 'w')
-      # Encoding is required for www.jspell.com/ajax-spell-checker.html.
-      try:
-        ffile.write(content) #.decode('utf-8')
-      except UnicodeDecodeError, e:
-        err('Error writing %s (%s, %s) to file: %s' % (self.url, base, ext, str(e)))
+      if isinstance(content, str):
+        ffile = open(outfile, 'w')
+      else:
+        ffile = open(outfile, 'wb')
+      ffile.write(content)  
       ffile.close()
+    else:
+      err('Directory %s is not accessible' % outdir)
     return outfile
   # /createFile
-
-  def log(self, num, msg):
-    self.rooturl[self.url].log(self.OPTIONS.verbose, num, msg)
-  # /log
 
 # /Unpacker
  
 class UnpackOpts:
-  RULES = None
-  fin = open(os.path.join(JSUNPACKPKG, 'rules'), 'r')
-  if fin:
-    RULES = fin.read()
-    fin.close()
-
-  RULESASCII = None
-  fin = open(os.path.join(JSUNPACKPKG, 'rules.ascii'), 'r')
-  if fin:
-    RULESASCII = fin.read()
-    fin.close()
-
-  HTMLPARSECONFIG = None
-  HTMLCFGFILE = os.path.join(JSUNPACKPKG, 'htmlparse.config')
+  HTMLPARSECONFIG = ''
+  HTMLCFGFILE = os.path.join(UTILDIR, 'htmlparse.config')
   fin = open(HTMLCFGFILE, 'r')
   if fin:
     HTMLPARSECONFIG = fin.read()
     fin.close()
 
-  CONFIGFILE = os.path.join(JSUNPACKPKG, 'options.config')
-  PREFILE = os.path.join(JSUNPACKPKG, 'pre.js')
-  POSTFILE = os.path.join(JSUNPACKPKG, 'post.js')
-
-  def __init__(self, infile):
-    # Show [nothing found] entries.
-    UrlAttr.verbose = True 
-
+  def __init__(self, infile, app, outdir):
     if isURL(infile):
       self.url = infile
       self.protocol = getProtocol(infile)
       self.file = None
       self.data = None
-      self.base = getAddress(self.url)
+      self.relpath = getRelativePath(self.url)
       self.ext = getExtension(self.url)
+      self.app = app
+      if self.app is None:
+        self.app = re.sub('/', '-', self.relpath)
     else:
       self.file = infile
       fin = open(self.file, 'r')
@@ -562,35 +706,39 @@ class UnpackOpts:
       self.url = None
       self.protocol = None
       info = get_file_info(infile)
-      self.base = info['app']
       self.ext = info['ext']
+      self.relpath = getRelativePath(self.file)
+      self.app = info['app']
 
-    self.urlfetch = self.url # Used by jsunpackn.py
-    self.rules = UnpackOpts.RULES
-    self.rulesAscii = UnpackOpts.RULESASCII
+    if outdir is not None:
+      self.outdir = os.path.abspath(outdir)
+      if os.path.exists(self.outdir):
+        if OVERWRITE:
+          if os.path.isfile(self.outdir):
+            err('File exists at output directory %s' % self.outdir)
+            sys.exit(1)
+          else:
+            warn('Output directory %s exists' % self.outdir)
+        else:
+          err('Output directory exists, use -f to overwrite')
+          sys.exit(1)
+    else:
+      # Get a unique, non-existent directory.
+      self.outdir = get_output_dir(UNPACKDIR, self.relpath)
+
     self.active = False
     self.quiet = not VERBOSE
     self.verbose = VERBOSE
     self.veryverbose = False
-    self.configfile = UnpackOpts.CONFIGFILE
-    self.htmlparse = UnpackOpts.HTMLCFGFILE
     self.htmlparseconfig = UnpackOpts.HTMLPARSECONFIG
-    self.interface = False
-    self.outdir = get_output_dir(os.path.join(JAMPKG, 'unpacked'), self.base)
-    self.decodelog = os.path.join(self.outdir, 'decoded.log')
-    self.ipslog = os.path.join(self.outdir, 'ip.log')
-    self.log_ips = self.ipslog # Used by jsunpackn.py
-    self.tmpdir = os.path.join(self.outdir, 'tmp')
     self.fasteval = False
-    self.saveallfiles = True
-    self.saveallexes = False
+    self.saveallfiles = SAVEALL
+    self.saveallexes = SAVEALL
     self.proxy = None
     self.currentproxy = None
     self.timeout = 30
     self.redoevaltime = 1
     self.maxruntime = 0
-    self.pre = UnpackOpts.PREFILE
-    self.post = UnpackOpts.POSTFILE
     self.debug = False
     self.nojs = False
     self.defaultreferer = 'http://www.example.com'
@@ -612,63 +760,81 @@ def isURL(uri):
 # end isURL
 
 def getProtocol(url):
-  parts = re.split('://', url, 1)
-  if len(parts) == 1:
-    return ''
-  prot = parts[0].lower()
+  urlparts = urllib.parse.urlparse(url)
+  prot = urlparts[0]
   return prot
 # end getProtocol
 
-# Return the address part (without the preceding protocol).
-def getAddress(url):
-  # %%% Handle other protocols.
-  prot = getProtocol(url)
-  addr = re.sub('^' + prot + '://', '', url, flags=re.IGNORECASE)
-  return addr
-# end getAddress
-
 def getDomain(url):
-  # Remove the protocol prefix.
-  addr = getAddress(url)
-  parts = re.split('/', addr)
-  dom = parts[0]
-  return dom
+  urlparts = urllib.parse.urlparse(url)
+  domain = urlparts[1]
+  return domain
 # end getDomain
 
-def getExtension(addr):
-  parts = re.split('/', addr)
-  subparts = re.split('\.', parts[-1])
-  ext = subparts[-1]
-  return ext
-# end getExtension
+def getRelativePath(url):
+  urlparts = urllib.parse.urlparse(url)
+  filepath = urlparts[2]
+  if filepath.startswith('/'):
+    filepath = filepath[1:]
+  if isURL(url):
+    # Prepend the domain
+    filepath = os.path.join(urlparts[1], filepath)
+  return filepath
+# /getRelativePath
 
-def getURLFileName(url):
-  urlparts = urlparse.urlparse(url)
+def getExtension(url, ctype=None):
+  ext = None
+  if ctype is not None:
+    if ctype in JS_CONTENT_TYPES:
+      ext = 'js'
+    elif ctype in HTML_CONTENT_TYPES:
+      ext = 'html'
+    elif ctype in IMAGE_CONTENT_TYPES:
+      parts = ctype.split('/')
+      ext = parts[-1]
+
+  if ext is None:
+    filename = getFileName(url)
+    if filename == '':
+      # Assume HTML file type.
+      ext = 'html'
+    else:
+      subparts = re.split('\.', filename)
+      if len(subparts) <= 1:
+        ext = 'html'
+      else:
+        ext = subparts[-1]
+    return ext
+# /getExtension
+
+def getFileName(url):
+  urlparts = urllib.parse.urlparse(url)
+  filepath = urlparts[2]
   # Split the path component and return the filename.
-  urlbase = urlparts[2].split('/')[-1]
-  return urlbase
-# /getURLFileName
+  filename = filepath.split('/')[-1]
+  return filename
+# /getFileName
 
 def loadDir(filename):
   absdir = os.path.abspath(os.path.dirname(filename))
   if not os.path.isdir(absdir):
     try:
       os.makedirs(absdir)
-    except Exception, e:
+    except Exception as e:
       err(e)
       sys.exit(1)
   return absdir
 # end loadDir
 
 # Load all JavaScript from loaded by a particular HTML file.
-def loadFile(infile):
-  opts = UnpackOpts(infile)
+def loadFile(infile, app, outdir):
+  opts = UnpackOpts(infile, app, outdir)
 
   try:
     js = Unpacker(opts)
     js.unpack()
     return True
-  except Exception, e:
+  except Exception as e:
     err("%s: %s" % (str(e), infile))
     err(traceback.format_exc())
     return False
@@ -692,27 +858,29 @@ def normalizeText(s):
 
 def main():
   parser = OptionParser(usage="%prog URL|HTML")
-  parser.add_option('-f', '--overwrite', action='store_true', default=False, dest='overwrite', help='overwrite existing files')
   parser.add_option('-v', '--verbose', action='store_true', default=False, dest='verbose', help='generate verbose output')
+  parser.add_option('-s', '--saveall', action='store_true', default=False, dest='saveall', help='save all downloadeded files')
+  parser.add_option('-f', '--overwrite', action='store_true', default=False, dest='overwrite', help='overwrite files if output directory already exists')
+  parser.add_option('-a', '--app', action='store', default=None, dest='app', help='application name')
+  parser.add_option('-o', '--outdir', action='store', default=None, dest='outdir', help='output directory')
 
   opts, args = parser.parse_args()
 
-  if len(args) < 1:
+  if len(args) != 1:
     parser.error("Invalid number of arguments")
 
   #global cfg
   #cfg = imp.load_source("cfg", args[0])
   #assert os.path.isdir(cfg.SOURCEDIR), "Source path %s doesn't exist." % cfg.SOURCEDIR
 
-  global OVERWRITE, VERBOSE
-  OVERWRITE = opts.overwrite
+  infile = args[0]
+
+  global VERBOSE, SAVEALL, OVERWRITE
   VERBOSE = opts.verbose
+  SAVEALL = opts.saveall
+  OVERWRITE = opts.overwrite
 
-  HTMLParser.debug = VERBOSE
-
-  output = ""
-  for infile in args:
-    loadFile(infile)
+  loadFile(infile, opts.app, opts.outdir)
 
 if __name__ == "__main__":
   main()

@@ -1,8 +1,6 @@
 import os
 import sys
 
-JAMPKG = os.environ['JAMPKG']
-sys.path.append(os.path.join(os.environ['JAMPKG'], 'tests'))
 from config import *
 
 OUTDIR = os.path.join(JAMPKG, "..", "jam-release")

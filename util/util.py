@@ -118,15 +118,15 @@ def get_output_dir(top, base):
   return ret
 
 def err(txt):
-  print >> sys.stderr, "ERROR:", txt
+  sys.stderr.write("ERROR: %s\n" % txt)
   sys.stderr.flush()
 
 def out(txt):
-  print >> sys.stderr, "INFO: ", txt
+  sys.stderr.write("INFO: %s\n" % txt)
   sys.stderr.flush()
 
 def warn(txt):
-  print >> sys.stderr, "WARNING:", txt
+  sys.stderr.write("WARNING: %s\n" % txt)
   sys.stderr.flush()
 
 def env_error(varname):
@@ -271,7 +271,8 @@ def load_policies(from_dir, base_name, polsuf='.policy'):
 def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=True, moreopts=[]):
   # Print the name of the file being analyzed.
   jsname = os.path.basename(jspath)
-  print jsname
+  sys.stdout.write(jsname)
+  sys.stdout.write('\n')
   sys.stdout.flush()
 
   if perf:
@@ -338,7 +339,8 @@ def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=
   cmd.extend(policies)
 
   # Display the command that's being invoked.
-  print " ".join(cmd)
+  sys.stdout.write(" ".join(cmd))
+  sys.stdout.write('\n')
   sys.stdout.flush()
 
   outfl = tempfile.TemporaryFile('r+')
@@ -389,6 +391,22 @@ def get_exp_path(testcase, suf='.exp'):
   expfile = basepath + suf
   return expfile
 
+def symlink(srcdir, tgtdir, name, srcname=None, relative=False): 
+  link = os.path.join(tgtdir, name)
+  # |lexists| is true for broken symbolic links.
+  # %%% Should check to see if the link is correct or needs updating.
+  if not os.path.lexists(link):
+    if srcname is not None:
+      srcpath = os.path.join(srcdir, srcname)
+    else:
+      srcpath = os.path.join(srcdir, name)
+    if relative:
+      # Get the path relative to the target directory.
+      src = os.path.relpath(srcpath, tgtdir)
+    else:
+      src = os.path.abspath(srcpath)
+    os.symlink(src, link)
+
 def get_variant_bases(directory):
   apps = load_sources(directory)
   bases = []
@@ -422,7 +440,7 @@ def overwrite_expected(srcfl, outp, suf):
   
   expfile = get_exp_path(srcfl, suf)
   expfl = open(expfile, 'w')
-  print >> expfl, outp,
+  expfl.write(outp)
   expfl.close()
   return "overwritten"
 
@@ -466,8 +484,8 @@ def validate_output(inp, outp, expsuf=".exp.js"):
   if outp == exp:
     return "ok"
   else:
-    #print >> sys.stderr, "OUTPUT:", outp
-    #print >> sys.stderr, "EXPECT:", exp
+    #sys.stderr.write("OUTPUT: %s" % outp)
+    #sys.stderr.write("EXPECT: %s" % exp)
     return "wrong"
 
 def evaluate_file(filename, verbose=False):
@@ -481,11 +499,13 @@ env_init(H0,L0),
 exp(H0,L0,%s,H1,L1,V),
 ecgv(H1,L1,V,H2,L2,VALUE).''' % ast
 
-  if verbose: print "\nQUERY:\n", query
+  if verbose:
+    sys.stdout.write("\nQUERY:\n%s\n" % query)
 
   output = run_query(query)
 
-  if verbose: print "OUTPUT:\n", output
+  if verbose:
+    sys.stdout.write("OUTPUT:\n%s\n" % output)
 
   return output
 
@@ -493,7 +513,7 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
   # Print the name of the file being analyzed.
   if debug:
     jsname = os.path.basename(jspath)
-    print jsname
+    sys.stdout.write('%s\n' % jsname)
     sys.stdout.flush()
 
   if perf:
@@ -507,12 +527,12 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
 
   # Load the JAMScript library
   cmd.append('-f')
-  cmd.append(TXLIB)
+  cmd.append(JAMSCRIPT_LIB)
 
   # Load the JAMScript debug extensions
   if debug:
     cmd.append('-f')
-    cmd.append(TXDBGLIB)
+    cmd.append(JAMSCRIPT_DBGLIB)
 
   # Load the files containing the policy iBlocks.
   for pol in policies:
@@ -524,7 +544,7 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
 
   if (debug):
     # Display the command that's being invoked.
-    print " ".join(cmd)
+    sys.stdout.write('%s\n' % ' '.join(cmd))
 
   outfl = tempfile.TemporaryFile('r+')
 
@@ -546,10 +566,10 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
     outlines = outp.split("\n")
     timeline = outlines[-1].strip("\"")
     outp = "\n".join(outlines[:-1])
-    print "cpu:", str(parse_time_output(timeline, element="cpu")) + "s"
+    sys.stdout.write("cpu: %ss" % str(parse_time_output(timeline, element="cpu")))
   
   # To portably analyze exception output, make absolute paths relative.
-  outp = outp.replace(JAMSCRIPTDIR + "/", "")
+  outp = outp.replace(JAMSCRIPT_DIR + "/", "")
 
   return outp
 

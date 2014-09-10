@@ -245,99 +245,75 @@ class CSSParser(cssutils.CSSParser):
     stylesheet = self.parseString(text, href=url)
 
     images = []
-    resources = {}
+    imports = []
     for rule in stylesheet.cssRules:
       if rule.type == cssutils.css.CSSRule.IMPORT_RULE:
         href = rule.href
-        if VERBOSE:
-          out('Raw href: %s' % href)
         impurl = urllib.parse.urljoin(url, href)
-        if VERBOSE:
-          out('Normalized url: %s' % impurl)
-
-        impresource = unpacker.fetch(impurl, referer=url)
-        impresource.setType('link.stylesheet.import')
-        # %%% Should add to remoteresources
-
-        impctype = impresource.getContentType()
-        impstatus = impresource.getStatus()
-        impencoding = impresource.getEncoding()
-        impdata = impresource.getData()
-        if impctype not in CSS_CONTENT_TYPES:
-          warn('Non-CSS content type for import %s: %s' % (impurl, impctype))
-        # %%% Should add comment to |js|
-
-        impparser = CSSParser()
-        newimpdata, impimgs, impresources = impparser.extractResources(impdata, impencoding, impurl, unpacker)
-        images.extend(impimgs)
-        for res in impresources:
-          resources[res.getURL()] = res
+        imports.append(impurl)
 
         # Rename the original CSS file for posterity.
-        impfilepath = impresource.getFilePath()
-        impfilename = impresource.getFileName()
-        imporigparts = impfilename.rsplit('.', 1)
-        imporigparts.insert(-1, 'original')
-        imporigfilename = '.'.join(imporigparts)
-        imporigfilepath = os.path.join(unpacker.OPTIONS.outdir, imporigfilename)
-        os.rename(impfilepath, imporigfilepath)
-
-        # Save the modified CSS file.
-        unpacker.createFile(impfilename, newimpdata, None)
-
+        impfilename = getFileName(impurl)
         rule.href = impfilename
         if VERBOSE:
-          out('Setting import %s to %s' % (href, impfilename))
+          out('Replaced import: %s -> %s' % (href, impfilename))
 
       if rule.type == cssutils.css.CSSRule.STYLE_RULE:
         decl = rule.style
         for prop in decl.getProperties():
+          replaced = False
+          origvals = []
           if prop.name == 'background-image':
             propvals = prop.propertyValue
             newvals = []
             for propval in propvals:
+              propvalstr = str(propval.value)
+              origvals.append(propvalstr)
               image = None
               if propval.type == cssutils.css.Value.URI:
                 image = propval.absoluteUri
-              elif propval.value != 'none':
-                image = urllib.parse.urljoin(url, propval.value)
+              elif propvalstr != 'none':
+                image = urllib.parse.urljoin(url, propvalstr)
 
               if image is not None:
                 images.append(image)
                 filename = getFileName(image)
                 newtext = 'url(' + filename + ')'
                 newvals.append(newtext)
-                if VERBOSE:
-                  out('Extracted background-image from CSS: %s' % image)
+                replaced = True
               else:
-                newvals.append(str(propval.value))
-            newval = ' '.join(newvals)
-            if VERBOSE:
-              out('Setting %s to %s' % (prop.name, newval))
-            decl.setProperty('background-image', value=newval, replace=True)
-          if prop.name == 'background':
+                newvals.append(propvalstr)
+            if replaced:
+              newval = ' '.join(newvals)
+              decl.setProperty(prop.name, value=newval, replace=True)
+          elif prop.name == 'background':
             propvals = prop.propertyValue
             newvals = []
             for propval in propvals:
+              propvalstr = str(propval.value)
+              origvals.append(propvalstr)
               if propval.type == cssutils.css.Value.URI:
                 image = propval.absoluteUri
                 images.append(image)
                 filename = getFileName(image)
                 newtext = 'url(' + filename + ')'
                 newvals.append(newtext)
-                if VERBOSE:
-                  out('Extracted background image from CSS: %s' % image)
+                replaced = True
               else:
-                newvals.append(str(propval.value))
-            newval = ' '.join(newvals)
-            if VERBOSE:
-              out('Setting %s to %s' % (prop.name, newval))
-            decl.setProperty('background', value=newval, replace=True)
+                newvals.append(propvalstr)
+            if replaced:
+              newval = ' '.join(newvals)
+              decl.setProperty(prop.name, value=newval, replace=True)
+
+          if replaced and VERBOSE:
+            origval = ' '.join(origvals)
+            out('Replaced %s: %s -> %s' % (prop.name, origval, newval))
 
     encoding = stylesheet.encoding
     if encoding is None: encoding = 'utf-8'
     newcss = stylesheet.cssText.decode(encoding)
-    return newcss, images, resources
+    return newcss, images, imports
+  # /extractResources
 
 class HTMLParser():
   
@@ -440,51 +416,57 @@ class HTMLParser():
           # The |attrs['rel']| value is a list.
           if 'stylesheet' in attrs['rel']:
 
-            if url in remoteresources:
-              resource = remoteresources[url]
-            else:
-              resource = unpacker.fetch(url, referer=baseurl)
-              resource.setElement(elt)
-              resource.setType('link.stylesheet')
-              remoteresources[url] = resource
+            stylesheets = [url]
+            while len(stylesheets) > 0:
+              ssurl = stylesheets.pop(0)
 
-              ctype = resource.getContentType()
-              status = resource.getStatus()
-              encoding = resource.getEncoding()
-              data = resource.getData()
-              if ctype not in CSS_CONTENT_TYPES:
-                warn('Non-CSS content type for %s: %s' % (url, ctype))
-              js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
+              if ssurl in remoteresources:
+                resource = remoteresources[ssurl]
+              else:
+                resource = unpacker.fetch(ssurl, referer=baseurl)
+                resource.setElement(elt)
+                resource.setType('link.stylesheet')
+                remoteresources[ssurl] = resource
 
-              cssparser = CSSParser()
-              newdata, imgs, importresources = cssparser.extractResources(data, encoding, url, unpacker)
-              for impurl, impres in importresources.items():
-                remoteresources[impurl] = impres
-                resources.append(impres)
-              for img in imgs:
-                iresource = unpacker.fetch(img, referer=url)
-                iresource.setElement(elt)
-                iresource.setType('link.stylesheet.image')
-                istatus = iresource.getStatus()
-                ictype = iresource.getContentType()
-                remoteresources[img] = iresource
-                resources.append(iresource)
-                js += '// URL: %s, status: %s, type: %s\n\n' % (img, istatus, ictype)
-                
-              # Rename the original CSS file for posterity.
-              filepath = resource.getFilePath()
-              filename = resource.getFileName()
-              origparts = filename.rsplit('.', 1)
-              origparts.insert(-1, 'original')
-              origfilename = '.'.join(origparts)
-              origfilepath = os.path.join(unpacker.OPTIONS.outdir, origfilename)
-              os.rename(filepath, origfilepath)
+                ctype = resource.getContentType()
+                status = resource.getStatus()
+                encoding = resource.getEncoding()
+                data = resource.getData()
+                if ctype not in CSS_CONTENT_TYPES:
+                  warn('Non-CSS content type for %s: %s' % (ssurl, ctype))
+                js += '// URL: %s, status: %s, type: %s\n\n' % (ssurl, status, ctype)
 
-              # Save the modified CSS file.
-              unpacker.createFile(filename, newdata, None)
+                cssparser = CSSParser()
+                newdata, imgs, imports = cssparser.extractResources(data, encoding, ssurl, unpacker)
+                # Transitively follow imports.
+                stylesheets.extend(imports)
 
-            resources.append(resource)
-            filename = resource.getFileName()
+                for img in imgs:
+                  iresource = unpacker.fetch(img, referer=ssurl)
+                  iresource.setElement(elt)
+                  iresource.setType('link.stylesheet.image')
+                  istatus = iresource.getStatus()
+                  ictype = iresource.getContentType()
+                  remoteresources[img] = iresource
+                  resources.append(iresource)
+                  js += '// URL: %s, status: %s, type: %s\n\n' % (img, istatus, ictype)
+                  
+                # Rename the original CSS file for posterity.
+                filepath = resource.getFilePath()
+                filename = resource.getFileName()
+                origparts = filename.rsplit('.', 1)
+                origparts.insert(-1, 'original')
+                origfilename = '.'.join(origparts)
+                origfilepath = os.path.join(unpacker.OPTIONS.outdir, origfilename)
+                os.rename(filepath, origfilepath)
+
+                # Save the modified CSS file.
+                unpacker.createFile(filename, newdata, None)
+
+              resources.append(resource)
+
+            # Replace the href in the original link element.
+            filename = getFileName(url)
             attrs['href'] = filename
             elt['href'] = filename
             if VERBOSE:

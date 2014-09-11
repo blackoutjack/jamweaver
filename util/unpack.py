@@ -157,7 +157,7 @@ except ImportError as e:
 
 class Resource:
   
-  def __init__(self, url, status, ctype, data, encoding, filepath):
+  def __init__(self, url, type, element=None, status=None, ctype=None, data=None, encoding=None, filepath=None):
     self.url = url
     self.status = status
     self.contenttype = ctype
@@ -173,32 +173,17 @@ class Resource:
     else:
       self.filename = None
 
-    self.tag = None
-    self.element = None
-    self.restype = None
+    self.element = element
+    self.type = type
   # /Resource.__init__
-
-  def setElement(self, elt):
-    self.element = elt
-    if elt is not None:
-      self.tag = elt.name
-  # /setElement
 
   def getElement(self):
     return self.element
   # /getElement
 
-  def setType(self, rtype):
-    self.restype = rtype
-  # /setType
-
   def getType(self):
-    return self.restype
+    return self.type
   # /getType
-
-  def getTag(self):
-    return self.tag
-  # /getTag
 
   def getURL(self):
     return self.url
@@ -207,31 +192,180 @@ class Resource:
   def getStatus(self):
     return self.status
   # /getStatus
+  
+  def setStatus(self, stat):
+    self.status = stat
+  # /setStatus
 
   def getContentType(self):
     return self.contenttype
   # /getType
+  
+  def setContentType(self, ctype):
+    self.contenttype = ctype
+  # /setContentType
 
   def getData(self):
     return self.data
   # /getData
 
+  def setData(self, data):
+    self.data = data
+  # /setData
+
   def getEncoding(self):
+    if self.encoding is None:
+      return 'utf-8'
     return self.encoding
   # /getEncoding
+
+  def setEncoding(self, enc):
+    self.encoding = enc
+  # /setEncoding
 
   def getFilePath(self):
     return self.filepath
   # /getFilePath
+
+  def setFilePath(self, path):
+    self.filepath = path
+  # /setFilePath
  
-  def getFileName(self):
+  def getFileName(self, ext=None):
+    if self.filename is None:
+      if self.filepath is not None:
+        self.filename = getFileName(self.filepath)
+      elif self.url is not None:
+        self.filename = getFileName(self.url)
+
+      if not self.filename:
+        self.filename = getDomain(self.url)
+
+      if ext is None:
+        ext = getExtension(self.url, self.contenttype)
+
+      if not self.filename.endswith('.' + ext):
+        self.filename += '.' + ext
     return self.filename
   # /getFileName
 
-  def appendContent(self, extra):
-    self.content = self.content + extra
-    return self.content
-  # /appendContent
+  def fetch(self, referer=None):
+    url = self.url
+    if url is None:
+      warn('Attempting to fetch resource without URL')
+      return False
+    if VERBOSE:
+      out('Fetching %s' % url)
+
+    try:
+      request = urllib.request.Request(url)
+      if referer is not None:
+        request.add_header('Referer', referer)
+      request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)')
+      opener = urllib.request.build_opener()
+
+    except Exception as e:
+      err('Failure initializing request for %s: %s' % (url, str(e)))
+      self.setStatus(500)
+      return False
+
+    try:
+      resp = opener.open(request)
+    except urllib.error.HTTPError as e:
+      # Don't load 404 error pages.
+      # See http://www.jspell.com/ajax-spell-checker.html
+      status = e.getcode()
+      err('HTTP error while retrieving %s: %r' % (url, status))
+      self.setStatus(status)
+      return False
+    except Exception as e:
+      err('Failed to retrieve %s: %s' % (url, str(e)))
+      self.setStatus(500)
+      return False
+
+    status = resp.getcode()
+    # In Python 2, |respinfo| is a |mimetools.Message| object.
+    # In Python 3, it is an |HTTPMessage|.
+    respinfo = resp.info()
+    if VERYVERBOSE:
+      out('Headers:\n%s\n' % str(respinfo))
+    content = resp.read()
+    
+    compression = respinfo.get('Content-Encoding')
+    if compression is not None:
+      compression = compression.lower()
+      if compression == 'gzip':
+        content = gzip.decompress(content)
+      else:
+        warn('Unsupported Content-Encoding header: %s' % encoding)
+
+    encoding = None
+    ctypehdr = respinfo.get('Content-Type')
+    if ctypehdr is None:
+      warn('No Content-Type header for %s, assuming text/html' % url)
+      # %%% Should be able to pass a default.
+      ctype = 'text/html'
+    else:
+      ctypeparts = [part.strip() for part in ctypehdr.split(';')]
+      ctype = ctypeparts[0].strip().lower()
+      plist = ctypeparts[1:]
+      for p in plist:
+        if p.startswith('charset='):
+          encoding = p[8:].lower()
+          if encoding == 'utf8':
+            encoding = 'utf-8'
+
+    if content.startswith(b'MZ'):
+      warn('MZ case was hit: %s' % url)
+      if SAVEALL:
+        urlbase = self.getFileName(ext='bin')
+        mz = createFile(urlbase, content)
+
+    if content.startswith(b'CWS') or content.startswith(b'FWS'):
+      # This case is triggered by HTML embed (and object?) tags that
+      # pull in Flash scripts.
+      warn('Flash content not currently supported: %s' % url)
+
+      # %%% This code comes from the original jsunpack. I'm not
+      # %%% sure exactly what it does.
+      #msgs, urls = swf.swfstream(content)
+      #for url in urls:
+      #  swfjs_obj = re.search('javascript:(.*)', url, re.I)
+      #  if swfjs_obj:
+      #    swfjs += swfjs_obj.group(1) + '\n'
+      #  else:
+      #    # URL only
+      #    multi = re.findall('https?:\/\/([^\s<>\'"]+)', url)
+      #    if multi:
+      #      for m in multi:
+      #        self.rooturl[self.url].setChild(m, 'swfurl')
+      #    else:
+      #      # No http
+      #      if url.startswith('/'):
+      #        #relative root path
+      #        firstdir = re.sub('([^/])/.*$', '\\1', self.url)
+      #        m = firstdir + url
+      #      else:
+      #        #relative preserve directory path
+      #        lastdir = re.sub('/[^\/]*$', '/', self.url)
+      #        m = lastdir + url
+      #      self.rooturl[self.url].setChild(m, 'swfurl')
+    
+    self.setStatus(status)
+    self.setContentType(ctype)
+    self.setData(content)
+    self.setEncoding(encoding)
+
+    if VERBOSE:
+      out('Downloaded %s %s' % (ctype, url))
+
+    if SAVEALL:
+      filename = self.getFileName()
+      filepath = createFile(filename, content)
+      self.setFilePath(filepath)
+
+    return True
+  # /fetch
 
 class CSSParser(cssutils.CSSParser):
   # Suppress all but the worst errors.
@@ -345,9 +479,8 @@ class HTMLParser():
           if url in remoteresources:
             resource = remoteresources[url]
           else:
-            resource = unpacker.fetch(url, referer=baseurl)
-            resource.setElement(elt)
-            resource.setType('script.src')
+            resource = Resource(url, 'script.src', element=elt)
+            resource.fetch(referer=baseurl)
             remoteresources[url] = resource
           resources.append(resource)
 
@@ -386,9 +519,7 @@ class HTMLParser():
           data = ''
           for child in elt.contents:
             data += self.getElementContents(child)
-          resource = Resource(None, None, attrs['type'], data, None, None)
-          resource.setType('script.inline')
-          resource.setElement(elt)
+          resource = Resource(None, 'script.inline', element=elt, ctype=attrs['type'], data=data)
           resources.append(resource)
 
           if isjs:
@@ -417,16 +548,18 @@ class HTMLParser():
           if 'stylesheet' in attrs['rel']:
 
             stylesheets = [url]
+            resource0 = None
             while len(stylesheets) > 0:
               ssurl = stylesheets.pop(0)
 
               if ssurl in remoteresources:
                 resource = remoteresources[ssurl]
+                resources.append(resource)
               else:
-                resource = unpacker.fetch(ssurl, referer=baseurl)
-                resource.setElement(elt)
-                resource.setType('link.stylesheet')
+                resource = Resource(ssurl, 'link.stylesheet', element=elt)
+                resource.fetch(referer=baseurl)
                 remoteresources[ssurl] = resource
+                resources.append(resource)
 
                 ctype = resource.getContentType()
                 status = resource.getStatus()
@@ -442,9 +575,8 @@ class HTMLParser():
                 stylesheets.extend(imports)
 
                 for img in imgs:
-                  iresource = unpacker.fetch(img, referer=ssurl)
-                  iresource.setElement(elt)
-                  iresource.setType('link.stylesheet.image')
+                  iresource = Resource(img, 'link.stylesheet.image', element=elt)
+                  iresource.fetch(referer=ssurl)
                   istatus = iresource.getStatus()
                   ictype = iresource.getContentType()
                   remoteresources[img] = iresource
@@ -461,12 +593,14 @@ class HTMLParser():
                 os.rename(filepath, origfilepath)
 
                 # Save the modified CSS file.
-                unpacker.createFile(filename, newdata, None)
+                createFile(filename, newdata)
 
-              resources.append(resource)
+              # Collect the root CSS file.
+              if resource0 is None:
+                resource0 = resource
 
             # Replace the href in the original link element.
-            filename = getFileName(url)
+            filename = resource0.getFileName()
             attrs['href'] = filename
             elt['href'] = filename
             if VERBOSE:
@@ -476,9 +610,8 @@ class HTMLParser():
             if url in remoteresources:
               resource = remoteresources[url]
             else:
-              resource = unpacker.fetch(url, referer=baseurl)
-              resource.setType('link.icon')
-              resource.setElement(elt)
+              resource = Resource(url, 'link.icon', element=elt)
+              resource.fetch(referer=baseurl)
               remoteresources[url] = resource
             resources.append(resource)
 
@@ -506,9 +639,8 @@ class HTMLParser():
           if url in remoteresources:
             resource = remoteresources[url]
           else:
-            resource = unpacker.fetch(url, referer=baseurl)
-            resource.setType('img.src')
-            resource.setElement(elt)
+            resource = Resource(url, 'img.src', element=elt)
+            resource.fetch(referer=baseurl)
             remoteresources[url] = resource
           resources.append(resource)
 
@@ -542,9 +674,8 @@ class HTMLParser():
           if url in remoteresources:
             resource = remoteresources[url]
           else:
-            resource = unpacker.fetch(url, referer=baseurl)
-            resource.setType('input.src')
-            resource.setElement(elt)
+            resource = Resource(url, 'input.src', element=elt)
+            resource.fetch(referer=baseurl)
             remoteresources[url] = resource
           resources.append(resource)
 
@@ -580,9 +711,8 @@ class HTMLParser():
           if url in remoteresources:
             resource = remoteresources[url]
           else:
-            resource = unpacker.fetch(url, referer=baseurl)
-            resource.setType('embed.src')
-            resource.setElement(elt)
+            resource = Resource(url, 'embed.src', element=elt)
+            resource.fetch(referer=baseurl)
             remoteresources[url] = resource
           resources.append(resource)
 
@@ -618,10 +748,8 @@ class HTMLParser():
             newtext = re.sub('\'', '\\\'', text)
             newjs = "document.body.onload = '%s';" % newtext
 
-            resource = Resource(None, None, 'text/javascript', newjs, None, None)
             restype = 'script.event.load'
-            resource.setType(restype)
-            resource.setElement(elt)
+            resource = Resource(None, restype, element=elt, ctype='text/javascript', data=newjs)
 
             js += '// %s %s\n%s\n\n' % (restype, 'body', newjs)
 
@@ -656,10 +784,8 @@ class HTMLParser():
               newsrc = re.sub('\'', '\\\'', src)
               newjs += "\ndocument.getElementById('%s').src = '%s';" % (eltid, newsrc)
 
-            resource = Resource(None, None, 'text/javascript', newjs, None, None)
             restype = 'script.event.load'
-            resource.setType(restype)
-            resource.setElement(elt)
+            resource = Resource(None, restype, element=elt, ctype='text/javascript', data=newjs)
 
             js += '// %s %s %s\n%s\n\n' % (restype, elt.name, eltid, newjs)
 
@@ -689,14 +815,12 @@ class HTMLParser():
           newtext = re.sub('\'', '\\\'', text)
           newjs = "document.getElementById('%s').%s = '%s';" % (eltid, attr, newtext)
 
-          resource = Resource(None, None, 'text/javascript', newjs, None, None)
           if attr.startswith('on'):
             event = attr[2:]
           else:
             event = attr
           restype = 'script.event.%s' % event
-          resource.setType(restype)
-          resource.setElement(elt)
+          resource = Resource(None, restype, element=elt, ctype='text/javascript', data=newjs)
 
           js += '// %s %s %s\n%s\n\n' % (restype, elt.name, eltid, newjs)
 
@@ -714,9 +838,9 @@ class HTMLParser():
           if url in remoteresources:
             resource = remoteresources[url]
           else:
-            resource = unpacker.fetch(url, referer=baseurl)
-            resource.setType('%s.background' % elt.name)
-            resource.setElement(elt)
+            restype = '%s.background' % elt.name
+            resource = Resource(url, restype, element=elt)
+            resource = resource.fetch(referer=baseurl)
             remoteresources[url] = resource
           resources.append(resource)
 
@@ -791,7 +915,8 @@ class Unpacker():
     if self.url:
       if VERBOSE:
         out('Root URL: %s' % self.url)
-      resource = self.fetch(self.url)
+      resource = Resource(self.url, 'root')
+      resource.fetch()
 
       ctype = resource.getContentType()
       encoding = resource.getEncoding()
@@ -816,181 +941,26 @@ class Unpacker():
         self.extract(self.file, text)
   # /unpack
 
-  def fetch(self, url, referer=None, filename=None):
-    if VERBOSE:
-      out('Fetching %s' % url)
-
-    try:
-      request = urllib.request.Request(url)
-      if referer is not None:
-        request.add_header('Referer', referer)
-      request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)')
-      opener = urllib.request.build_opener()
-
-    except Exception as e:
-      err('Failure initializing request for %s: %s' % (url, str(e)))
-      return Resource(url, 500, None, None, None, None)
-
-    try:
-      resp = opener.open(request)
-    except urllib.error.HTTPError as e:
-      # Don't load 404 error pages.
-      # See http://www.jspell.com/ajax-spell-checker.html
-      status = e.getcode()
-      err('HTTP error while retrieving %s: %r' % (url, status))
-      content = None
-      ctype = None
-      return Resource(url, status, None, None, None, None)
-    except Exception as e:
-      err('Failed to retrieve %s: %s' % (url, str(e)))
-      return Resource(url, 500, None, None, None, None)
-
-    status = resp.getcode()
-    # In Python 2, |respinfo| is a |mimetools.Message| object.
-    # In Python 3, it is an |HTTPMessage|.
-    respinfo = resp.info()
-    if VERYVERBOSE:
-      out('Headers:\n%s\n' % str(respinfo))
-    content = resp.read()
-    
-    compression = respinfo.get('Content-Encoding')
-    if compression is not None:
-      compression = compression.lower()
-      if compression == 'gzip':
-        content = gzip.decompress(content)
-      else:
-        warn('Unsupported Content-Encoding header: %s' % encoding)
-
-    encoding = None
-    ctypehdr = respinfo.get('Content-Type')
-    if ctypehdr is None:
-      warn('No Content-Type header for %s, assuming text/html' % url)
-      ctype = 'text/html'
-    else:
-      ctypeparts = [part.strip() for part in ctypehdr.split(';')]
-      ctype = ctypeparts[0].strip().lower()
-      plist = ctypeparts[1:]
-      for p in plist:
-        if p.startswith('charset='):
-          encoding = p[8:].lower()
-          if encoding == 'utf8':
-            encoding = 'utf-8'
-
-    #out('STATUS:', status, 'ENCODING:', encoding, 'CTYPE:', ctype)
-
-    if content.startswith(b'MZ'):
-      warn('MZ case was hit: %s' % url)
-      if SAVEALL:
-        urlbase = getFileName(url)
-        mz = self.createFile(urlbase, content, 'bin')
-
-    if content.startswith(b'CWS') or content.startswith(b'FWS'):
-      # This case is triggered by HTML embed (and object?) tags that
-      # pull in Flash scripts.
-      warn('Flash content not currently supported: %s' % url)
-
-      # %%% This code comes from the original jsunpack. I'm not
-      # %%% sure exactly what it does.
-      #msgs, urls = swf.swfstream(content)
-      #for url in urls:
-      #  swfjs_obj = re.search('javascript:(.*)', url, re.I)
-      #  if swfjs_obj:
-      #    swfjs += swfjs_obj.group(1) + '\n'
-      #  else:
-      #    # URL only
-      #    multi = re.findall('https?:\/\/([^\s<>\'"]+)', url)
-      #    if multi:
-      #      for m in multi:
-      #        self.rooturl[self.url].setChild(m, 'swfurl')
-      #    else:
-      #      # No http
-      #      if url.startswith('/'):
-      #        #relative root path
-      #        firstdir = re.sub('([^/])/.*$', '\\1', self.url)
-      #        m = firstdir + url
-      #      else:
-      #        #relative preserve directory path
-      #        lastdir = re.sub('/[^\/]*$', '/', self.url)
-      #        m = lastdir + url
-      #      self.rooturl[self.url].setChild(m, 'swfurl')
-
-    if VERBOSE:
-      out('Downloaded %s %s' % (ctype, url))
-
-    filepath = None
-    if SAVEALL:
-      if filename is None:
-        filename = getFileName(url)
-        if not filename:
-          filename = getDomain(url)
-        ext = getExtension(url, ctype)
-      else:
-        ext = None
-      filepath = self.createFile(filename, content, ext)
-
-    return Resource(url, status, ctype, content, encoding, filepath)
-  # /fetch
-
   def extract(self, url, text):
     if SAVEALL:
-      self.createFile(self.OPTIONS.app, text, 'original.html')
+      createFile(self.OPTIONS.app, text, ext='original.html')
 
     js, headhtml, bodyhtml, headers = self.hparser.extractResources(self, url, text)
 
     if len(js) > 0:
-      self.createFile(self.OPTIONS.app, js, 'js')
+      createFile(self.OPTIONS.app, js, ext='js')
     if len(headers) > 0:
-      self.createFile(self.OPTIONS.app, headers, 'headers.js')
+      createFile(self.OPTIONS.app, headers, ext='headers.js')
     if len(bodyhtml) > 0:
-      self.createFile(self.OPTIONS.app, bodyhtml, 'html')
+      createFile(self.OPTIONS.app, bodyhtml, ext='html')
     if len(headhtml) > 0:
-      self.createFile(self.OPTIONS.app, headhtml, 'head.html')
+      createFile(self.OPTIONS.app, headhtml, ext='head.html')
 
     for fileattrs in SYMLINK_FILES:
       assert len(fileattrs) == 3, 'Invalid SYMLINK_FILES configuration: %r' % fileattrs
       srcdir, destname, srcname = fileattrs
       symlink(srcdir, self.OPTIONS.outdir, destname, srcname)
   # /extract
-
-  def createFile(self, base, content, ext):
-    if len(content) == 0:
-      return None
-    outdir = self.OPTIONS.outdir
-    # No output directory means don't output anything.
-    if not outdir:
-      return None
-
-    if ext and not base.endswith('.' + ext):
-      filename = base + '.' + ext
-    else:
-      filename = base
-
-    # Avoid clobbering these.
-    for fileattrs in SYMLINK_FILES:
-      if len(fileattrs) == 3:
-        srcname = fileattrs[2]
-        if srcname == filename:
-          newbase = 'new-' + base
-          warn('File name conflict with %s, trying new base name %s' % (filename, newbase)) 
-          return self.createFile(newbase, content, ext)
-      
-    outfile = os.path.join(outdir, filename)
-
-    if not os.path.isdir(outdir):
-      os.mkdir(outdir)
-    if os.path.isdir(outdir):
-      if isinstance(content, str):
-        ffile = open(outfile, 'w')
-      else:
-        ffile = open(outfile, 'wb')
-      ffile.write(content)  
-      ffile.close()
-      if VERBOSE:
-        out('Saved to file: %s' % outfile)
-    else:
-      err('Directory %s is not accessible' % outdir)
-    return outfile
-  # /createFile
 
 # /Unpacker
  
@@ -1033,6 +1003,45 @@ class UnpackOpts:
     return str(self.__dict__)
 
 # end UnpackOpts
+
+def createFile(base, content, ext=None):
+  if len(content) == 0:
+    return None
+  # No output directory means don't output anything.
+  if not OUTDIR:
+    return None
+
+  filename = base
+  if ext is not None:
+    if not filename.endswith('.' + ext):
+      filename += '.' + ext
+
+  # Avoid clobbering these.
+  for fileattrs in SYMLINK_FILES:
+    if len(fileattrs) == 3:
+      srcname = fileattrs[2]
+      if srcname == filename:
+        newbase = 'new-' + base
+        warn('File name conflict with %s, trying new base name %s' % (filename, newbase)) 
+        return createFile(newbase, content, ext=ext)
+    
+  outfile = os.path.join(OUTDIR, filename)
+
+  if not os.path.isdir(OUTDIR):
+    os.mkdir(OUTDIR)
+  if os.path.isdir(OUTDIR):
+    if isinstance(content, str):
+      ffile = open(outfile, 'w')
+    else:
+      ffile = open(outfile, 'wb')
+    ffile.write(content)  
+    ffile.close()
+    if VERBOSE:
+      out('Saved to file: %s' % outfile)
+  else:
+    err('Directory %s is not accessible' % OUTDIR)
+  return outfile
+# /createFile
 
 def isURL(uri):
   return getProtocol(uri) in ['http', 'https']
@@ -1083,7 +1092,7 @@ def getExtension(url, ctype=None):
         ext = 'html'
       else:
         ext = subparts[-1]
-    return ext
+  return ext
 # /getExtension
 
 def getFileName(url):
@@ -1108,6 +1117,8 @@ def loadDir(filename):
 # Load all JavaScript loaded by a particular HTML file.
 def loadFile(infile, app, outdir):
   opts = UnpackOpts(infile, app, outdir)
+  global OUTDIR
+  OUTDIR = opts.outdir
 
   try:
     unpacker = Unpacker(opts)

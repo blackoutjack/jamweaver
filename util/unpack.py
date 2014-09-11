@@ -157,7 +157,7 @@ except ImportError as e:
 
 class Resource:
   
-  def __init__(self, url, type, element=None, status=None, ctype=None, data=None, encoding=None, filepath=None):
+  def __init__(self, type, url=None, element=None, status=None, ctype=None, data=None, encoding=None, filepath=None):
     self.url = url
     self.status = status
     self.contenttype = ctype
@@ -450,18 +450,35 @@ class CSSParser(cssutils.CSSParser):
   # /extractResources
 
 class HTMLParser():
+
+  def __init__(self):
+    self.resources = []
+    self.remoteresources = {}
+    self.js = ''
+    self.headers = []
+
+  def loadRemoteResource(self, restype, url, referer, element=None):
+    if url in self.remoteresources:
+      resource = self.remoteresources[url]
+    else:
+      resource = Resource(restype, url=url, element=element)
+      resource.fetch(referer=referer)
+      self.remoteresources[url] = resource
+    self.resources.append(resource)
+    return resource
+
+  def loadInlineResource(self, restype, element, ctype, data):
+    resource = Resource(restype, element=element, ctype=ctype, data=data)
+    self.resources.append(resource)
+    return resource
   
   def extractResources(self, unpacker, baseurl, htmltext):
-    resources = []
-    remoteresources = {}
-    js = ''
-    headers = []
 
     try:
       soup = bs4.BeautifulSoup(htmltext)
     except Exception as e:
       err('Unable to initialize HTML parser: %s' % str(e))
-      return resources
+      return None, None, None, None
 
     # Process elements in order of opening tag.
     for elt in soup.findAll(True):
@@ -476,13 +493,7 @@ class HTMLParser():
           src = attrs['src']
           url = urllib.parse.urljoin(baseurl, src)
 
-          if url in remoteresources:
-            resource = remoteresources[url]
-          else:
-            resource = Resource(url, 'script.src', element=elt)
-            resource.fetch(referer=baseurl)
-            remoteresources[url] = resource
-          resources.append(resource)
+          resource = self.loadRemoteResource('script.src', url, baseurl, element=elt)
 
           status = resource.getStatus()
           ctype = resource.getContentType()
@@ -493,7 +504,7 @@ class HTMLParser():
             data = None
           if data is not None:
             text = normalizeText(data.decode(encoding)) + '\n'
-            js += '// URL: %s, status: %s, type: %s\n%s\n\n' % (url, status, ctype, text)
+            self.js += '// URL: %s, status: %s, type: %s\n%s\n\n' % (url, status, ctype, text)
 
             # Don't remove the entire element if there are additional
             # attributes because it may be referenced by the code itself.
@@ -519,12 +530,12 @@ class HTMLParser():
           data = ''
           for child in elt.contents:
             data += self.getElementContents(child)
-          resource = Resource(None, 'script.inline', element=elt, ctype=attrs['type'], data=data)
-          resources.append(resource)
+          ctype = attrs['type']
+          resource = self.loadInlineResource('script.inline', elt, ctype, data) 
 
           if isjs:
             text = normalizeText(data).strip()
-            js += '// %s\n%s\n\n' % ('script.inline', text)
+            self.js += '// %s\n%s\n\n' % ('script.inline', text)
 
           # Don't remove the entire element if there are additional
           # attributes because it may be referenced by the code itself.
@@ -552,48 +563,40 @@ class HTMLParser():
             while len(stylesheets) > 0:
               ssurl = stylesheets.pop(0)
 
-              if ssurl in remoteresources:
-                resource = remoteresources[ssurl]
-                resources.append(resource)
-              else:
-                resource = Resource(ssurl, 'link.stylesheet', element=elt)
-                resource.fetch(referer=baseurl)
-                remoteresources[ssurl] = resource
-                resources.append(resource)
+              resource = self.loadRemoteResource('link.stylesheet', ssurl, baseurl, element=elt)
 
-                ctype = resource.getContentType()
-                status = resource.getStatus()
-                encoding = resource.getEncoding()
-                data = resource.getData()
-                if ctype not in CSS_CONTENT_TYPES:
-                  warn('Non-CSS content type for %s: %s' % (ssurl, ctype))
-                js += '// URL: %s, status: %s, type: %s\n\n' % (ssurl, status, ctype)
+              ctype = resource.getContentType()
+              status = resource.getStatus()
+              encoding = resource.getEncoding()
+              data = resource.getData()
+              if ctype not in CSS_CONTENT_TYPES:
+                warn('Non-CSS content type for %s: %s' % (ssurl, ctype))
+              self.js += '// URL: %s, status: %s, type: %s\n\n' % (ssurl, status, ctype)
 
-                cssparser = CSSParser()
-                newdata, imgs, imports = cssparser.extractResources(data, encoding, ssurl, unpacker)
-                # Transitively follow imports.
-                stylesheets.extend(imports)
+              cssparser = CSSParser()
+              newdata, imgs, imports = cssparser.extractResources(data, encoding, ssurl, unpacker)
+              # Transitively follow imports.
+              stylesheets.extend(imports)
 
-                for img in imgs:
-                  iresource = Resource(img, 'link.stylesheet.image', element=elt)
-                  iresource.fetch(referer=ssurl)
-                  istatus = iresource.getStatus()
-                  ictype = iresource.getContentType()
-                  remoteresources[img] = iresource
-                  resources.append(iresource)
-                  js += '// URL: %s, status: %s, type: %s\n\n' % (img, istatus, ictype)
-                  
-                # Rename the original CSS file for posterity.
-                filepath = resource.getFilePath()
-                filename = resource.getFileName()
-                origparts = filename.rsplit('.', 1)
-                origparts.insert(-1, 'original')
-                origfilename = '.'.join(origparts)
-                origfilepath = os.path.join(unpacker.OPTIONS.outdir, origfilename)
-                os.rename(filepath, origfilepath)
+              for img in imgs:
+                iresource = self.loadRemoteResource('link.stylesheet.image', img, ssurl, element=elt)
+                istatus = iresource.getStatus()
+                ictype = iresource.getContentType()
+                self.remoteresources[img] = iresource
+                self.resources.append(iresource)
+                self.js += '// URL: %s, status: %s, type: %s\n\n' % (img, istatus, ictype)
+                
+              # Rename the original CSS file for posterity.
+              filepath = resource.getFilePath()
+              filename = resource.getFileName()
+              origparts = filename.rsplit('.', 1)
+              origparts.insert(-1, 'original')
+              origfilename = '.'.join(origparts)
+              origfilepath = os.path.join(unpacker.OPTIONS.outdir, origfilename)
+              os.rename(filepath, origfilepath)
 
-                # Save the modified CSS file.
-                createFile(filename, newdata)
+              # Save the modified CSS file.
+              createFile(filename, newdata)
 
               # Collect the root CSS file.
               if resource0 is None:
@@ -607,20 +610,14 @@ class HTMLParser():
               out('Replaced stylesheet %s: %s -> %s' % ('href', href, attrs['href']))
 
           if 'icon' in attrs['rel']:
-            if url in remoteresources:
-              resource = remoteresources[url]
-            else:
-              resource = Resource(url, 'link.icon', element=elt)
-              resource.fetch(referer=baseurl)
-              remoteresources[url] = resource
-            resources.append(resource)
+            resource = self.loadRemoteResource('link.icon', url, baseurl, element=elt)
 
             ctype = resource.getContentType()
             status = resource.getStatus()
             if ctype not in IMAGE_CONTENT_TYPES:
               warn('Non-image content type for icon %s: %s' % (url, ctype))
 
-            js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
+            self.js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
 
             filename = resource.getFileName()
             attrs['href'] = filename
@@ -636,13 +633,7 @@ class HTMLParser():
           src = attrs['src']
           url = urllib.parse.urljoin(baseurl, src)
 
-          if url in remoteresources:
-            resource = remoteresources[url]
-          else:
-            resource = Resource(url, 'img.src', element=elt)
-            resource.fetch(referer=baseurl)
-            remoteresources[url] = resource
-          resources.append(resource)
+          resource = self.loadRemoteResource('img.src', url, baseurl, element=elt)
 
           filename = resource.getFileName()
           if filename is not None:
@@ -657,7 +648,7 @@ class HTMLParser():
           status = resource.getStatus()
           if ctype not in IMAGE_CONTENT_TYPES:
             warn('Non-image content type for img %s: %s' % (url, ctype))
-          js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
+          self.js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
         else:
           warn('No src attribute for img tag: %s' % str(elt))
 
@@ -671,13 +662,7 @@ class HTMLParser():
           src = attrs['src']
           url = urllib.parse.urljoin(baseurl, src)
 
-          if url in remoteresources:
-            resource = remoteresources[url]
-          else:
-            resource = Resource(url, 'input.src', element=elt)
-            resource.fetch(referer=baseurl)
-            remoteresources[url] = resource
-          resources.append(resource)
+          resource = self.loadRemoteResource('input.src', url, baseurl, element=elt)
 
           filename = resource.getFileName()
           if filename is not None:
@@ -692,7 +677,7 @@ class HTMLParser():
           status = resource.getStatus()
           if ctype not in IMAGE_CONTENT_TYPES:
             warn('Non-image content type for input %s: %s' % (url, ctype))
-          js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
+          self.js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
 
       elif elt.name == 'iframe':
         warn('Unhandled iframe tag: %s' % str(elt))
@@ -708,13 +693,7 @@ class HTMLParser():
           src = attrs['src']
           url = urllib.parse.urljoin(baseurl, src)
 
-          if url in remoteresources:
-            resource = remoteresources[url]
-          else:
-            resource = Resource(url, 'embed.src', element=elt)
-            resource.fetch(referer=baseurl)
-            remoteresources[url] = resource
-          resources.append(resource)
+          resource = self.loadRemoteResource('embed.src', url, baseurl, element=elt)
 
           filename = resource.getFileName()
           if filename is not None:
@@ -729,7 +708,7 @@ class HTMLParser():
           status = resource.getStatus()
           if ctype not in EMBED_CONTENT_TYPES:
             warn('Unknown content type for embed %s: %s' % (url, ctype))
-          js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
+          self.js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
         else:
           warn('No src attribute for embed tag: %s' % str(elt))
 
@@ -749,9 +728,10 @@ class HTMLParser():
             newjs = "document.body.onload = '%s';" % newtext
 
             restype = 'script.event.load'
-            resource = Resource(None, restype, element=elt, ctype='text/javascript', data=newjs)
+            ctype = 'text/javascript'
+            resource = self.loadInlineResource(restype, elt, ctype, newjs)
 
-            js += '// %s %s\n%s\n\n' % (restype, 'body', newjs)
+            self.js += '// %s %s\n%s\n\n' % (restype, 'body', newjs)
 
             attrsToDel.append('onload')
             if VERBOSE:
@@ -785,9 +765,10 @@ class HTMLParser():
               newjs += "\ndocument.getElementById('%s').src = '%s';" % (eltid, newsrc)
 
             restype = 'script.event.load'
-            resource = Resource(None, restype, element=elt, ctype='text/javascript', data=newjs)
+            ctype = 'text/javascript'
+            resource = self.loadInlineResource(restype, elt, ctype, newjs)
 
-            js += '// %s %s %s\n%s\n\n' % (restype, elt.name, eltid, newjs)
+            self.js += '// %s %s %s\n%s\n\n' % (restype, elt.name, eltid, newjs)
 
             if src is not None:
               attrsToDel.append('src')
@@ -820,9 +801,10 @@ class HTMLParser():
           else:
             event = attr
           restype = 'script.event.%s' % event
-          resource = Resource(None, restype, element=elt, ctype='text/javascript', data=newjs)
+          ctype = 'text/javascript'
+          resource = self.loadInlineResource(restype, elt, ctype, newjs)
 
-          js += '// %s %s %s\n%s\n\n' % (restype, elt.name, eltid, newjs)
+          self.js += '// %s %s %s\n%s\n\n' % (restype, elt.name, eltid, newjs)
 
           attrsToDel.append(attr)
           if VERBOSE:
@@ -835,14 +817,7 @@ class HTMLParser():
           src = attrs['background']
           url = urllib.parse.urljoin(baseurl, src)
 
-          if url in remoteresources:
-            resource = remoteresources[url]
-          else:
-            restype = '%s.background' % elt.name
-            resource = Resource(url, restype, element=elt)
-            resource = resource.fetch(referer=baseurl)
-            remoteresources[url] = resource
-          resources.append(resource)
+          resource = self.loadRemoteResource(restype, url, baseurl, element=elt)
 
           filename = resource.getFileName()
           if filename is not None:
@@ -857,7 +832,7 @@ class HTMLParser():
           status = resource.getStatus()
           if ctype not in IMAGE_CONTENT_TYPES:
             warn('Unknown content type for %s background %s: %s' % (elt.name, url, ctype))
-          js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
+          self.js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
           
 
       # Delete attribute outside the loop to avoid errors.
@@ -867,7 +842,7 @@ class HTMLParser():
         elt[attr] = val
 
     headerstr = ''
-    for header in headers:
+    for header in self.headers:
       # |headers| contains JavaScript for DOM setup.
       # %%% Not currently used. Could be very useful if improved.
       headerstr += '// %s\n%s\n' % (baseurl, header)
@@ -880,9 +855,9 @@ class HTMLParser():
     for elt in soup.head.contents:
       headhtml += self.getElementContents(elt)
 
-    js = '// %s\n\n%s' % (baseurl, js)
+    self.js = '// %s\n\n%s' % (baseurl, self.js)
 
-    return js, headhtml, bodyhtml, headerstr
+    return self.js, headhtml, bodyhtml, headerstr
   # /extractResources
 
   def getElementContents(self, elt):
@@ -914,8 +889,8 @@ class Unpacker():
 
     if self.url:
       if VERBOSE:
-        out('Root URL: %s' % self.url)
-      resource = Resource(self.url, 'root')
+        out('Unpacking URL: %s' % self.url)
+      resource = Resource('root', url=self.url)
       resource.fetch()
 
       ctype = resource.getContentType()
@@ -929,6 +904,8 @@ class Unpacker():
     else:
       # Local file decode
       # %%% Untested
+      if VERBOSE:
+        out('Unpacking file: %s' % self.file)
       try:
         fl = open(self.file, 'rb')
       except Exception as e:
@@ -1175,6 +1152,4 @@ def main():
 
 if __name__ == "__main__":
   main()
-
-
 

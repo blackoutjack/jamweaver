@@ -374,7 +374,7 @@ class CSSParser(cssutils.CSSParser):
   def __init__(self):
     super().__init__(log=None, loglevel=None, raiseExceptions=None, fetcher=None, parseComments=True, validate=True)
 
-  def extractResources(self, data, encoding, url, unpacker):
+  def extractResources(self, data, encoding, url):
     text = data.decode(encoding)
     stylesheet = self.parseString(text, href=url)
 
@@ -450,6 +450,8 @@ class CSSParser(cssutils.CSSParser):
   # /extractResources
 
 class HTMLParser():
+  # Static counter for id attribute generation.
+  NEXT_ID = 0
 
   def __init__(self):
     self.resources = []
@@ -471,8 +473,16 @@ class HTMLParser():
     resource = Resource(restype, element=element, ctype=ctype, data=data)
     self.resources.append(resource)
     return resource
+
+  def generateId(self, soup, elt):
+    newid = 'unpack' + str(HTMLParser.NEXT_ID)
+    HTMLParser.NEXT_ID += 1
+    while soup.find(id=newid) is not None:
+      newid = 'unpack' + str(HTMLParser.NEXT_ID)
+      HTMLParser.NEXT_ID += 1
+    return newid
   
-  def extractResources(self, unpacker, baseurl, htmltext):
+  def extractResources(self, baseurl, htmltext):
 
     try:
       soup = bs4.BeautifulSoup(htmltext)
@@ -574,7 +584,7 @@ class HTMLParser():
               self.js += '// URL: %s, status: %s, type: %s\n\n' % (ssurl, status, ctype)
 
               cssparser = CSSParser()
-              newdata, imgs, imports = cssparser.extractResources(data, encoding, ssurl, unpacker)
+              newdata, imgs, imports = cssparser.extractResources(data, encoding, ssurl)
               # Transitively follow imports.
               stylesheets.extend(imports)
 
@@ -582,8 +592,6 @@ class HTMLParser():
                 iresource = self.loadRemoteResource('link.stylesheet.image', img, ssurl, element=elt)
                 istatus = iresource.getStatus()
                 ictype = iresource.getContentType()
-                self.remoteresources[img] = iresource
-                self.resources.append(iresource)
                 self.js += '// URL: %s, status: %s, type: %s\n\n' % (img, istatus, ictype)
                 
               # Rename the original CSS file for posterity.
@@ -592,7 +600,7 @@ class HTMLParser():
               origparts = filename.rsplit('.', 1)
               origparts.insert(-1, 'original')
               origfilename = '.'.join(origparts)
-              origfilepath = os.path.join(unpacker.OPTIONS.outdir, origfilename)
+              origfilepath = os.path.join(OUTDIR, origfilename)
               os.rename(filepath, origfilepath)
 
               # Save the modified CSS file.
@@ -744,7 +752,7 @@ class HTMLParser():
             if 'id' in attrs:
               eltid = attrs['id']
             else:
-              eltid = generateId(soup, elt)
+              eltid = self.generateId(soup, elt)
               attrsToMod['id'] = eltid
 
             if 'src' in attrs:
@@ -785,7 +793,7 @@ class HTMLParser():
           elif 'id' in attrs and 'id' not in attrsToDel:
             eltid = attrs['id']
           else:
-            eltid = generateId(soup, elt)
+            eltid = self.generateId(soup, elt)
             attrsToMod['id'] = eltid
 
           text = attrs[attr]
@@ -920,23 +928,28 @@ class Unpacker():
 
   def extract(self, url, text):
     if SAVEALL:
-      createFile(self.OPTIONS.app, text, ext='original.html')
+      filename = self.OPTIONS.app + '.original.html'
+      createFile(filename, text)
 
-    js, headhtml, bodyhtml, headers = self.hparser.extractResources(self, url, text)
+    js, headhtml, bodyhtml, headers = self.hparser.extractResources(url, text)
 
     if len(js) > 0:
-      createFile(self.OPTIONS.app, js, ext='js')
+      filename = self.OPTIONS.app + '.js'
+      createFile(filename, js)
     if len(headers) > 0:
-      createFile(self.OPTIONS.app, headers, ext='headers.js')
+      filename = self.OPTIONS.app + '.headers.js'
+      createFile(filename, headers)
     if len(bodyhtml) > 0:
-      createFile(self.OPTIONS.app, bodyhtml, ext='html')
+      filename = self.OPTIONS.app + '.html'
+      createFile(filename, bodyhtml)
     if len(headhtml) > 0:
-      createFile(self.OPTIONS.app, headhtml, ext='head.html')
+      filename = self.OPTIONS.app + '.head.html'
+      createFile(filename, headhtml)
 
     for fileattrs in SYMLINK_FILES:
       assert len(fileattrs) == 3, 'Invalid SYMLINK_FILES configuration: %r' % fileattrs
       srcdir, destname, srcname = fileattrs
-      symlink(srcdir, self.OPTIONS.outdir, destname, srcname)
+      symlink(srcdir, OUTDIR, destname, srcname)
   # /extract
 
 # /Unpacker
@@ -981,31 +994,38 @@ class UnpackOpts:
 
 # end UnpackOpts
 
-def createFile(base, content, ext=None):
+def createDirForFile(filename):
+  absdir = os.path.abspath(os.path.dirname(filename))
+  if not os.path.isdir(absdir):
+    try:
+      os.makedirs(absdir)
+    except Exception as e:
+      err(e)
+      sys.exit(1)
+  return absdir
+# end loadDir
+
+def createFile(filename, content):
   if len(content) == 0:
     return None
   # No output directory means don't output anything.
   if not OUTDIR:
     return None
 
-  filename = base
-  if ext is not None:
-    if not filename.endswith('.' + ext):
-      filename += '.' + ext
-
   # Avoid clobbering these.
   for fileattrs in SYMLINK_FILES:
     if len(fileattrs) == 3:
       srcname = fileattrs[2]
       if srcname == filename:
-        newbase = 'new-' + base
-        warn('File name conflict with %s, trying new base name %s' % (filename, newbase)) 
-        return createFile(newbase, content, ext=ext)
+        newname = 'new-' + filename
+        warn('File name conflict with %s, trying new filename %s' % (filename, newname)) 
+        return createFile(newname, content)
     
   outfile = os.path.join(OUTDIR, filename)
 
   if not os.path.isdir(OUTDIR):
-    os.mkdir(OUTDIR)
+    os.makedirs(OUTDIR)
+
   if os.path.isdir(OUTDIR):
     if isinstance(content, str):
       ffile = open(outfile, 'w')
@@ -1080,42 +1100,15 @@ def getFileName(url):
   return filename
 # /getFileName
 
-def loadDir(filename):
-  absdir = os.path.abspath(os.path.dirname(filename))
-  if not os.path.isdir(absdir):
-    try:
-      os.makedirs(absdir)
-    except Exception as e:
-      err(e)
-      sys.exit(1)
-  return absdir
-# end loadDir
-
 # Load all JavaScript loaded by a particular HTML file.
 def loadFile(infile, app, outdir):
   opts = UnpackOpts(infile, app, outdir)
   global OUTDIR
   OUTDIR = opts.outdir
 
-  try:
-    unpacker = Unpacker(opts)
-    unpacker.unpack()
-    return True
-  except Exception as e:
-    err("%s: %s" % (str(e), infile))
-    err(traceback.format_exc())
-    return False
+  unpacker = Unpacker(opts)
+  unpacker.unpack()
 # end loadFile
-
-NEXT_ID = 0
-def generateId(soup, elt):
-  global NEXT_ID
-  newid = 'unpack' + str(NEXT_ID)
-  NEXT_ID += 1
-  while soup.find(id=newid) is not None:
-    newid = 'unpack' + str(NEXT_ID)
-    NEXT_ID += 1
-  return newid
 
 def normalizeText(s):
   s = re.sub('\r\n', '\n', s)

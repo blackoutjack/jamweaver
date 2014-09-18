@@ -21,8 +21,9 @@ all:
 # steps needed, and the script outputs directions for these.
 # %%% Make boost (eventually all of these) externally linkable
 # %%% so that JAM can reuse already installed versions.
-everything: yices boost wali buddy closure xsb spidermonkey javabdd commons gperftools
+everything: yices wali buddy closure xsb spidermonkey javabdd commons gperftools
 
+# A sufficient boost version is now available via apt-get in Ubuntu.
 boost:
 	mkdir -p packages
 	# Get and install boost. WALi priority queues need boost 1.49
@@ -98,10 +99,11 @@ commons:
 
 # Needed to build nwa from source, when using tcmalloc.
 gperftools:
-	wget http://gperftools.googlecode.com/files/gperftools-2.1.tar.gz
-	tar -xzf gperftools-2.1.tar.gz
-	cd gperftools-2.1 && ./configure && make
-	mv gperftools-2.1.tar.gz packages
+	wget https://googledrive.com/host/0B6NtGsLhIcf7MWxMMF9JdTN3UVk/gperftools-2.2.1.tar.gz
+	#wget http://gperftools.googlecode.com/files/gperftools-2.1.tar.gz
+	tar -xzf gperftools-2.2.1.tar.gz
+	cd gperftools-2.2.1 && ./configure && make
+	mv gperftools-2.2.1.tar.gz packages
 
 # Install this if you have the development package.
 wali:
@@ -151,10 +153,18 @@ libjson:
 	ln -s libjson.so.7.6.1 libjson/libjson.so; \
 	ln -s libjson.so.7.6.1 libjson/libjson.so.7
 
+commons-io:
+	mkdir -p packages
+	wget http://mirror.olnevhost.net/pub/apache//commons/io/binaries/commons-io-2.4-bin.tar.gz
+	tar -xzf commons-io-2.4-bin.tar.gz
+	mv commons-io-2.4-bin.tar.gz packages
+
 # Currently unused
-wala:
-	# Retrieve IBM Wala source code.
-	git clone git://github.org/wala/WALA.git
+wala: commons-io
+	# Retrieve IBM Wala source code and build with Maven.
+	git clone git@github.com:wala/WALA.git wala
+	cd wala; \
+	mvn clean verify -DskipTests=true -q
 
 # Utility for extracting JS from HTML.
 jsunpack:

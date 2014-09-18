@@ -6,12 +6,21 @@ instructions. Particularly important, check that the JAMPKG environment
 variable is pointing to the root directory of the checked-out
 jamweaver repository.
 
+The following commands compile the JAM weaver, a set of utilities, and
+the experimental WALA client (if you installed the optional ``wala''
+target in doc/DEPENDENCIES.mk).
+
+make -C $JAMPKG
+make -C $JAMPKG util
+make -C $JAMPKG wala
+
 You can set up the following aliases in your login script to
 make invoking JAM easier.
 
 alias jam="java -Xms256m -Xmx4096m -jar $JAMPKG/bin/jam.jar"
 alias jamdbg="java -ea -Xms256m -Xmx4096m -Xdebug -agentlib:jdwp=transport=dt_socket,address=localhost:9009,server=y,suspend=n -jar \$JAMPKG/bin/jam.jar -g -b -v 3"
 alias jamutil="java -jar $JAMPKG/bin/util.jar"
+alias jamwala="java -jar $JAMPKG/bin/wala.jar"
 
 
 ##### Input to the analysis #####
@@ -222,7 +231,7 @@ collected on the [ITER] iteration (i.e. step in the algorithm).
 
 The jar file found at $JAMPKG/bin/util.jar can be used for various
 purposes. This utility is built by the default target in Makefile, or
-directly by "make jamutil". This section also include instructions for
+directly by "make util". This section also include instructions for
 other useful debugging procedures.
 
 * Retrieving native locations
@@ -276,5 +285,33 @@ these automata are saved in the subdirectory of output/ for that run.
 This utility can be run as follows, replacing the argument as necessary.
 
 $JAMPKG/bin/nwa $JAMPKG/output/snote-0/1/raut-0
+
+##### WALA integration #####
+
+IBM's WALA framework has JavaScript analysis capabilities that we are
+currently experimenting with. The makefile at doc/DEPENDENCIES.mk has
+a target for retrieving and building WALA. This will also install the
+commons-io package.
+
+make -C $JAMPKG -f $JAMPKG/doc/DEPENDENCIES.mk wala
+
+Then following command builds JAM's WALA integration component.
+
+make -C $JAMPKG wala
+
+The utility can be invoked as follows to output a WALA call graph for
+JavaScript file example.js.
+
+jamwala -j -c example.js
+
+It also has experimental capabilities for converting an HTML file into
+equivalent JavaScript, and then outputting the call graph for that.
+
+jamwala -m -c example.html
+
+The following command outputs the JavaScript representation of the HTML
+(without the call graph).
+
+jamwala -m -r example.html
 
 

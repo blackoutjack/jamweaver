@@ -38,7 +38,7 @@ public class OpenNWAProcess implements OpenNWAInterface {
       try {
         toStdin.serializeToStream(p.getOutputStream());
       } catch (IOException ex) {
-        System.err.println("Error writing to wali process: " + ex.getMessage());
+        Dbg.err("Error writing to wali process: " + ex.getMessage());
       }
     }
 
@@ -78,7 +78,7 @@ public class OpenNWAProcess implements OpenNWAInterface {
     try {
       trace = callOpenNWA(args, raut);
     } catch (IOException ex) {
-      System.err.println("Error reading stream from WALi: " + ex.getMessage());
+      Dbg.err("Error reading stream from WALi: " + ex.getMessage());
       return null;
     }
 
@@ -87,7 +87,7 @@ public class OpenNWAProcess implements OpenNWAInterface {
     if (trace.equals("no counterexamples")) return null;
 
     if (trace.equals("")) {
-      System.err.println("Empty counterexample returned by OpenNWA.");
+      Dbg.err("Empty counterexample returned by OpenNWA.");
       return null;
     }
 

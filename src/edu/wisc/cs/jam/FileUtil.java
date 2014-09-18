@@ -16,51 +16,53 @@ import java.util.List;
 import java.util.ArrayList;
 
 import edu.wisc.cs.automaton.Automaton;
+import edu.wisc.cs.jam.Dbg;
 
 public class FileUtil {
 
   public static final File TMP_DIR;
   public static final File CACHE_DIR;
   public static final File BIN_DIR;
-  public static File PROJECT_DIR;
-  public static File workingDir;
-  public static String baseName;
+  protected static File PROJECT_DIR;
+  protected static File workingDir;
+  protected static String baseName;
+  protected static boolean initialized = false;
 
   static {
     String jampkg = System.getenv("JAMPKG");
     if (jampkg == null) {
-      System.err.println("WARNING: JAMPKG environment variable is not set.");
+      Dbg.warn("JAMPKG environment variable is not set");
       BIN_DIR = new File("./bin/");
       TMP_DIR = new File(System.getProperty("java.io.tmpdir", "/tmp/"));
       CACHE_DIR = TMP_DIR;
     } else {
       File jamdir = new File(jampkg);
       if (!jamdir.isDirectory()) {
-        System.err.println("ERROR: JAMPKG environment variable does not reference a valid directory: " + jampkg);
-        System.exit(1);
+        Dbg.fatal("JAMPKG environment variable does not reference a valid directory: " + jampkg);
       }
       BIN_DIR = new File(jamdir, "bin");
       TMP_DIR = new File(jamdir, "output");
       CACHE_DIR = new File(jamdir, "cache");
     }
     if (!BIN_DIR.isDirectory()) {
-      System.err.println("ERROR: Unable to load bin directory: " + BIN_DIR);
-      System.exit(1);
+      Dbg.fatal("Unable to load bin directory: " + BIN_DIR);
     }
     if (!TMP_DIR.isDirectory()) {
       boolean ok = TMP_DIR.mkdirs();
       if (!ok) {
-        System.err.println("ERROR: Unable to initialize temporary directory: " + TMP_DIR);
-        System.exit(1);
+        Dbg.fatal("Unable to initialize temporary directory: " + TMP_DIR);
       }
     }
     if (!CACHE_DIR.isDirectory()) {
       boolean ok = CACHE_DIR.mkdirs();
       if (!ok) {
-        System.err.println("ERROR: Unable to initialize cache directory: " + CACHE_DIR);
-        System.exit(1);
+        Dbg.fatal("Unable to initialize cache directory: " + CACHE_DIR);
       }
     }
+  }
+
+  public static boolean isInitialized() {
+    return initialized;
   }
 
   public static void init(SourceFile src) {
@@ -74,12 +76,11 @@ public class FileUtil {
       PROJECT_DIR = new File(dirname);
       boolean ok = PROJECT_DIR.mkdirs();
       if (!ok) throw new IOException("Unable to create project directory.");
+      initialized = true;
     } catch (SecurityException ex) {
-      System.err.println("Unable to initialize project directory.");
-      System.exit(1);
+      Dbg.fatal("Unable to initialize project directory");
     } catch (IOException ex) {
-      System.err.println(ex.getMessage());
-      System.exit(1);
+      Dbg.fatal(ex.getMessage());
     }
   }
 
@@ -109,11 +110,9 @@ public class FileUtil {
       boolean ok = workingDir.mkdirs();
       if (!ok) throw new IOException("Unable to create working directory: " + workingDir.getAbsolutePath());
     } catch (SecurityException ex) {
-      System.err.println("Unable to initialize working directory.");
-      System.exit(1);
+      Dbg.fatal("Unable to initialize working directory");
     } catch (IOException ex) {
-      System.err.println(ex.getMessage());
-      System.exit(1);
+      Dbg.fatal(ex.getMessage());
     }
     return workingDir;
   }
@@ -191,7 +190,7 @@ public class FileUtil {
         }
       }
     } catch (SecurityException ex) {
-      System.err.println("Unable to read target directory. Filename may not be unique.");
+      Dbg.err("Unable to read target directory; filename may not be unique");
     }
 
     return dir.getPath() + "/" + prefix + (++highestID) + suffix;
@@ -199,6 +198,8 @@ public class FileUtil {
 
   // Write data to the given file.
   public static synchronized String writeToFile(Object data, File file, boolean append, boolean tmp) {
+    if (!initialized) return null;
+
     if (!file.isAbsolute()) {
       if (workingDir == null) newWorkingDir();
       file = new File(workingDir, file.getPath());
@@ -212,12 +213,12 @@ public class FileUtil {
       w.write(content, 0, content.length());
       w.close();
     } catch (IOException ex) {
-      System.err.println("Error writing data to file: " + ex.getMessage());
+      Dbg.err("Error writing data to file: " + ex.getMessage());
       if (w != null) {
         try {
           w.close();
         } catch (IOException ex2) {
-          System.err.println("Unable to close file: " + ex2.getMessage());
+          Dbg.err("Unable to close file: " + ex2.getMessage());
         }
       }
     }
@@ -227,7 +228,7 @@ public class FileUtil {
       ret = file.getCanonicalPath();
     } catch (IOException ex) {
       ret = file.getPath();
-      System.err.println("Unable to get canonical path of file: " + ret);
+      Dbg.err("Unable to get canonical path of file: " + ret);
     }
     return ret;
   }
@@ -279,7 +280,7 @@ public class FileUtil {
       String contents = getFileContents(srcPath);
       return writeToMain(contents, destFilename, false, false);
     } catch (IOException ex) {
-      System.err.println("Unable to copy file " + srcPath + " to " + destFilename + ": " + ex.getMessage());
+      Dbg.err("Unable to copy file " + srcPath + " to " + destFilename + ": " + ex.getMessage());
       return null;
     }
   }
@@ -301,12 +302,12 @@ public class FileUtil {
       aut.serializeToStream(w);
       w.close();
     } catch (IOException ex) {
-      System.err.println("Error writing automaton to file: " + ex.getMessage());
+      Dbg.err("Error writing automaton to file: " + ex.getMessage());
       if (w != null) {
         try {
           w.close();
         } catch (IOException ex2) {
-          System.err.println("Unable to close file: " + ex2.getMessage());
+          Dbg.err("Unable to close file: " + ex2.getMessage());
         }
       }
     }
@@ -316,7 +317,7 @@ public class FileUtil {
       ret = file.getCanonicalPath();
     } catch (IOException ex) {
       ret = file.getPath();
-      System.err.println("Unable to get canonical path of file: " + ret);
+      Dbg.err("Unable to get canonical path of file: " + ret);
     }
     return ret;
   }

@@ -6,9 +6,11 @@ cache/
 boost/
 closure/
 closure-orig/
-commons-lang3-3.1/
-gperftools-2.1/
+commons-lang*/
+commons-io-*/
+gperftools-*/
 wali/
+wala/
 JavaBDD/
 js-1.8.5/
 yices-*/
@@ -19,3 +21,4 @@ output-*
 *.class
 *.pyc
 .svn/
+.*.swp

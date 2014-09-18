@@ -7,6 +7,7 @@ import org.kohsuke.args4j.Argument;
 
 import edu.wisc.cs.jam.Options;
 import edu.wisc.cs.jam.OptionParser;
+import edu.wisc.cs.jam.Dbg;
 
 public class Main {
   
@@ -40,13 +41,7 @@ public class Main {
       
       util = new NativeIdentifier(nativeOptions);
     } else if (mainOptions.util.equals("wala")) {
-      // Process the additional command line args.
-      //WalaClient.Opts walaOptions = new WalaClient.Opts();
-      //OptionParser parser = new OptionParser(walaOptions);
-      //parser.parseArgument(subArgs);
-
-      //util = new WalaClient(walaOptions);
-      throw new UnsupportedOperationException("Wala integration is not currently supported.");
+      Dbg.fatal("WALA integration has been moved to a stand-alone utility at edu.wisc.cs.jam.wala.WalaClient");
     } else if (mainOptions.util.equals("bdd")) {
       // Process the additional command line args.
       BDDClient.Opts bddOptions = new BDDClient.Opts();
@@ -55,8 +50,7 @@ public class Main {
       
       util = new BDDClient();
     } else {
-      System.err.println("Invalid utility: " + mainOptions.util);
-      System.exit(1);
+      Dbg.fatal("Invalid utility: " + mainOptions.util);
     }
 
     util.run();

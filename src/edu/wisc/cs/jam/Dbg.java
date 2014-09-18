@@ -69,6 +69,19 @@ public class Dbg {
       FileUtil.writeToMain(sb, "err.txt", true);
   }
 
+  public static void fatal(String message) {
+    StringBuilder sb = new StringBuilder();
+    appendHeader(sb);
+    sb.append("FATAL: ");
+    sb.append(message);
+    System.err.println(sb);
+
+    if (JAM.Opts.debug)
+      FileUtil.writeToMain(sb, "err.txt", true);
+    
+    System.exit(1);
+  }
+
   public static void warn(String message) {
     StringBuilder sb = new StringBuilder();
     appendHeader(sb);

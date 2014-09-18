@@ -1,0 +1,12 @@
+Main-Class: edu.wisc.cs.jam.wala.WalaClient
+Class-Path: ../commons-io-2.4/commons-io-2.4.jar
+  ../wala/com.ibm.wala.cast.js/lib/jericho-html-3.2.jar
+  ../wala/com.ibm.wala.core/target/com.ibm.wala.core-1.3.4-SNAPSHOT.jar
+  ../wala/com.ibm.wala.shrike/target/com.ibm.wala.shrike-1.3.4-SNAPSHOT.jar
+  ../wala/com.ibm.wala.cast/target/com.ibm.wala.cast-1.3.4-SNAPSHOT.jar
+  ../wala/com.ibm.wala.cast.js/target/com.ibm.wala.cast.js-1.3.4-SNAPSHOT.jar
+  ../wala/com.ibm.wala.cast.js.rhino/target/com.ibm.wala.cast.js.rhino-1.3.4-SNAPSHOT.jar
+  ../wala/com.ibm.wala.util/target/com.ibm.wala.util-1.3.4-SNAPSHOT.jar
+  ../wala/com.ibm.wala.cast.js.rhino/lib/rhino-1.7R3.jar
+  ../bin/jam.jar
+

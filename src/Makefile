@@ -7,11 +7,23 @@ JAVAC=javac
 # Java compilation flags
 JFLAGS=-g# -Xlint
 
+# The JAM jar file
+JAMJAR=$(BINDIR)/jam.jar
+# The utility jar file
+UTILJAR=$(BINDIR)/util.jar
+WALAJAR=$(BINDIR)/wala.jar
+
 JAVABDDVERSION=1.0b2
 COMMONSVERSION=3-3.1
 
 # Java classpath for compilation
-JCLASSPATH=-classpath ".:../closure/build/compiler.jar:../JavaBDD/javabdd-$(JAVABDDVERSION).jar:../commons-lang$(COMMONSVERSION)/commons-lang$(COMMONSVERSION).jar" #:../closure/lib/junit.jar:../wala2.jar"
+WALAVERSION=1.3.4-SNAPSHOT
+COMMONSIOVERSION=2.4
+JERICHOVERSION=3.2
+RHINOVERSION=1.7R3
+WALACLASSPATH=../commons-io-$(COMMONSIOVERSION)/commons-io-$(COMMONSIOVERSION).jar ../wala/com.ibm.wala.cast.js/lib/jericho-html-$(JERICHOVERSION).jar:../wala/com.ibm.wala.core/target/com.ibm.wala.core-$(WALAVERSION).jar:../wala/com.ibm.wala.shrike/target/com.ibm.wala.shrike-$(WALAVERSION).jar:../wala/com.ibm.wala.cast/target/com.ibm.wala.cast-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js/target/com.ibm.wala.cast.js-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js.rhino/target/com.ibm.wala.cast.js.rhino-$(WALAVERSION).jar:../wala/com.ibm.wala.util/target/com.ibm.wala.util-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js.rhino/lib/rhino-$(RHINOVERSION).jar
+JCLASSPATH=".:../closure/build/compiler.jar:../JavaBDD/javabdd-$(JAVABDDVERSION).jar:../commons-lang$(COMMONSVERSION)/commons-lang$(COMMONSVERSION).jar:../closure/lib/junit.jar:$(WALACLASSPATH):$(JAMJAR):../JavaBDD/jdd.jar"
+  
 
 # Relative Java source directories
 MAINDIR=edu/wisc/cs/jam
@@ -22,6 +34,7 @@ BDDDIR=$(MAINDIR)/bdd
 NWADIR=$(MAINDIR)/opennwa
 TXDIR=$(MAINDIR)/tx
 UTLDIR=$(MAINDIR)/util
+WALADIR=$(MAINDIR)/wala
 COMDIR=com/google/javascript/jscomp
 
 # Java classes in the edu.wisc.cs.jam package
@@ -66,13 +79,12 @@ TXCLS=$(TXSRC:.java=.class)
 
 # Java utility classes
 UTLBASE=Main NativeIdentifier ASTPrint BDDClient Utility
-#WalaClient 
 UTLSRC=$(UTLBASE:%=$(UTLDIR)/%.java)
 UTLCLS=$(UTLSRC:.java=.class)
 
-# The JAM jar file
-JAMJAR=$(BINDIR)/jam.jar
-UTILJAR=$(BINDIR)/util.jar
+WALABASE=WalaClient
+WALASRC=$(WALABASE:%=$(WALADIR)/%.java)
+WALACLS=$(WALASRC:.java=.class)
 
 .SUFFIXES: .java .class
 
@@ -82,14 +94,22 @@ $(JAMJAR): $(JSCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(NWACLS) $(TXCLS) $(COMCLS) $
 	mkdir -p ../bin
 	jar cfm $@ MANIFEST.MF $(MAINDIR)/*.class $(COMDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class
 
-jamutil: $(UTILJAR)
+util: $(UTILJAR)
+
+wala: $(WALAJAR)
+
+$(WALAJAR): $(JAMJAR) $(WALACLS)
+	jar cfm $@ MANIFEST-WALA.MF $(WALADIR)/*.class
 
 $(UTILJAR): $(JAMJAR) $(UTLCLS)
 	jar cfm $@ MANIFEST-UTIL.MF $(UTLDIR)/*.class
 
-clean:
+utilclean:
+	rm -f $(UTLDIR)/*.class $(UTILJAR)
+
+clean: utilclean
 	rm -f $(COMDIR)/*.class $(MAINDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TSTDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class
 
 .java.class:
-	$(JAVAC) $(JCLASSPATH) $(JFLAGS) $*.java
+	$(JAVAC) -classpath $(JCLASSPATH) $(JFLAGS) $*.java
 

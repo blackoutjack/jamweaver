@@ -15,8 +15,9 @@ OLEVEL=-O3
 CFLAGS=$(OLEVEL) #-g
 
 # gperftools locations
-GPERFLINK=-Wl,-rpath,$(JAMPKG)/gperftools-2.1/.libs -L$(JAMPKG)/gperftools-2.1/.libs -ltcmalloc #-lprofiler
-GPERFINCLUDE=-I$(JAMPKG)/gperftools-2.1/src
+GPERFVERSION=2.2.1
+GPERFLINK=-Wl,-rpath,$(JAMPKG)/gperftools-$(GPERFVERSION)/.libs -L$(JAMPKG)/gperftools-$(GPERFVERSION)/.libs -ltcmalloc #-lprofiler
+GPERFINCLUDE=-I$(JAMPKG)/gperftools-$(GPERFVERSION)/src
 
 # For compiling/linking against OpenNWA
 WALIDIR=$(JAMPKG)/wali
@@ -103,7 +104,9 @@ NATIVE_DEFN=$(wildcard $(NATIVE_DIR)/*.models)
 NATIVE_IN=generate.py base.P all.props fbase.P functions.list types.list varargs.list symprops.list base.yic 
 NATIVE_DEP=$(NATIVE_IN:%=$(NATIVE_DIR)/%) $(NATIVE_DEFN)
 
-all: jam semantics nwa $(BINDIR)/externs.zip jamutil
+all: jam semantics nwa $(BINDIR)/externs.zip
+
+everything: all util wala
 
 jam:
 	mkdir -p $(BINDIR)
@@ -113,8 +116,11 @@ semantics: $(SEMMAINLIB)
 	# Comment out the line below to examine generated source
 	rm -f $(SEMCDAT) $(SEMSUBDAT) $(SEMMAINDAT) $(SEMNATDAT)
 
-jamutil: jam
-	make -C $(SRCDIR) jamutil
+util: jam
+	make -C $(SRCDIR) util
+
+wala: jam
+	make -C $(SRCDIR) wala
 
 $(OBJDIR)/persist.o: $(JSSEMSRCDIR)/persist.cpp $(JSSEMSRCDIR)/persist.H
 	mkdir -p $(OBJDIR) 
@@ -199,7 +205,7 @@ natives: $(NATIVE_DEP)
 
 
 
-clean: nwaclean jamclean
+clean: nwaclean jamclean utilclean
 	rm -rf $(BINDIR) $(LIBDIR) $(OBJDIR)
 
 jamclean:
@@ -213,6 +219,9 @@ tmpclean:
 
 nwaclean:
 	rm -f $(LIBDIR)/libnwa.so $(NWAOBJS) $(BINDIR)/nwa
+
+utilclean:
+	make -C $(SRCDIR) utilclean
 
 veryclean: clean cacheclean tmpclean
 

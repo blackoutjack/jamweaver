@@ -39,11 +39,15 @@ sudo apt-get -y install ocaml-nox
 # WALi build dependencies
 sudo apt-get -y install curl
 
+# WALA build dependencies
+sudo apt-get install maven
+
 # Runtime dependencies
 sudo apt-get -y install libgmp3-dev
 sudo ln -s /usr/lib/libgmp.so.3 /usr/lib/libgmp.so.10
 sudo apt-get -y install libnewmat10-dev
-sudo apt-get -y install libunwind7-dev
+sudo apt-get -y install libunwind8-dev
+sudo apt-get install libboost1.55-dev
 
 
 # Some apps that I thought at one point were necessary, but don't seem

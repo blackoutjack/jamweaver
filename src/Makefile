@@ -88,7 +88,7 @@ WALACLS=$(WALASRC:.java=.class)
 
 .SUFFIXES: .java .class
 
-jar: $(JAMJAR)
+jam: $(JAMJAR)
 
 $(JAMJAR): $(JSCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(NWACLS) $(TXCLS) $(COMCLS) $(MAINCLS)
 	mkdir -p ../bin
@@ -107,7 +107,10 @@ $(UTILJAR): $(JAMJAR) $(UTLCLS)
 utilclean:
 	rm -f $(UTLDIR)/*.class $(UTILJAR)
 
-clean: utilclean
+walaclean:
+	rm -f $(WALADIR)/*.class $(WALAJAR)
+
+clean: utilclean walaclean
 	rm -f $(COMDIR)/*.class $(MAINDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TSTDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class
 
 .java.class:

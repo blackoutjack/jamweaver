@@ -15,11 +15,18 @@ import traceback
 import urllib.parse
 import urllib.request
 import urllib.error
+import http.cookiejar
 import socket
 import codecs
 import gzip
 import cssutils
 import logging
+
+#
+# TODO:
+# Output an ordered list of each type of resource
+# Insert identifiers into the HTML to track each resource's provenance
+#
 
 #
 # This script interfaces with the jsunpack utility. It can be accessed
@@ -42,6 +49,8 @@ from config import *
 from util import get_base
 from util import get_file_info
 from util import get_output_dir
+from util import get_unique_filename
+from util import fatal
 from util import err
 from util import warn
 from util import out
@@ -152,21 +161,19 @@ EVENT_ATTRIBUTES = [
 try:
   import bs4
 except ImportError as e:
-  err('Unable to import BeautifulSoup: %s' % str(e))
-  err("BeautifulSoup 4 is required. For Ubuntu, use ``apt-get install python3-bs4''")
-  sys.exit(1)
+  fatal("Unable to import BeautifulSoup 4: %s.\nFor Ubuntu, use ``apt-get install python3-bs4''" % str(e))
 
 class Resource:
+  COOKIE_POLICY = http.cookiejar.DefaultCookiePolicy(blocked_domains=None, allowed_domains=None, netscape=True, rfc2965=False, rfc2109_as_netscape=None, hide_cookie2=False, strict_domain=False, strict_rfc2965_unverifiable=True, strict_ns_unverifiable=False, strict_ns_domain=http.cookiejar.DefaultCookiePolicy.DomainLiberal, strict_ns_set_initial_dollar=False, strict_ns_set_path=False)
+  COOKIES = http.cookiejar.CookieJar(policy=COOKIE_POLICY)
+  OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(COOKIES))
   
   def __init__(self, type, url=None, element=None, status=None, ctype=None, data=None, encoding=None, filepath=None):
     self.url = url
     self.status = status
     self.contenttype = ctype
     self.data = data
-
     self.encoding = encoding
-    if self.encoding is None:
-      self.encoding = 'utf-8'
 
     self.filepath = filepath
     if self.filepath is not None:
@@ -269,7 +276,7 @@ class Resource:
     return self.filename
   # /getFileName
 
-  def fetch(self, referer=None):
+  def fetch(self, referer=None, accept=None):
     url = self.url
     if url is None:
       warn('Attempting to fetch resource without URL')
@@ -281,20 +288,24 @@ class Resource:
       request = urllib.request.Request(url)
       if referer is not None:
         request.add_header('Referer', referer)
-      request.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)')
-      opener = urllib.request.build_opener()
+      request.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:17.0) Gecko/20140807 Firefox/17.0')
+      request.add_header('Accept-Language', 'en-US,en;q=0.5')
+      request.add_header('Accept-Encoding', 'gzip') #, deflate
+      request.add_header('Cache-Control', 'no-cache')
+      if accept is not None:
+        request.add_header('Accept', accept)
     except Exception as e:
       err('Failure initializing request for %s: %s' % (url, str(e)))
       self.setStatus(500)
       return False
 
     try:
-      resp = opener.open(request)
+      resp = Resource.OPENER.open(request)
     except urllib.error.HTTPError as e:
       # Don't load 404 error pages.
       # See http://www.jspell.com/ajax-spell-checker.html
       status = e.getcode()
-      err('HTTP error while retrieving %s: %r' % (url, status))
+      warn('HTTP error while retrieving %s: %r' % (url, status))
       self.setStatus(status)
       return False
     except Exception as e:
@@ -308,7 +319,7 @@ class Resource:
     # In Python 3, it is an |HTTPMessage|.
     respinfo = resp.info()
     if VERYVERBOSE:
-      out('Headers:\n%s\n' % str(respinfo))
+      out('Headers for %s (status %d):\n%s\n' % (url, status, str(respinfo)))
     content = resp.read()
     
     # Decompress a zipped file.
@@ -339,7 +350,8 @@ class Resource:
     self.setStatus(status)
     self.setContentType(ctype)
     self.setData(content)
-    self.setEncoding(encoding)
+    if encoding is not None:
+      self.setEncoding(encoding)
 
     if VERBOSE:
       out('Downloaded %s %s' % (ctype, url))
@@ -362,7 +374,7 @@ class CSSParser(cssutils.CSSParser):
     super().__init__(log=None, loglevel=None, raiseExceptions=None, fetcher=fetcher, parseComments=True, validate=True)
 
   def extractResources(self, data, encoding, url):
-    text = data.decode(encoding)
+    text = data.decode(encoding, errors='replace')
     stylesheet = self.parseString(text, href=url)
 
     images = []
@@ -391,15 +403,34 @@ class CSSParser(cssutils.CSSParser):
               origvals.append(propvalstr)
               image = None
               if propval.type == cssutils.css.Value.URI:
-                image = propval.absoluteUri
+                absuri = propval.absoluteUri
+                # %%% Generalize
+                if absuri.startswith('data:'):
+                  # %%% Extract the data
+                  warn('Unsupported %s URI for %s property' % ('data', prop.name))
+                else:
+                  image = absuri
+              elif propval.type == cssutils.css.Value.COLOR_VALUE:
+                pass
+              elif propval.type == cssutils.css.Value.NUMBER:
+                pass
+              elif propval.type == cssutils.css.Value.DIMENSION:
+                pass
+              elif propval.type == cssutils.css.Value.PERCENTAGE:
+                pass
+              elif propval.type == cssutils.css.Value.IDENT:
+                # Things like "bottom" and "linear".
+                pass
+              elif propval.type == cssutils.css.Value.FUNCTION:
+                # This covers linear-gradient(...) stuff.
+                pass
               elif propvalstr == 'none':
                 # Do nothing
                 pass
-              # %%% Pretty hacky matching
-              elif 'gradient(' in propvalstr:
-                # Do nothing
-                pass
               else:
+                if propval.type == cssutils.css.Value.IDENT:
+                  warn('Maybe-supported CSS ident value: %s' % propval.cssText)
+                  
                 image = combineURLs(url, propvalstr) 
 
               if image is not None:
@@ -420,12 +451,18 @@ class CSSParser(cssutils.CSSParser):
               propvalstr = str(propval.value)
               origvals.append(propvalstr)
               if propval.type == cssutils.css.Value.URI:
-                image = propval.absoluteUri
-                images.append(image)
-                filename = getRelativePath(image, referer=url)
-                newtext = 'url(' + filename + ')'
-                newvals.append(newtext)
-                replaced = True
+                absuri = propval.absoluteUri
+                # %%% Generalize
+                if absuri.startswith('data:'):
+                  # %%% Extract the data
+                  warn('Unsupported %s URI for %s property' % ('data', prop.name))
+                else:
+                  image = absuri
+                  images.append(image)
+                  filename = getRelativePath(image, referer=url)
+                  newtext = 'url(' + filename + ')'
+                  newvals.append(newtext)
+                  replaced = True
               else:
                 newvals.append(propvalstr)
             if replaced:
@@ -439,7 +476,7 @@ class CSSParser(cssutils.CSSParser):
     encoding = stylesheet.encoding
     if encoding is None:
       encoding = 'utf-8'
-    newcss = stylesheet.cssText.decode(encoding)
+    newcss = stylesheet.cssText.decode(encoding, errors='replace')
     return newcss, images, imports
   # /extractResources
 # /CSSParser
@@ -454,18 +491,18 @@ class HTMLParser():
     self.js = ''
     self.headers = []
 
-  def loadRemoteResource(self, restype, url, referer, element):
+  def loadRemoteResource(self, restype, url, referer, element, defaultencoding):
     if url in self.remoteresources:
       resource = self.remoteresources[url]
     else:
-      resource = Resource(restype, url=url, element=element)
+      resource = Resource(restype, url=url, element=element, encoding=defaultencoding)
       resource.fetch(referer=referer)
       self.remoteresources[url] = resource
     self.resources.append(resource)
     return resource
 
-  def loadInlineResource(self, restype, element, ctype, data):
-    resource = Resource(restype, element=element, ctype=ctype, data=data)
+  def loadInlineResource(self, restype, element, ctype, text):
+    resource = Resource(restype, element=element, ctype=ctype, data=text)
     self.resources.append(resource)
     return resource
 
@@ -477,7 +514,7 @@ class HTMLParser():
       HTMLParser.NEXT_ID += 1
     return newid
   
-  def extractResources(self, baseurl, htmltext):
+  def extractResources(self, htmltext, baseurl, defaultencoding):
 
     try:
       soup = bs4.BeautifulSoup(htmltext)
@@ -495,10 +532,10 @@ class HTMLParser():
 
         if 'src' in attrs:
           # External script
-          src = attrs['src']
+          src = attrs['src'].strip()
           url = combineURLs(baseurl, src)
 
-          resource = self.loadRemoteResource('script.src', url, baseurl, elt)
+          resource = self.loadRemoteResource('script.src', url, baseurl, elt, defaultencoding)
 
           status = resource.getStatus()
           ctype = resource.getContentType()
@@ -509,7 +546,7 @@ class HTMLParser():
             data = None
 
           if data is not None:
-            text = normalizeText(data.decode(encoding)) + '\n'
+            text = normalizeText(data.decode(encoding, errors='replace')) + '\n'
             self.js += '// URL: %s, status: %s, type: %s\n%s\n\n' % (url, status, ctype, text)
 
             # Don't remove the entire element if there are additional
@@ -526,22 +563,24 @@ class HTMLParser():
           # Inline script
           isjs = True
           if 'type' in attrs:
-            if attrs['type'] not in JS_CONTENT_TYPES:
+            ctype = attrs['type'].strip()
+            if ctype not in JS_CONTENT_TYPES:
               warn('Skipping script element with non-JS content type: %s' % attrs['type'])
               isjs = False
           else:
-            warn('Script element with no type attribute')
-            attrs['type'] = 'text/javascript'
+            if VERYVERBOSE:
+              warn('Script element with no type attribute: %s' % str(elt))
+            # Assume JavaScript, as browsers seem to do.
+            ctype = 'text/javascript'
 
-          data = ''
+          text = ''
           for child in elt.contents:
-            data += self.getElementContents(child)
-          ctype = attrs['type']
+            text += self.getElementContents(child)
           restype = 'script.inline'
-          resource = self.loadInlineResource(restype, elt, ctype, data) 
+          resource = self.loadInlineResource(restype, elt, ctype, text) 
 
           if isjs:
-            text = normalizeText(data).strip()
+            text = normalizeText(text).strip()
             self.js += '// %s\n%s\n\n' % (restype, text)
 
           # Don't remove the entire element if there are additional
@@ -555,12 +594,12 @@ class HTMLParser():
 
       elif elt.name == 'a':
         if 'href' in attrs:
-          href = attrs['href']
+          href = attrs['href'].strip()
           if href.startswith('javascript:'):
-            data = href[11:]
+            text = href[11:]
             ctype = 'text/javascript'
             restype = 'script.href'
-            resource = self.loadInlineResource(restype, elt, ctype, data) 
+            resource = self.loadInlineResource(restype, elt, ctype, text) 
             
             if 'id' in attrs:
               eltid = attrs['id']
@@ -568,8 +607,8 @@ class HTMLParser():
               eltid = self.generateId(soup, elt)
               elt['id'] = eltid
               attrs['id'] = eltid
-            newdata = re.sub('\'', '\\\'', data)
-            newjs = "document.getElementById('%s').href = 'javascript:%s';" % (eltid, newdata)
+            newtext = re.sub('\'', '\\\'', text)
+            newjs = "document.getElementById('%s').href = 'javascript:%s';" % (eltid, newtext)
             self.js += '// %s\n%s\n\n' % (restype, newjs)
             del attrs['href']
             del elt['href']
@@ -587,7 +626,7 @@ class HTMLParser():
         
       elif elt.name == 'link':
         if 'href' in attrs:
-          href = attrs['href']
+          href = attrs['href'].strip()
           url = combineURLs(baseurl, href)
 
           if 'rel' not in attrs:
@@ -603,7 +642,7 @@ class HTMLParser():
             while len(stylesheets) > 0:
               ssurl = stylesheets.pop(0)
 
-              resource = self.loadRemoteResource(restype, ssurl, baseurl, elt)
+              resource = self.loadRemoteResource(restype, ssurl, baseurl, elt, defaultencoding)
 
               ctype = resource.getContentType()
               status = resource.getStatus()
@@ -619,22 +658,23 @@ class HTMLParser():
               stylesheets.extend(imports)
 
               for img in imgs:
-                iresource = self.loadRemoteResource('link.stylesheet.image', img, ssurl, elt)
+                iresource = self.loadRemoteResource('link.stylesheet.image', img, ssurl, elt, defaultencoding)
                 istatus = iresource.getStatus()
                 ictype = iresource.getContentType()
                 self.js += '// URL: %s, status: %s, type: %s\n\n' % (img, istatus, ictype)
                 
               # Rename the original CSS file for posterity.
               filepath = resource.getFilePath()
-              filename = resource.getRelativeFilePath()
-              origparts = filename.rsplit('.', 1)
-              origparts.insert(-1, 'original')
-              origfilename = '.'.join(origparts)
-              origfilepath = os.path.join(OUTDIR, origfilename)
-              os.rename(filepath, origfilepath)
+              if filepath is not None:
+                filename = resource.getRelativeFilePath()
+                origparts = os.path.splitext(filename)
+                newparts = (origparts[0], '.original', origparts[1])
+                origfilename = ''.join(newparts)
+                origfilepath = os.path.join(OUTDIR, origfilename)
+                os.rename(filepath, origfilepath)
 
-              # Save the modified CSS file.
-              createFile(filename, newdata)
+                # Save the modified CSS file.
+                createFile(filename, newdata)
 
               # Collect the root CSS file.
               if resource0 is None:
@@ -645,11 +685,11 @@ class HTMLParser():
             attrs['href'] = filename
             elt['href'] = filename
             if VERBOSE:
-              out('Replaced %s: %s -> %s' % (restype, href, attrs['href']))
+              out('Replaced %s: %s -> %s' % (restype, href, filename))
 
           if 'icon' in attrs['rel']:
             restype = 'link.icon'
-            resource = self.loadRemoteResource(restype, url, baseurl, elt)
+            resource = self.loadRemoteResource(restype, url, baseurl, elt, defaultencoding)
 
             ctype = resource.getContentType()
             status = resource.getStatus()
@@ -669,26 +709,33 @@ class HTMLParser():
 
       elif elt.name == 'img':
         if 'src' in attrs:
-          src = attrs['src']
-          url = combineURLs(baseurl, src)
-          restype = 'img.src'
-
-          resource = self.loadRemoteResource(restype, url, baseurl, elt)
-
-          filename = resource.getRelativeFilePath()
-          if filename is not None:
-            attrs['src'] = filename
-            elt['src'] = filename
-            if VERBOSE:
-              out('Replaced %s: %s -> %s' % (restype, url, filename))
+          src = attrs['src'].strip()
+          if src.startswith('data:'):
+            # %%% Extract the data
+            warn('Unsupported data URI for img.src')
           else:
-            warn('Unable to determine file name for image: %s' % url)
+            url = combineURLs(baseurl, src)
+            restype = 'img.src'
 
-          ctype = resource.getContentType()
-          status = resource.getStatus()
-          if ctype not in IMAGE_CONTENT_TYPES:
-            warn('Non-image content type for img %s: %s' % (url, ctype))
-          self.js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
+            resource = self.loadRemoteResource(restype, url, baseurl, elt, defaultencoding)
+
+            filename = resource.getRelativeFilePath()
+            if filename is not None:
+              attrs['src'] = filename
+              elt['src'] = filename
+              if VERBOSE:
+                out('Replaced %s: %s -> %s' % (restype, url, filename))
+            else:
+              warn('Unable to determine file name for image: %s' % url)
+
+            ctype = resource.getContentType()
+            status = resource.getStatus()
+            if ctype not in IMAGE_CONTENT_TYPES:
+              warn('Non-image content type for img %s: %s' % (url, ctype))
+            self.js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
+        elif 'data-image-src' in attrs:
+          # Observed this in http://www.alibaba.com.
+          warn('Unsupported data-image-src attribute for tag: %s' % str(elt))
         else:
           warn('No src attribute for img tag: %s' % str(elt))
 
@@ -699,26 +746,30 @@ class HTMLParser():
             # but fetch the file anyway in case it's used dynamically.
             warn('Non-image input element with src attribute: %s' % str(elt))
 
-          src = attrs['src']
-          url = combineURLs(baseurl, src)
-          restype = 'input.src'
-
-          resource = self.loadRemoteResource(restype, url, baseurl, elt)
-
-          filename = resource.getRelativeFilePath()
-          if filename is not None:
-            attrs['src'] = filename
-            elt['src'] = filename
-            if VERBOSE:
-              out('Replaced %s: %s -> %s' % (restype, url, filename))
+          src = attrs['src'].strip()
+          if src.startswith('data:'):
+            # %%% Extract the data
+            warn('Unsupported data URI for input.src')
           else:
-            warn('Unable to determine file name for image: %s' % url)
+            url = combineURLs(baseurl, src)
+            restype = 'input.src'
 
-          ctype = resource.getContentType()
-          status = resource.getStatus()
-          if ctype not in IMAGE_CONTENT_TYPES:
-            warn('Non-image content type for input %s: %s' % (url, ctype))
-          self.js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
+            resource = self.loadRemoteResource(restype, url, baseurl, elt, defaultencoding)
+
+            filename = resource.getRelativeFilePath()
+            if filename is not None:
+              attrs['src'] = filename
+              elt['src'] = filename
+              if VERBOSE:
+                out('Replaced %s: %s -> %s' % (restype, url, filename))
+            else:
+              warn('Unable to determine file name for image: %s' % url)
+
+            ctype = resource.getContentType()
+            status = resource.getStatus()
+            if ctype not in IMAGE_CONTENT_TYPES:
+              warn('Non-image content type for input %s: %s' % (url, ctype))
+            self.js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
 
       elif elt.name == 'iframe':
         warn('Unhandled iframe tag: %s' % str(elt))
@@ -769,28 +820,35 @@ class HTMLParser():
           
       elif elt.name == 'embed':
         if 'src' in attrs:
-          src = attrs['src']
-          url = combineURLs(baseurl, src)
-
-          restype = 'embed.src'
-          resource = self.loadRemoteResource(restype, url, baseurl, elt)
-
-          filename = resource.getRelativeFilePath()
-          if filename is not None:
-            attrs['src'] = filename
-            elt['src'] = filename
-            if VERBOSE:
-              out('Replaced %s: %s -> %s' % (restype, url, filename))
+          src = attrs['src'].strip()
+          if src.startswith('data:'):
+            # %%% Extract the data
+            warn('Unsupported data URI for embed.src')
           else:
-            warn('Unable to determine file name for embed: %s' % url)
+            url = combineURLs(baseurl, src)
 
-          ctype = resource.getContentType()
-          status = resource.getStatus()
-          if ctype not in EMBED_CONTENT_TYPES:
-            warn('Unknown content type for embed %s: %s' % (url, ctype))
-          self.js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
+            restype = 'embed.src'
+            resource = self.loadRemoteResource(restype, url, baseurl, elt, defaultencoding)
+
+            filename = resource.getRelativeFilePath()
+            if filename is not None:
+              attrs['src'] = filename
+              elt['src'] = filename
+              if VERBOSE:
+                out('Replaced %s: %s -> %s' % (restype, url, filename))
+            else:
+              warn('Unable to determine file name for embed: %s' % url)
+
+            ctype = resource.getContentType()
+            status = resource.getStatus()
+            if ctype not in EMBED_CONTENT_TYPES:
+              warn('Unknown content type for embed %s: %s' % (url, ctype))
+            self.js += '// URL: %s, status: %s, type: %s\n\n' % (url, status, ctype)
         else:
           warn('No src attribute for embed tag: %s' % str(elt))
+      elif elt.name == 'base':
+        warn('Removing base URL element: %s' % str(elt))
+        elt.extract()
 
       # Check for event handlers.
       attrsToDel = []
@@ -802,10 +860,8 @@ class HTMLParser():
             text = attrs['onload']
             # %%% Probably not sufficient escaping.
             #newtext = re.sub('\\', '\\\\', eltvals[k])
-            newtext = normalizeText(text)
-            newtext = re.sub('\n', '', text)
-            newtext = re.sub('\'', '\\\'', text)
-            newjs = "document.body.onload = '%s';" % newtext
+            newtext = normalizeText(text, removenl=True, quote=True)
+            newjs = "document.body.onload = %s;" % newtext
 
             restype = 'script.event.load'
             ctype = 'text/javascript'
@@ -836,10 +892,8 @@ class HTMLParser():
             text = attrs['onload']
             # %%% Probably not sufficient escaping.
             #newtext = re.sub('\\', '\\\\', eltvals[k])
-            newtext = normalizeText(text)
-            newtext = re.sub('\n', '', text)
-            newtext = re.sub('\'', '\\\'', text)
-            newjs = "document.getElementById('%s').onload = '%s';" % (eltid, newtext)
+            newtext = normalizeText(text, removenl=True, quote=True)
+            newjs = "document.getElementById('%s').onload = %s;" % (eltid, newtext)
             if src is not None:
               newsrc = re.sub('\'', '\\\'', src)
               newjs += "\ndocument.getElementById('%s').src = '%s';" % (eltid, newsrc)
@@ -871,10 +925,8 @@ class HTMLParser():
           text = attrs[attr]
           # %%% Probably not sufficient escaping.
           #newtext = re.sub('\\', '\\\\', eltvals[k])
-          newtext = normalizeText(text)
-          newtext = re.sub('\n', '', text)
-          newtext = re.sub('\'', '\\\'', text)
-          newjs = "document.getElementById('%s').%s = '%s';" % (eltid, attr, newtext)
+          newtext = normalizeText(text, removenl=True, quote=True)
+          newjs = "document.getElementById('%s').%s = %s;" % (eltid, attr, newtext)
 
           if attr.startswith('on'):
             event = attr[2:]
@@ -897,7 +949,10 @@ class HTMLParser():
           src = attrs['background']
           url = combineURLs(baseurl, src)
 
-          resource = self.loadRemoteResource(restype, url, baseurl, elt)
+          restype = '%s.background' % elt.name
+          resource = self.loadRemoteResource(restype, url, baseurl, elt, defaultencoding)
+
+          self.js += '// %s %s\n\n' % (restype, url)
 
           filename = resource.getRelativeFilePath()
           if filename is not None:
@@ -928,12 +983,20 @@ class HTMLParser():
       headerstr += '// %s\n%s\n' % (baseurl, header)
 
     bodyhtml = ''
-    for elt in soup.body.contents:
-      bodyhtml += self.getElementContents(elt)
+    bodyelt = soup.body
+    if bodyelt is None:
+      warn('No body element found')
+    else:
+      for elt in bodyelt.contents:
+        bodyhtml += self.getElementContents(elt)
 
     headhtml = ''
-    for elt in soup.head.contents:
-      headhtml += self.getElementContents(elt)
+    headelt = soup.head
+    if headelt is None:
+      warn('No head element found')
+    else:
+      for elt in headelt.contents:
+        headhtml += self.getElementContents(elt)
 
     self.js = '// %s\n\n%s' % (baseurl, self.js)
 
@@ -968,7 +1031,7 @@ class Unpacker():
     if VERBOSE:
       out('Unpacking URL: %s' % self.url)
     resource = Resource('root', url=self.url)
-    resource.fetch()
+    resource.fetch(accept='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
 
     ctype = resource.getContentType()
     encoding = resource.getEncoding()
@@ -976,27 +1039,29 @@ class Unpacker():
     if data is not None:
       if ctype not in HTML_CONTENT_TYPES:
         warn('Non-HTML content type for %s: %s' % (self.url, ctype))
-      text = data.decode(encoding)
+      text = data.decode(encoding, errors='replace')
 
       if SAVEALL:
-        filename = self.app + '.original.html'
-        createFile(filename, text)
+        filepath = resource.getFilePath()
+        newfilename = self.app + '.original.html'
+        newfilepath = os.path.join(OUTDIR, newfilename)
+        os.rename(filepath, newfilepath)
 
       hparser = HTMLParser()
-      js, headhtml, bodyhtml, headers = hparser.extractResources(self.url, text)
+      js, headhtml, bodyhtml, headers = hparser.extractResources(text, self.url, encoding)
 
       if len(js) > 0:
         filename = self.app + '.js'
-        createFile(filename, js)
+        createFile(filename, js, force=True)
       if len(headers) > 0:
         filename = self.app + '.headers.js'
-        createFile(filename, headers)
+        createFile(filename, headers, force=True)
       if len(bodyhtml) > 0:
         filename = self.app + '.html'
-        createFile(filename, bodyhtml)
+        createFile(filename, bodyhtml, force=True)
       if len(headhtml) > 0:
         filename = self.app + '.head.html'
-        createFile(filename, headhtml)
+        createFile(filename, headhtml, force=True)
 
       for fileattrs in SYMLINK_FILES:
         assert len(fileattrs) == 3, 'Invalid SYMLINK_FILES configuration: %r' % fileattrs
@@ -1024,8 +1089,7 @@ class UnpackOpts:
       info = get_file_info(infile)
       self.app = info['app']
     else:
-      err('Unknown protocol: %s' % prot)
-      sys.exit(1)
+      fatal('Unknown protocol: %s' % prot)
 
     global OUTDIR
     if outdir is not None:
@@ -1033,15 +1097,14 @@ class UnpackOpts:
       if os.path.exists(OUTDIR):
         if OVERWRITE:
           if os.path.isfile(OUTDIR):
-            err('File exists at output directory %s' % OUTDIR)
-            sys.exit(1)
+            fatal('File exists at output directory %s' % OUTDIR)
         else:
-          err('Output directory exists, use -f to overwrite')
-          sys.exit(1)
+          fatal('Output directory exists, use -f to overwrite')
     else:
       # Get a unique, non-existent directory.
       relpath = getRelativePath(self.uri, usedomain=True)
       OUTDIR = get_output_dir(UNPACKDIR, relpath)
+      #out('APP: %s, URL: %s, RELPATH: %s, OUTDIR: %s' % (self.app, self.uri, relpath, OUTDIR))
   # /UnpackOpts.__init__
 
 # /UnpackOpts
@@ -1052,8 +1115,8 @@ def createDirForFile(filename):
     try:
       os.makedirs(absdir)
     except Exception as e:
-      err(e)
-      sys.exit(1)
+      err('Error creating directory %s: %s' % (absdir, str(e)))
+      return None
   return absdir
 # /createDirForFile
 
@@ -1063,20 +1126,20 @@ def makeNewFileName(filepath, prepend):
   return newpath
 # /makeNewFileName
 
-def createFile(relpath, content):
-  if len(content) == 0:
+def createFile(relpath, content, force=False):
+  # No output directory means don't output anything.
+  if not OUTDIR:
+    warn('No output directory specified, cannot save: %s', relpath)
     return None
   if relpath.startswith('/'):
     err('Absolute path passed to createFile: %s' % relpath)
     return None
-  # No output directory means don't output anything.
-  if not OUTDIR:
-    return None
-  
   if relpath.strip() == '':
-    newpath = makeNewFileName('', 'x.html')
-    warn('No relative path provided, saving to %s' % newpath)
-    return createFile(newpath, content)
+    warn('Empty path provided to createFile')
+    return None
+
+  if len(content) == 0:
+    warn('Empty content for file: %s' % relpath)
 
   # Don't ever clobber these.
   for fileattrs in SYMLINK_FILES:
@@ -1088,29 +1151,18 @@ def createFile(relpath, content):
         return createFile(newpath, content)
     
   outpath = os.path.join(OUTDIR, relpath)
+  outpath = get_unique_filename(outpath)
   assert not os.path.relpath(outpath, OUTDIR).startswith('../'), 'Attempting to save file outside of output directory: %s' % outpath
 
-  dirpath = os.path.dirname(outpath)
-  if os.path.isfile(dirpath):
-    # %%% Should ideally check all parent directories in |relpath| also.
-    newdir = makeNewFileName(dirpath, 'new-')
-    filename = os.path.basename(outpath)
-    newpath = os.path.join(newdir, filename)
-    newrelpath = os.path.relpath(newpath, OUTDIR)
-    warn('Directory conflict with file %s, trying new directory %s' % (relpath, newrelpath)) 
-    return createFile(newrelpath, content)
+  dirpath, filename = os.path.split(outpath)
 
-  if os.path.exists(outpath):
-    if not OVERWRITE:
-      warn('Not overwriting existing file: %s' % outpath)
+  if not os.path.isdir(dirpath):
+    try:
+      os.makedirs(dirpath)
+    except OSError as e:
+      err('Unable to create directory %s: %s' % (dirpath, str(e)))
       return None
-    elif os.path.isdir(outpath):
-      warn('Directory exists at target file path: %s' % outpath)
-      return None
-  elif not os.path.isdir(dirpath):
-    os.makedirs(dirpath)
-
-  if os.path.isdir(OUTDIR):
+  if os.path.isdir(dirpath):
     if isinstance(content, str):
       outfl = open(outpath, 'w')
     else:
@@ -1124,7 +1176,7 @@ def createFile(relpath, content):
       err('Unable to save to file: %s' % outpath)
       return None
   else:
-    err('Directory is not accessible: %s' % OUTDIR)
+    err('Directory is not accessible: %s' % dirpath)
     return None
 
   return outpath
@@ -1149,8 +1201,7 @@ def getDomain(url):
 def getRelativePath(url, usedomain=False, referer=None):
   urlparts = urllib.parse.urlparse(url)
   filepath = urlparts[2]
-  if filepath.startswith('/'):
-    filepath = filepath[1:]
+      
   if usedomain and isURL(url):
     # Prepend the domain
     filepath = os.path.join(urlparts[1], filepath)
@@ -1164,6 +1215,9 @@ def getRelativePath(url, usedomain=False, referer=None):
     if refpath.startswith('/'):
       refpath = refpath[1:]
     filepath = os.path.relpath(filepath, refpath)
+
+  # Remove beginning and ending slashes.
+  filepath = filepath.strip('/')
 
   return filepath
 # /getRelativePath
@@ -1234,9 +1288,13 @@ def combineURLs(baseurl, relurl):
 
   return url
 
-def normalizeText(s):
+def normalizeText(s, removenl=False, quote=False):
   s = re.sub('\r\n', '\n', s)
   s = re.sub('\r', '\n', s)
+  if removenl:
+    s = re.sub('\n', '', s)
+  if quote:
+    s = "'" + re.sub('\'', '\\\'', s) + "'"
   return s
 
 def main():

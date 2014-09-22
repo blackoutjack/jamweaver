@@ -110,7 +110,7 @@ everything: all util wala
 
 jam:
 	mkdir -p $(BINDIR)
-	make -C $(SRCDIR) jar BINDIR=$(BINDIR)
+	make -C $(SRCDIR) jam BINDIR=$(BINDIR)
 
 semantics: $(SEMMAINLIB)
 	# Comment out the line below to examine generated source

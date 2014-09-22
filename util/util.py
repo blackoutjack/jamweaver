@@ -90,6 +90,60 @@ def parse_time_output(timeout, sep1=" ", sep2=":", element=None):
     err("Invalid time key: %s" % element)
     return False
 
+def get_unique_filename(origpath):
+  dirpath, filename = os.path.split(origpath)
+  if not os.path.exists(dirpath):
+    # Easy case: the original path is available.
+    return origpath
+
+  if not os.path.isdir(dirpath):
+    dirparts = []
+    # Climb the directory structure to see if there are conflicts.
+    dirpart = dirpath
+    while dirpart != '':
+      # %%% Maybe need special handling for symlinks?
+      if os.path.isdir(dirpart):
+        break
+      if os.path.isfile(dirpart):
+        # Rename the directory.
+        pathprefix = dirpart
+        dirpart, lastpart = os.path.split(dirpart)
+        dirparts.insert(0, lastpart)
+        idx = 0
+        while os.path.isfile(pathprefix):
+          # Make an altered directory name.
+          newlastpart = lastpart + '-' + str(idx)
+          pathprefix = os.path.join(dirpart, newlastpart)
+          idx += 1
+
+        newfilepath = pathprefix
+        for suffixpart in dirparts:
+          newfilepath = os.path.join(newfilepath, suffixpart)
+
+        if os.path.isdir(pathprefix):
+          # Need to make sure the new path is available.
+          return get_unique_filename(newfilepath)
+        origpath = newfilepath
+        break
+
+      dirpart, lastpart = os.path.split(dirpart)
+      dirparts.insert(0, lastpart)
+
+    # Getting here means the original path is available.
+    return origpath
+
+  filebase, fileext = os.path.splitext(filename)
+  newfilepath = origpath
+  idx = 0
+  while os.path.exists(newfilepath):
+    # Make an altered filename.
+    newfilebase = filebase + '-' + str(idx)
+    newfilename = newfilebase + fileext
+    newfilepath = os.path.join(dirpath, newfilename)
+    idx += 1
+
+  return newfilepath
+
 def get_output_dir(top, base):
   parts = base.split('/')
   dirparts = parts[:-1]
@@ -116,6 +170,10 @@ def get_output_dir(top, base):
   for dirpart in dirparts:
     ret = os.path.join(ret, dirpart)
   return ret
+
+def fatal(txt, code=1):
+  sys.stderr.write("FATAL: %s\n" % txt)
+  sys.exit(code)
 
 def err(txt):
   sys.stderr.write("ERROR: %s\n" % txt)

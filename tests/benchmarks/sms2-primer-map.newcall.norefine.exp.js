@@ -2062,5 +2062,4 @@ MatchCollection.prototype.sortMatches = sortMatches;
 MatchCollection.prototype.getMatchesInRange = getMatchesInRange;
 JAM.set(document, "onload", v11);
 JAM.set(JAM.call(document.getElementById, document, ["submitbtn"], JAM.policy.p14), "onclick", v12);
-JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p14), "onclick", v13);
-
+JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p14), "onclick", v13)

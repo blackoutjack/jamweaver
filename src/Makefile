@@ -38,12 +38,12 @@ WALADIR=$(MAINDIR)/wala
 COMDIR=com/google/javascript/jscomp
 
 # Java classes in the edu.wisc.cs.jam package
-MAINBASE=JAM JAMAnalysis BackwardAnalysis BranchSymbol Clause CartesianAutomaton ControlAutomaton ControlStructure CounterExample DataState EvaluationAutomaton FileUtil FocusAutomaton FunctionEntrySymbol JAMConfig ExpSymbol OptionParser Options Policy PolicyPath Predicate PredicateValue PredicateLearner PredicateSymbol ProgramModel Relation RelationDomain ReturnSymbol Semantics SourceFile DataTransition SeedPredicates CleverCache RelationAutomaton Dbg DisjointAutomaton IncrementalAnalysis CheckManager RuntimeCheck Transform Tree SyntaxTree Exp PolicyLanguage Language #BooleanAutomaton MultiAnalysis ForkCheckManager ForkCheck
+MAINBASE=JAM JAMAnalysis BackwardAnalysis BranchSymbol Clause CartesianAutomaton ControlAutomaton ControlStructure CounterExample DataState EvaluationAutomaton FileUtil FocusAutomaton FunctionEntrySymbol JAMConfig ExpSymbol OptionParser Options Policy PolicyPath Predicate PredicateValue PredicateLearner PredicateSymbol ProgramModel Relation RelationDomain ReturnSymbol Semantics SourceManager Source DataTransition SeedPredicates CleverCache RelationAutomaton Dbg DisjointAutomaton IncrementalAnalysis CheckManager RuntimeCheck Transform Tree SyntaxTree Exp PolicyLanguage Language #BooleanAutomaton MultiAnalysis ForkCheckManager ForkCheck
 MAINSRC=$(MAINBASE:%=$(MAINDIR)/%.java)
 MAINCLS=$(MAINSRC:%.java=%.class)
 
 # Java classes in the edu.wisc.cs.jam.js package.
-JSBASE=JavaScript JSFile JSSemantics JSTransform JSStatementTransform JSIndirectionTransform JSCollapseTransform JSControlStructure JSInterproceduralControlStructure JSExp JSPredicateLearner JSPolicyLanguage FunctionFacts NodeUtil TypeFacts
+JSBASE=JavaScript JSSourceManager JSSource JSSemantics JSTransform JSStatementTransform JSIndirectionTransform JSCollapseTransform JSControlStructure JSInterproceduralControlStructure JSExp JSPredicateLearner JSPolicyLanguage FunctionFacts NodeUtil TypeFacts
 JSSRC=$(JSBASE:%=$(JSDIR)/%.java)
 JSCLS=$(JSSRC:.java=.class)
 

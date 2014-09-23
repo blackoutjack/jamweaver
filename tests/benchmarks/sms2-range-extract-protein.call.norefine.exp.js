@@ -1606,5 +1606,4 @@ RangeGroup.prototype.addRange = addRange;
 RangeGroup.prototype.writeRanges = writeRanges;
 JAM.set(document, "onload", v10);
 JAM.set(JAM.call(document.getElementById, document, ["submitbtn"], JAM.policy.p9), "onclick", v11);
-JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p9), "onclick", v12);
-
+JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p9), "onclick", v12)

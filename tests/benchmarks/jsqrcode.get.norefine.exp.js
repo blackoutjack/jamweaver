@@ -4499,5 +4499,4 @@ var imageData = null;
 var ii = 0;
 var jj = 0;
 var c = 0;
-JAM.set(document.getElementById("decode"), "onclick", load);
-
+JAM.set(document.getElementById("decode"), "onclick", load)

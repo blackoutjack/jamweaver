@@ -8,7 +8,7 @@ import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.Argument;
 
 import edu.wisc.cs.jam.ExpSymbol;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Options;
 import edu.wisc.cs.jam.OptionParser;
 import edu.wisc.cs.jam.Exp;
@@ -27,12 +27,12 @@ public class ASTPrint implements Utility {
 
   public void run() {
     Node src = null;
-    SourceFile srcfl = null;
+    SourceManager sm = new JSSourceManager();
     JAM.Opts.noExterns = true;
     if (options.expr) {
-      srcfl = new JSFile("/dev/null");
+      sm.addSourceFile(new JSSource("/dev/null"));
       // Interpret the argument as a JavaScript snippet.
-      src = srcfl.nodeFromCode(options.source);
+      src = sm.nodeFromCode(options.source);
     } else {
       // Interpret the argument as a filename containing JavaScript.
 
@@ -41,14 +41,14 @@ public class ASTPrint implements Utility {
         System.err.println("Can't find file: " + options.source);
         return;
       }
-      srcfl = new JSFile(options.source);
-      src = srcfl.getRootNode();
+      sm.addSourceFile(new JSSource(options.source));
+      src = sm.getRootNode();
       // Remove the boilerplate stuff.
       src = src.getChildAtIndex(src.getChildCount() - 1).getFirstChild();
     }
 
     if (options.condensed) {
-      Exp s = JSExp.create(srcfl, src);
+      Exp s = JSExp.create(sm, src);
       ExpSymbol ss = new ExpSymbol(s);
       System.out.println(ss.toAST());
     } else {

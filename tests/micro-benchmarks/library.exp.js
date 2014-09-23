@@ -18,4 +18,3 @@ function g() {
   this.setter = v1;
   return
 }
-;

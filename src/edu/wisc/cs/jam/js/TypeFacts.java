@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import edu.wisc.cs.jam.SourceFile;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.JAM;
 import edu.wisc.cs.jam.Dbg;
@@ -31,14 +30,12 @@ import edu.wisc.cs.jam.Dbg;
 // Generates Prolog clauses regarding types in the program
 public class TypeFacts {
 
-  private SourceFile sourceFile;
   private Map<String,String> symbolTypes;
   // Save these since they can be expensive to calculate.
   private int hash = 0;
   private String str = "";
 
-  public TypeFacts(SourceFile src, SymbolTable symbols) {
-    sourceFile = src;
+  public TypeFacts(SymbolTable symbols) {
     symbolTypes = new HashMap<String,String>();
     
     // Guard here to allow creating a dummy record.

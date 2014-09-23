@@ -4,5 +4,4 @@ if(JAM.isEval(eval)) {
 }else {
   JAM.call(eval, null, ["String = Boolean"])
 }
-var b = new String;
-
+var b = new String

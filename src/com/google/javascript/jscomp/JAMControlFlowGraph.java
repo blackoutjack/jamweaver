@@ -26,7 +26,7 @@ import edu.wisc.cs.jam.ControlStructure;
 import edu.wisc.cs.jam.ExpSymbol;
 import edu.wisc.cs.jam.FunctionEntrySymbol;
 import edu.wisc.cs.jam.BranchSymbol;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
 
@@ -37,7 +37,7 @@ import edu.wisc.cs.jam.js.NodeUtil;
 public class JAMControlFlowGraph {
   private ControlStructure caut;
   //private ControlFlowGraph<Node> cfg;
-  private SourceFile sourceFile;
+  private SourceManager sm;
 
   private Map<Node,State> stateMap;
   private Map<Function,State> functionEntryMap;
@@ -45,16 +45,16 @@ public class JAMControlFlowGraph {
 
   private Node externs;
 
-  public JAMControlFlowGraph(ControlStructure c, SourceFile src, Node externs, Node root) {
+  public JAMControlFlowGraph(ControlStructure c, SourceManager src, Node externs, Node root) {
     caut = c;
-    sourceFile = src;
+    sm = src;
     this.externs = externs;
 
     stateMap = new HashMap<Node,State>();
     functionEntryMap = new HashMap<Function,State>();
     functionReturnMap = new HashMap<Function,List<State>>();
 
-    //ControlFlowAnalysis cfa = new ControlFlowAnalysis(sourceFile.getCompiler(), true, false);
+    //ControlFlowAnalysis cfa = new ControlFlowAnalysis(sm.getCompiler(), true, false);
     //cfa.process(externs, root);
     //cfg = cfa.getCfg();
   }
@@ -136,11 +136,11 @@ public class JAMControlFlowGraph {
       dest = boes.get(0).getDestination();
     }
 
-    ExpSymbol sym = new FunctionEntrySymbol(f, sourceFile);
+    ExpSymbol sym = new FunctionEntrySymbol(f, sm);
     Node destNode = dest.getValue();
 
     if (destNode == null) {
-      assert false : "Empty function: " + f.getName();
+      //assert false : "Empty function: " + f.getName();
       // This indicates that we have an empty function, so add the
       // edges and the return state and be done with it.
       State destState = new State();
@@ -166,7 +166,7 @@ public class JAMControlFlowGraph {
     
     // Get the CFG for this function.
     Node root = f.getAstNode();
-    ControlFlowAnalysis cfa = new ControlFlowAnalysis(sourceFile.getCompiler(), false, false);
+    ControlFlowAnalysis cfa = new ControlFlowAnalysis(sm.getCompiler(), false, false);
     cfa.process(externs, root);
     ControlFlowGraph<Node> cfg = cfa.getCfg();
 
@@ -177,7 +177,7 @@ public class JAMControlFlowGraph {
     /*
     if (entryNode == null) {
       needToRevert
-      ControlFlowAnalysis cfa = new ControlFlowAnalysis(sourceFile.getCompiler(), true, false);
+      ControlFlowAnalysis cfa = new ControlFlowAnalysis(sm.getCompiler(), true, false);
       cfa.process(externs, fnode);
       cfg = cfa.getCfg();
     }
@@ -227,7 +227,7 @@ public class JAMControlFlowGraph {
       }
       */
 
-      Exp s = JSExp.create(sourceFile, source);
+      Exp s = JSExp.create(sm, source);
       ExpSymbol sym = new ExpSymbol(s);
 
       if (source.isThrow() && oes.size() == 0) {
@@ -260,7 +260,7 @@ public class JAMControlFlowGraph {
             caut.addEdge(caut.makeEdge(sym, srcState, midState));
             
             // Alter |sym| so that the implicit return is explicit.
-            sym = new ExpSymbol(JSExp.create(sourceFile, new Node(Token.RETURN)));
+            sym = new ExpSymbol(JSExp.create(sm, new Node(Token.RETURN)));
             srcState = midState;
           }
 

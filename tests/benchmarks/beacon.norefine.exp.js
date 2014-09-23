@@ -251,5 +251,4 @@ var v50 = typeof _comscore == "undefined";
 if(v50) {
   _comscore = []
 }
-v1();
-
+v1()

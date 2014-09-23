@@ -15,7 +15,7 @@ import com.google.javascript.jscomp.NodeTraversal.Callback;
 
 import edu.wisc.cs.jam.Transform;
 import edu.wisc.cs.jam.CheckManager;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Semantics;
 import edu.wisc.cs.jam.Policy;
 import edu.wisc.cs.jam.Predicate;
@@ -26,7 +26,7 @@ import edu.wisc.cs.jam.FileUtil;
 public class ForkCheckManager implements CheckManager, Callback {
 
   // Various aspects of the analysis that we may need a handle for.
-  private SourceFile sourceFile;
+  private SourceManager sm;
   private Semantics semantics;
   private Policy policy;
 
@@ -40,7 +40,7 @@ public class ForkCheckManager implements CheckManager, Callback {
   private List<RuntimeCheck> activeChecks;
 
   public ForkCheckManager(JAM jam) {
-    sourceFile = jam.getSourceFile();
+    sm = jam.getSourceManager();
     semantics = jam.getSemantics();
     policy = jam.getPolicy();
 
@@ -50,8 +50,8 @@ public class ForkCheckManager implements CheckManager, Callback {
 
   @Override
   public void loadExistingChecks() {
-    Node root = sourceFile.getRootNode();
-    sourceFile.traverse(root, cm);
+    Node root = sm.getRootNode();
+    sm.traverse(root, cm);
   }
 
   // Get a list of checks that were applied to this node already in the
@@ -64,8 +64,8 @@ public class ForkCheckManager implements CheckManager, Callback {
     return ret;
   }
 
-  public SourceFile getSourceFile() {
-    return sourceFile;
+  public SourceManager getSourceManager() {
+    return sm;
   }
 
   public Semantics getSemantics() {
@@ -94,7 +94,7 @@ public class ForkCheckManager implements CheckManager, Callback {
         return rc;
       }
     }
-    RuntimeCheck ret = new ForkCheck(sourceFile, sym.getNode(), e);
+    RuntimeCheck ret = new ForkCheck(sm, sym.getNode(), e);
     sym.addCheck(ret);
     return ret;
   }
@@ -147,7 +147,7 @@ public class ForkCheckManager implements CheckManager, Callback {
 
     // Get the predicate observed by the check. 
     // First create a predicate from the string parameter's text.
-    String predstr = sourceFile.codeFromNode(n.getChildAtIndex(2));
+    String predstr = sm.codeFromNode(n.getChildAtIndex(2));
     // Strip the quotes.
     predstr = predstr.substring(1, predstr.length() - 1);
     Predicate pred = semantics.getConditionPredicate(predstr);
@@ -164,7 +164,7 @@ public class ForkCheckManager implements CheckManager, Callback {
     Node loc = getCheckLocation(n);
 
     // Create the object representation of the check.
-    RuntimeCheck c = new ForkCheck(sourceFile, loc, pe);
+    RuntimeCheck c = new ForkCheck(sm, loc, pe);
     // Note that the check was already in the source code.
     c.setOriginal();
 
@@ -281,6 +281,6 @@ public class ForkCheckManager implements CheckManager, Callback {
   }
 
   @Override
-  public void transform(SourceFile src, Transform pt) { }
+  public void transform(SourceManager src, Transform pt) { }
 }
 

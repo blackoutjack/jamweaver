@@ -1617,5 +1617,4 @@ new RulerComponent;
 RulerComponent.prototype.buildRuler = buildRuler;
 JAM.set(document, "onload", v11);
 JAM.set(JAM.call(document.getElementById, document, ["submitbtn"], JAM.policy.p9), "onclick", v12);
-JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p9), "onclick", v13);
-
+JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p9), "onclick", v13)

@@ -1298,5 +1298,4 @@ function writeOneToThree(proteinSequence$$1) {
 }
 JAM.set(document, "onload", v4);
 JAM.set(JAM.call(document.getElementById, document, ["submitbtn"], JAM.policy.p14), "onclick", v5);
-JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p14), "onclick", v6);
-
+JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p14), "onclick", v6)

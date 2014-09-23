@@ -13,5 +13,4 @@ if(JAM.isEval(eval)) {
   JAM.call(eval, null, ["var x = 4;"])
 }
 z = f();
-alert(z);
-
+alert(z)

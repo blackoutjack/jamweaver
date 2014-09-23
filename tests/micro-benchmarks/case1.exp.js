@@ -6,4 +6,3 @@ switch(x) {
   default:
     alert(x + 1)
 }
-;

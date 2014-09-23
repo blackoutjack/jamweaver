@@ -2011,5 +2011,4 @@ RestrictionSiteCollection.prototype.sortRestrictionSites = sortRestrictionSites;
 RestrictionSiteCollection.prototype.getSitesInRange = getSitesInRange;
 JAM.set(document, "onload", v7);
 JAM.set(JAM.call(document.getElementById, document, ["submitbtn"], JAM.policy.p9), "onclick", v8);
-JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p9), "onclick", v9);
-
+JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p9), "onclick", v9)

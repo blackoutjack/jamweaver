@@ -8,8 +8,8 @@ public class ReturnSymbol extends ExpSymbol {
 
 	private Function function;
 
-	public ReturnSymbol(SourceFile src, Function f) {
-    super(JSExp.createEmpty(src));
+	public ReturnSymbol(SourceManager sm, Function f) {
+    super(JSExp.createEmpty(sm));
 		function = f;
 	}
 	

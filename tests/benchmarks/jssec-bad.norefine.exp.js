@@ -61,5 +61,4 @@ function snapDisplay(c$$1) {
   return
 }
 initSnippets();
-document.getElementById("c1").onclick();
-
+document.getElementById("c1").onclick()

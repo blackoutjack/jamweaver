@@ -11530,5 +11530,4 @@ v434(jQuery);
 v452(jQuery);
 v484(jQuery);
 $ = window.$;
-JAM.call($, null, [v485]);
-
+JAM.call($, null, [v485])

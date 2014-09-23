@@ -30,7 +30,7 @@ import edu.wisc.cs.automaton.State;
 import edu.wisc.cs.jam.JAM;
 import edu.wisc.cs.jam.ExpSymbol;
 import edu.wisc.cs.jam.ControlStructure;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.ReturnSymbol;
@@ -43,9 +43,9 @@ public class JSControlStructure extends ControlStructure {
 
   protected JSControlStructure() { }
 
-  public JSControlStructure(SourceFile src, CheckManager cman) {
+  public JSControlStructure(SourceManager src, CheckManager cman) {
     // Collect the analysis input from the main algorithm.
-    sourceFile = src;
+    sm = src;
     cm = cman;
 
 
@@ -67,7 +67,7 @@ public class JSControlStructure extends ControlStructure {
     // Unless we're debugging, there's no reason to have a separate
     // return symbol for every return edge.
     if (!JAM.Opts.debug)
-      globalReturn = new ReturnSymbol(sourceFile, mainFunction);
+      globalReturn = new ReturnSymbol(sm, mainFunction);
 
     // Generate the control structure (without relations). This
     // results in the invocation of the process function below.
@@ -101,10 +101,10 @@ public class JSControlStructure extends ControlStructure {
     if (JAM.Opts.countNodes)
       FileUtil.writeToMain("allFunctions:" + allFunctions.size() + "\nallCallsites:" + allCallsites.size() + "\n", JAMConfig.INFO_FILENAME, true);
 
-    Node root = sourceFile.getRootNode();
-    Node externs = sourceFile.getExterns();
+    Node root = sm.getRootNode();
+    Node externs = sm.getExterns();
     JAMControlFlowGraph cfg =
-      new JAMControlFlowGraph(this, sourceFile, externs, root);
+      new JAMControlFlowGraph(this, sm, externs, root);
 
     buildIntraproceduralEdges(cfg);
 

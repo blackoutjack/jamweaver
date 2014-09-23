@@ -11,7 +11,7 @@ import com.google.javascript.jscomp.CallGraph.Callsite;
 import com.google.javascript.jscomp.CompilerPass;
 import com.google.javascript.jscomp.Scope;
 
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.Transform;
 
@@ -35,11 +35,11 @@ public abstract class JSTransform implements Transform {
   }
 
   public class DeanonymizeFunction implements Callback {
-    SourceFile sourceFile;
+    SourceManager sm;
 
-    public DeanonymizeFunction(SourceFile src) {
+    public DeanonymizeFunction(SourceManager src) {
       super();
-      sourceFile = src;
+      sm = src;
     }
 
     // Give an anonymous function a name.
@@ -60,17 +60,17 @@ public abstract class JSTransform implements Transform {
     public void visit(NodeTraversal t, Node n, Node parent) {
       if (NodeUtil.isAnonymousFunction(n)) {
         deanonymize(t, n, parent);
-        sourceFile.reportCodeChange();
+        sm.reportCodeChange();
       }
     }
   }
 
   public class FunctionElevate implements Callback {
 
-    SourceFile sourceFile;
+    SourceManager sm;
 
-    public FunctionElevate(SourceFile src) {
-      sourceFile = src;
+    public FunctionElevate(SourceManager src) {
+      sm = src;
     }
 
     /* 
@@ -147,11 +147,11 @@ public abstract class JSTransform implements Transform {
 
   // Add explicit returns to functions without them.
   public class ReturnExplicit implements Callback {
-    protected SourceFile sourceFile;
+    protected SourceManager sm;
 
-    public ReturnExplicit(SourceFile src) {
+    public ReturnExplicit(SourceManager src) {
       super();
-      sourceFile = src;
+      sm = src;
     }
 
     @Override
@@ -181,7 +181,7 @@ public abstract class JSTransform implements Transform {
         }
         if (needsReturn) {
           addReturn(t, body, n);
-          sourceFile.reportCodeChange();
+          sm.reportCodeChange();
         }
       }
     }
@@ -192,10 +192,10 @@ public abstract class JSTransform implements Transform {
   public class ArrayLiteralConverter implements Callback {
     public static final int MAX_ENTRIES = 500;
 
-    SourceFile sourceFile;
+    SourceManager sm;
 
-    public ArrayLiteralConverter(SourceFile src) {
-      sourceFile = src;
+    public ArrayLiteralConverter(SourceManager src) {
+      sm = src;
     }
 
     @Override
@@ -264,10 +264,10 @@ public abstract class JSTransform implements Transform {
   public class StringConverter implements Callback {
     public static final int MAX_LENGTH = 5000;
 
-    SourceFile sourceFile;
+    SourceManager sm;
 
-    public StringConverter(SourceFile src) {
-      sourceFile = src;
+    public StringConverter(SourceManager src) {
+      sm = src;
     }
 
     @Override
@@ -334,10 +334,10 @@ public abstract class JSTransform implements Transform {
   //
   public class SplitSetsAndCalls implements Callback {
 
-    SourceFile sourceFile;
+    SourceManager sm;
 
-    public SplitSetsAndCalls(SourceFile src) {
-      sourceFile = src;
+    public SplitSetsAndCalls(SourceManager src) {
+      sm = src;
     }
 
     @Override

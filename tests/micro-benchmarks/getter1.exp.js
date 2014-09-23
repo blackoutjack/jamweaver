@@ -14,5 +14,4 @@ function v2() {
 }
 var a = {};
 JAM.call(Object.defineProperty, Object, [a, "ok", {get:v2}]);
-alert(a.ok);
-
+alert(a.ok)

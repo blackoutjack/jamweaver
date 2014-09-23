@@ -4,5 +4,4 @@ function f() {
 function g() {
   return"ok"
 }
-var v = f()[g()];
-
+var v = f()[g()]

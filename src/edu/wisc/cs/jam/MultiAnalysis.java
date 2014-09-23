@@ -140,7 +140,7 @@ public class MultiAnalysis extends JAMAnalysis {
           // Possibly save the current source code to file.
           if (JAM.Opts.intermediateOutput || JAM.Opts.debug) {
             String srcout = FileUtil.getBaseName() + "-" + id + "-" + iter + ".js";
-            FileUtil.writeToFile(getSourceFile(), srcout);
+            FileUtil.writeToFile(getSourceManager(), srcout);
           }
         }
 

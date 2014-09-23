@@ -8,5 +8,4 @@ function f(g) {
   g();
   return
 }
-f(h$$4);
-
+f(h$$4)

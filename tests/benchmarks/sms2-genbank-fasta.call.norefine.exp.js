@@ -1274,5 +1274,4 @@ function genbankToFasta(genBankFile$$2) {
 }
 JAM.set(document, "onload", v2);
 JAM.set(JAM.call(document.getElementById, document, ["submitbtn"], JAM.policy.p9), "onclick", v3);
-JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p9), "onclick", v4);
-
+JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p9), "onclick", v4)

@@ -422,5 +422,4 @@ if(!v68) {
 }
 var gapi = v68;
 v4();
-gapi_load("googleapis.client:plusone", window["__bsld"]);
-
+gapi_load("googleapis.client:plusone", window["__bsld"])

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import edu.wisc.cs.jam.RuntimeCheck;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Policy;
 
 import edu.wisc.cs.jam.js.NodeUtil;
@@ -25,8 +25,8 @@ public class ForkCheck extends RuntimeCheck {
   // The constructed conditional node which serves as the check.
   private Node checkNode;
 
-  public ForkCheck(SourceFile src, Node n, Policy.Edge edge) {
-    super(src, n, edge);
+  public ForkCheck(SourceManager sm, Node n, Policy.Edge edge) {
+    super(sm, n, edge);
     build();
   }
 
@@ -71,7 +71,7 @@ public class ForkCheck extends RuntimeCheck {
     sb.append(postval);
     sb.append(");\n");
 
-    checkNode = getSourceFile().nodeFromCode(sb.toString());
+    checkNode = getSourceManager().nodeFromCode(sb.toString());
   }
 
   // Insert this check into the source code.
@@ -102,7 +102,7 @@ public class ForkCheck extends RuntimeCheck {
     }
 
     parent.addChildBefore(checkNode, n);
-    getSourceFile().reportCodeChange();
+    getSourceManager().reportCodeChange();
 
     setApplied(true);
   }
@@ -114,7 +114,7 @@ public class ForkCheck extends RuntimeCheck {
     assert !isLocked();
 
     checkNode.getParent().removeChild(checkNode);
-    getSourceFile().reportCodeChange();
+    getSourceManager().reportCodeChange();
 
     setApplied(false);
   }

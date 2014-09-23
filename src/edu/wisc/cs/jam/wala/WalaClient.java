@@ -29,6 +29,7 @@ import com.ibm.wala.cast.js.ipa.callgraph.PropertyNameContextSelector;
 import com.ibm.wala.cast.js.ipa.callgraph.correlations.extraction.CorrelatedPairExtractorFactory;
 import com.ibm.wala.cast.js.ipa.callgraph.JSCallGraph;
 import com.ibm.wala.cast.js.ipa.callgraph.JSZeroOrOneXCFABuilder;
+import com.ibm.wala.cast.js.ipa.callgraph.JSSSAPropagationCallGraphBuilder;
 import com.ibm.wala.cast.js.loader.JavaScriptLoader;
 import com.ibm.wala.cast.js.loader.JavaScriptLoaderFactory;
 import com.ibm.wala.cast.js.translator.CAstRhinoTranslatorFactory;
@@ -52,9 +53,11 @@ import com.ibm.wala.ipa.callgraph.AnalysisCache;
 import com.ibm.wala.ipa.callgraph.CallGraph;
 import com.ibm.wala.ipa.callgraph.CGNode;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
+import com.ibm.wala.ipa.callgraph.propagation.cfa.nCFABuilder;
 import com.ibm.wala.ipa.callgraph.propagation.cfa.ZeroXInstanceKeys;
 import com.ibm.wala.ipa.callgraph.propagation.PointerKey;
 import com.ibm.wala.ipa.callgraph.propagation.PointerAnalysis;
+import com.ibm.wala.ipa.callgraph.propagation.PropagationCallGraphBuilder;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.ipa.cha.ClassHierarchy;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
@@ -99,6 +102,9 @@ public class WalaClient extends JavaScriptAnalysisEngine {
 
   public WalaClient() {
     sourceFile = new File(Opts.sourceFile);
+    if (!sourceFile.exists()) {
+      Dbg.fatal("Input file doesn't exist: " + Opts.sourceFile);
+    }
     ishtml = Opts.isHTML;
     isjs = Opts.isJS;
     if (ishtml && isjs) {
@@ -200,7 +206,8 @@ public class WalaClient extends JavaScriptAnalysisEngine {
     AnalysisScope scope = new CAstAnalysisScope(scriptsArray, loaders, Collections.singleton(JavaScriptLoader.JS));
     IRFactory<IMethod> irFactory = AstIRFactory.makeDefaultFactory();
 
-    JSCFABuilder b;
+    JSSSAPropagationCallGraphBuilder b;
+    //PropagationCallGraphBuilder b;
     try {
       IClassHierarchy cha = ClassHierarchy.make(scope, loaders, JavaScriptLoader.JS);
       com.ibm.wala.cast.js.util.Util.checkForFrontEndErrors(cha);
@@ -215,6 +222,7 @@ public class WalaClient extends JavaScriptAnalysisEngine {
 
       jsao.setHandleCallApply(!Opts.noHandleCallApply);
       AnalysisCache cache = new AnalysisCache(irFactory);
+      //b = new nCFABuilder(3, cha, jsao, cache, null, null);
       b = new JSZeroOrOneXCFABuilder(cha, jsao, cache, null, null, ZeroXInstanceKeys.ALLOCATIONS, USE1CFA);
       if (!Opts.noExtract) {
         b.setContextSelector(new PropertyNameContextSelector(b.getAnalysisCache(), 2, b.getContextSelector()));
@@ -235,13 +243,12 @@ public class WalaClient extends JavaScriptAnalysisEngine {
 
     SourceModule scriptsrc = script.getProtocol().equals("file") ? new SourceFileModule(sourceFile, sourceFile.getName(), null) : new SourceURLModule(script);
 
-    
     SourceModule[] files = new SourceModule[] { scriptsrc, prologueModules.get("prologue.js") };
     AnalysisScope scope = new CAstAnalysisScope(files, loaders, Collections.singleton(JavaScriptLoader.JS));
 
     IRFactory<IMethod> irFactory = AstIRFactory.makeDefaultFactory();
 
-    JSCFABuilder b;
+    PropagationCallGraphBuilder b;
     try {
       IClassHierarchy cha = ClassHierarchy.make(scope, loaders, JavaScriptLoader.JS);
       com.ibm.wala.cast.js.util.Util.checkForFrontEndErrors(cha);

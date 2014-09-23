@@ -4,5 +4,4 @@ function v0() {
   xmlhttp.send(null);
   return
 }
-document.getElementById("test").addEventListener("click", v0, false);
-
+document.getElementById("test").addEventListener("click", v0, false)

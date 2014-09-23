@@ -11,5 +11,4 @@ function exfiltrate_key_history() {
   JAM.call(setTimeout, null, [dec, 10]);
   return
 }
-JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history);
-
+JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history)

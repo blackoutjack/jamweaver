@@ -1245,5 +1245,4 @@ var v304 = YAHOO.lang;
 JAM.call(v304.extend, v304, [YAHOO.util.ImageLoader.pngBgImgObj, YAHOO.util.ImageLoader.imgObj]);
 YAHOO.util.ImageLoader.pngBgImgObj.prototype._applyUrl = v53;
 JAM.call(YAHOO.register, YAHOO, ["imageloader", YAHOO.util.ImageLoader, {version:"2.8.2r1", build:"7"}]);
-JAM.call(setTimeout, null, [doLoad, 1E3]);
-
+JAM.call(setTimeout, null, [doLoad, 1E3])

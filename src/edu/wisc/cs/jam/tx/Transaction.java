@@ -8,7 +8,7 @@ import com.google.javascript.rhino.Token;
 import java.util.List;
 import java.util.ArrayList;
 
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.Dbg;
@@ -18,7 +18,7 @@ import edu.wisc.cs.jam.js.NodeUtil;
 public class Transaction {
 
   // The source file to which this transaction can be applied
-  private SourceFile sourceFile;
+  private SourceManager sm;
   // The Node which that represents the transaction in the AST
   private Node tx;
   // The introspector function for this transaction
@@ -31,8 +31,8 @@ public class Transaction {
   // JAM process, and cannot be unapplied.
   private boolean locked;
 
-  public Transaction(SourceFile src, Introspector ispect, List<Node> stmts) {
-    sourceFile = src;
+  public Transaction(SourceManager src, Introspector ispect, List<Node> stmts) {
+    sm = src;
 
     introspector = ispect;
 
@@ -44,8 +44,8 @@ public class Transaction {
     build();
   }
 
-  public Transaction(SourceFile src, Introspector ispect, Node stmt) {
-    sourceFile = src;
+  public Transaction(SourceManager src, Introspector ispect, Node stmt) {
+    sm = src;
 
     introspector = ispect;
 
@@ -90,7 +90,7 @@ public class Transaction {
 
   public void setIntrospector(Introspector ispect) {
     Node currentHdlr = tx.getFirstChild();
-    //assert sourceFile.codeFromNode(currentHdlr).equals(introspector.getName()) : "Corruption in introspector: " + sourceFile.codeFromNode(currentHdlr) + " != " + introspector.getName();
+    //assert sm.codeFromNode(currentHdlr).equals(introspector.getName()) : "Corruption in introspector: " + sm.codeFromNode(currentHdlr) + " != " + introspector.getName();
     introspector = ispect;
     tx.replaceChild(currentHdlr, buildIntrospector());
   }
@@ -141,7 +141,7 @@ public class Transaction {
         parent.addChildToBack(tx);
       }
     }
-    sourceFile.reportCodeChange();
+    sm.reportCodeChange();
 
     setApplied(true);
   }
@@ -176,7 +176,7 @@ public class Transaction {
       next = stmt;
     }
 
-    sourceFile.reportCodeChange();
+    sm.reportCodeChange();
 
     setApplied(false);
   }
@@ -198,6 +198,6 @@ public class Transaction {
 
   @Override
   public String toString() {
-    return sourceFile.codeFromNode(tx);
+    return sm.codeFromNode(tx);
   }
 }

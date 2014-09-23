@@ -2520,5 +2520,4 @@ JAM.call(midori.addEventListener, midori, [document, "mouseup", v101]);
 JAM.call(midori.addEventListener, midori, [document, "touchend", v102]);
 var midoriTab = {selectedTabs:{}, select:v103, init:v107};
 var midoriHistory = {history:[], modifyLocation:v108, add:v109, remove:v110, onChange:v111, init:v112};
-JAM.call(midori.setCookie, midori, [1, 2, 3, 4, 5]);
-
+JAM.call(midori.setCookie, midori, [1, 2, 3, 4, 5])

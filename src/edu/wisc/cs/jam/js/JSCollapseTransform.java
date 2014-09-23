@@ -30,14 +30,14 @@ import edu.wisc.cs.jam.ControlAutomaton;
 import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.JAMConfig;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.JAM;
 
 // Reuse ExpressionFlattener to maintain sequential variable naming.
 public class JSCollapseTransform extends JSTransform {
     
-  protected SourceFile sourceFile;
+  protected SourceManager sm;
   protected Set<String> temporaries;
 
   private int collapseCnt = 0;
@@ -47,10 +47,10 @@ public class JSCollapseTransform extends JSTransform {
   }
 
   @Override
-  public void run(SourceFile src) {
+  public void run(SourceManager src) {
     Node root = src.getRootNode();
     Compiler comp = src.getCompiler();
-    sourceFile = src;
+    sm = src;
 
     // This should be done after the JSCallTransform.
     Collector collect = new Collector();
@@ -254,7 +254,7 @@ public class JSCollapseTransform extends JSTransform {
       Node stmt = NodeUtil.getEnclosingStatement(n);
       Node stmtParent = stmt.getParent();
       if (stmtParent.getChildBefore(stmt) != decl.getParent()) {
-        //Dbg.dbg("This one: " + n + " / " + sourceFile.codeFromNode(stmt));
+        //Dbg.dbg("This one: " + n + " / " + sm.codeFromNode(stmt));
         return false;
       }
 

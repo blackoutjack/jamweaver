@@ -15,5 +15,4 @@ function g() {
 }
 x = 3;
 g();
-JAM.call(print, null, [x]);
-
+JAM.call(print, null, [x])

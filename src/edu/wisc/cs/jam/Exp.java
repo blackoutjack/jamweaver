@@ -3,8 +3,6 @@ package edu.wisc.cs.jam;
 import java.util.List;
 import java.util.Set;
 
-import edu.wisc.cs.jam.SourceFile;
-
 // An Exp is any program snippet that can be evaluated.
 public abstract class Exp extends SyntaxTree {
   // Exp-type-specific functions.
@@ -26,7 +24,7 @@ public abstract class Exp extends SyntaxTree {
   public abstract boolean isNoOp();
 
   // Utility methods.
-  public abstract SourceFile getSource();
+  public abstract SourceManager getSourceManager(); // %%% Might should just be a SourceFile
   public abstract Exp cloneTree();
   public abstract String toAST();
   public abstract String toQueryAST();

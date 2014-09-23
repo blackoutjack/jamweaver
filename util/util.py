@@ -394,6 +394,7 @@ def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=
     cmd.append(seeds)
 
   cmd.append(jspath)
+  cmd.append('-Y')
   cmd.extend(policies)
 
   # Display the command that's being invoked.

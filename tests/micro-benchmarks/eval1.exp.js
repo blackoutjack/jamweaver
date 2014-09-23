@@ -7,5 +7,4 @@ function f() {
   return
 }
 x = 0;
-f();
-
+f()

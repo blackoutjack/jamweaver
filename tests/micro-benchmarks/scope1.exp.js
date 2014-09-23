@@ -3,5 +3,4 @@ function a() {
   return z$$3
 }
 var z = 3;
-x = a();
-
+x = a()

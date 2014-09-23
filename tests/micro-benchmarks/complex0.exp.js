@@ -6,5 +6,4 @@ var z = 3;
 var currentRow = 1;
 var lastRow = 3;
 var nextRow = 2;
-result = x[currentRow] = (y[currentRow] + a * (result + x[currentRow = currentRow + 1] + x[lastRow = lastRow + 1] + x[nextRow = nextRow + 1])) * z;
-
+result = x[currentRow] = (y[currentRow] + a * (result + x[currentRow = currentRow + 1] + x[lastRow = lastRow + 1] + x[nextRow = nextRow + 1])) * z

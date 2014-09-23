@@ -49470,5 +49470,4 @@ Smits.PhyloCanvas.Render.CircularPhylogram.prototype = {};
 var XMLObjectifier = v1991();
 JAM.call(v2127.call, v2127, [this], JAM.policy.p3);
 JAM.call(v2226.call, v2226, [this], JAM.policy.p3);
-JAM.set(document.body, "onload", init);
-
+JAM.set(document.body, "onload", init)

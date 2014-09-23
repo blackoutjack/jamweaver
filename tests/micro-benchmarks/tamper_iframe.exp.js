@@ -20,5 +20,4 @@ JAM.call(frm.appendChild, frm, [button2]);
 JAM.call(frm.appendChild, frm, [script]);
 var v5 = document.body;
 JAM.call(v5.appendChild, v5, [frm]);
-JAM.set(document.getElementById("test"), "onclick", click_inner);
-
+JAM.set(document.getElementById("test"), "onclick", click_inner)

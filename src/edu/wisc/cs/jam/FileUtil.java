@@ -65,15 +65,11 @@ public class FileUtil {
     return initialized;
   }
 
-  public static void init(SourceFile src) {
+  public static void init(String appname) {
+    baseName = appname;
+    String dirname = getUniqueFilename(appname, "", TMP_DIR);
+    PROJECT_DIR = new File(dirname);
     try {
-      String[] srcparts = getBaseparts(src.getFilename());
-      baseName = srcparts[0];
-      if (JAM.Opts.appSuffix != null) {
-        baseName += "-" + JAM.Opts.appSuffix;
-      }
-      String dirname = getUniqueFilename(baseName, "", TMP_DIR);
-      PROJECT_DIR = new File(dirname);
       boolean ok = PROJECT_DIR.mkdirs();
       if (!ok) throw new IOException("Unable to create project directory.");
       initialized = true;
@@ -104,9 +100,24 @@ public class FileUtil {
     return baseName;
   }
 
+  public static synchronized File getSourceDir(String suffix) {
+    File srcdir = new File(PROJECT_DIR, "source-" + suffix);
+    if (!srcdir.exists()) {
+      try {
+        boolean ok = srcdir.mkdirs();
+        if (!ok) throw new IOException("Unable to create working directory: " + srcdir.getAbsolutePath());
+      } catch (SecurityException ex) {
+        Dbg.fatal("Unable to initialize working directory");
+      } catch (IOException ex) {
+        Dbg.fatal(ex.getMessage());
+      }
+    }
+    return srcdir;
+  }
+
   public static synchronized File newWorkingDir() {
+    workingDir = new File(getUniqueFilename("", "", PROJECT_DIR));
     try {
-      workingDir = new File(getUniqueFilename("", "", PROJECT_DIR));
       boolean ok = workingDir.mkdirs();
       if (!ok) throw new IOException("Unable to create working directory: " + workingDir.getAbsolutePath());
     } catch (SecurityException ex) {
@@ -117,7 +128,7 @@ public class FileUtil {
     return workingDir;
   }
 
-  public static String[] getBaseparts(String path) {
+  public static String[] getBaseParts(String path) {
     String base = new File(path).getName();
     String[] parts = base.split("\\.", 2);
     String basename = parts[0];
@@ -153,7 +164,7 @@ public class FileUtil {
   }
 
   public static String getUniqueFilename(String filename) {
-    String[] parts = getBaseparts(filename);
+    String[] parts = getBaseParts(filename);
     String basename = parts[0];
     String ext = parts[1];
     return getUniqueFilename(basename, ext, workingDir);
@@ -273,14 +284,14 @@ public class FileUtil {
     return fl.canRead();
   }
 
-  public static String copyFileToMain(String srcPath, String destFilename) {
+  public static String copyFileToMain(String srcpath, String destFilename) {
     try {
-      // %%% Annoyingly, |Files.copy| inserts carraige returns.
-      //Files.copy(new File(srcPath).toPath(), new File(getMainDir() + "/" + destFileName).toPath(), StandardCopyOption.REPLACE_EXISTING);
-      String contents = getFileContents(srcPath);
+      // %%% Annoyingly, |Files.copy| inserts carriage returns.
+      //Files.copy(new File(srcpath).toPath(), new File(getMainDir() + "/" + destFileName).toPath(), StandardCopyOption.REPLACE_EXISTING);
+      String contents = getFileContents(srcpath);
       return writeToMain(contents, destFilename, false, false);
     } catch (IOException ex) {
-      Dbg.err("Unable to copy file " + srcPath + " to " + destFilename + ": " + ex.getMessage());
+      Dbg.err("Unable to copy file " + srcpath + " to " + destFilename + ": " + ex.getMessage());
       return null;
     }
   }

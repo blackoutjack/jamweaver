@@ -18,5 +18,4 @@ switch(y) {
       x = 2
     }
 }
-JAM.call(print, null, ["x: " + x]);
-
+JAM.call(print, null, ["x: " + x])

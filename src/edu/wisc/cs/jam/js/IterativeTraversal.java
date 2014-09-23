@@ -4,23 +4,23 @@ import com.google.javascript.rhino.Node;
 import com.google.javascript.jscomp.NodeTraversal;
 import com.google.javascript.jscomp.NodeTraversal.Callback;
 
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 
 
 public abstract class IterativeTraversal implements Callback {
   private boolean changed;
   private boolean more;
-  protected SourceFile sourceFile;
+  protected SourceManager sm;
 
-  public IterativeTraversal(SourceFile src) {
-    sourceFile = src;
+  public IterativeTraversal(SourceManager src) {
+    sm = src;
     changed = false;
     more = false;
   }
 
   protected void flagChange(boolean val) {
     changed = val;
-    if (changed) sourceFile.reportCodeChange();
+    if (changed) sm.reportCodeChange();
   }
 
   protected void flagMore(boolean val) {

@@ -1476,5 +1476,4 @@ function writeTranslation(dnaSequence$$3, geneticCode$$1, startPos, strand) {
 }
 JAM.set(document, "onload", v3);
 JAM.set(document.getElementById("submitbtn"), "onclick", v4);
-JAM.set(document.getElementById("clearbtn"), "onclick", v5);
-
+JAM.set(document.getElementById("clearbtn"), "onclick", v5)

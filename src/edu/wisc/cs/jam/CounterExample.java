@@ -12,7 +12,7 @@ import java.io.IOException;
 import edu.wisc.cs.jam.js.JSExp;
 
 public class CounterExample {
-  private SourceFile sourceFile;
+  private SourceManager sm;
   private Semantics semantics;
   private PolicyPath policyPath;
   private CheckManager cm;
@@ -22,7 +22,7 @@ public class CounterExample {
   private List<RuntimeCheck> checks;
 
   public CounterExample(JAMAnalysis ja, RelationAutomaton raut, String trace) throws IllegalArgumentException {
-    sourceFile = ja.getSourceFile();
+    sm = ja.getSourceManager();
     semantics = ja.getSemantics();
     policyPath = ja.getPolicyPath();
     cm = ja.getCheckManager();
@@ -33,7 +33,7 @@ public class CounterExample {
   }
 
   public CounterExample(JAMAnalysis ja, List<ComboSymbol<PredicateSymbol,ExpSymbol>> trc) {
-    sourceFile = ja.getSourceFile();
+    sm = ja.getSourceManager();
     semantics = ja.getSemantics();
     policyPath = ja.getPolicyPath();
     cm = ja.getCheckManager();

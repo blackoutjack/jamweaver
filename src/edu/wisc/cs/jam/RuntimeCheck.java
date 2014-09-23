@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class RuntimeCheck {
 
   // The source file to which this check can be applied.
-  private SourceFile sourceFile;
+  private SourceManager sm;
   // The Exp to which this check is applied.
   private Exp location;
   // The policy edge that is evaluated by this check.
@@ -20,8 +20,8 @@ public class RuntimeCheck {
   // this JAM process.
   private boolean locked;
 
-  public RuntimeCheck(SourceFile src, Exp s, Policy.Edge edge) {
-    sourceFile = src;
+  public RuntimeCheck(SourceManager src, Exp s, Policy.Edge edge) {
+    sm = src;
     location = s;
     policyEdge = edge;
     
@@ -55,8 +55,8 @@ public class RuntimeCheck {
     return location;
   }
 
-  public SourceFile getSourceFile() {
-    return sourceFile;
+  public SourceManager getSourceManager() {
+    return sm;
   }
 
   // Insert this check into the source code.

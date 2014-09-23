@@ -20,4 +20,3 @@ var p;
 for(p in o) {
   alert("o[" + p + "]: " + o[p])
 }
-;

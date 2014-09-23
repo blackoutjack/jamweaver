@@ -3114,5 +3114,4 @@ GoogieSpell.prototype.appendIndicator = v229;
 GoogieSpell.prototype.createFocusLink = v230;
 var x = document.cookie;
 var googie1 = new GoogieSpell("./", "./spell-check/spell-check.php?lang=");
-JAM.call(googie1.decorateTextarea, googie1, ["ta1"]);
-
+JAM.call(googie1.decorateTextarea, googie1, ["ta1"])

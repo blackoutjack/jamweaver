@@ -13,7 +13,7 @@ import edu.wisc.cs.jam.Options;
 import edu.wisc.cs.jam.OptionParser;
 import edu.wisc.cs.jam.Semantics;
 import edu.wisc.cs.jam.Clause;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.ExpSymbol;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.FileUtil;
@@ -29,7 +29,7 @@ public class NativeIdentifier implements Utility {
 
   private static Opts options;
 
-  private SourceFile sourceFile;
+  private SourceManager sm;
   private Semantics semantics;
 
   public NativeIdentifier(Opts opts) {
@@ -37,7 +37,7 @@ public class NativeIdentifier implements Utility {
   }
 
   public String identify(String phrase) {
-    Exp s = JSExp.create(sourceFile, sourceFile.nodeFromCode(phrase));
+    Exp s = JSExp.create(sm, sm.nodeFromCode(phrase));
     ExpSymbol ss = new ExpSymbol(s);
 
     // Use the XSB semantics to interpret JavaScript snippets and get
@@ -66,9 +66,10 @@ public class NativeIdentifier implements Utility {
 
   @Override
   public void run() {
-    sourceFile = new JSFile("/dev/null");
-    FileUtil.init(sourceFile);
-    semantics = new JSSemantics(sourceFile);
+    sm = new JSSourceManager();
+    sm.addSourceFile(new JSSource("/dev/null"));
+    FileUtil.init(sm);
+    semantics = new JSSemantics(sm);
 
     for (String phrase : options.phrases) {
       String sentinel = identify(phrase);

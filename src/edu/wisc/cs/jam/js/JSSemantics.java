@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 
 import edu.wisc.cs.jam.Semantics;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.Dbg;
@@ -41,7 +41,7 @@ public class JSSemantics implements Semantics {
   private static int pv = 2121;
 
   private XSBInterface xsb;
-  private SourceFile sourceFile;
+  private SourceManager sm;
   private FunctionFacts functionFacts;
 
   // Properties that are incorporated into policy predicates. Extra
@@ -53,8 +53,8 @@ public class JSSemantics implements Semantics {
   private Set<String> namesOfInterest;
   private boolean hasNamesOfInterest = false;
 
-  public JSSemantics(SourceFile src) {
-    sourceFile = src;
+  public JSSemantics(SourceManager src) {
+    sm = src;
   }
 
   @Override
@@ -216,7 +216,7 @@ public class JSSemantics implements Semantics {
 
   public void loadFunctionFacts() {
     // Collect function information to augment the language semantics.
-    FunctionFacts ff = new FunctionFacts(sourceFile);
+    FunctionFacts ff = new FunctionFacts(sm);
     setFunctionFacts(ff);
   }
 
@@ -309,8 +309,8 @@ public class JSSemantics implements Semantics {
     // String. The primary reason was to maintain the exact syntax of
     // a predicate specified in the policy file when weaving that
     // predicate in a runtime check.
-    Node n = sourceFile.nodeFromCode(cond);
-    Exp s = JSExp.create(sourceFile, n);
+    Node n = sm.nodeFromCode(cond);
+    Exp s = JSExp.create(sm, n);
     String ast = s.toQueryAST();
 
     Clause pos = getConditionTestClause(ast, true);
@@ -324,8 +324,8 @@ public class JSSemantics implements Semantics {
     // Save the AST nodes for each of the values for later use.
     ret.getPositive().setStatement(s);
     PredicateValue negpv = ret.getNegative();
-    Node negn = sourceFile.nodeFromCode(negpv.getCondition());
-    Exp negs = JSExp.create(sourceFile, negn);
+    Node negn = sm.nodeFromCode(negpv.getCondition());
+    Exp negs = JSExp.create(sm, negn);
     negpv.setStatement(negs);
 
     return ret;
@@ -464,7 +464,7 @@ public class JSSemantics implements Semantics {
     Node lhs = NodeUtil.getAssignLHS(n);
     // %%% extend this to assignments to object properties
     if (!NodeUtil.isName(lhs)) return null;
-    String varname = NodeUtil.codeFromNode(lhs, s.getSource());
+    String varname = NodeUtil.codeFromNode(lhs, s.getSourceManager());
 
     Node rhs = NodeUtil.getAssignRHS(n);
     if (!NodeUtil.isObjectLiteral(rhs)) return null;
@@ -473,7 +473,7 @@ public class JSSemantics implements Semantics {
     for (int i=0; i<rhs.getChildCount(); i++) {
       Node memb = rhs.getChildAtIndex(i);
       if (NodeUtil.isString(memb)) {
-        String prop = NodeUtil.unquote(sourceFile.codeFromNode(memb));
+        String prop = NodeUtil.unquote(sm.codeFromNode(memb));
         props.add(prop);
       }
     }
@@ -525,13 +525,13 @@ public class JSSemantics implements Semantics {
       if (!NodeUtil.isName(objNode)) {
         return null;
       }
-      String obj = sourceFile.codeFromNode(objNode);
+      String obj = sm.codeFromNode(objNode);
 
       Node propNode = n.getChildAtIndex(1);
       if (!NodeUtil.isString(propNode)) {
         return null;
       }
-      String prop = NodeUtil.unquote(sourceFile.codeFromNode(propNode));
+      String prop = NodeUtil.unquote(sm.codeFromNode(propNode));
 
       String c = "propvaluesent(%H,%L,'\"" + obj + "\"',['\""
         + XSBInterface.escapeString(prop) + "\"'],'%T')";
@@ -540,7 +540,7 @@ public class JSSemantics implements Semantics {
     }
 
     if (NodeUtil.isName(n)) {
-      String varname = sourceFile.codeFromNode(n);
+      String varname = sm.codeFromNode(n);
       String c = "valuesent(%H,%L,'\"" + varname + "\"','%T')";
       return new Clause(c);
     }
@@ -587,7 +587,7 @@ public class JSSemantics implements Semantics {
     Clause clause = null;
     if (NodeUtil.isName(lhs)) {
 
-      String varname = NodeUtil.codeFromNode(lhs, s.getSource());
+      String varname = NodeUtil.codeFromNode(lhs, s.getSourceManager());
       if (varname.equals("policy")) return null;
 
       String c = "valuesent(%H,%L,'\"" + varname + "\"','%T')";
@@ -598,12 +598,12 @@ public class JSSemantics implements Semantics {
       if (!NodeUtil.isName(objNode)) {
         return null;
       }
-      String obj = sourceFile.codeFromNode(objNode);
+      String obj = sm.codeFromNode(objNode);
       Node propNode = lhs.getChildAtIndex(1);
       if (!NodeUtil.isString(propNode)) {
         return null;
       }
-      String prop = NodeUtil.unquote(sourceFile.codeFromNode(propNode));
+      String prop = NodeUtil.unquote(sm.codeFromNode(propNode));
 
       String c = "propvaluesent(%H,%L,'\"" + obj + "\"',['\""
         + XSBInterface.escapeString(prop) + "\"'],'%T')";

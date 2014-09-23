@@ -39,7 +39,7 @@ import edu.wisc.cs.jam.js.NodeUtil;
 public abstract class ControlStructure extends ControlAutomaton {
 
   // Input fed in from the main algorithm at construction.
-  protected SourceFile sourceFile;
+  protected SourceManager sm;
   protected CheckManager cm;
   
   // Maps a program statement to the control flow state that it lead to
@@ -212,13 +212,13 @@ public abstract class ControlStructure extends ControlAutomaton {
     // Make an edge from the last destination state in the top-level
     // program body to a new loop state.
     State loopState = new State();
-    ExpSymbol cbentry = new CallbackEntrySymbol(JSExp.createEmpty(sourceFile));
+    ExpSymbol cbentry = new CallbackEntrySymbol(JSExp.createEmpty(sm));
     Edge loopEdge = makeEdge(cbentry, lastMainState, loopState);
     addEdge(loopEdge);
 
     // We non-deterministically call all functions possibly targets by
     // callbacks.
-    ExpSymbol noop = new ExpSymbol(JSExp.createEmpty(sourceFile));
+    ExpSymbol noop = new ExpSymbol(JSExp.createEmpty(sm));
     for (Function curFunc : targets) {
       // Get the entry node for the current function      
       State targetEntry = functionEntryMap.get(curFunc);
@@ -239,7 +239,7 @@ public abstract class ControlStructure extends ControlAutomaton {
       // specific one, which can be useful for debugging.
       ExpSymbol retSym = globalReturn;
       if (retSym == null) {
-        retSym = new ReturnSymbol(sourceFile, curFunc);
+        retSym = new ReturnSymbol(sm, curFunc);
       }
 
       // Loop through all of the function's exit points
@@ -287,8 +287,8 @@ public abstract class ControlStructure extends ControlAutomaton {
     State externSource = new State();
     // %%% Might want a special symbol for this, but it's messing up
     // %%% the sentinel system currently.
-    //ExpSymbol externSymbol = new ExternEntrySymbol(sourceFile);
-    ExpSymbol externSymbol = new ExpSymbol(JSExp.createEmpty(sourceFile));
+    //ExpSymbol externSymbol = new ExternEntrySymbol(sm);
+    ExpSymbol externSymbol = new ExpSymbol(JSExp.createEmpty(sm));
     State externDest = new State();
     externCall = makeEdge(externSymbol, externSource, externDest);
     addEdge(externCall);
@@ -312,7 +312,7 @@ public abstract class ControlStructure extends ControlAutomaton {
   }
 
   protected void loadCallGraph() {
-    CallGraph cg = sourceFile.getCallGraph();
+    CallGraph cg = sm.getCallGraph();
     allCallsites = cg.getAllCallsites();
     mainFunction = cg.getMainFunction();
     // We copy in this funny way because modifications to the collection
@@ -366,7 +366,7 @@ public abstract class ControlStructure extends ControlAutomaton {
   }
 
   protected String getCode(Node n) {
-    return NodeUtil.codeFromNode(n, sourceFile);
+    return NodeUtil.codeFromNode(n, sm);
   }
 
   // Dump the current size of the automaton.

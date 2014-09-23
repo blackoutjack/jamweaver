@@ -676,5 +676,4 @@ if(typeof skipBenchmarks === "undefined") {
 }else {
   v162 = skipBenchmarks
 }
-var skipBenchmarks = v162;
-
+var skipBenchmarks = v162

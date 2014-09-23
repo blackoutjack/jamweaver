@@ -5,4 +5,3 @@ try {
 }finally {
   x = 3
 }
-;

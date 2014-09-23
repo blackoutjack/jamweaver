@@ -9295,4 +9295,3 @@ var v4040 = JAM.call(cram.getel, cram, ["supercookie"], JAM.policy.p1);
 introspect(JAM.policy.p2) {
   v2095.cookie = v4040
 }
-;

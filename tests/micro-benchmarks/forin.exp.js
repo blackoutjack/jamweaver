@@ -7,4 +7,3 @@ for(i in o) {
     x = o[i]
   }
 }
-;

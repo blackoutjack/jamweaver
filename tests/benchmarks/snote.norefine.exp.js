@@ -1936,5 +1936,4 @@ if(!v391) {
 }
 v88();
 new SNote("./SNote/", document.getElementById("div1"));
-new SNoteSwindler("", document.getElementById("div2"), "div1");
-
+new SNoteSwindler("", document.getElementById("div2"), "div1")

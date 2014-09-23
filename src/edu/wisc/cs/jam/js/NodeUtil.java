@@ -20,7 +20,7 @@ import com.google.javascript.rhino.Token;
 import com.google.javascript.jscomp.ClosureUtil;
 
 import edu.wisc.cs.jam.Exp;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.Dbg;
@@ -702,7 +702,7 @@ public class NodeUtil {
     return false;
   }
 
-  public static boolean returnsString(SourceFile src, Node n) {
+  public static boolean returnsString(SourceManager src, Node n) {
     if (n == null) return false;
     if (n.isString()) return true;
     if (n.isName()) {
@@ -722,7 +722,7 @@ public class NodeUtil {
     return false;
   }
 
-  public static boolean returnsNumber(SourceFile src, Node n) {
+  public static boolean returnsNumber(SourceManager src, Node n) {
     if (n == null) return false;
     if (n.isNumber()) return true;
     if (n.isName()) {
@@ -836,7 +836,7 @@ public class NodeUtil {
     return getEnclosingBlock(parent);
   }
 
-  public static String codeFromNode(Node n, SourceFile src) {
+  public static String codeFromNode(Node n, SourceManager src) {
     // The source file only provides for better formatting, so we can
     // safely fall back.
     if (src == null) return codeFromNode(n);
@@ -868,7 +868,7 @@ public class NodeUtil {
 
   // Returns a unique string for the given function
   // The string is based on the function's name and position in the source file
-  public static String funcHash(Node n, SourceFile src) {
+  public static String funcHash(Node n, SourceManager src) {
     String code;
     // The {main} dummy function has type BLOCK.
     if (n.getType() != Token.FUNCTION) {
@@ -880,7 +880,7 @@ public class NodeUtil {
   }
 
   /*
-  static String getFunctionTransition(Node n, SourceFile src) {
+  static String getFunctionTransition(Node n, SourceManager src) {
     return "{#" + funcHash(n, src) + "}";
   }
   */

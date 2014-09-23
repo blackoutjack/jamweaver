@@ -128,5 +128,4 @@ function run_tests() {
   return
 }
 add_onload_function(v1);
-do_js_beautify();
-
+do_js_beautify()

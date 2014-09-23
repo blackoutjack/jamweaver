@@ -11,12 +11,12 @@ import com.google.javascript.rhino.Token;
 
 import edu.wisc.cs.jam.xsb.XSBInterface;
 
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
 
 public class JSExp extends Exp {
-  protected SourceFile source;
+  protected SourceManager sm;
   protected Node node;
   protected boolean isstatement;
   protected boolean iscontrol;
@@ -165,30 +165,30 @@ public class JSExp extends Exp {
     return t == EXPR_RESULT || t == VAR || t == THROW || t == RETURN;
   }
 
-  protected JSExp(SourceFile src) {
+  protected JSExp(SourceManager src) {
     assert src != null;
-    source = src;
+    sm = src;
     isstatement = false;
     isblock = false;
     iscontrol = false;
     node = new Node(EMPTY);
   }
 
-  protected JSExp(SourceFile src, Node n) {
+  protected JSExp(SourceManager src, Node n) {
     // %%% Make this constructor protected, and have a public one that
-    // %%% takes only the SourceFile. This will prevent duplicates.
+    // %%% takes only the SourceManager. This will prevent duplicates.
     assert src != null;
     assert n != null;
     assert !nodeMap.containsKey(n) : "JSExp already created for node: " + n;
     node = n;
-    source = src;
+    sm = src;
 
     // Recursively generate child expressions.
     children = new ArrayList<Exp>();
     int cnt = node.getChildCount();
     for (int i=0; i<cnt; i++) {
       Node c = node.getChildAtIndex(i);
-      children.add(create(source, c));
+      children.add(create(sm, c));
     }
     isstatement = isStatementNode(node);
     isblock = isBlockNode(node);
@@ -196,11 +196,11 @@ public class JSExp extends Exp {
     nodeMap.put(n, this);
   }
 
-  public static JSExp createEmpty(SourceFile src) {
+  public static JSExp createEmpty(SourceManager src) {
     return new JSExp(src);
   }
 
-  public static JSExp create(SourceFile src, Node n) {
+  public static JSExp create(SourceManager src, Node n) {
     if (nodeMap.containsKey(n)) {
       return nodeMap.get(n);
     }
@@ -326,12 +326,12 @@ public class JSExp extends Exp {
     if (!isControl()) return null;
     Node cond = NodeUtil.getCondition(node);
     assert cond != null : "Null condition for control expression: " + toCode();
-    return create(source, cond);
+    return create(sm, cond);
   }
 
   @Override
   public Exp cloneTree() {
-    return create(source, node.cloneTree());
+    return create(sm, node.cloneTree());
   }
 
   // Return a textual representation of the node.
@@ -373,7 +373,7 @@ public class JSExp extends Exp {
           // Strip an enclosing transaction expression.
           c = c.getChildAtIndex(1);
           // The block should only contain 1 statement.
-          //assert c.getChildCount() == 1 : "Unexpected transaction expression block: " + source.codeFromNode(c) + " / " + c.getChildCount();
+          //assert c.getChildCount() == 1 : "Unexpected transaction expression block: " + sm.codeFromNode(c) + " / " + c.getChildCount();
           c = c.getLastChild();
         }
         return c;
@@ -439,7 +439,7 @@ public class JSExp extends Exp {
       sb.append(norm);
       sb.append("\"'");
       
-      String type = source.getType(name);
+      String type = sm.getType(name);
       if (type != null
           && NodeUtil.getEnclosingStatement(n).isExprResult()) {
         // %%% Somewhat conservative.
@@ -454,7 +454,7 @@ public class JSExp extends Exp {
       sb.append(",'\"");
 
       // This unescapes quotes in the body of the string also.
-      String strval = NodeUtil.unquote(source.codeFromNode(n));
+      String strval = NodeUtil.unquote(sm.codeFromNode(n));
 
       String escval = XSBInterface.escapeString(strval);
       sb.append(escval);
@@ -516,13 +516,13 @@ public class JSExp extends Exp {
   }
 
   @Override
-  public SourceFile getSource() {
-    return source;
+  public SourceManager getSourceManager() {
+    return sm;
   }
 
   @Override
   public String toCode() {
-    return source.codeFromNode(node);
+    return sm.codeFromNode(node);
   }
 
   protected String toShortCode() {
@@ -531,37 +531,37 @@ public class JSExp extends Exp {
       switch (node.getType()) {
         case IF:
           cond = NodeUtil.getCondition(node);
-          return "if (" + source.codeFromNode(cond) + ") {...}";
+          return "if (" + sm.codeFromNode(cond) + ") {...}";
         case WHILE:
           cond = NodeUtil.getCondition(node);
-          return "while (" + source.codeFromNode(cond) + ") {...}";
+          return "while (" + sm.codeFromNode(cond) + ") {...}";
         case DO:
           cond = NodeUtil.getCondition(node);
-          return "do {...} while (" + source.codeFromNode(cond) + ")";
+          return "do {...} while (" + sm.codeFromNode(cond) + ")";
         case FOR:
           if (NodeUtil.isStandardFor(node)) {
             cond = NodeUtil.getCondition(node);
-            String init = source.codeFromNode(node.getFirstChild());
-            String iter = source.codeFromNode(node.getChildAtIndex(2));
+            String init = sm.codeFromNode(node.getFirstChild());
+            String iter = sm.codeFromNode(node.getChildAtIndex(2));
             return "for (" + init + ";" + cond + ";" + iter + ") {...}";
           } else {
             assert NodeUtil.isForIn(node);
-            String inst = source.codeFromNode(node.getChildAtIndex(0));
-            String coll = source.codeFromNode(node.getChildAtIndex(1));
+            String inst = sm.codeFromNode(node.getChildAtIndex(0));
+            String coll = sm.codeFromNode(node.getChildAtIndex(1));
             return "for (" + inst + " in " + coll + ") {...}";
           }
         case SWITCH:
-          String exp = source.codeFromNode(node.getFirstChild());
+          String exp = sm.codeFromNode(node.getFirstChild());
           return "switch (" + exp + ") {...}";
         case CASE:
-          return "case " + source.codeFromNode(node.getFirstChild()) + ": ...";
+          return "case " + sm.codeFromNode(node.getFirstChild()) + ": ...";
         case DEFAULT_CASE:
           return "default: ...";
         case TRY:
           // %%% Alter according to what blocks are present.
           return "try {...} catch (...) {...} finally {...}";
         case CATCH:
-          return "catch (" + source.codeFromNode(node.getFirstChild()) + ") {...}";
+          return "catch (" + sm.codeFromNode(node.getFirstChild()) + ") {...}";
         default:
           Dbg.err("Unhandled control type: " + node);
           return "???";

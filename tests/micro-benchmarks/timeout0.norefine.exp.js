@@ -165,5 +165,4 @@ var c = document.createElement("img");
 c.src = b;
 JAM.call(document.write, document, [b]);
 var f = JAM.new(Function, ["x = 2"]);
-f();
-
+f()

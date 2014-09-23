@@ -9,5 +9,4 @@ function f() {
   alert(x);
   return
 }
-f();
-
+f()

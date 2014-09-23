@@ -168,7 +168,7 @@ public class JSPredicateLearner implements PredicateLearner {
   protected Predicate makeFunctionEntryPredicate(ExpSymbol sym) {
     Exp s = sym.getExp();
     Node n = ((JSExp)s).getNode();
-    String func = NodeUtil.funcHash(n, sym.getSourceFile());
+    String func = NodeUtil.funcHash(n, sym.getSourceManager());
 
     return makeFunctionEntryPredicate(func);
   }
@@ -201,7 +201,7 @@ public class JSPredicateLearner implements PredicateLearner {
     // %%% Only learn simple names currently.
     if (!NodeUtil.isName(cond)) {
       Dbg.out("WARNING: Learning condition predicate not supported: "
-        + NodeUtil.codeFromNode(cond, sym.getSourceFile()), 2);
+        + NodeUtil.codeFromNode(cond, sym.getSourceManager()), 2);
       return null;
     }
 

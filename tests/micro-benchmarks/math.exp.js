@@ -1,2 +1,1 @@
-x = JAM.call(Math.floor, Math, [Math.random()]);
-
+x = JAM.call(Math.floor, Math, [Math.random()])

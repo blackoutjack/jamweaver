@@ -1340,5 +1340,4 @@ function splitFasta(theDocument) {
 }
 JAM.set(document, "onload", v2);
 JAM.set(document.getElementById("submitbtn"), "onclick", v3);
-JAM.set(document.getElementById("clearbtn"), "onclick", v4);
-
+JAM.set(document.getElementById("clearbtn"), "onclick", v4)

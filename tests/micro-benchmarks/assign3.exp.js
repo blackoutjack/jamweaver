@@ -8,5 +8,4 @@ var i = 2;
 var b;
 var v0 = f();
 b = JAM.set(a, v0, a[v0] + 1);
-alert("a: " + a + " b: " + b + " i: " + i + " cnt: " + cnt);
-
+alert("a: " + a + " b: " + b + " i: " + i + " cnt: " + cnt)

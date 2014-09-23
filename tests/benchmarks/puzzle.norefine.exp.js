@@ -32138,5 +32138,4 @@ var v4038 = AJS;
 var v15743 = new AJS.Drag;
 v4038.dnd = v15743;
 script_loaded = true;
-JAM.call(AJS.withScope, AJS, [AJS, v195], JAM.policy.p1);
-
+JAM.call(AJS.withScope, AJS, [AJS, v195], JAM.policy.p1)

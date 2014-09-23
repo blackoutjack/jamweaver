@@ -7,5 +7,4 @@ function f() {
   var v = "OK".indexOf("K");
   return v
 }
-x = f();
-
+x = f()

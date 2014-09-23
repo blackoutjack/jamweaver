@@ -2,5 +2,4 @@ function f() {
   return 4
 }
 x = 3;
-x = f();
-
+x = f()

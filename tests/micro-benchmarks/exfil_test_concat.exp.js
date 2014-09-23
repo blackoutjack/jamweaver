@@ -13,5 +13,4 @@ function exfiltrate_key_history() {
   }
   return
 }
-JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history);
-
+JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history)

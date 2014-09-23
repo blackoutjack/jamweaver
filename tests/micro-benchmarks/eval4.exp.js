@@ -4,5 +4,4 @@ if(JAM.isEval(eval)) {
 }else {
   JAM.call(eval, null, ['a = "ok"'])
 }
-var b = a;
-
+var b = a

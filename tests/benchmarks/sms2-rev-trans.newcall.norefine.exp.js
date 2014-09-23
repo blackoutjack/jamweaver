@@ -1787,5 +1787,4 @@ AminoAcid.prototype.setDegenCodon = setDegenCodon;
 AminoAcid.prototype.getConsensusBase = getConsensusBase;
 JAM.set(document, "onload", v5);
 JAM.set(JAM.call(document.getElementById, document, ["submitbtn"], JAM.policy.p14), "onclick", v6);
-JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p14), "onclick", v7);
-
+JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p14), "onclick", v7)

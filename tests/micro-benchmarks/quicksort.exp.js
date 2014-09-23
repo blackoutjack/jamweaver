@@ -48,5 +48,4 @@ for(;v9;) {
   i = i + 1;
   v9 = i < cnt
 }
-quickSort(vals, 0, vals.length - 1);
-
+quickSort(vals, 0, vals.length - 1)

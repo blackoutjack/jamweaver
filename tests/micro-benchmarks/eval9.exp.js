@@ -8,5 +8,4 @@ function f() {
   return y$$31
 }
 x = 4;
-var z = f();
-
+var z = f()

@@ -11,4 +11,3 @@ for(;v2;) {
   i = i + 1;
   v2 = i < a.length
 }
-;

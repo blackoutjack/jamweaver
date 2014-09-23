@@ -71,5 +71,4 @@ for(;v14;) {
   i = i + 1;
   v14 = i < cnt
 }
-var sorted = mergeSort(vals);
-
+var sorted = mergeSort(vals)

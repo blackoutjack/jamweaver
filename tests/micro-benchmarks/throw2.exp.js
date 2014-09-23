@@ -1,4 +1,4 @@
 function f() {
   return"exception!"
 }
-throw f();
+throw f()

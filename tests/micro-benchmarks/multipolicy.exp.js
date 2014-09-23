@@ -9,5 +9,4 @@ var c = JAM.call(document.createElement, document, ["img"], JAM.policy.p2);
 introspect(JAM.policy.p3) {
   c.src = b
 }
-JAM.call(document.write, document, [b], JAM.policy.p5);
-
+JAM.call(document.write, document, [b], JAM.policy.p5)

@@ -1345,5 +1345,4 @@ function getBasesBasedOnCodonPosition(sequence$$19, position) {
 }
 JAM.set(document, "onload", v3);
 JAM.set(document.getElementById("submitbtn"), "onclick", v4);
-JAM.set(document.getElementById("clearbtn"), "onclick", v5);
-
+JAM.set(document.getElementById("clearbtn"), "onclick", v5)

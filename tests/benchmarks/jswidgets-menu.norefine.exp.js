@@ -1489,5 +1489,4 @@ if(is.w3c) {
 }
 document.body.background = "images/researchbg.gif";
 JAM.set(document.body, "onload", initialize);
-JAM.set(document.getElementById("cleardiv"), "onmouseover", clearAll);
-
+JAM.set(document.getElementById("cleardiv"), "onmouseover", clearAll)

@@ -1784,5 +1784,4 @@ new Codon("", 0, 0, 0);
 Codon.prototype.resetValues = resetValues;
 JAM.set(document, "onload", v4);
 JAM.set(document.getElementById("submitbtn"), "onclick", v5);
-JAM.set(document.getElementById("clearbtn"), "onclick", v6);
-
+JAM.set(document.getElementById("clearbtn"), "onclick", v6)

@@ -2518,5 +2518,4 @@ GB_showImageSet = v239;
 GB_Sets = JAM.call(GB_Gallery.extend, GB_Gallery, [{init:v240, showSet:v241, updateStatus:v242, _setCaption:v243, updateFrame:v244, switchPrev:v245, switchNext:v246}], JAM.policy.p1);
 JAM.call(AJS.AEV, AJS, [window, "load", v247], JAM.policy.p1);
 insertHeader();
-insertMenu("examples");
-
+insertMenu("examples")

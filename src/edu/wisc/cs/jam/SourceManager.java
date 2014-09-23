@@ -11,7 +11,9 @@ import com.google.javascript.jscomp.JAMControlFlowGraph;
 
 import java.util.List;
 
-public interface SourceFile {
+public interface SourceManager {
+  public abstract void saveSources(String dirname);
+  public abstract void addSource(Source fl);
   public abstract void preprocess();
   // %%% Remove the need for ControlAutomaton.
   public abstract void postprocess(ControlAutomaton c, CheckManager cm);

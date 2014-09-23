@@ -52,5 +52,4 @@ AttackAPI.PortScanner = {};
 AttackAPI.PortScanner.scanPort = v2;
 AttackAPI.PortScanner.scanTarget = v3;
 var v14 = AttackAPI.PortScanner;
-JAM.call(v14.scanTarget, v14, [cb, "localhost", [20, 21, 22, 23, 24, 100, 101, 102, 103], 1E3]);
-
+JAM.call(v14.scanTarget, v14, [cb, "localhost", [20, 21, 22, 23, 24, 100, 101, 102, 103], 1E3])

@@ -4,7 +4,7 @@ package edu.wisc.cs.jam.tx;
 import edu.wisc.cs.jam.RuntimeCheck;
 import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.Policy;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.automaton.State;
@@ -19,7 +19,7 @@ import edu.wisc.cs.jam.js.JSExp;
 // coordinates the addition and removal of Evaluators to Transactions.
 public class TransactionCheck extends RuntimeCheck {
 
-  public TransactionCheck(SourceFile src, Exp s, Policy.Edge edge) {
+  public TransactionCheck(SourceManager src, Exp s, Policy.Edge edge) {
     super(src, s, edge);
   }
 

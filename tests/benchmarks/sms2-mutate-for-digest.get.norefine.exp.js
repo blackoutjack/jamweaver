@@ -2147,5 +2147,4 @@ RestrictionSiteCollection.prototype.sortRestrictionSites = sortRestrictionSites;
 RestrictionSiteCollection.prototype.getSitesInRange = getSitesInRange;
 JAM.set(document, "onload", v7);
 JAM.set(document.getElementById("submitbtn"), "onclick", v8);
-JAM.set(document.getElementById("clearbtn"), "onclick", v9);
-
+JAM.set(document.getElementById("clearbtn"), "onclick", v9)

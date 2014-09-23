@@ -76,8 +76,8 @@ public class JAMAnalysis implements Runnable {
     if (JAM.Opts.debug) FileUtil.newWorkingDir();
   }
 
-  public SourceFile getSourceFile() {
-    return parent.getSourceFile();
+  public SourceManager getSourceManager() {
+    return parent.getSourceManager();
   }
 
   public Semantics getSemantics() {
@@ -233,7 +233,7 @@ public class JAMAnalysis implements Runnable {
       // Possibly save the current source code to file.
       if (JAM.Opts.intermediateOutput || JAM.Opts.debug) {
         String srcout = FileUtil.getBaseName() + "-" + iteration + ".js";
-        FileUtil.writeToFile(getSourceFile(), srcout);
+        FileUtil.writeToFile(getSourceManager(), srcout);
       }
     }
 

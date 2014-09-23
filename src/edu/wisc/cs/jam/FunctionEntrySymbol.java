@@ -9,8 +9,8 @@ public class FunctionEntrySymbol extends ExpSymbol {
 
 	private Function function;
 
-	public FunctionEntrySymbol(Function f, SourceFile src) {
-		super(JSExp.createEmpty(src));
+	public FunctionEntrySymbol(Function f, SourceManager sm) {
+		super(JSExp.createEmpty(sm));
 		function = f;
 	}
 	

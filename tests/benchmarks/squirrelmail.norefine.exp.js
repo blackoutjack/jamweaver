@@ -39,4 +39,3 @@ for(;v4;) {
 if(pos >= 0) {
   document.forms[i - 1].elements[pos].focus()
 }
-;

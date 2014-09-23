@@ -21,14 +21,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.Exp;
 
 // Gathers prolog facts about all of the functions in the source file
 public class FunctionFacts {
 
-  protected SourceFile sourceFile;
+  protected SourceManager sm;
   protected Collection<Function> allFunctions;
   protected Map<String,List<Function>> handlerAssignments;
   protected Map<String,List<Function>> callMap;
@@ -39,8 +39,8 @@ public class FunctionFacts {
   protected CallGraph cg;
   protected String functionPredicates;
 
-  public FunctionFacts(SourceFile src) {
-    sourceFile = src;
+  public FunctionFacts(SourceManager src) {
+    sm = src;
     functionPredicates = null;
 
     handlerAssignments = new LinkedHashMap<String,List<Function>>();
@@ -52,7 +52,7 @@ public class FunctionFacts {
 
   public String getFunctionPredicates() {
     if (functionPredicates == null) {
-      cg = sourceFile.getCallGraph();
+      cg = sm.getCallGraph();
       // We copy in this funny way because modifications to the collection
       // returned here will change the actual CallGraph!
       Collection<Function> allFunctionsOrig = cg.getAllFunctions();
@@ -68,8 +68,8 @@ public class FunctionFacts {
       */
       assert allFunctions != null;
 
-      Node root = sourceFile.getRootNode();
-      Compiler comp = sourceFile.getCompiler();
+      Node root = sm.getRootNode();
+      Compiler comp = sm.getCompiler();
       //NodeUtil.dumpAST(root);
       //NodeUtil.dumpCallGraph(cg);
       NodeTraversal.traverse(comp, root, new EventHandlerVisitor());
@@ -609,7 +609,7 @@ public class FunctionFacts {
 
   // Convenience functions
   protected String getCode(Node n) {
-    return NodeUtil.codeFromNode(n, sourceFile);
+    return NodeUtil.codeFromNode(n, sm);
   }
 
   @Override

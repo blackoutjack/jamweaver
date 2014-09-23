@@ -4,5 +4,4 @@ function transformed() {
   return
 }
 transformed();
-alert(xxx);
-
+alert(xxx)

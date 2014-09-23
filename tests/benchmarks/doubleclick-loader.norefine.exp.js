@@ -64,5 +64,4 @@ function getURLParameter(url$$3, name$$31, delimiter) {
   }
   return v
 }
-rtmItURL();
-
+rtmItURL()

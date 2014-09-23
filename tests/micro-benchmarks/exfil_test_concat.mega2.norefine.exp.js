@@ -13,5 +13,4 @@ function exfiltrate_key_history() {
   }
   return
 }
-JAM.set(JAM.call(JAM.get(document, "getElementById", JAM.policy.p5), document, ["test"], JAM.policy.p5), "onclick", exfiltrate_key_history, JAM.policy.p3);
-
+JAM.set(JAM.call(JAM.get(document, "getElementById", JAM.policy.p5), document, ["test"], JAM.policy.p5), "onclick", exfiltrate_key_history, JAM.policy.p3)

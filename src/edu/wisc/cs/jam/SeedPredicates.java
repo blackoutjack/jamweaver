@@ -27,10 +27,10 @@ public class SeedPredicates {
     globalSeedPredicates = new ArrayList<List<Predicate>>();
     policySeedPredicates = new HashMap<Policy.Edge,List<List<Predicate>>>();
 
-    init(jam.getPolicy(), jam.getSemantics(), jam.getSourceFile());
+    init(jam.getPolicy(), jam.getSemantics(), jam.getSourceManager());
   }
 
-  protected void init(Policy p, Semantics sem, SourceFile src) {
+  protected void init(Policy p, Semantics sem, SourceManager sm) {
     if (seedFilePath == null) return;
 
     List<String> lines = null;

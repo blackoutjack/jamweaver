@@ -14,4 +14,3 @@ try {
 }catch(ex$$1) {
   console.error(ex$$1.name + ": " + ex$$1.message)
 }
-;

@@ -75,5 +75,4 @@ for(;v19;) {
 var done = move(num, initialStack, targetStack, auxStack);
 alert("Initial: " + initialStack);
 alert("Aux: " + auxStack);
-alert("Target: " + targetStack);
-
+alert("Target: " + targetStack)

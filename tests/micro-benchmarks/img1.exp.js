@@ -7,5 +7,4 @@ var elts = document.getElementsByTagName("div");
 var elt = elts.item(0);
 JAM.set(elt, "innerHTML", html);
 alert("indexOf 1: " + String.prototype.indexOf);
-JAM.call(setTimeout, null, [v0, 1E3]);
-
+JAM.call(setTimeout, null, [v0, 1E3])

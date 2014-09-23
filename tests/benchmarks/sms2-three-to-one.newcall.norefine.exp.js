@@ -1322,5 +1322,4 @@ function getInfoFromTitleAndSequenceTriplets(fastaSequenceTitle$$4, sequence$$18
 }
 JAM.set(document, "onload", v3);
 JAM.set(JAM.call(document.getElementById, document, ["submitbtn"], JAM.policy.p14), "onclick", v4);
-JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p14), "onclick", v5);
-
+JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p14), "onclick", v5)

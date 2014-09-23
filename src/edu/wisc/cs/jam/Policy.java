@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class Policy extends Automaton<State,PredicateSymbol> {
   
-  private SourceFile sourceFile;
+  private SourceManager sm;
   private Semantics semantics;
   private PolicyLanguage language;
 
@@ -54,7 +54,7 @@ public class Policy extends Automaton<State,PredicateSymbol> {
 
   public Policy(JAM jam, PolicyLanguage lang, List<String> files) {
 
-    sourceFile = jam.getSourceFile();
+    sm = jam.getSourceManager();
     semantics = jam.getSemantics();
     language = lang;
 
@@ -324,8 +324,8 @@ public class Policy extends Automaton<State,PredicateSymbol> {
     return semantics;
   }
 
-  public SourceFile getSourceFile() {
-    return sourceFile;
+  public SourceManager getSourceManager() {
+    return sm;
   }
 
   public State getState(int idx) {

@@ -285,5 +285,4 @@ function SNoteSwindler(serverPath$$4, divParent$$2, strNoteId) {
 var message = "Here's a secret stored message";
 var password = "test";
 new SNote("./SNote/", document.getElementById("div1"));
-new SNoteSwindler("", document.getElementById("div2"), "div1");
-
+new SNoteSwindler("", document.getElementById("div2"), "div1")

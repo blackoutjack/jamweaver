@@ -4,5 +4,4 @@ function f() {
   }
   return
 }
-JAM.call(setTimeout, null, [f, 1E3]);
-
+JAM.call(setTimeout, null, [f, 1E3])

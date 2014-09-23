@@ -25,7 +25,7 @@ import edu.wisc.cs.jam.ControlAutomaton;
 import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.JAMConfig;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.PolicyType;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.JAM;
@@ -48,7 +48,7 @@ public class JSIndirectionTransform extends JSTransform {
 
   protected CheckManager cm;
   protected ControlAutomaton caut;
-  protected SourceFile sourceFile;
+  protected SourceManager sm;
 
   protected static Set<String> dynamicExterns;
   protected static Set<String> dynamicProperties;
@@ -231,8 +231,8 @@ public class JSIndirectionTransform extends JSTransform {
   }
   
   @Override
-  public void run(SourceFile src) {
-    sourceFile = src;
+  public void run(SourceManager src) {
+    sm = src;
 
     // These are HashSet rather than LinkedHashSet since we only ever
     // check containment.
@@ -242,26 +242,26 @@ public class JSIndirectionTransform extends JSTransform {
       Node tgtNode = callNode.getFirstChild();
       // Higher-order scripts need at least 1 argument to do anything.
       if (callNode.getChildCount() > 1) {
-        conservativeCalls.add(sourceFile.codeFromNode(tgtNode));
+        conservativeCalls.add(sm.codeFromNode(tgtNode));
       }
     }
 
     dynamicCalls = new HashSet<String>();
     for (Callsite cs : caut.getExternCalls()) {
       for (Node ex : cs.getPossibleExternTargets()) {
-        String s = sourceFile.codeFromNode(ex);
+        String s = sm.codeFromNode(ex);
         if (dynamicExterns.contains(s)) {
           Node callNode = cs.getAstNode();
           Node tgtNode = callNode.getFirstChild();
           if (callNode.getChildCount() > 1) {
-            dynamicCalls.add(sourceFile.codeFromNode(tgtNode));
+            dynamicCalls.add(sm.codeFromNode(tgtNode));
           }
         }
       }
     }
 
-    Compiler comp = sourceFile.getCompiler();
-    Node root = sourceFile.getRootNode();
+    Compiler comp = sm.getCompiler();
+    Node root = sm.getRootNode();
 
     NodeTraversal.traverse(comp, root, new Indirector());
 
@@ -276,9 +276,9 @@ public class JSIndirectionTransform extends JSTransform {
     }
 
     // Generate the transformed output.
-    sourceFile.reportCodeChange();
+    sm.reportCodeChange();
     String filename = FileUtil.getBaseName() + "-indirection.js";
-    FileUtil.writeToMain(sourceFile.toString() + "\n", filename);
+    FileUtil.writeToMain(sm.toString() + "\n", filename);
   }
 
   // Create an array literal holding the call receiver, followed by
@@ -353,7 +353,7 @@ public class JSIndirectionTransform extends JSTransform {
 
     // Replace the old call with the constructed library call.
     parent.replaceChild(n, libCall);
-    sourceFile.reportCodeChange();
+    sm.reportCodeChange();
   }
 
   // Perform a transformation on (potential) direct eval calls.
@@ -503,7 +503,7 @@ public class JSIndirectionTransform extends JSTransform {
 
     if (tgt.isCall()) {
       Node subtgt = tgt.getFirstChild();
-      String subs = sourceFile.codeFromNode(subtgt);
+      String subs = sm.codeFromNode(subtgt);
       if (subs.equals("JAM.get")) {
         // Return the first argument.
         Node rec = tgt.getChildAtIndex(1).cloneTree();
@@ -519,7 +519,7 @@ public class JSIndirectionTransform extends JSTransform {
     } else if (tgt.isName()) {
       // This case is expected. 
     } else {
-      Dbg.warn("Unexpected call target case: " + sourceFile.codeFromNode(tgt));      
+      Dbg.warn("Unexpected call target case: " + sm.codeFromNode(tgt));      
     }
 
     return tgt;
@@ -534,7 +534,7 @@ public class JSIndirectionTransform extends JSTransform {
     Node rec = null;
     if (tgt.isCall()) {
       Node subtgt = tgt.getFirstChild();
-      String subs = sourceFile.codeFromNode(subtgt);
+      String subs = sm.codeFromNode(subtgt);
       if (subs.equals("JAM.get")) {
         // Return the first argument.
         rec = tgt.getChildAtIndex(1);
@@ -544,7 +544,7 @@ public class JSIndirectionTransform extends JSTransform {
     } else if (tgt.isName()) {
       rec = null;
     } else {
-      Dbg.warn("Unexpected call target case: " + sourceFile.codeFromNode(tgt));      
+      Dbg.warn("Unexpected call target case: " + sm.codeFromNode(tgt));      
     }
 
     return rec;
@@ -558,14 +558,14 @@ public class JSIndirectionTransform extends JSTransform {
     }
     Node tgt = getCallTarget(n);
 
-    String s = sourceFile.codeFromNode(tgt);
+    String s = sm.codeFromNode(tgt);
     return dynamicCalls.contains(s) || conservativeCalls.contains(s);
   }
 
   protected boolean maybeDirectEvalCall(Node n) {
     assert n.isCall() || n.isNew();
     Node tgtNode = n.getFirstChild();
-    String s = sourceFile.codeFromNode(tgtNode);
+    String s = sm.codeFromNode(tgtNode);
     return s.equals("eval");
   }
 
@@ -588,7 +588,7 @@ public class JSIndirectionTransform extends JSTransform {
     } else if (prop.isName()) {
       // This is the general element access case.
       String propName = prop.getString();
-      String propType = sourceFile.getType(propName);
+      String propType = sm.getType(propName);
       if (propType == null || propType.equals("String")) {
         doTransform = true;
       }
@@ -652,7 +652,7 @@ public class JSIndirectionTransform extends JSTransform {
           }
         }
       } else if (NodeUtil.isAssign(n)) {
-        assert n.isAssign() : "Non-standard assign statement within a transaction: " + sourceFile.codeFromNode(n);
+        assert n.isAssign() : "Non-standard assign statement within a transaction: " + sm.codeFromNode(n);
         // %%% Currently we don't handle assignments to global/with props.
         Node lhs = NodeUtil.getAssignLHS(n);
         if (NodeUtil.isAccessor(lhs)) {
@@ -739,7 +739,7 @@ public class JSIndirectionTransform extends JSTransform {
       } else if (NodeUtil.isTransaction(n)) {
         if (txNodesToIndirect.contains(n)) {
           TxIndirector txi = new TxIndirector(n);
-          Compiler comp = sourceFile.getCompiler();
+          Compiler comp = sm.getCompiler();
           // Traverse the transaction block and indirect as needed.
           NodeTraversal.traverse(comp, n, txi);
         }

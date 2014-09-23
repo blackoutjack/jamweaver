@@ -6,5 +6,4 @@ function exfiltrate_key_history() {
   button.dispatchEvent(event$$1);
   return
 }
-JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history);
-
+JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history)

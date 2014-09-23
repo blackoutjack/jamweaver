@@ -2077,5 +2077,4 @@ if(!v456) {
 }
 v98();
 new SNote("", document.getElementById("div1"));
-new Clock("", document.getElementById("div2"));
-
+new Clock("", document.getElementById("div2"))

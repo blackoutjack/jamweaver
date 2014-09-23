@@ -3,5 +3,4 @@ function v0() {
 }
 var a = {};
 JAM.call(Object.defineProperty, Object, [a, "ok", {get:v0}]);
-alert(a.ok);
-
+alert(a.ok)

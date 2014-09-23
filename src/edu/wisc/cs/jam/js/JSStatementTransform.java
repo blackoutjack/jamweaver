@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.lang.Iterable;
 
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Dbg;
 
 public class JSStatementTransform extends JSTransform {
@@ -30,7 +30,7 @@ public class JSStatementTransform extends JSTransform {
   protected Set<String> simpleTmpDefs;
 
   @Override
-  public void run(SourceFile src) {
+  public void run(SourceManager src) {
     Node root = src.getRootNode();
 
     Compiler comp = src.getCompiler();
@@ -79,7 +79,7 @@ public class JSStatementTransform extends JSTransform {
 
   public class StatementSplit extends IterativeTraversal {
     
-    public StatementSplit(SourceFile src) {
+    public StatementSplit(SourceManager src) {
       super(src);
       tmpDefs = new HashSet<Node>();
       tmpUses = new HashSet<Node>();
@@ -224,7 +224,7 @@ public class JSStatementTransform extends JSTransform {
           for (int i=0; i<childCnt; i++) {
             Node memb = n.getChildAtIndex(i);
             // This applies to getter and setter definitions also.
-            assert memb.getChildCount() == 1 : "Object literal member without 1 child: " + sourceFile.codeFromNode(memb);
+            assert memb.getChildCount() == 1 : "Object literal member without 1 child: " + sm.codeFromNode(memb);
             Node val = memb.getFirstChild();
             if (!isVerySimple(val)) return false;
           } 
@@ -332,13 +332,13 @@ public class JSStatementTransform extends JSTransform {
         String id = tmpName.getString();
         /*
         if (n.isName()) {
-          sourceFile.propagateType(n.getString(), id);
+          sm.propagateType(n.getString(), id);
         } else if (NodeUtil.returnsBoolean(n)) {
-          sourceFile.setType(id, "Boolean");
-        } else if (NodeUtil.returnsString(sourceFile, n)) {
-          sourceFile.setType(id, "String");
-        } else if (NodeUtil.returnsNumber(sourceFile, n)) {
-          sourceFile.setType(id, "Number");
+          sm.setType(id, "Boolean");
+        } else if (NodeUtil.returnsString(sm, n)) {
+          sm.setType(id, "String");
+        } else if (NodeUtil.returnsNumber(sm, n)) {
+          sm.setType(id, "Number");
         }
         */
 
@@ -1224,7 +1224,7 @@ public class JSStatementTransform extends JSTransform {
             // Case blocks may be wrapped, and break statements occupy a
             // second sub-block.
             assert blockChildCnt == 1 || (blockChildCnt == 2 && block.getChildAtIndex(1).isBreak())
-              : "Unknown sub-block format for case statement: " + sourceFile.codeFromNode(c);
+              : "Unknown sub-block format for case statement: " + sm.codeFromNode(c);
             block = block.getFirstChild();
           }
           assert block.isBlock();
@@ -1454,9 +1454,9 @@ public class JSStatementTransform extends JSTransform {
           || typ == Token.RETURN) {
         Node e = n.getFirstChild();
         if (!isSimpleExpression(t, e, n)) {
-          //Dbg.dbg("BEFORE: " + sourceFile.codeFromNode(n));
+          //Dbg.dbg("BEFORE: " + sm.codeFromNode(n));
           if (transform(t, e, n)) {
-            //Dbg.dbg("AFTER: " + sourceFile.codeFromNode(n));
+            //Dbg.dbg("AFTER: " + sm.codeFromNode(n));
             flagChange(true);
           }
         }

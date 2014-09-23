@@ -96,5 +96,4 @@ function boldEvents() {
   }
   return
 }
-v1(window, pVH = v2);
-
+v1(window, pVH = v2)

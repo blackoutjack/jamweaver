@@ -7,5 +7,4 @@ function c() {
   return
 }
 var o = new c;
-var a = JAM.call(o.m, o, ["ok"]);
-
+var a = JAM.call(o.m, o, ["ok"])

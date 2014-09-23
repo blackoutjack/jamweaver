@@ -1976,5 +1976,4 @@ RangeGroup.prototype.addRange = addRange;
 RangeGroup.prototype.writeRanges = writeRanges;
 JAM.set(document, "onload", v10);
 JAM.set(document.getElementById("submitbtn"), "onclick", v11);
-JAM.set(document.getElementById("clearbtn"), "onclick", v12);
-
+JAM.set(document.getElementById("clearbtn"), "onclick", v12)

@@ -6,4 +6,3 @@ x = 6;
 introspect(JAM.policy.p2) {
   x = 5
 }
-;

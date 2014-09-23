@@ -3,5 +3,4 @@ if(JAM.isEval(eval)) {
 }else {
   JAM.call(eval, null, ['eval("var xxx = 10;");'])
 }
-alert(xxx);
-
+alert(xxx)

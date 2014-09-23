@@ -25,7 +25,7 @@ import edu.wisc.cs.automaton.State;
 
 import edu.wisc.cs.jam.JAM;
 import edu.wisc.cs.jam.ExpSymbol;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.ReturnSymbol;
@@ -49,8 +49,8 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
   // Maps callsite references to functions they might target
   private Map<String,Set<Function>> callTargetMap;
 
-  public JSInterproceduralControlStructure(SourceFile src, CheckManager cman) {
-    super(src, cman);
+  public JSInterproceduralControlStructure(SourceManager sm, CheckManager cman) {
+    super(sm, cman);
   }
 
   // Clear all accumulated state to free memory.
@@ -342,7 +342,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
       State newCallSource = new State();
       callStateMap.put(curSite, newCallSource);
 
-      Exp s = JSExp.create(sourceFile, curSiteStmt);
+      Exp s = JSExp.create(sm, curSiteStmt);
       ExpSymbol sym = new ExpSymbol(s);
 
       for (Function curFunc : targets) {
@@ -464,11 +464,11 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
 
         // Generate a symbol consisting only of the callsite (and not
         // the containing statement).
-        Exp callExp = JSExp.create(sourceFile, curSiteNode);
+        Exp callExp = JSExp.create(sm, curSiteNode);
         // %%% I'd like to have the call syntax on the edge, but then
         // %%% it's not easy to skip addl. queries for the node.
         //ExpSymbol callSymbol = new ExpSymbol(callExp);
-        ExpSymbol callSymbol = new ExpSymbol(JSExp.createEmpty(sourceFile));
+        ExpSymbol callSymbol = new ExpSymbol(JSExp.createEmpty(sm));
 
         for (Function curFunc : targets) {
           // Create the NWA call edge.
@@ -512,7 +512,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
           // %%% Abstract this (duplicated in buildReturnEdges).
           ExpSymbol retSym = globalReturn;
           if (retSym == null) {
-            retSym = new ReturnSymbol(sourceFile, null);
+            retSym = new ReturnSymbol(sm, null);
           }
           State externReturn = externCall.getDestination();
           Edge externReturnEdge = makeReturnEdge(retSym, externReturn, callEdgeSource, retState);
@@ -553,7 +553,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
       // specific one, which can be useful for debugging.
       ExpSymbol retSym = globalReturn;
       if (retSym == null) {
-        retSym = new ReturnSymbol(sourceFile, curFunc);
+        retSym = new ReturnSymbol(sm, curFunc);
       }
 
       // Consult the callgraph.
@@ -695,13 +695,13 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
       FileUtil.writeToMain("allFunctions:" + allFunctions.size() + "\nallCallsites:" + allCallsites.size() + "\n", JAMConfig.INFO_FILENAME, true);
 
     // Collect event handler information.
-    Node root = sourceFile.getRootNode();
-    Compiler comp = sourceFile.getCompiler();
+    Node root = sm.getRootNode();
+    Compiler comp = sm.getCompiler();
     NodeTraversal.traverse(comp, root, this);
 
-    Node externs = sourceFile.getExterns();
+    Node externs = sm.getExterns();
     JAMControlFlowGraph cfg =
-      new JAMControlFlowGraph(this, sourceFile, externs, root);
+      new JAMControlFlowGraph(this, sm, externs, root);
 
     buildIntraproceduralEdges(cfg);
     buildInterproceduralEdges();

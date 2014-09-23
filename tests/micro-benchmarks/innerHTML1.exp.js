@@ -4,5 +4,4 @@ introspect(JAM.process) {
   var v0 = div.childNodes;
   var d = v0[0]
 }
-alert("VALUE: " + d);
-
+alert("VALUE: " + d)

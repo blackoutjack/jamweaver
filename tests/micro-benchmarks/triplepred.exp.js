@@ -12,5 +12,4 @@ var v2 = Math.random();
 introspect(JAM.policy.p2) {
   x = v2 * 3
 }
-x = 6;
-
+x = 6

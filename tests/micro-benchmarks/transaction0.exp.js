@@ -8,4 +8,3 @@ introspect(pol) {
     x = 2
   }
 }
-;

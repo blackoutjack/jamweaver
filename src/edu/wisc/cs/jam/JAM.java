@@ -29,7 +29,7 @@ public class JAM {
   private Language language;
 
   // Input to the algorithm
-  private SourceFile sourceFile;
+  private SourceManager sm;
   private Policy policy;
   private SeedPredicates seedPredicates;
 
@@ -37,14 +37,17 @@ public class JAM {
   private ControlAutomaton caut;
   private CheckManager cm;
 
+  // Name of the application being analyzed.
+  private String applicationName;
+
   // Track the number of counter-examples found.
   private int counterExampleCount = 0;
 
 
   // Public getters
 
-  public SourceFile getSourceFile() {
-    return sourceFile;
+  public SourceManager getSourceManager() {
+    return sm;
   }
 
   public CheckManager getCheckManager() {
@@ -168,44 +171,65 @@ public class JAM {
     }
   }
 
-  // Initial load and one-time processing of source.
-  protected void preanalyze() {
-    // Check for file existence.
-    if (!FileUtil.isAccessible(Opts.sourceFile)) {
-      Dbg.err("Input source is not accessible: " + Opts.sourceFile);
-      System.exit(0);
-    }
-    if (Opts.policyFiles != null) {
-      for (String polFile : Opts.policyFiles) {
-        if (!FileUtil.isAccessible(polFile)) {
-          Dbg.err("Input policy file is not accessible: " + polFile);
-          System.exit(0);
-        }
+  // Check for file existence, and quit if a file is not found.
+  protected void ensureFilesExist(List<String> files) {
+    if (files == null) return;
+    for (String path : files) {
+      if (!FileUtil.isAccessible(path)) {
+        Dbg.fatal("Input file is not accessible: " + path);
       }
     }
+  }
 
-    sourceFile = language.newSourceFile(Opts.sourceFile);
-    // %%% Check for errors in JSFile constructor. 
+  public String getApplicationName() {
+    if (applicationName != null) {
+      // All subsequent calls go here.
+      return applicationName;
+    }
+
+    if (Opts.appName != null) {
+      applicationName = Opts.appName;
+    } else {
+      assert Opts.sourceFiles.size() > 0;
+      // Legacy method
+      String filename = Opts.sourceFiles.get(0);
+      String[] srcparts = FileUtil.getBaseParts(filename);
+      applicationName = srcparts[0];
+      if (Opts.appSuffix != null) {
+        applicationName += "-" + Opts.appSuffix;
+      }
+    }
+    return applicationName;
+  }
+
+  // Initial load and one-time processing of source.
+  protected void preanalyze() {
+    ensureFilesExist(Opts.sourceFiles);
+    ensureFilesExist(Opts.policyFiles);
+
+    sm = language.newSourceManager(Opts.sourceFiles);
+    // %%% Check for errors in JSSourceManager constructor. 
 
     // Initialize the FileUtil module to facilitate gathering
     // all intermediate/debugging output in a single location.
-    FileUtil.init(sourceFile);
+    FileUtil.init(getApplicationName());
 
-    FileUtil.copyFileToMain(Opts.sourceFile, FileUtil.getBaseName() + "-original.js" );
+    // Save the original source files.
+    sm.saveSources("original");
 
     // Break complex statements into simpler but semantically equal
     // constituents.
-    if (!Opts.skipPreprocess) sourceFile.preprocess();
+    if (!Opts.skipPreprocess) sm.preprocess();
 
     // Create the Semantics object.
-    language.newSemantics(sourceFile);
+    language.newSemantics(sm);
 
     // Load the policy paths from the given arguments.
     initPolicy();
 
     // Load the control structure for the program once here.
-    cm = language.newCheckManager(sourceFile, policy);
-    caut = language.newControlAutomaton(sourceFile, cm);
+    cm = language.newCheckManager(sm, policy);
+    caut = language.newControlAutomaton(sm, cm);
     if (Opts.debug) FileUtil.writeToMain(caut, "control.aut");
 
     // %%% The objects being initialized here are in a tangled mess of
@@ -250,11 +274,14 @@ public class JAM {
       FileUtil.writeToMain("checks:" + cm.getCheckCount() + "\n", JAMConfig.INFO_FILENAME, true);
     }
 
-    sourceFile.postprocess(getControlAutomaton(), getCheckManager());
+    sm.postprocess(getControlAutomaton(), getCheckManager());
 
-    if (!Opts.noOut) System.out.println(sourceFile);
+    // Save the final source files.
+    sm.saveSources("final");
 
-    sourceFile.finalize();
+    if (!Opts.noOut) System.out.println(sm);
+
+    sm.finalize();
   }
 
   public JAM(Language l) {
@@ -278,7 +305,7 @@ public class JAM {
         jam.run();
       }
       // Output the instrumented source.
-      FileUtil.writeToMain(jam.getSourceFile(), FileUtil.getBaseName() + "-instrumented.js");
+      FileUtil.writeToMain(jam.getSourceManager(), FileUtil.getBaseName() + "-instrumented.js");
       Dbg.out("Summary: " + jam.getCounterExampleCount() + " counterexamples found; "
         + jam.getCheckManager().getCheckCount() + " runtime checks inserted", 1);
     }
@@ -302,10 +329,10 @@ public class JAM {
 
   public static class Opts extends Options {
 
-    @Argument(required=true, index=0, usage="source file", metaVar="SRCFILE")
-    public static String sourceFile;
+    @Argument(required=true, index=0, usage="source file(s)", metaVar="SRCFILE+", multiValued=true)
+    public static List<String> sourceFiles;
 
-    @Argument(required=false, index=1, usage="policy file(s)", metaVar="POLFILE+", multiValued=true)
+    @Option(name="-Y", usage="policy file(s)", metaVar="POLFILE+", multiValued=true)
     public static List<String> policyFiles;
 
     @Option(name="-p", usage="Maximum number of learned predicates (-1 = unlimited)", metaVar="MAX")
@@ -403,6 +430,9 @@ public class JAM {
 
     @Option(name="-U", usage="Make no assumptions about the initial environment")
     public static boolean unconstrainedEnvironment = false;
+
+    @Option(name="-N", usage="JavaScript application name", metaVar="APPNAME")
+    public static String appName;
 
     @Option(name="--appsuffix", usage="Append this suffix to the application name in output files")
     public static String appSuffix;

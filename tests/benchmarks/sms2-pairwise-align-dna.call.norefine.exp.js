@@ -1931,5 +1931,4 @@ AlignPairQuad.prototype.getAlignedN = getAlignedN;
 AlignPairQuad.prototype.dumpMatrix = dumpMatrix;
 JAM.set(document, "onload", v2);
 JAM.set(JAM.call(document.getElementById, document, ["submitbtn"], JAM.policy.p15), "onclick", v3);
-JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p15), "onclick", v4);
-
+JAM.set(JAM.call(document.getElementById, document, ["clearbtn"], JAM.policy.p15), "onclick", v4)

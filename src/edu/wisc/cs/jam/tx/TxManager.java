@@ -19,7 +19,7 @@ import com.google.javascript.jscomp.NodeTraversal.Callback;
 
 import edu.wisc.cs.jam.JAM;
 import edu.wisc.cs.jam.CheckManager;
-import edu.wisc.cs.jam.SourceFile;
+import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Semantics;
 import edu.wisc.cs.jam.Policy;
 import edu.wisc.cs.jam.PolicyType;
@@ -38,10 +38,10 @@ import edu.wisc.cs.jam.js.JSExp;
 // This class coordinates the creation and composition of all the
 // objects defined in the edu.wisc.cs.jam.tx package. It also
 // synchronizes the application and removal of transactional
-// instrumentation from the the SourceFile.
+// instrumentation from the the SourceManager.
 public class TxManager implements CheckManager, Callback {
   // Various aspects of the analysis that we may need a handle for.
-  private SourceFile sourceFile;
+  private SourceManager sm;
   private Policy policy;
 
   // Information about checks that were present in the initial
@@ -71,8 +71,8 @@ public class TxManager implements CheckManager, Callback {
   private static int NEXT_INTROSPECTOR_ID = 0;
 
   // Construct a TxManager for the given JAM analysis.
-  public TxManager(SourceFile src, Policy pol) {
-    sourceFile = src;
+  public TxManager(SourceManager src, Policy pol) {
+    sm = src;
     policy = pol;
 
     activeChecks = new ArrayList<RuntimeCheck>();
@@ -91,8 +91,8 @@ public class TxManager implements CheckManager, Callback {
 
   @Override
   public void loadExistingChecks() {
-    Node root = sourceFile.getRootNode();
-    Compiler comp = sourceFile.getCompiler();
+    Node root = sm.getRootNode();
+    Compiler comp = sm.getCompiler();
     NodeTraversal.traverse(comp, root, this);
   }
 
@@ -158,7 +158,7 @@ public class TxManager implements CheckManager, Callback {
 
     Exp s = sym.getExp();
       
-    RuntimeCheck ret = new TransactionCheck(sourceFile, s, e);
+    RuntimeCheck ret = new TransactionCheck(sm, s, e);
     sym.addCheck(ret);
     return ret;
   }
@@ -225,7 +225,7 @@ public class TxManager implements CheckManager, Callback {
       List<Policy.Edge> edges = new ArrayList<Policy.Edge>();
       edges.add(edge);
       Introspector ispect = introspectorMap.get(edges);
-      tx = new Transaction(sourceFile, ispect, ((JSExp)loc).getNode());
+      tx = new Transaction(sm, ispect, ((JSExp)loc).getNode());
       tx.apply();
       activeTransactions.put(loc, tx);
     }
@@ -300,7 +300,7 @@ public class TxManager implements CheckManager, Callback {
   // existed prior to the current analysis.
   @Override
   public void visit(NodeTraversal t, Node n, Node parent) {
-    Exp s = JSExp.create(sourceFile, n);
+    Exp s = JSExp.create(sm, n);
     // We're only interested in statements representing pre-existing
     // instrumentation.
     if (!s.isTransaction()) return;
@@ -350,7 +350,7 @@ public class TxManager implements CheckManager, Callback {
       childNodes.add(((JSExp)c).getNode());
     }
 
-    Transaction tx = new Transaction(sourceFile, introspect, childNodes);
+    Transaction tx = new Transaction(sm, introspect, childNodes);
     tx.setOriginal();
 
     // Create some number of |TransactionCheck|s here.
@@ -361,7 +361,7 @@ public class TxManager implements CheckManager, Callback {
         originalChecks.put(stmt, origs);
       }
       for (Policy.Edge pe : introspect.getPolicyEdges()) {
-        TransactionCheck tc = new TransactionCheck(sourceFile, stmt, pe);
+        TransactionCheck tc = new TransactionCheck(sm, stmt, pe);
         tc.setOriginal();
         activeChecks.add(tc);
         origs.add(tc);
@@ -482,8 +482,8 @@ public class TxManager implements CheckManager, Callback {
     appendIntrospectorMap(sb, null);
     appendPolicyClosing(sb);
 
-    Node node = sourceFile.nodeFromCode(sb.toString());
-    return JSExp.create(sourceFile, node);
+    Node node = sm.nodeFromCode(sb.toString());
+    return JSExp.create(sm, node);
   }
 
   // Output the policy object, complete with all requisite introspectors
@@ -518,8 +518,8 @@ public class TxManager implements CheckManager, Callback {
     appendWovenFlag(sb, true);
     appendPolicyClosing(sb);
 
-    Node node = sourceFile.nodeFromCode(sb.toString());
-    return JSExp.create(sourceFile, node);
+    Node node = sm.nodeFromCode(sb.toString());
+    return JSExp.create(sm, node);
   }
 
   public Set<PolicyType> getPolicyTypes(String ispectId) {

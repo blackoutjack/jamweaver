@@ -2287,5 +2287,4 @@ if("https:" == document.location.protocol) {
 var pkBaseURL = v393;
 var piwikTracker = JAM.call(Piwik.getTracker, Piwik, [pkBaseURL + "piwik.php", "crash"], JAM.policy.p3);
 JAM.call(piwikTracker.trackPageView, piwikTracker, [], JAM.policy.p3);
-JAM.call(piwikTracker.enableLinkTracking, piwikTracker, [], JAM.policy.p3);
-
+JAM.call(piwikTracker.enableLinkTracking, piwikTracker, [], JAM.policy.p3)

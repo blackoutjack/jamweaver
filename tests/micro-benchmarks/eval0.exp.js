@@ -4,5 +4,4 @@ function f() {
 }
 x = 0;
 var e = eval;
-f();
-
+f()

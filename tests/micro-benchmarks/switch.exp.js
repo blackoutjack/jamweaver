@@ -23,4 +23,3 @@ switch(x) {
   default:
     alert("ERROR")
 }
-;

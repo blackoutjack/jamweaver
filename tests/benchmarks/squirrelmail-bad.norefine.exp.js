@@ -43,4 +43,3 @@ if(pos >= 0) {
     v6.src = "http://www.blackoutjack.com/pics/TweekGhost.jpg"
   }
 }
-;

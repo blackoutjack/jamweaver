@@ -295,5 +295,4 @@ for(;v22;) {
   i = i + 1;
   v22 = i < output.length
 }
-start();
-
+start()

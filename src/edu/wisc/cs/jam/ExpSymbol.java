@@ -100,7 +100,7 @@ public class ExpSymbol extends Symbol {
 
     // No existing check was present, so create one.
     Exp stmt = getExp();
-    RuntimeCheck newcheck = new RuntimeCheck(stmt.getSource(), stmt, edge);
+    RuntimeCheck newcheck = new RuntimeCheck(stmt.getSourceManager(), stmt, edge);
     addCheck(newcheck);
     return newcheck;
   }
@@ -133,8 +133,9 @@ public class ExpSymbol extends Symbol {
     return exp;
   }
 
-  public SourceFile getSourceFile() {
-    return exp.getSource();
+  // %%% Might should just be a SourceFile.
+  public SourceManager getSourceManager() {
+    return exp.getSourceManager();
   }
 
   /*

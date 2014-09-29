@@ -30,7 +30,6 @@ public class FunctionFacts {
 
   protected SourceManager sm;
   protected Collection<Function> allFunctions;
-  protected Map<String,List<Function>> handlerAssignments;
   protected Map<String,List<Function>> callMap;
   protected Map<String,Function> addressMap;
   protected Map<Function,List<Scope>> scopeChainMap;
@@ -43,7 +42,6 @@ public class FunctionFacts {
     sm = src;
     functionPredicates = null;
 
-    handlerAssignments = new LinkedHashMap<String,List<Function>>();
     callMap = new LinkedHashMap<String,List<Function>>();
     addressMap = new LinkedHashMap<String,Function>();
     scopeChainMap = new LinkedHashMap<Function,List<Scope>>();
@@ -72,7 +70,7 @@ public class FunctionFacts {
       Compiler comp = sm.getCompiler();
       //NodeUtil.dumpAST(root);
       //NodeUtil.dumpCallGraph(cg);
-      NodeTraversal.traverse(comp, root, new EventHandlerVisitor());
+
       NodeTraversal.traverse(comp, root, new CallTargetVisitor());
       NodeTraversal.traverse(comp, root, new ScopeGatherer());
 
@@ -112,8 +110,8 @@ public class FunctionFacts {
     return ret;
   }
 
-  // Finds all of the call target assignments that might take place in the program.
-  // Populates callMap with the results.
+  // Finds all of the call target assignments that might take place in
+  // the program. Populates callMap with the results.
   public class CallTargetVisitor implements Callback {
 
     @Override 
@@ -542,49 +540,6 @@ public class FunctionFacts {
 
   }
 
-  // Traverses the AST and collects assignments to event handlers, because the CG
-  // assumes they're all external, and provides no useful information.
-  public class EventHandlerVisitor implements Callback {
-
-    @Override
-    public boolean shouldTraverse(NodeTraversal traversal, Node n, Node parent) {
-      return true;
-    }
-
-    @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (NodeUtil.isAssign(n)) {
-        for (String curHandler : NodeUtil.handlerList) {
-          // See if the LHS mentions a handler
-          if (getCode(n.getChildAtIndex(0)).indexOf(curHandler) >= 0) {
-            // If so, make sure the RHS is just an identifier, and add the symbol name
-            // to the possible targets for this handler
-            if (n.getChildAtIndex(1).getType() == Token.NAME) {
-              addPossibleTarget(curHandler, getCode(n.getChildAtIndex(1)));
-            }
-          }
-        }
-      }
-    }
-
-    protected void addPossibleTarget(String handler, String target) {
-
-      if (handlerAssignments == null) {
-        handlerAssignments = new LinkedHashMap<String,List<Function>>();
-      }
-
-      Set<Function> targets = getPossibleTargetsOfName(target);
-      List<Function> curTargets;
-      if (handlerAssignments.containsKey(handler)) {
-        curTargets = handlerAssignments.get(handler);
-      } else {
-        curTargets = new ArrayList<Function>();    
-        handlerAssignments.put(handler, curTargets);
-      }
-      curTargets.addAll(targets);
-    }
-  }
-
   // Creates initializer predicates for all variables with explicit initializers
   public class InitGatherer implements Callback {
 
@@ -606,10 +561,9 @@ public class FunctionFacts {
     }
   }
 
-
   // Convenience functions
   protected String getCode(Node n) {
-    return NodeUtil.codeFromNode(n, sm);
+    return sm.codeFromNode(n);
   }
 
   @Override

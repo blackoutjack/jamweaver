@@ -1,5 +1,6 @@
-% Generated: Sat Jun 28 2014 17:31:56 GMT-0500 (CDT)
-% User agent: Mozilla/5.0 (X11; Linux x86_64; rv:17.0) Gecko/20140625 Firefox/17.0
+
+% Generated: Tue Sep 23 2014 22:56:20 GMT-0400 (EDT)
+% User agent: Mozilla/5.0 (X11; Linux x86_64; rv:17.0) Gecko/20140807 Firefox/17.0
 
 @Object@prototype
 
@@ -527,6 +528,7 @@ Function DontEnum #Function Function
 HTMLAnchorElement DontEnum #HTMLAnchorElement HTMLAnchorElement
 HTMLAudioElement DontEnum #HTMLAudioElement HTMLAudioElement
 HTMLBRElement DontEnum #HTMLBRElement HTMLBRElement
+HTMLBodyElement DontEnum #HTMLBodyElement HTMLBodyElement
 HTMLButtonElement DontEnum #HTMLButtonElement HTMLButtonElement
 HTMLCanvasElement DontEnum #HTMLCanvasElement HTMLCanvasElement
 HTMLCollection DontEnum #HTMLCollection HTMLCollection
@@ -534,6 +536,7 @@ HTMLDocument DontEnum #HTMLDocument HTMLDocument
 HTMLElement DontEnum #HTMLElement HTMLElement
 HTMLFormElement DontEnum #HTMLFormElement HTMLFormElement
 HTMLFrameElement DontEnum #HTMLFrameElement HTMLFrameElement
+HTMLHeadElement DontEnum #HTMLHeadElement HTMLHeadElement
 HTMLHtmlElement DontEnum #HTMLHtmlElement HTMLHtmlElement
 HTMLIFrameElement DontEnum #HTMLIFrameElement HTMLIFrameElement
 HTMLImageElement DontEnum #HTMLImageElement HTMLImageElement
@@ -549,6 +552,7 @@ HTMLScriptElement DontEnum #HTMLScriptElement HTMLScriptElement
 HTMLSelectElement DontEnum #HTMLSelectElement HTMLSelectElement
 HTMLSourceElement DontEnum #HTMLSourceElement HTMLSourceElement
 HTMLTextAreaElement DontEnum #HTMLTextAreaElement HTMLTextAreaElement
+HTMLTitleElement DontEnum #HTMLTitleElement HTMLTitleElement
 HTMLVideoElement DontEnum #HTMLVideoElement HTMLVideoElement
 History DontEnum #History History
 IDBDatabase DontEnum #IDBDatabase IDBDatabase
@@ -1033,6 +1037,13 @@ __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #HTMLAudioElement#prototype#__proto__ HTMLMediaElement.prototype
 
 
+@HTMLBodyElement
+
+% HTMLBodyElement properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #HTMLBodyElement#prototype HTMLBodyElement.prototype
+
+
 @HTMLBRElement
 
 % HTMLBRElement properties
@@ -1066,6 +1077,13 @@ prototype ReadOnly,DontEnum,DontDelete #HTMLFormElement#prototype HTMLFormElemen
 % HTMLFrameElement properties
 __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #HTMLFrameElement#prototype HTMLFrameElement.prototype
+
+
+@HTMLHeadElement
+
+% HTMLHeadElement properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #HTMLHeadElement#prototype HTMLHeadElement.prototype
 
 
 @HTMLHtmlElement
@@ -1143,6 +1161,13 @@ prototype ReadOnly,DontEnum,DontDelete #HTMLSelectElement#prototype HTMLSelectEl
 % HTMLSourceElement properties
 __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #HTMLSourceElement#prototype HTMLSourceElement.prototype
+
+
+@HTMLTitleElement
+
+% HTMLTitleElement properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #HTMLTitleElement#prototype HTMLTitleElement.prototype
 
 
 @HTMLTextAreaElement
@@ -2231,6 +2256,8 @@ state ReadOnly &undefined History.prototype.state
 0 - &null history.0
 %%% Unable to get descriptor info for property 1.
 1 - &null history.1
+%%% Unable to get descriptor info for property 2.
+2 - &null history.2
 __proto__ DontEnum #History#prototype History.prototype
 
 
@@ -4195,6 +4222,458 @@ volume ReadOnly &undefined HTMLAudioElement.prototype.volume
 
 % HTMLAudioElement#prototype#__proto__ properties
 __proto__ DontEnum #HTMLElement#prototype HTMLElement.prototype
+
+
+@HTMLBodyElement@prototype
+
+% HTMLBodyElement#prototype properties
+ATTRIBUTE_NODE - 2 HTMLBodyElement.prototype.ATTRIBUTE_NODE
+CDATA_SECTION_NODE - 4 HTMLBodyElement.prototype.CDATA_SECTION_NODE
+COMMENT_NODE - 8 HTMLBodyElement.prototype.COMMENT_NODE
+DOCUMENT_FRAGMENT_NODE - 11 HTMLBodyElement.prototype.DOCUMENT_FRAGMENT_NODE
+DOCUMENT_NODE - 9 HTMLBodyElement.prototype.DOCUMENT_NODE
+DOCUMENT_POSITION_CONTAINED_BY - 16 HTMLBodyElement.prototype.DOCUMENT_POSITION_CONTAINED_BY
+DOCUMENT_POSITION_CONTAINS - 8 HTMLBodyElement.prototype.DOCUMENT_POSITION_CONTAINS
+DOCUMENT_POSITION_DISCONNECTED - 1 HTMLBodyElement.prototype.DOCUMENT_POSITION_DISCONNECTED
+DOCUMENT_POSITION_FOLLOWING - 4 HTMLBodyElement.prototype.DOCUMENT_POSITION_FOLLOWING
+DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC - 32 HTMLBodyElement.prototype.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+DOCUMENT_POSITION_PRECEDING - 2 HTMLBodyElement.prototype.DOCUMENT_POSITION_PRECEDING
+DOCUMENT_TYPE_NODE - 10 HTMLBodyElement.prototype.DOCUMENT_TYPE_NODE
+ELEMENT_NODE - 1 HTMLBodyElement.prototype.ELEMENT_NODE
+ENTITY_NODE - 6 HTMLBodyElement.prototype.ENTITY_NODE
+ENTITY_REFERENCE_NODE - 5 HTMLBodyElement.prototype.ENTITY_REFERENCE_NODE
+NOTATION_NODE - 12 HTMLBodyElement.prototype.NOTATION_NODE
+PROCESSING_INSTRUCTION_NODE - 7 HTMLBodyElement.prototype.PROCESSING_INSTRUCTION_NODE
+QueryInterface DontEnum #HTMLBodyElement#prototype#QueryInterface HTMLBodyElement.prototype.QueryInterface
+TEXT_NODE - 3 HTMLBodyElement.prototype.TEXT_NODE
+__defineGetter__ DontEnum #HTMLBodyElement#prototype#__defineGetter__ HTMLBodyElement.prototype.__defineGetter__
+__defineSetter__ DontEnum #HTMLBodyElement#prototype#__defineSetter__ HTMLBodyElement.prototype.__defineSetter__
+__lookupGetter__ DontEnum #HTMLBodyElement#prototype#__lookupGetter__ HTMLBodyElement.prototype.__lookupGetter__
+__lookupSetter__ DontEnum #HTMLBodyElement#prototype#__lookupSetter__ HTMLBodyElement.prototype.__lookupSetter__
+__proto__ DontEnum #HTMLElement#prototype HTMLElement.prototype
+%%% @HTMLBodyElement@prototype.aLink has getter to model.
+%%% @HTMLBodyElement@prototype.aLink has setter to model.
+aLink ReadOnly &undefined HTMLBodyElement.prototype.aLink
+%%% Unable to get descriptor info for property accessKey.
+accessKey - &null HTMLBodyElement.prototype.accessKey
+%%% Unable to get descriptor info for property accessKeyLabel.
+accessKeyLabel - &null HTMLBodyElement.prototype.accessKeyLabel
+addEventListener - #HTMLBodyElement#prototype#addEventListener HTMLBodyElement.prototype.addEventListener
+appendChild - #HTMLBodyElement#prototype#appendChild HTMLBodyElement.prototype.appendChild
+%%% Unable to get descriptor info for property attributes.
+attributes - &null HTMLBodyElement.prototype.attributes
+%%% @HTMLBodyElement@prototype.background has getter to model.
+%%% @HTMLBodyElement@prototype.background has setter to model.
+background ReadOnly &undefined HTMLBodyElement.prototype.background
+%%% Unable to get descriptor info for property baseURI.
+baseURI - &null HTMLBodyElement.prototype.baseURI
+%%% @HTMLBodyElement@prototype.bgColor has getter to model.
+%%% @HTMLBodyElement@prototype.bgColor has setter to model.
+bgColor ReadOnly &undefined HTMLBodyElement.prototype.bgColor
+blur - #HTMLBodyElement#prototype#blur HTMLBodyElement.prototype.blur
+%%% Unable to get descriptor info for property childElementCount.
+childElementCount - &null HTMLBodyElement.prototype.childElementCount
+%%% Unable to get descriptor info for property childNodes.
+childNodes - &null HTMLBodyElement.prototype.childNodes
+%%% Unable to get descriptor info for property children.
+children - &null HTMLBodyElement.prototype.children
+%%% Unable to get descriptor info for property classList.
+classList - &null HTMLBodyElement.prototype.classList
+%%% Unable to get descriptor info for property className.
+className - &null HTMLBodyElement.prototype.className
+click - #HTMLBodyElement#prototype#click HTMLBodyElement.prototype.click
+%%% Unable to get descriptor info for property clientHeight.
+clientHeight - &null HTMLBodyElement.prototype.clientHeight
+%%% Unable to get descriptor info for property clientLeft.
+clientLeft - &null HTMLBodyElement.prototype.clientLeft
+%%% Unable to get descriptor info for property clientTop.
+clientTop - &null HTMLBodyElement.prototype.clientTop
+%%% Unable to get descriptor info for property clientWidth.
+clientWidth - &null HTMLBodyElement.prototype.clientWidth
+cloneNode - #HTMLBodyElement#prototype#cloneNode HTMLBodyElement.prototype.cloneNode
+compareDocumentPosition - #HTMLBodyElement#prototype#compareDocumentPosition HTMLBodyElement.prototype.compareDocumentPosition
+contains - #HTMLBodyElement#prototype#contains HTMLBodyElement.prototype.contains
+%%% Unable to get descriptor info for property contentEditable.
+contentEditable - &null HTMLBodyElement.prototype.contentEditable
+%%% Unable to get descriptor info for property contextMenu.
+contextMenu - &null HTMLBodyElement.prototype.contextMenu
+%%% Unable to get descriptor info for property dataset.
+dataset - &null HTMLBodyElement.prototype.dataset
+%%% Unable to get descriptor info for property dir.
+dir - &null HTMLBodyElement.prototype.dir
+dispatchEvent - #HTMLBodyElement#prototype#dispatchEvent HTMLBodyElement.prototype.dispatchEvent
+%%% Unable to get descriptor info for property draggable.
+draggable - &null HTMLBodyElement.prototype.draggable
+%%% Unable to get descriptor info for property firstChild.
+firstChild - &null HTMLBodyElement.prototype.firstChild
+%%% Unable to get descriptor info for property firstElementChild.
+firstElementChild - &null HTMLBodyElement.prototype.firstElementChild
+focus - #HTMLBodyElement#prototype#focus HTMLBodyElement.prototype.focus
+getAttribute - #HTMLBodyElement#prototype#getAttribute HTMLBodyElement.prototype.getAttribute
+getAttributeNS - #HTMLBodyElement#prototype#getAttributeNS HTMLBodyElement.prototype.getAttributeNS
+getAttributeNode - #HTMLBodyElement#prototype#getAttributeNode HTMLBodyElement.prototype.getAttributeNode
+getAttributeNodeNS - #HTMLBodyElement#prototype#getAttributeNodeNS HTMLBodyElement.prototype.getAttributeNodeNS
+getBoundingClientRect - #HTMLBodyElement#prototype#getBoundingClientRect HTMLBodyElement.prototype.getBoundingClientRect
+getClientRects - #HTMLBodyElement#prototype#getClientRects HTMLBodyElement.prototype.getClientRects
+getElementsByClassName - #HTMLBodyElement#prototype#getElementsByClassName HTMLBodyElement.prototype.getElementsByClassName
+getElementsByTagName - #HTMLBodyElement#prototype#getElementsByTagName HTMLBodyElement.prototype.getElementsByTagName
+getElementsByTagNameNS - #HTMLBodyElement#prototype#getElementsByTagNameNS HTMLBodyElement.prototype.getElementsByTagNameNS
+getUserData - #HTMLBodyElement#prototype#getUserData HTMLBodyElement.prototype.getUserData
+hasAttribute - #HTMLBodyElement#prototype#hasAttribute HTMLBodyElement.prototype.hasAttribute
+hasAttributeNS - #HTMLBodyElement#prototype#hasAttributeNS HTMLBodyElement.prototype.hasAttributeNS
+hasAttributes - #HTMLBodyElement#prototype#hasAttributes HTMLBodyElement.prototype.hasAttributes
+hasChildNodes - #HTMLBodyElement#prototype#hasChildNodes HTMLBodyElement.prototype.hasChildNodes
+%%% Unable to get descriptor info for property hidden.
+hidden - &null HTMLBodyElement.prototype.hidden
+%%% Unable to get descriptor info for property id.
+id - &null HTMLBodyElement.prototype.id
+%%% Unable to get descriptor info for property innerHTML.
+innerHTML - &null HTMLBodyElement.prototype.innerHTML
+insertAdjacentHTML - #HTMLBodyElement#prototype#insertAdjacentHTML HTMLBodyElement.prototype.insertAdjacentHTML
+insertBefore - #HTMLBodyElement#prototype#insertBefore HTMLBodyElement.prototype.insertBefore
+%%% Unable to get descriptor info for property isContentEditable.
+isContentEditable - &null HTMLBodyElement.prototype.isContentEditable
+isDefaultNamespace - #HTMLBodyElement#prototype#isDefaultNamespace HTMLBodyElement.prototype.isDefaultNamespace
+isEqualNode - #HTMLBodyElement#prototype#isEqualNode HTMLBodyElement.prototype.isEqualNode
+isSupported - #HTMLBodyElement#prototype#isSupported HTMLBodyElement.prototype.isSupported
+%%% Unable to get descriptor info for property itemId.
+itemId - &null HTMLBodyElement.prototype.itemId
+%%% @HTMLBodyElement@prototype.itemProp has getter to model.
+%%% @HTMLBodyElement@prototype.itemProp has setter to model.
+itemProp ReadOnly &undefined HTMLBodyElement.prototype.itemProp
+%%% @HTMLBodyElement@prototype.itemRef has getter to model.
+%%% @HTMLBodyElement@prototype.itemRef has setter to model.
+itemRef ReadOnly &undefined HTMLBodyElement.prototype.itemRef
+%%% Unable to get descriptor info for property itemScope.
+itemScope - &null HTMLBodyElement.prototype.itemScope
+%%% @HTMLBodyElement@prototype.itemType has getter to model.
+%%% @HTMLBodyElement@prototype.itemType has setter to model.
+itemType ReadOnly &undefined HTMLBodyElement.prototype.itemType
+%%% @HTMLBodyElement@prototype.itemValue has getter to model.
+%%% @HTMLBodyElement@prototype.itemValue has setter to model.
+itemValue ReadOnly &undefined HTMLBodyElement.prototype.itemValue
+%%% Unable to get descriptor info for property lang.
+lang - &null HTMLBodyElement.prototype.lang
+%%% Unable to get descriptor info for property lastChild.
+lastChild - &null HTMLBodyElement.prototype.lastChild
+%%% Unable to get descriptor info for property lastElementChild.
+lastElementChild - &null HTMLBodyElement.prototype.lastElementChild
+%%% @HTMLBodyElement@prototype.link has getter to model.
+%%% @HTMLBodyElement@prototype.link has setter to model.
+link ReadOnly &undefined HTMLBodyElement.prototype.link
+%%% Unable to get descriptor info for property localName.
+localName - &null HTMLBodyElement.prototype.localName
+lookupNamespaceURI - #HTMLBodyElement#prototype#lookupNamespaceURI HTMLBodyElement.prototype.lookupNamespaceURI
+lookupPrefix - #HTMLBodyElement#prototype#lookupPrefix HTMLBodyElement.prototype.lookupPrefix
+mozMatchesSelector - #HTMLBodyElement#prototype#mozMatchesSelector HTMLBodyElement.prototype.mozMatchesSelector
+mozRequestFullScreen - #HTMLBodyElement#prototype#mozRequestFullScreen HTMLBodyElement.prototype.mozRequestFullScreen
+mozRequestPointerLock - #HTMLBodyElement#prototype#mozRequestPointerLock HTMLBodyElement.prototype.mozRequestPointerLock
+%%% Unable to get descriptor info for property namespaceURI.
+namespaceURI - &null HTMLBodyElement.prototype.namespaceURI
+%%% Unable to get descriptor info for property nextElementSibling.
+nextElementSibling - &null HTMLBodyElement.prototype.nextElementSibling
+%%% Unable to get descriptor info for property nextSibling.
+nextSibling - &null HTMLBodyElement.prototype.nextSibling
+%%% Unable to get descriptor info for property nodeName.
+nodeName - &null HTMLBodyElement.prototype.nodeName
+%%% Unable to get descriptor info for property nodeType.
+nodeType - &null HTMLBodyElement.prototype.nodeType
+%%% Unable to get descriptor info for property nodeValue.
+nodeValue - &null HTMLBodyElement.prototype.nodeValue
+normalize - #HTMLBodyElement#prototype#normalize HTMLBodyElement.prototype.normalize
+%%% Unable to get descriptor info for property offsetHeight.
+offsetHeight - &null HTMLBodyElement.prototype.offsetHeight
+%%% Unable to get descriptor info for property offsetLeft.
+offsetLeft - &null HTMLBodyElement.prototype.offsetLeft
+%%% Unable to get descriptor info for property offsetParent.
+offsetParent - &null HTMLBodyElement.prototype.offsetParent
+%%% Unable to get descriptor info for property offsetTop.
+offsetTop - &null HTMLBodyElement.prototype.offsetTop
+%%% Unable to get descriptor info for property offsetWidth.
+offsetWidth - &null HTMLBodyElement.prototype.offsetWidth
+%%% @HTMLBodyElement@prototype.onabort has getter to model.
+%%% @HTMLBodyElement@prototype.onabort has setter to model.
+onabort ReadOnly &undefined HTMLBodyElement.prototype.onabort
+%%% @HTMLBodyElement@prototype.onafterprint has getter to model.
+%%% @HTMLBodyElement@prototype.onafterprint has setter to model.
+onafterprint ReadOnly &undefined HTMLBodyElement.prototype.onafterprint
+%%% @HTMLBodyElement@prototype.onafterscriptexecute has getter to model.
+%%% @HTMLBodyElement@prototype.onafterscriptexecute has setter to model.
+onafterscriptexecute ReadOnly &undefined HTMLBodyElement.prototype.onafterscriptexecute
+%%% @HTMLBodyElement@prototype.onbeforeprint has getter to model.
+%%% @HTMLBodyElement@prototype.onbeforeprint has setter to model.
+onbeforeprint ReadOnly &undefined HTMLBodyElement.prototype.onbeforeprint
+%%% @HTMLBodyElement@prototype.onbeforescriptexecute has getter to model.
+%%% @HTMLBodyElement@prototype.onbeforescriptexecute has setter to model.
+onbeforescriptexecute ReadOnly &undefined HTMLBodyElement.prototype.onbeforescriptexecute
+%%% @HTMLBodyElement@prototype.onbeforeunload has getter to model.
+%%% @HTMLBodyElement@prototype.onbeforeunload has setter to model.
+onbeforeunload ReadOnly &undefined HTMLBodyElement.prototype.onbeforeunload
+%%% @HTMLBodyElement@prototype.onblur has getter to model.
+%%% @HTMLBodyElement@prototype.onblur has setter to model.
+onblur ReadOnly &undefined HTMLBodyElement.prototype.onblur
+%%% @HTMLBodyElement@prototype.oncanplay has getter to model.
+%%% @HTMLBodyElement@prototype.oncanplay has setter to model.
+oncanplay ReadOnly &undefined HTMLBodyElement.prototype.oncanplay
+%%% @HTMLBodyElement@prototype.oncanplaythrough has getter to model.
+%%% @HTMLBodyElement@prototype.oncanplaythrough has setter to model.
+oncanplaythrough ReadOnly &undefined HTMLBodyElement.prototype.oncanplaythrough
+%%% @HTMLBodyElement@prototype.onchange has getter to model.
+%%% @HTMLBodyElement@prototype.onchange has setter to model.
+onchange ReadOnly &undefined HTMLBodyElement.prototype.onchange
+%%% @HTMLBodyElement@prototype.onclick has getter to model.
+%%% @HTMLBodyElement@prototype.onclick has setter to model.
+onclick ReadOnly &undefined HTMLBodyElement.prototype.onclick
+%%% @HTMLBodyElement@prototype.oncontextmenu has getter to model.
+%%% @HTMLBodyElement@prototype.oncontextmenu has setter to model.
+oncontextmenu ReadOnly &undefined HTMLBodyElement.prototype.oncontextmenu
+%%% @HTMLBodyElement@prototype.oncopy has getter to model.
+%%% @HTMLBodyElement@prototype.oncopy has setter to model.
+oncopy ReadOnly &undefined HTMLBodyElement.prototype.oncopy
+%%% @HTMLBodyElement@prototype.oncut has getter to model.
+%%% @HTMLBodyElement@prototype.oncut has setter to model.
+oncut ReadOnly &undefined HTMLBodyElement.prototype.oncut
+%%% @HTMLBodyElement@prototype.ondblclick has getter to model.
+%%% @HTMLBodyElement@prototype.ondblclick has setter to model.
+ondblclick ReadOnly &undefined HTMLBodyElement.prototype.ondblclick
+%%% @HTMLBodyElement@prototype.ondrag has getter to model.
+%%% @HTMLBodyElement@prototype.ondrag has setter to model.
+ondrag ReadOnly &undefined HTMLBodyElement.prototype.ondrag
+%%% @HTMLBodyElement@prototype.ondragend has getter to model.
+%%% @HTMLBodyElement@prototype.ondragend has setter to model.
+ondragend ReadOnly &undefined HTMLBodyElement.prototype.ondragend
+%%% @HTMLBodyElement@prototype.ondragenter has getter to model.
+%%% @HTMLBodyElement@prototype.ondragenter has setter to model.
+ondragenter ReadOnly &undefined HTMLBodyElement.prototype.ondragenter
+%%% @HTMLBodyElement@prototype.ondragleave has getter to model.
+%%% @HTMLBodyElement@prototype.ondragleave has setter to model.
+ondragleave ReadOnly &undefined HTMLBodyElement.prototype.ondragleave
+%%% @HTMLBodyElement@prototype.ondragover has getter to model.
+%%% @HTMLBodyElement@prototype.ondragover has setter to model.
+ondragover ReadOnly &undefined HTMLBodyElement.prototype.ondragover
+%%% @HTMLBodyElement@prototype.ondragstart has getter to model.
+%%% @HTMLBodyElement@prototype.ondragstart has setter to model.
+ondragstart ReadOnly &undefined HTMLBodyElement.prototype.ondragstart
+%%% @HTMLBodyElement@prototype.ondrop has getter to model.
+%%% @HTMLBodyElement@prototype.ondrop has setter to model.
+ondrop ReadOnly &undefined HTMLBodyElement.prototype.ondrop
+%%% @HTMLBodyElement@prototype.ondurationchange has getter to model.
+%%% @HTMLBodyElement@prototype.ondurationchange has setter to model.
+ondurationchange ReadOnly &undefined HTMLBodyElement.prototype.ondurationchange
+%%% @HTMLBodyElement@prototype.onemptied has getter to model.
+%%% @HTMLBodyElement@prototype.onemptied has setter to model.
+onemptied ReadOnly &undefined HTMLBodyElement.prototype.onemptied
+%%% @HTMLBodyElement@prototype.onended has getter to model.
+%%% @HTMLBodyElement@prototype.onended has setter to model.
+onended ReadOnly &undefined HTMLBodyElement.prototype.onended
+%%% @HTMLBodyElement@prototype.onerror has getter to model.
+%%% @HTMLBodyElement@prototype.onerror has setter to model.
+onerror ReadOnly &undefined HTMLBodyElement.prototype.onerror
+%%% @HTMLBodyElement@prototype.onfocus has getter to model.
+%%% @HTMLBodyElement@prototype.onfocus has setter to model.
+onfocus ReadOnly &undefined HTMLBodyElement.prototype.onfocus
+%%% @HTMLBodyElement@prototype.onhashchange has getter to model.
+%%% @HTMLBodyElement@prototype.onhashchange has setter to model.
+onhashchange ReadOnly &undefined HTMLBodyElement.prototype.onhashchange
+%%% @HTMLBodyElement@prototype.oninput has getter to model.
+%%% @HTMLBodyElement@prototype.oninput has setter to model.
+oninput ReadOnly &undefined HTMLBodyElement.prototype.oninput
+%%% @HTMLBodyElement@prototype.oninvalid has getter to model.
+%%% @HTMLBodyElement@prototype.oninvalid has setter to model.
+oninvalid ReadOnly &undefined HTMLBodyElement.prototype.oninvalid
+%%% @HTMLBodyElement@prototype.onkeydown has getter to model.
+%%% @HTMLBodyElement@prototype.onkeydown has setter to model.
+onkeydown ReadOnly &undefined HTMLBodyElement.prototype.onkeydown
+%%% @HTMLBodyElement@prototype.onkeypress has getter to model.
+%%% @HTMLBodyElement@prototype.onkeypress has setter to model.
+onkeypress ReadOnly &undefined HTMLBodyElement.prototype.onkeypress
+%%% @HTMLBodyElement@prototype.onkeyup has getter to model.
+%%% @HTMLBodyElement@prototype.onkeyup has setter to model.
+onkeyup ReadOnly &undefined HTMLBodyElement.prototype.onkeyup
+%%% @HTMLBodyElement@prototype.onload has getter to model.
+%%% @HTMLBodyElement@prototype.onload has setter to model.
+onload ReadOnly &undefined HTMLBodyElement.prototype.onload
+%%% @HTMLBodyElement@prototype.onloadeddata has getter to model.
+%%% @HTMLBodyElement@prototype.onloadeddata has setter to model.
+onloadeddata ReadOnly &undefined HTMLBodyElement.prototype.onloadeddata
+%%% @HTMLBodyElement@prototype.onloadedmetadata has getter to model.
+%%% @HTMLBodyElement@prototype.onloadedmetadata has setter to model.
+onloadedmetadata ReadOnly &undefined HTMLBodyElement.prototype.onloadedmetadata
+%%% @HTMLBodyElement@prototype.onloadstart has getter to model.
+%%% @HTMLBodyElement@prototype.onloadstart has setter to model.
+onloadstart ReadOnly &undefined HTMLBodyElement.prototype.onloadstart
+%%% @HTMLBodyElement@prototype.onmessage has getter to model.
+%%% @HTMLBodyElement@prototype.onmessage has setter to model.
+onmessage ReadOnly &undefined HTMLBodyElement.prototype.onmessage
+%%% @HTMLBodyElement@prototype.onmousedown has getter to model.
+%%% @HTMLBodyElement@prototype.onmousedown has setter to model.
+onmousedown ReadOnly &undefined HTMLBodyElement.prototype.onmousedown
+onmouseenter - &null HTMLBodyElement.prototype.onmouseenter
+onmouseleave - &null HTMLBodyElement.prototype.onmouseleave
+%%% @HTMLBodyElement@prototype.onmousemove has getter to model.
+%%% @HTMLBodyElement@prototype.onmousemove has setter to model.
+onmousemove ReadOnly &undefined HTMLBodyElement.prototype.onmousemove
+%%% @HTMLBodyElement@prototype.onmouseout has getter to model.
+%%% @HTMLBodyElement@prototype.onmouseout has setter to model.
+onmouseout ReadOnly &undefined HTMLBodyElement.prototype.onmouseout
+%%% @HTMLBodyElement@prototype.onmouseover has getter to model.
+%%% @HTMLBodyElement@prototype.onmouseover has setter to model.
+onmouseover ReadOnly &undefined HTMLBodyElement.prototype.onmouseover
+%%% @HTMLBodyElement@prototype.onmouseup has getter to model.
+%%% @HTMLBodyElement@prototype.onmouseup has setter to model.
+onmouseup ReadOnly &undefined HTMLBodyElement.prototype.onmouseup
+%%% @HTMLBodyElement@prototype.onmozfullscreenchange has getter to model.
+%%% @HTMLBodyElement@prototype.onmozfullscreenchange has setter to model.
+onmozfullscreenchange ReadOnly &undefined HTMLBodyElement.prototype.onmozfullscreenchange
+%%% @HTMLBodyElement@prototype.onmozfullscreenerror has getter to model.
+%%% @HTMLBodyElement@prototype.onmozfullscreenerror has setter to model.
+onmozfullscreenerror ReadOnly &undefined HTMLBodyElement.prototype.onmozfullscreenerror
+%%% @HTMLBodyElement@prototype.onmozpointerlockchange has getter to model.
+%%% @HTMLBodyElement@prototype.onmozpointerlockchange has setter to model.
+onmozpointerlockchange ReadOnly &undefined HTMLBodyElement.prototype.onmozpointerlockchange
+%%% @HTMLBodyElement@prototype.onmozpointerlockerror has getter to model.
+%%% @HTMLBodyElement@prototype.onmozpointerlockerror has setter to model.
+onmozpointerlockerror ReadOnly &undefined HTMLBodyElement.prototype.onmozpointerlockerror
+%%% @HTMLBodyElement@prototype.onoffline has getter to model.
+%%% @HTMLBodyElement@prototype.onoffline has setter to model.
+onoffline ReadOnly &undefined HTMLBodyElement.prototype.onoffline
+%%% @HTMLBodyElement@prototype.ononline has getter to model.
+%%% @HTMLBodyElement@prototype.ononline has setter to model.
+ononline ReadOnly &undefined HTMLBodyElement.prototype.ononline
+%%% @HTMLBodyElement@prototype.onpagehide has getter to model.
+%%% @HTMLBodyElement@prototype.onpagehide has setter to model.
+onpagehide ReadOnly &undefined HTMLBodyElement.prototype.onpagehide
+%%% @HTMLBodyElement@prototype.onpageshow has getter to model.
+%%% @HTMLBodyElement@prototype.onpageshow has setter to model.
+onpageshow ReadOnly &undefined HTMLBodyElement.prototype.onpageshow
+%%% @HTMLBodyElement@prototype.onpaste has getter to model.
+%%% @HTMLBodyElement@prototype.onpaste has setter to model.
+onpaste ReadOnly &undefined HTMLBodyElement.prototype.onpaste
+%%% @HTMLBodyElement@prototype.onpause has getter to model.
+%%% @HTMLBodyElement@prototype.onpause has setter to model.
+onpause ReadOnly &undefined HTMLBodyElement.prototype.onpause
+%%% @HTMLBodyElement@prototype.onplay has getter to model.
+%%% @HTMLBodyElement@prototype.onplay has setter to model.
+onplay ReadOnly &undefined HTMLBodyElement.prototype.onplay
+%%% @HTMLBodyElement@prototype.onplaying has getter to model.
+%%% @HTMLBodyElement@prototype.onplaying has setter to model.
+onplaying ReadOnly &undefined HTMLBodyElement.prototype.onplaying
+%%% @HTMLBodyElement@prototype.onpopstate has getter to model.
+%%% @HTMLBodyElement@prototype.onpopstate has setter to model.
+onpopstate ReadOnly &undefined HTMLBodyElement.prototype.onpopstate
+%%% @HTMLBodyElement@prototype.onprogress has getter to model.
+%%% @HTMLBodyElement@prototype.onprogress has setter to model.
+onprogress ReadOnly &undefined HTMLBodyElement.prototype.onprogress
+%%% @HTMLBodyElement@prototype.onratechange has getter to model.
+%%% @HTMLBodyElement@prototype.onratechange has setter to model.
+onratechange ReadOnly &undefined HTMLBodyElement.prototype.onratechange
+%%% @HTMLBodyElement@prototype.onreset has getter to model.
+%%% @HTMLBodyElement@prototype.onreset has setter to model.
+onreset ReadOnly &undefined HTMLBodyElement.prototype.onreset
+%%% @HTMLBodyElement@prototype.onresize has getter to model.
+%%% @HTMLBodyElement@prototype.onresize has setter to model.
+onresize ReadOnly &undefined HTMLBodyElement.prototype.onresize
+%%% @HTMLBodyElement@prototype.onscroll has getter to model.
+%%% @HTMLBodyElement@prototype.onscroll has setter to model.
+onscroll ReadOnly &undefined HTMLBodyElement.prototype.onscroll
+%%% @HTMLBodyElement@prototype.onseeked has getter to model.
+%%% @HTMLBodyElement@prototype.onseeked has setter to model.
+onseeked ReadOnly &undefined HTMLBodyElement.prototype.onseeked
+%%% @HTMLBodyElement@prototype.onseeking has getter to model.
+%%% @HTMLBodyElement@prototype.onseeking has setter to model.
+onseeking ReadOnly &undefined HTMLBodyElement.prototype.onseeking
+%%% @HTMLBodyElement@prototype.onselect has getter to model.
+%%% @HTMLBodyElement@prototype.onselect has setter to model.
+onselect ReadOnly &undefined HTMLBodyElement.prototype.onselect
+%%% @HTMLBodyElement@prototype.onshow has getter to model.
+%%% @HTMLBodyElement@prototype.onshow has setter to model.
+onshow ReadOnly &undefined HTMLBodyElement.prototype.onshow
+%%% @HTMLBodyElement@prototype.onstalled has getter to model.
+%%% @HTMLBodyElement@prototype.onstalled has setter to model.
+onstalled ReadOnly &undefined HTMLBodyElement.prototype.onstalled
+%%% @HTMLBodyElement@prototype.onsubmit has getter to model.
+%%% @HTMLBodyElement@prototype.onsubmit has setter to model.
+onsubmit ReadOnly &undefined HTMLBodyElement.prototype.onsubmit
+%%% @HTMLBodyElement@prototype.onsuspend has getter to model.
+%%% @HTMLBodyElement@prototype.onsuspend has setter to model.
+onsuspend ReadOnly &undefined HTMLBodyElement.prototype.onsuspend
+%%% @HTMLBodyElement@prototype.ontimeupdate has getter to model.
+%%% @HTMLBodyElement@prototype.ontimeupdate has setter to model.
+ontimeupdate ReadOnly &undefined HTMLBodyElement.prototype.ontimeupdate
+%%% @HTMLBodyElement@prototype.onunload has getter to model.
+%%% @HTMLBodyElement@prototype.onunload has setter to model.
+onunload ReadOnly &undefined HTMLBodyElement.prototype.onunload
+%%% @HTMLBodyElement@prototype.onvolumechange has getter to model.
+%%% @HTMLBodyElement@prototype.onvolumechange has setter to model.
+onvolumechange ReadOnly &undefined HTMLBodyElement.prototype.onvolumechange
+%%% @HTMLBodyElement@prototype.onwaiting has getter to model.
+%%% @HTMLBodyElement@prototype.onwaiting has setter to model.
+onwaiting ReadOnly &undefined HTMLBodyElement.prototype.onwaiting
+%%% @HTMLBodyElement@prototype.onwheel has getter to model.
+%%% @HTMLBodyElement@prototype.onwheel has setter to model.
+onwheel ReadOnly &undefined HTMLBodyElement.prototype.onwheel
+%%% Unable to get descriptor info for property outerHTML.
+outerHTML - &null HTMLBodyElement.prototype.outerHTML
+%%% Unable to get descriptor info for property ownerDocument.
+ownerDocument - &null HTMLBodyElement.prototype.ownerDocument
+%%% Unable to get descriptor info for property parentElement.
+parentElement - &null HTMLBodyElement.prototype.parentElement
+%%% Unable to get descriptor info for property parentNode.
+parentNode - &null HTMLBodyElement.prototype.parentNode
+%%% Unable to get descriptor info for property prefix.
+prefix - &null HTMLBodyElement.prototype.prefix
+%%% Unable to get descriptor info for property previousElementSibling.
+previousElementSibling - &null HTMLBodyElement.prototype.previousElementSibling
+%%% Unable to get descriptor info for property previousSibling.
+previousSibling - &null HTMLBodyElement.prototype.previousSibling
+%%% Unable to get descriptor info for property properties.
+properties - &null HTMLBodyElement.prototype.properties
+querySelector - #HTMLBodyElement#prototype#querySelector HTMLBodyElement.prototype.querySelector
+querySelectorAll - #HTMLBodyElement#prototype#querySelectorAll HTMLBodyElement.prototype.querySelectorAll
+releaseCapture - #HTMLBodyElement#prototype#releaseCapture HTMLBodyElement.prototype.releaseCapture
+removeAttribute - #HTMLBodyElement#prototype#removeAttribute HTMLBodyElement.prototype.removeAttribute
+removeAttributeNS - #HTMLBodyElement#prototype#removeAttributeNS HTMLBodyElement.prototype.removeAttributeNS
+removeAttributeNode - #HTMLBodyElement#prototype#removeAttributeNode HTMLBodyElement.prototype.removeAttributeNode
+removeChild - #HTMLBodyElement#prototype#removeChild HTMLBodyElement.prototype.removeChild
+removeEventListener - #HTMLBodyElement#prototype#removeEventListener HTMLBodyElement.prototype.removeEventListener
+replaceChild - #HTMLBodyElement#prototype#replaceChild HTMLBodyElement.prototype.replaceChild
+%%% Unable to get descriptor info for property scrollHeight.
+scrollHeight - &null HTMLBodyElement.prototype.scrollHeight
+scrollIntoView - #HTMLBodyElement#prototype#scrollIntoView HTMLBodyElement.prototype.scrollIntoView
+%%% Unable to get descriptor info for property scrollLeft.
+scrollLeft - &null HTMLBodyElement.prototype.scrollLeft
+%%% @HTMLBodyElement@prototype.scrollLeftMax has getter to model.
+scrollLeftMax ReadOnly &undefined HTMLBodyElement.prototype.scrollLeftMax
+%%% Unable to get descriptor info for property scrollTop.
+scrollTop - &null HTMLBodyElement.prototype.scrollTop
+%%% @HTMLBodyElement@prototype.scrollTopMax has getter to model.
+scrollTopMax ReadOnly &undefined HTMLBodyElement.prototype.scrollTopMax
+%%% Unable to get descriptor info for property scrollWidth.
+scrollWidth - &null HTMLBodyElement.prototype.scrollWidth
+setAttribute - #HTMLBodyElement#prototype#setAttribute HTMLBodyElement.prototype.setAttribute
+setAttributeNS - #HTMLBodyElement#prototype#setAttributeNS HTMLBodyElement.prototype.setAttributeNS
+setAttributeNode - #HTMLBodyElement#prototype#setAttributeNode HTMLBodyElement.prototype.setAttributeNode
+setAttributeNodeNS - #HTMLBodyElement#prototype#setAttributeNodeNS HTMLBodyElement.prototype.setAttributeNodeNS
+setCapture - #HTMLBodyElement#prototype#setCapture HTMLBodyElement.prototype.setCapture
+setUserData - #HTMLBodyElement#prototype#setUserData HTMLBodyElement.prototype.setUserData
+%%% Unable to get descriptor info for property spellcheck.
+spellcheck - &null HTMLBodyElement.prototype.spellcheck
+%%% Unable to get descriptor info for property style.
+style - &null HTMLBodyElement.prototype.style
+%%% Unable to get descriptor info for property tabIndex.
+tabIndex - &null HTMLBodyElement.prototype.tabIndex
+%%% Unable to get descriptor info for property tagName.
+tagName - &null HTMLBodyElement.prototype.tagName
+%%% @HTMLBodyElement@prototype.text has getter to model.
+%%% @HTMLBodyElement@prototype.text has setter to model.
+text ReadOnly &undefined HTMLBodyElement.prototype.text
+%%% Unable to get descriptor info for property textContent.
+textContent - &null HTMLBodyElement.prototype.textContent
+%%% Unable to get descriptor info for property title.
+title - &null HTMLBodyElement.prototype.title
+%%% @HTMLBodyElement@prototype.vLink has getter to model.
+%%% @HTMLBodyElement@prototype.vLink has setter to model.
+vLink ReadOnly &undefined HTMLBodyElement.prototype.vLink
 
 
 @HTMLBRElement@prototype
@@ -6297,6 +6776,404 @@ tagName - &null HTMLFrameElement.prototype.tagName
 textContent - &null HTMLFrameElement.prototype.textContent
 %%% Unable to get descriptor info for property title.
 title - &null HTMLFrameElement.prototype.title
+
+
+@HTMLHeadElement@prototype
+
+% HTMLHeadElement#prototype properties
+ATTRIBUTE_NODE - 2 HTMLHeadElement.prototype.ATTRIBUTE_NODE
+CDATA_SECTION_NODE - 4 HTMLHeadElement.prototype.CDATA_SECTION_NODE
+COMMENT_NODE - 8 HTMLHeadElement.prototype.COMMENT_NODE
+DOCUMENT_FRAGMENT_NODE - 11 HTMLHeadElement.prototype.DOCUMENT_FRAGMENT_NODE
+DOCUMENT_NODE - 9 HTMLHeadElement.prototype.DOCUMENT_NODE
+DOCUMENT_POSITION_CONTAINED_BY - 16 HTMLHeadElement.prototype.DOCUMENT_POSITION_CONTAINED_BY
+DOCUMENT_POSITION_CONTAINS - 8 HTMLHeadElement.prototype.DOCUMENT_POSITION_CONTAINS
+DOCUMENT_POSITION_DISCONNECTED - 1 HTMLHeadElement.prototype.DOCUMENT_POSITION_DISCONNECTED
+DOCUMENT_POSITION_FOLLOWING - 4 HTMLHeadElement.prototype.DOCUMENT_POSITION_FOLLOWING
+DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC - 32 HTMLHeadElement.prototype.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+DOCUMENT_POSITION_PRECEDING - 2 HTMLHeadElement.prototype.DOCUMENT_POSITION_PRECEDING
+DOCUMENT_TYPE_NODE - 10 HTMLHeadElement.prototype.DOCUMENT_TYPE_NODE
+ELEMENT_NODE - 1 HTMLHeadElement.prototype.ELEMENT_NODE
+ENTITY_NODE - 6 HTMLHeadElement.prototype.ENTITY_NODE
+ENTITY_REFERENCE_NODE - 5 HTMLHeadElement.prototype.ENTITY_REFERENCE_NODE
+NOTATION_NODE - 12 HTMLHeadElement.prototype.NOTATION_NODE
+PROCESSING_INSTRUCTION_NODE - 7 HTMLHeadElement.prototype.PROCESSING_INSTRUCTION_NODE
+QueryInterface DontEnum #HTMLHeadElement#prototype#QueryInterface HTMLHeadElement.prototype.QueryInterface
+TEXT_NODE - 3 HTMLHeadElement.prototype.TEXT_NODE
+__defineGetter__ DontEnum #HTMLHeadElement#prototype#__defineGetter__ HTMLHeadElement.prototype.__defineGetter__
+__defineSetter__ DontEnum #HTMLHeadElement#prototype#__defineSetter__ HTMLHeadElement.prototype.__defineSetter__
+__lookupGetter__ DontEnum #HTMLHeadElement#prototype#__lookupGetter__ HTMLHeadElement.prototype.__lookupGetter__
+__lookupSetter__ DontEnum #HTMLHeadElement#prototype#__lookupSetter__ HTMLHeadElement.prototype.__lookupSetter__
+__proto__ DontEnum #HTMLElement#prototype HTMLElement.prototype
+%%% Unable to get descriptor info for property accessKey.
+accessKey - &null HTMLHeadElement.prototype.accessKey
+%%% Unable to get descriptor info for property accessKeyLabel.
+accessKeyLabel - &null HTMLHeadElement.prototype.accessKeyLabel
+addEventListener - #HTMLHeadElement#prototype#addEventListener HTMLHeadElement.prototype.addEventListener
+appendChild - #HTMLHeadElement#prototype#appendChild HTMLHeadElement.prototype.appendChild
+%%% Unable to get descriptor info for property attributes.
+attributes - &null HTMLHeadElement.prototype.attributes
+%%% Unable to get descriptor info for property baseURI.
+baseURI - &null HTMLHeadElement.prototype.baseURI
+blur - #HTMLHeadElement#prototype#blur HTMLHeadElement.prototype.blur
+%%% Unable to get descriptor info for property childElementCount.
+childElementCount - &null HTMLHeadElement.prototype.childElementCount
+%%% Unable to get descriptor info for property childNodes.
+childNodes - &null HTMLHeadElement.prototype.childNodes
+%%% Unable to get descriptor info for property children.
+children - &null HTMLHeadElement.prototype.children
+%%% Unable to get descriptor info for property classList.
+classList - &null HTMLHeadElement.prototype.classList
+%%% Unable to get descriptor info for property className.
+className - &null HTMLHeadElement.prototype.className
+click - #HTMLHeadElement#prototype#click HTMLHeadElement.prototype.click
+%%% Unable to get descriptor info for property clientHeight.
+clientHeight - &null HTMLHeadElement.prototype.clientHeight
+%%% Unable to get descriptor info for property clientLeft.
+clientLeft - &null HTMLHeadElement.prototype.clientLeft
+%%% Unable to get descriptor info for property clientTop.
+clientTop - &null HTMLHeadElement.prototype.clientTop
+%%% Unable to get descriptor info for property clientWidth.
+clientWidth - &null HTMLHeadElement.prototype.clientWidth
+cloneNode - #HTMLHeadElement#prototype#cloneNode HTMLHeadElement.prototype.cloneNode
+compareDocumentPosition - #HTMLHeadElement#prototype#compareDocumentPosition HTMLHeadElement.prototype.compareDocumentPosition
+contains - #HTMLHeadElement#prototype#contains HTMLHeadElement.prototype.contains
+%%% Unable to get descriptor info for property contentEditable.
+contentEditable - &null HTMLHeadElement.prototype.contentEditable
+%%% Unable to get descriptor info for property contextMenu.
+contextMenu - &null HTMLHeadElement.prototype.contextMenu
+%%% Unable to get descriptor info for property dataset.
+dataset - &null HTMLHeadElement.prototype.dataset
+%%% Unable to get descriptor info for property dir.
+dir - &null HTMLHeadElement.prototype.dir
+dispatchEvent - #HTMLHeadElement#prototype#dispatchEvent HTMLHeadElement.prototype.dispatchEvent
+%%% Unable to get descriptor info for property draggable.
+draggable - &null HTMLHeadElement.prototype.draggable
+%%% Unable to get descriptor info for property firstChild.
+firstChild - &null HTMLHeadElement.prototype.firstChild
+%%% Unable to get descriptor info for property firstElementChild.
+firstElementChild - &null HTMLHeadElement.prototype.firstElementChild
+focus - #HTMLHeadElement#prototype#focus HTMLHeadElement.prototype.focus
+getAttribute - #HTMLHeadElement#prototype#getAttribute HTMLHeadElement.prototype.getAttribute
+getAttributeNS - #HTMLHeadElement#prototype#getAttributeNS HTMLHeadElement.prototype.getAttributeNS
+getAttributeNode - #HTMLHeadElement#prototype#getAttributeNode HTMLHeadElement.prototype.getAttributeNode
+getAttributeNodeNS - #HTMLHeadElement#prototype#getAttributeNodeNS HTMLHeadElement.prototype.getAttributeNodeNS
+getBoundingClientRect - #HTMLHeadElement#prototype#getBoundingClientRect HTMLHeadElement.prototype.getBoundingClientRect
+getClientRects - #HTMLHeadElement#prototype#getClientRects HTMLHeadElement.prototype.getClientRects
+getElementsByClassName - #HTMLHeadElement#prototype#getElementsByClassName HTMLHeadElement.prototype.getElementsByClassName
+getElementsByTagName - #HTMLHeadElement#prototype#getElementsByTagName HTMLHeadElement.prototype.getElementsByTagName
+getElementsByTagNameNS - #HTMLHeadElement#prototype#getElementsByTagNameNS HTMLHeadElement.prototype.getElementsByTagNameNS
+getUserData - #HTMLHeadElement#prototype#getUserData HTMLHeadElement.prototype.getUserData
+hasAttribute - #HTMLHeadElement#prototype#hasAttribute HTMLHeadElement.prototype.hasAttribute
+hasAttributeNS - #HTMLHeadElement#prototype#hasAttributeNS HTMLHeadElement.prototype.hasAttributeNS
+hasAttributes - #HTMLHeadElement#prototype#hasAttributes HTMLHeadElement.prototype.hasAttributes
+hasChildNodes - #HTMLHeadElement#prototype#hasChildNodes HTMLHeadElement.prototype.hasChildNodes
+%%% Unable to get descriptor info for property hidden.
+hidden - &null HTMLHeadElement.prototype.hidden
+%%% Unable to get descriptor info for property id.
+id - &null HTMLHeadElement.prototype.id
+%%% Unable to get descriptor info for property innerHTML.
+innerHTML - &null HTMLHeadElement.prototype.innerHTML
+insertAdjacentHTML - #HTMLHeadElement#prototype#insertAdjacentHTML HTMLHeadElement.prototype.insertAdjacentHTML
+insertBefore - #HTMLHeadElement#prototype#insertBefore HTMLHeadElement.prototype.insertBefore
+%%% Unable to get descriptor info for property isContentEditable.
+isContentEditable - &null HTMLHeadElement.prototype.isContentEditable
+isDefaultNamespace - #HTMLHeadElement#prototype#isDefaultNamespace HTMLHeadElement.prototype.isDefaultNamespace
+isEqualNode - #HTMLHeadElement#prototype#isEqualNode HTMLHeadElement.prototype.isEqualNode
+isSupported - #HTMLHeadElement#prototype#isSupported HTMLHeadElement.prototype.isSupported
+%%% Unable to get descriptor info for property itemId.
+itemId - &null HTMLHeadElement.prototype.itemId
+%%% @HTMLHeadElement@prototype.itemProp has getter to model.
+%%% @HTMLHeadElement@prototype.itemProp has setter to model.
+itemProp ReadOnly &undefined HTMLHeadElement.prototype.itemProp
+%%% @HTMLHeadElement@prototype.itemRef has getter to model.
+%%% @HTMLHeadElement@prototype.itemRef has setter to model.
+itemRef ReadOnly &undefined HTMLHeadElement.prototype.itemRef
+%%% Unable to get descriptor info for property itemScope.
+itemScope - &null HTMLHeadElement.prototype.itemScope
+%%% @HTMLHeadElement@prototype.itemType has getter to model.
+%%% @HTMLHeadElement@prototype.itemType has setter to model.
+itemType ReadOnly &undefined HTMLHeadElement.prototype.itemType
+%%% @HTMLHeadElement@prototype.itemValue has getter to model.
+%%% @HTMLHeadElement@prototype.itemValue has setter to model.
+itemValue ReadOnly &undefined HTMLHeadElement.prototype.itemValue
+%%% Unable to get descriptor info for property lang.
+lang - &null HTMLHeadElement.prototype.lang
+%%% Unable to get descriptor info for property lastChild.
+lastChild - &null HTMLHeadElement.prototype.lastChild
+%%% Unable to get descriptor info for property lastElementChild.
+lastElementChild - &null HTMLHeadElement.prototype.lastElementChild
+%%% Unable to get descriptor info for property localName.
+localName - &null HTMLHeadElement.prototype.localName
+lookupNamespaceURI - #HTMLHeadElement#prototype#lookupNamespaceURI HTMLHeadElement.prototype.lookupNamespaceURI
+lookupPrefix - #HTMLHeadElement#prototype#lookupPrefix HTMLHeadElement.prototype.lookupPrefix
+mozMatchesSelector - #HTMLHeadElement#prototype#mozMatchesSelector HTMLHeadElement.prototype.mozMatchesSelector
+mozRequestFullScreen - #HTMLHeadElement#prototype#mozRequestFullScreen HTMLHeadElement.prototype.mozRequestFullScreen
+mozRequestPointerLock - #HTMLHeadElement#prototype#mozRequestPointerLock HTMLHeadElement.prototype.mozRequestPointerLock
+%%% Unable to get descriptor info for property namespaceURI.
+namespaceURI - &null HTMLHeadElement.prototype.namespaceURI
+%%% Unable to get descriptor info for property nextElementSibling.
+nextElementSibling - &null HTMLHeadElement.prototype.nextElementSibling
+%%% Unable to get descriptor info for property nextSibling.
+nextSibling - &null HTMLHeadElement.prototype.nextSibling
+%%% Unable to get descriptor info for property nodeName.
+nodeName - &null HTMLHeadElement.prototype.nodeName
+%%% Unable to get descriptor info for property nodeType.
+nodeType - &null HTMLHeadElement.prototype.nodeType
+%%% Unable to get descriptor info for property nodeValue.
+nodeValue - &null HTMLHeadElement.prototype.nodeValue
+normalize - #HTMLHeadElement#prototype#normalize HTMLHeadElement.prototype.normalize
+%%% Unable to get descriptor info for property offsetHeight.
+offsetHeight - &null HTMLHeadElement.prototype.offsetHeight
+%%% Unable to get descriptor info for property offsetLeft.
+offsetLeft - &null HTMLHeadElement.prototype.offsetLeft
+%%% Unable to get descriptor info for property offsetParent.
+offsetParent - &null HTMLHeadElement.prototype.offsetParent
+%%% Unable to get descriptor info for property offsetTop.
+offsetTop - &null HTMLHeadElement.prototype.offsetTop
+%%% Unable to get descriptor info for property offsetWidth.
+offsetWidth - &null HTMLHeadElement.prototype.offsetWidth
+%%% @HTMLHeadElement@prototype.onabort has getter to model.
+%%% @HTMLHeadElement@prototype.onabort has setter to model.
+onabort ReadOnly &undefined HTMLHeadElement.prototype.onabort
+%%% @HTMLHeadElement@prototype.onafterscriptexecute has getter to model.
+%%% @HTMLHeadElement@prototype.onafterscriptexecute has setter to model.
+onafterscriptexecute ReadOnly &undefined HTMLHeadElement.prototype.onafterscriptexecute
+%%% @HTMLHeadElement@prototype.onbeforescriptexecute has getter to model.
+%%% @HTMLHeadElement@prototype.onbeforescriptexecute has setter to model.
+onbeforescriptexecute ReadOnly &undefined HTMLHeadElement.prototype.onbeforescriptexecute
+%%% @HTMLHeadElement@prototype.onblur has getter to model.
+%%% @HTMLHeadElement@prototype.onblur has setter to model.
+onblur ReadOnly &undefined HTMLHeadElement.prototype.onblur
+%%% @HTMLHeadElement@prototype.oncanplay has getter to model.
+%%% @HTMLHeadElement@prototype.oncanplay has setter to model.
+oncanplay ReadOnly &undefined HTMLHeadElement.prototype.oncanplay
+%%% @HTMLHeadElement@prototype.oncanplaythrough has getter to model.
+%%% @HTMLHeadElement@prototype.oncanplaythrough has setter to model.
+oncanplaythrough ReadOnly &undefined HTMLHeadElement.prototype.oncanplaythrough
+%%% @HTMLHeadElement@prototype.onchange has getter to model.
+%%% @HTMLHeadElement@prototype.onchange has setter to model.
+onchange ReadOnly &undefined HTMLHeadElement.prototype.onchange
+%%% @HTMLHeadElement@prototype.onclick has getter to model.
+%%% @HTMLHeadElement@prototype.onclick has setter to model.
+onclick ReadOnly &undefined HTMLHeadElement.prototype.onclick
+%%% @HTMLHeadElement@prototype.oncontextmenu has getter to model.
+%%% @HTMLHeadElement@prototype.oncontextmenu has setter to model.
+oncontextmenu ReadOnly &undefined HTMLHeadElement.prototype.oncontextmenu
+%%% @HTMLHeadElement@prototype.oncopy has getter to model.
+%%% @HTMLHeadElement@prototype.oncopy has setter to model.
+oncopy ReadOnly &undefined HTMLHeadElement.prototype.oncopy
+%%% @HTMLHeadElement@prototype.oncut has getter to model.
+%%% @HTMLHeadElement@prototype.oncut has setter to model.
+oncut ReadOnly &undefined HTMLHeadElement.prototype.oncut
+%%% @HTMLHeadElement@prototype.ondblclick has getter to model.
+%%% @HTMLHeadElement@prototype.ondblclick has setter to model.
+ondblclick ReadOnly &undefined HTMLHeadElement.prototype.ondblclick
+%%% @HTMLHeadElement@prototype.ondrag has getter to model.
+%%% @HTMLHeadElement@prototype.ondrag has setter to model.
+ondrag ReadOnly &undefined HTMLHeadElement.prototype.ondrag
+%%% @HTMLHeadElement@prototype.ondragend has getter to model.
+%%% @HTMLHeadElement@prototype.ondragend has setter to model.
+ondragend ReadOnly &undefined HTMLHeadElement.prototype.ondragend
+%%% @HTMLHeadElement@prototype.ondragenter has getter to model.
+%%% @HTMLHeadElement@prototype.ondragenter has setter to model.
+ondragenter ReadOnly &undefined HTMLHeadElement.prototype.ondragenter
+%%% @HTMLHeadElement@prototype.ondragleave has getter to model.
+%%% @HTMLHeadElement@prototype.ondragleave has setter to model.
+ondragleave ReadOnly &undefined HTMLHeadElement.prototype.ondragleave
+%%% @HTMLHeadElement@prototype.ondragover has getter to model.
+%%% @HTMLHeadElement@prototype.ondragover has setter to model.
+ondragover ReadOnly &undefined HTMLHeadElement.prototype.ondragover
+%%% @HTMLHeadElement@prototype.ondragstart has getter to model.
+%%% @HTMLHeadElement@prototype.ondragstart has setter to model.
+ondragstart ReadOnly &undefined HTMLHeadElement.prototype.ondragstart
+%%% @HTMLHeadElement@prototype.ondrop has getter to model.
+%%% @HTMLHeadElement@prototype.ondrop has setter to model.
+ondrop ReadOnly &undefined HTMLHeadElement.prototype.ondrop
+%%% @HTMLHeadElement@prototype.ondurationchange has getter to model.
+%%% @HTMLHeadElement@prototype.ondurationchange has setter to model.
+ondurationchange ReadOnly &undefined HTMLHeadElement.prototype.ondurationchange
+%%% @HTMLHeadElement@prototype.onemptied has getter to model.
+%%% @HTMLHeadElement@prototype.onemptied has setter to model.
+onemptied ReadOnly &undefined HTMLHeadElement.prototype.onemptied
+%%% @HTMLHeadElement@prototype.onended has getter to model.
+%%% @HTMLHeadElement@prototype.onended has setter to model.
+onended ReadOnly &undefined HTMLHeadElement.prototype.onended
+%%% @HTMLHeadElement@prototype.onerror has getter to model.
+%%% @HTMLHeadElement@prototype.onerror has setter to model.
+onerror ReadOnly &undefined HTMLHeadElement.prototype.onerror
+%%% @HTMLHeadElement@prototype.onfocus has getter to model.
+%%% @HTMLHeadElement@prototype.onfocus has setter to model.
+onfocus ReadOnly &undefined HTMLHeadElement.prototype.onfocus
+%%% @HTMLHeadElement@prototype.oninput has getter to model.
+%%% @HTMLHeadElement@prototype.oninput has setter to model.
+oninput ReadOnly &undefined HTMLHeadElement.prototype.oninput
+%%% @HTMLHeadElement@prototype.oninvalid has getter to model.
+%%% @HTMLHeadElement@prototype.oninvalid has setter to model.
+oninvalid ReadOnly &undefined HTMLHeadElement.prototype.oninvalid
+%%% @HTMLHeadElement@prototype.onkeydown has getter to model.
+%%% @HTMLHeadElement@prototype.onkeydown has setter to model.
+onkeydown ReadOnly &undefined HTMLHeadElement.prototype.onkeydown
+%%% @HTMLHeadElement@prototype.onkeypress has getter to model.
+%%% @HTMLHeadElement@prototype.onkeypress has setter to model.
+onkeypress ReadOnly &undefined HTMLHeadElement.prototype.onkeypress
+%%% @HTMLHeadElement@prototype.onkeyup has getter to model.
+%%% @HTMLHeadElement@prototype.onkeyup has setter to model.
+onkeyup ReadOnly &undefined HTMLHeadElement.prototype.onkeyup
+%%% @HTMLHeadElement@prototype.onload has getter to model.
+%%% @HTMLHeadElement@prototype.onload has setter to model.
+onload ReadOnly &undefined HTMLHeadElement.prototype.onload
+%%% @HTMLHeadElement@prototype.onloadeddata has getter to model.
+%%% @HTMLHeadElement@prototype.onloadeddata has setter to model.
+onloadeddata ReadOnly &undefined HTMLHeadElement.prototype.onloadeddata
+%%% @HTMLHeadElement@prototype.onloadedmetadata has getter to model.
+%%% @HTMLHeadElement@prototype.onloadedmetadata has setter to model.
+onloadedmetadata ReadOnly &undefined HTMLHeadElement.prototype.onloadedmetadata
+%%% @HTMLHeadElement@prototype.onloadstart has getter to model.
+%%% @HTMLHeadElement@prototype.onloadstart has setter to model.
+onloadstart ReadOnly &undefined HTMLHeadElement.prototype.onloadstart
+%%% @HTMLHeadElement@prototype.onmousedown has getter to model.
+%%% @HTMLHeadElement@prototype.onmousedown has setter to model.
+onmousedown ReadOnly &undefined HTMLHeadElement.prototype.onmousedown
+onmouseenter - &null HTMLHeadElement.prototype.onmouseenter
+onmouseleave - &null HTMLHeadElement.prototype.onmouseleave
+%%% @HTMLHeadElement@prototype.onmousemove has getter to model.
+%%% @HTMLHeadElement@prototype.onmousemove has setter to model.
+onmousemove ReadOnly &undefined HTMLHeadElement.prototype.onmousemove
+%%% @HTMLHeadElement@prototype.onmouseout has getter to model.
+%%% @HTMLHeadElement@prototype.onmouseout has setter to model.
+onmouseout ReadOnly &undefined HTMLHeadElement.prototype.onmouseout
+%%% @HTMLHeadElement@prototype.onmouseover has getter to model.
+%%% @HTMLHeadElement@prototype.onmouseover has setter to model.
+onmouseover ReadOnly &undefined HTMLHeadElement.prototype.onmouseover
+%%% @HTMLHeadElement@prototype.onmouseup has getter to model.
+%%% @HTMLHeadElement@prototype.onmouseup has setter to model.
+onmouseup ReadOnly &undefined HTMLHeadElement.prototype.onmouseup
+%%% @HTMLHeadElement@prototype.onmozfullscreenchange has getter to model.
+%%% @HTMLHeadElement@prototype.onmozfullscreenchange has setter to model.
+onmozfullscreenchange ReadOnly &undefined HTMLHeadElement.prototype.onmozfullscreenchange
+%%% @HTMLHeadElement@prototype.onmozfullscreenerror has getter to model.
+%%% @HTMLHeadElement@prototype.onmozfullscreenerror has setter to model.
+onmozfullscreenerror ReadOnly &undefined HTMLHeadElement.prototype.onmozfullscreenerror
+%%% @HTMLHeadElement@prototype.onmozpointerlockchange has getter to model.
+%%% @HTMLHeadElement@prototype.onmozpointerlockchange has setter to model.
+onmozpointerlockchange ReadOnly &undefined HTMLHeadElement.prototype.onmozpointerlockchange
+%%% @HTMLHeadElement@prototype.onmozpointerlockerror has getter to model.
+%%% @HTMLHeadElement@prototype.onmozpointerlockerror has setter to model.
+onmozpointerlockerror ReadOnly &undefined HTMLHeadElement.prototype.onmozpointerlockerror
+%%% @HTMLHeadElement@prototype.onpaste has getter to model.
+%%% @HTMLHeadElement@prototype.onpaste has setter to model.
+onpaste ReadOnly &undefined HTMLHeadElement.prototype.onpaste
+%%% @HTMLHeadElement@prototype.onpause has getter to model.
+%%% @HTMLHeadElement@prototype.onpause has setter to model.
+onpause ReadOnly &undefined HTMLHeadElement.prototype.onpause
+%%% @HTMLHeadElement@prototype.onplay has getter to model.
+%%% @HTMLHeadElement@prototype.onplay has setter to model.
+onplay ReadOnly &undefined HTMLHeadElement.prototype.onplay
+%%% @HTMLHeadElement@prototype.onplaying has getter to model.
+%%% @HTMLHeadElement@prototype.onplaying has setter to model.
+onplaying ReadOnly &undefined HTMLHeadElement.prototype.onplaying
+%%% @HTMLHeadElement@prototype.onprogress has getter to model.
+%%% @HTMLHeadElement@prototype.onprogress has setter to model.
+onprogress ReadOnly &undefined HTMLHeadElement.prototype.onprogress
+%%% @HTMLHeadElement@prototype.onratechange has getter to model.
+%%% @HTMLHeadElement@prototype.onratechange has setter to model.
+onratechange ReadOnly &undefined HTMLHeadElement.prototype.onratechange
+%%% @HTMLHeadElement@prototype.onreset has getter to model.
+%%% @HTMLHeadElement@prototype.onreset has setter to model.
+onreset ReadOnly &undefined HTMLHeadElement.prototype.onreset
+%%% @HTMLHeadElement@prototype.onscroll has getter to model.
+%%% @HTMLHeadElement@prototype.onscroll has setter to model.
+onscroll ReadOnly &undefined HTMLHeadElement.prototype.onscroll
+%%% @HTMLHeadElement@prototype.onseeked has getter to model.
+%%% @HTMLHeadElement@prototype.onseeked has setter to model.
+onseeked ReadOnly &undefined HTMLHeadElement.prototype.onseeked
+%%% @HTMLHeadElement@prototype.onseeking has getter to model.
+%%% @HTMLHeadElement@prototype.onseeking has setter to model.
+onseeking ReadOnly &undefined HTMLHeadElement.prototype.onseeking
+%%% @HTMLHeadElement@prototype.onselect has getter to model.
+%%% @HTMLHeadElement@prototype.onselect has setter to model.
+onselect ReadOnly &undefined HTMLHeadElement.prototype.onselect
+%%% @HTMLHeadElement@prototype.onshow has getter to model.
+%%% @HTMLHeadElement@prototype.onshow has setter to model.
+onshow ReadOnly &undefined HTMLHeadElement.prototype.onshow
+%%% @HTMLHeadElement@prototype.onstalled has getter to model.
+%%% @HTMLHeadElement@prototype.onstalled has setter to model.
+onstalled ReadOnly &undefined HTMLHeadElement.prototype.onstalled
+%%% @HTMLHeadElement@prototype.onsubmit has getter to model.
+%%% @HTMLHeadElement@prototype.onsubmit has setter to model.
+onsubmit ReadOnly &undefined HTMLHeadElement.prototype.onsubmit
+%%% @HTMLHeadElement@prototype.onsuspend has getter to model.
+%%% @HTMLHeadElement@prototype.onsuspend has setter to model.
+onsuspend ReadOnly &undefined HTMLHeadElement.prototype.onsuspend
+%%% @HTMLHeadElement@prototype.ontimeupdate has getter to model.
+%%% @HTMLHeadElement@prototype.ontimeupdate has setter to model.
+ontimeupdate ReadOnly &undefined HTMLHeadElement.prototype.ontimeupdate
+%%% @HTMLHeadElement@prototype.onvolumechange has getter to model.
+%%% @HTMLHeadElement@prototype.onvolumechange has setter to model.
+onvolumechange ReadOnly &undefined HTMLHeadElement.prototype.onvolumechange
+%%% @HTMLHeadElement@prototype.onwaiting has getter to model.
+%%% @HTMLHeadElement@prototype.onwaiting has setter to model.
+onwaiting ReadOnly &undefined HTMLHeadElement.prototype.onwaiting
+%%% @HTMLHeadElement@prototype.onwheel has getter to model.
+%%% @HTMLHeadElement@prototype.onwheel has setter to model.
+onwheel ReadOnly &undefined HTMLHeadElement.prototype.onwheel
+%%% Unable to get descriptor info for property outerHTML.
+outerHTML - &null HTMLHeadElement.prototype.outerHTML
+%%% Unable to get descriptor info for property ownerDocument.
+ownerDocument - &null HTMLHeadElement.prototype.ownerDocument
+%%% Unable to get descriptor info for property parentElement.
+parentElement - &null HTMLHeadElement.prototype.parentElement
+%%% Unable to get descriptor info for property parentNode.
+parentNode - &null HTMLHeadElement.prototype.parentNode
+%%% Unable to get descriptor info for property prefix.
+prefix - &null HTMLHeadElement.prototype.prefix
+%%% Unable to get descriptor info for property previousElementSibling.
+previousElementSibling - &null HTMLHeadElement.prototype.previousElementSibling
+%%% Unable to get descriptor info for property previousSibling.
+previousSibling - &null HTMLHeadElement.prototype.previousSibling
+%%% Unable to get descriptor info for property properties.
+properties - &null HTMLHeadElement.prototype.properties
+querySelector - #HTMLHeadElement#prototype#querySelector HTMLHeadElement.prototype.querySelector
+querySelectorAll - #HTMLHeadElement#prototype#querySelectorAll HTMLHeadElement.prototype.querySelectorAll
+releaseCapture - #HTMLHeadElement#prototype#releaseCapture HTMLHeadElement.prototype.releaseCapture
+removeAttribute - #HTMLHeadElement#prototype#removeAttribute HTMLHeadElement.prototype.removeAttribute
+removeAttributeNS - #HTMLHeadElement#prototype#removeAttributeNS HTMLHeadElement.prototype.removeAttributeNS
+removeAttributeNode - #HTMLHeadElement#prototype#removeAttributeNode HTMLHeadElement.prototype.removeAttributeNode
+removeChild - #HTMLHeadElement#prototype#removeChild HTMLHeadElement.prototype.removeChild
+removeEventListener - #HTMLHeadElement#prototype#removeEventListener HTMLHeadElement.prototype.removeEventListener
+replaceChild - #HTMLHeadElement#prototype#replaceChild HTMLHeadElement.prototype.replaceChild
+%%% Unable to get descriptor info for property scrollHeight.
+scrollHeight - &null HTMLHeadElement.prototype.scrollHeight
+scrollIntoView - #HTMLHeadElement#prototype#scrollIntoView HTMLHeadElement.prototype.scrollIntoView
+%%% Unable to get descriptor info for property scrollLeft.
+scrollLeft - &null HTMLHeadElement.prototype.scrollLeft
+%%% @HTMLHeadElement@prototype.scrollLeftMax has getter to model.
+scrollLeftMax ReadOnly &undefined HTMLHeadElement.prototype.scrollLeftMax
+%%% Unable to get descriptor info for property scrollTop.
+scrollTop - &null HTMLHeadElement.prototype.scrollTop
+%%% @HTMLHeadElement@prototype.scrollTopMax has getter to model.
+scrollTopMax ReadOnly &undefined HTMLHeadElement.prototype.scrollTopMax
+%%% Unable to get descriptor info for property scrollWidth.
+scrollWidth - &null HTMLHeadElement.prototype.scrollWidth
+setAttribute - #HTMLHeadElement#prototype#setAttribute HTMLHeadElement.prototype.setAttribute
+setAttributeNS - #HTMLHeadElement#prototype#setAttributeNS HTMLHeadElement.prototype.setAttributeNS
+setAttributeNode - #HTMLHeadElement#prototype#setAttributeNode HTMLHeadElement.prototype.setAttributeNode
+setAttributeNodeNS - #HTMLHeadElement#prototype#setAttributeNodeNS HTMLHeadElement.prototype.setAttributeNodeNS
+setCapture - #HTMLHeadElement#prototype#setCapture HTMLHeadElement.prototype.setCapture
+setUserData - #HTMLHeadElement#prototype#setUserData HTMLHeadElement.prototype.setUserData
+%%% Unable to get descriptor info for property spellcheck.
+spellcheck - &null HTMLHeadElement.prototype.spellcheck
+%%% Unable to get descriptor info for property style.
+style - &null HTMLHeadElement.prototype.style
+%%% Unable to get descriptor info for property tabIndex.
+tabIndex - &null HTMLHeadElement.prototype.tabIndex
+%%% Unable to get descriptor info for property tagName.
+tagName - &null HTMLHeadElement.prototype.tagName
+%%% Unable to get descriptor info for property textContent.
+textContent - &null HTMLHeadElement.prototype.textContent
+%%% Unable to get descriptor info for property title.
+title - &null HTMLHeadElement.prototype.title
 
 
 @HTMLHtmlElement@prototype
@@ -11487,6 +12364,406 @@ title - &null HTMLSourceElement.prototype.title
 type ReadOnly &undefined HTMLSourceElement.prototype.type
 
 
+@HTMLTitleElement@prototype
+
+% HTMLTitleElement#prototype properties
+ATTRIBUTE_NODE - 2 HTMLTitleElement.prototype.ATTRIBUTE_NODE
+CDATA_SECTION_NODE - 4 HTMLTitleElement.prototype.CDATA_SECTION_NODE
+COMMENT_NODE - 8 HTMLTitleElement.prototype.COMMENT_NODE
+DOCUMENT_FRAGMENT_NODE - 11 HTMLTitleElement.prototype.DOCUMENT_FRAGMENT_NODE
+DOCUMENT_NODE - 9 HTMLTitleElement.prototype.DOCUMENT_NODE
+DOCUMENT_POSITION_CONTAINED_BY - 16 HTMLTitleElement.prototype.DOCUMENT_POSITION_CONTAINED_BY
+DOCUMENT_POSITION_CONTAINS - 8 HTMLTitleElement.prototype.DOCUMENT_POSITION_CONTAINS
+DOCUMENT_POSITION_DISCONNECTED - 1 HTMLTitleElement.prototype.DOCUMENT_POSITION_DISCONNECTED
+DOCUMENT_POSITION_FOLLOWING - 4 HTMLTitleElement.prototype.DOCUMENT_POSITION_FOLLOWING
+DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC - 32 HTMLTitleElement.prototype.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+DOCUMENT_POSITION_PRECEDING - 2 HTMLTitleElement.prototype.DOCUMENT_POSITION_PRECEDING
+DOCUMENT_TYPE_NODE - 10 HTMLTitleElement.prototype.DOCUMENT_TYPE_NODE
+ELEMENT_NODE - 1 HTMLTitleElement.prototype.ELEMENT_NODE
+ENTITY_NODE - 6 HTMLTitleElement.prototype.ENTITY_NODE
+ENTITY_REFERENCE_NODE - 5 HTMLTitleElement.prototype.ENTITY_REFERENCE_NODE
+NOTATION_NODE - 12 HTMLTitleElement.prototype.NOTATION_NODE
+PROCESSING_INSTRUCTION_NODE - 7 HTMLTitleElement.prototype.PROCESSING_INSTRUCTION_NODE
+QueryInterface DontEnum #HTMLTitleElement#prototype#QueryInterface HTMLTitleElement.prototype.QueryInterface
+TEXT_NODE - 3 HTMLTitleElement.prototype.TEXT_NODE
+__defineGetter__ DontEnum #HTMLTitleElement#prototype#__defineGetter__ HTMLTitleElement.prototype.__defineGetter__
+__defineSetter__ DontEnum #HTMLTitleElement#prototype#__defineSetter__ HTMLTitleElement.prototype.__defineSetter__
+__lookupGetter__ DontEnum #HTMLTitleElement#prototype#__lookupGetter__ HTMLTitleElement.prototype.__lookupGetter__
+__lookupSetter__ DontEnum #HTMLTitleElement#prototype#__lookupSetter__ HTMLTitleElement.prototype.__lookupSetter__
+__proto__ DontEnum #HTMLElement#prototype HTMLElement.prototype
+%%% Unable to get descriptor info for property accessKey.
+accessKey - &null HTMLTitleElement.prototype.accessKey
+%%% Unable to get descriptor info for property accessKeyLabel.
+accessKeyLabel - &null HTMLTitleElement.prototype.accessKeyLabel
+addEventListener - #HTMLTitleElement#prototype#addEventListener HTMLTitleElement.prototype.addEventListener
+appendChild - #HTMLTitleElement#prototype#appendChild HTMLTitleElement.prototype.appendChild
+%%% Unable to get descriptor info for property attributes.
+attributes - &null HTMLTitleElement.prototype.attributes
+%%% Unable to get descriptor info for property baseURI.
+baseURI - &null HTMLTitleElement.prototype.baseURI
+blur - #HTMLTitleElement#prototype#blur HTMLTitleElement.prototype.blur
+%%% Unable to get descriptor info for property childElementCount.
+childElementCount - &null HTMLTitleElement.prototype.childElementCount
+%%% Unable to get descriptor info for property childNodes.
+childNodes - &null HTMLTitleElement.prototype.childNodes
+%%% Unable to get descriptor info for property children.
+children - &null HTMLTitleElement.prototype.children
+%%% Unable to get descriptor info for property classList.
+classList - &null HTMLTitleElement.prototype.classList
+%%% Unable to get descriptor info for property className.
+className - &null HTMLTitleElement.prototype.className
+click - #HTMLTitleElement#prototype#click HTMLTitleElement.prototype.click
+%%% Unable to get descriptor info for property clientHeight.
+clientHeight - &null HTMLTitleElement.prototype.clientHeight
+%%% Unable to get descriptor info for property clientLeft.
+clientLeft - &null HTMLTitleElement.prototype.clientLeft
+%%% Unable to get descriptor info for property clientTop.
+clientTop - &null HTMLTitleElement.prototype.clientTop
+%%% Unable to get descriptor info for property clientWidth.
+clientWidth - &null HTMLTitleElement.prototype.clientWidth
+cloneNode - #HTMLTitleElement#prototype#cloneNode HTMLTitleElement.prototype.cloneNode
+compareDocumentPosition - #HTMLTitleElement#prototype#compareDocumentPosition HTMLTitleElement.prototype.compareDocumentPosition
+contains - #HTMLTitleElement#prototype#contains HTMLTitleElement.prototype.contains
+%%% Unable to get descriptor info for property contentEditable.
+contentEditable - &null HTMLTitleElement.prototype.contentEditable
+%%% Unable to get descriptor info for property contextMenu.
+contextMenu - &null HTMLTitleElement.prototype.contextMenu
+%%% Unable to get descriptor info for property dataset.
+dataset - &null HTMLTitleElement.prototype.dataset
+%%% Unable to get descriptor info for property dir.
+dir - &null HTMLTitleElement.prototype.dir
+dispatchEvent - #HTMLTitleElement#prototype#dispatchEvent HTMLTitleElement.prototype.dispatchEvent
+%%% Unable to get descriptor info for property draggable.
+draggable - &null HTMLTitleElement.prototype.draggable
+%%% Unable to get descriptor info for property firstChild.
+firstChild - &null HTMLTitleElement.prototype.firstChild
+%%% Unable to get descriptor info for property firstElementChild.
+firstElementChild - &null HTMLTitleElement.prototype.firstElementChild
+focus - #HTMLTitleElement#prototype#focus HTMLTitleElement.prototype.focus
+getAttribute - #HTMLTitleElement#prototype#getAttribute HTMLTitleElement.prototype.getAttribute
+getAttributeNS - #HTMLTitleElement#prototype#getAttributeNS HTMLTitleElement.prototype.getAttributeNS
+getAttributeNode - #HTMLTitleElement#prototype#getAttributeNode HTMLTitleElement.prototype.getAttributeNode
+getAttributeNodeNS - #HTMLTitleElement#prototype#getAttributeNodeNS HTMLTitleElement.prototype.getAttributeNodeNS
+getBoundingClientRect - #HTMLTitleElement#prototype#getBoundingClientRect HTMLTitleElement.prototype.getBoundingClientRect
+getClientRects - #HTMLTitleElement#prototype#getClientRects HTMLTitleElement.prototype.getClientRects
+getElementsByClassName - #HTMLTitleElement#prototype#getElementsByClassName HTMLTitleElement.prototype.getElementsByClassName
+getElementsByTagName - #HTMLTitleElement#prototype#getElementsByTagName HTMLTitleElement.prototype.getElementsByTagName
+getElementsByTagNameNS - #HTMLTitleElement#prototype#getElementsByTagNameNS HTMLTitleElement.prototype.getElementsByTagNameNS
+getUserData - #HTMLTitleElement#prototype#getUserData HTMLTitleElement.prototype.getUserData
+hasAttribute - #HTMLTitleElement#prototype#hasAttribute HTMLTitleElement.prototype.hasAttribute
+hasAttributeNS - #HTMLTitleElement#prototype#hasAttributeNS HTMLTitleElement.prototype.hasAttributeNS
+hasAttributes - #HTMLTitleElement#prototype#hasAttributes HTMLTitleElement.prototype.hasAttributes
+hasChildNodes - #HTMLTitleElement#prototype#hasChildNodes HTMLTitleElement.prototype.hasChildNodes
+%%% Unable to get descriptor info for property hidden.
+hidden - &null HTMLTitleElement.prototype.hidden
+%%% Unable to get descriptor info for property id.
+id - &null HTMLTitleElement.prototype.id
+%%% Unable to get descriptor info for property innerHTML.
+innerHTML - &null HTMLTitleElement.prototype.innerHTML
+insertAdjacentHTML - #HTMLTitleElement#prototype#insertAdjacentHTML HTMLTitleElement.prototype.insertAdjacentHTML
+insertBefore - #HTMLTitleElement#prototype#insertBefore HTMLTitleElement.prototype.insertBefore
+%%% Unable to get descriptor info for property isContentEditable.
+isContentEditable - &null HTMLTitleElement.prototype.isContentEditable
+isDefaultNamespace - #HTMLTitleElement#prototype#isDefaultNamespace HTMLTitleElement.prototype.isDefaultNamespace
+isEqualNode - #HTMLTitleElement#prototype#isEqualNode HTMLTitleElement.prototype.isEqualNode
+isSupported - #HTMLTitleElement#prototype#isSupported HTMLTitleElement.prototype.isSupported
+%%% Unable to get descriptor info for property itemId.
+itemId - &null HTMLTitleElement.prototype.itemId
+%%% @HTMLTitleElement@prototype.itemProp has getter to model.
+%%% @HTMLTitleElement@prototype.itemProp has setter to model.
+itemProp ReadOnly &undefined HTMLTitleElement.prototype.itemProp
+%%% @HTMLTitleElement@prototype.itemRef has getter to model.
+%%% @HTMLTitleElement@prototype.itemRef has setter to model.
+itemRef ReadOnly &undefined HTMLTitleElement.prototype.itemRef
+%%% Unable to get descriptor info for property itemScope.
+itemScope - &null HTMLTitleElement.prototype.itemScope
+%%% @HTMLTitleElement@prototype.itemType has getter to model.
+%%% @HTMLTitleElement@prototype.itemType has setter to model.
+itemType ReadOnly &undefined HTMLTitleElement.prototype.itemType
+%%% @HTMLTitleElement@prototype.itemValue has getter to model.
+%%% @HTMLTitleElement@prototype.itemValue has setter to model.
+itemValue ReadOnly &undefined HTMLTitleElement.prototype.itemValue
+%%% Unable to get descriptor info for property lang.
+lang - &null HTMLTitleElement.prototype.lang
+%%% Unable to get descriptor info for property lastChild.
+lastChild - &null HTMLTitleElement.prototype.lastChild
+%%% Unable to get descriptor info for property lastElementChild.
+lastElementChild - &null HTMLTitleElement.prototype.lastElementChild
+%%% Unable to get descriptor info for property localName.
+localName - &null HTMLTitleElement.prototype.localName
+lookupNamespaceURI - #HTMLTitleElement#prototype#lookupNamespaceURI HTMLTitleElement.prototype.lookupNamespaceURI
+lookupPrefix - #HTMLTitleElement#prototype#lookupPrefix HTMLTitleElement.prototype.lookupPrefix
+mozMatchesSelector - #HTMLTitleElement#prototype#mozMatchesSelector HTMLTitleElement.prototype.mozMatchesSelector
+mozRequestFullScreen - #HTMLTitleElement#prototype#mozRequestFullScreen HTMLTitleElement.prototype.mozRequestFullScreen
+mozRequestPointerLock - #HTMLTitleElement#prototype#mozRequestPointerLock HTMLTitleElement.prototype.mozRequestPointerLock
+%%% Unable to get descriptor info for property namespaceURI.
+namespaceURI - &null HTMLTitleElement.prototype.namespaceURI
+%%% Unable to get descriptor info for property nextElementSibling.
+nextElementSibling - &null HTMLTitleElement.prototype.nextElementSibling
+%%% Unable to get descriptor info for property nextSibling.
+nextSibling - &null HTMLTitleElement.prototype.nextSibling
+%%% Unable to get descriptor info for property nodeName.
+nodeName - &null HTMLTitleElement.prototype.nodeName
+%%% Unable to get descriptor info for property nodeType.
+nodeType - &null HTMLTitleElement.prototype.nodeType
+%%% Unable to get descriptor info for property nodeValue.
+nodeValue - &null HTMLTitleElement.prototype.nodeValue
+normalize - #HTMLTitleElement#prototype#normalize HTMLTitleElement.prototype.normalize
+%%% Unable to get descriptor info for property offsetHeight.
+offsetHeight - &null HTMLTitleElement.prototype.offsetHeight
+%%% Unable to get descriptor info for property offsetLeft.
+offsetLeft - &null HTMLTitleElement.prototype.offsetLeft
+%%% Unable to get descriptor info for property offsetParent.
+offsetParent - &null HTMLTitleElement.prototype.offsetParent
+%%% Unable to get descriptor info for property offsetTop.
+offsetTop - &null HTMLTitleElement.prototype.offsetTop
+%%% Unable to get descriptor info for property offsetWidth.
+offsetWidth - &null HTMLTitleElement.prototype.offsetWidth
+%%% @HTMLTitleElement@prototype.onabort has getter to model.
+%%% @HTMLTitleElement@prototype.onabort has setter to model.
+onabort ReadOnly &undefined HTMLTitleElement.prototype.onabort
+%%% @HTMLTitleElement@prototype.onafterscriptexecute has getter to model.
+%%% @HTMLTitleElement@prototype.onafterscriptexecute has setter to model.
+onafterscriptexecute ReadOnly &undefined HTMLTitleElement.prototype.onafterscriptexecute
+%%% @HTMLTitleElement@prototype.onbeforescriptexecute has getter to model.
+%%% @HTMLTitleElement@prototype.onbeforescriptexecute has setter to model.
+onbeforescriptexecute ReadOnly &undefined HTMLTitleElement.prototype.onbeforescriptexecute
+%%% @HTMLTitleElement@prototype.onblur has getter to model.
+%%% @HTMLTitleElement@prototype.onblur has setter to model.
+onblur ReadOnly &undefined HTMLTitleElement.prototype.onblur
+%%% @HTMLTitleElement@prototype.oncanplay has getter to model.
+%%% @HTMLTitleElement@prototype.oncanplay has setter to model.
+oncanplay ReadOnly &undefined HTMLTitleElement.prototype.oncanplay
+%%% @HTMLTitleElement@prototype.oncanplaythrough has getter to model.
+%%% @HTMLTitleElement@prototype.oncanplaythrough has setter to model.
+oncanplaythrough ReadOnly &undefined HTMLTitleElement.prototype.oncanplaythrough
+%%% @HTMLTitleElement@prototype.onchange has getter to model.
+%%% @HTMLTitleElement@prototype.onchange has setter to model.
+onchange ReadOnly &undefined HTMLTitleElement.prototype.onchange
+%%% @HTMLTitleElement@prototype.onclick has getter to model.
+%%% @HTMLTitleElement@prototype.onclick has setter to model.
+onclick ReadOnly &undefined HTMLTitleElement.prototype.onclick
+%%% @HTMLTitleElement@prototype.oncontextmenu has getter to model.
+%%% @HTMLTitleElement@prototype.oncontextmenu has setter to model.
+oncontextmenu ReadOnly &undefined HTMLTitleElement.prototype.oncontextmenu
+%%% @HTMLTitleElement@prototype.oncopy has getter to model.
+%%% @HTMLTitleElement@prototype.oncopy has setter to model.
+oncopy ReadOnly &undefined HTMLTitleElement.prototype.oncopy
+%%% @HTMLTitleElement@prototype.oncut has getter to model.
+%%% @HTMLTitleElement@prototype.oncut has setter to model.
+oncut ReadOnly &undefined HTMLTitleElement.prototype.oncut
+%%% @HTMLTitleElement@prototype.ondblclick has getter to model.
+%%% @HTMLTitleElement@prototype.ondblclick has setter to model.
+ondblclick ReadOnly &undefined HTMLTitleElement.prototype.ondblclick
+%%% @HTMLTitleElement@prototype.ondrag has getter to model.
+%%% @HTMLTitleElement@prototype.ondrag has setter to model.
+ondrag ReadOnly &undefined HTMLTitleElement.prototype.ondrag
+%%% @HTMLTitleElement@prototype.ondragend has getter to model.
+%%% @HTMLTitleElement@prototype.ondragend has setter to model.
+ondragend ReadOnly &undefined HTMLTitleElement.prototype.ondragend
+%%% @HTMLTitleElement@prototype.ondragenter has getter to model.
+%%% @HTMLTitleElement@prototype.ondragenter has setter to model.
+ondragenter ReadOnly &undefined HTMLTitleElement.prototype.ondragenter
+%%% @HTMLTitleElement@prototype.ondragleave has getter to model.
+%%% @HTMLTitleElement@prototype.ondragleave has setter to model.
+ondragleave ReadOnly &undefined HTMLTitleElement.prototype.ondragleave
+%%% @HTMLTitleElement@prototype.ondragover has getter to model.
+%%% @HTMLTitleElement@prototype.ondragover has setter to model.
+ondragover ReadOnly &undefined HTMLTitleElement.prototype.ondragover
+%%% @HTMLTitleElement@prototype.ondragstart has getter to model.
+%%% @HTMLTitleElement@prototype.ondragstart has setter to model.
+ondragstart ReadOnly &undefined HTMLTitleElement.prototype.ondragstart
+%%% @HTMLTitleElement@prototype.ondrop has getter to model.
+%%% @HTMLTitleElement@prototype.ondrop has setter to model.
+ondrop ReadOnly &undefined HTMLTitleElement.prototype.ondrop
+%%% @HTMLTitleElement@prototype.ondurationchange has getter to model.
+%%% @HTMLTitleElement@prototype.ondurationchange has setter to model.
+ondurationchange ReadOnly &undefined HTMLTitleElement.prototype.ondurationchange
+%%% @HTMLTitleElement@prototype.onemptied has getter to model.
+%%% @HTMLTitleElement@prototype.onemptied has setter to model.
+onemptied ReadOnly &undefined HTMLTitleElement.prototype.onemptied
+%%% @HTMLTitleElement@prototype.onended has getter to model.
+%%% @HTMLTitleElement@prototype.onended has setter to model.
+onended ReadOnly &undefined HTMLTitleElement.prototype.onended
+%%% @HTMLTitleElement@prototype.onerror has getter to model.
+%%% @HTMLTitleElement@prototype.onerror has setter to model.
+onerror ReadOnly &undefined HTMLTitleElement.prototype.onerror
+%%% @HTMLTitleElement@prototype.onfocus has getter to model.
+%%% @HTMLTitleElement@prototype.onfocus has setter to model.
+onfocus ReadOnly &undefined HTMLTitleElement.prototype.onfocus
+%%% @HTMLTitleElement@prototype.oninput has getter to model.
+%%% @HTMLTitleElement@prototype.oninput has setter to model.
+oninput ReadOnly &undefined HTMLTitleElement.prototype.oninput
+%%% @HTMLTitleElement@prototype.oninvalid has getter to model.
+%%% @HTMLTitleElement@prototype.oninvalid has setter to model.
+oninvalid ReadOnly &undefined HTMLTitleElement.prototype.oninvalid
+%%% @HTMLTitleElement@prototype.onkeydown has getter to model.
+%%% @HTMLTitleElement@prototype.onkeydown has setter to model.
+onkeydown ReadOnly &undefined HTMLTitleElement.prototype.onkeydown
+%%% @HTMLTitleElement@prototype.onkeypress has getter to model.
+%%% @HTMLTitleElement@prototype.onkeypress has setter to model.
+onkeypress ReadOnly &undefined HTMLTitleElement.prototype.onkeypress
+%%% @HTMLTitleElement@prototype.onkeyup has getter to model.
+%%% @HTMLTitleElement@prototype.onkeyup has setter to model.
+onkeyup ReadOnly &undefined HTMLTitleElement.prototype.onkeyup
+%%% @HTMLTitleElement@prototype.onload has getter to model.
+%%% @HTMLTitleElement@prototype.onload has setter to model.
+onload ReadOnly &undefined HTMLTitleElement.prototype.onload
+%%% @HTMLTitleElement@prototype.onloadeddata has getter to model.
+%%% @HTMLTitleElement@prototype.onloadeddata has setter to model.
+onloadeddata ReadOnly &undefined HTMLTitleElement.prototype.onloadeddata
+%%% @HTMLTitleElement@prototype.onloadedmetadata has getter to model.
+%%% @HTMLTitleElement@prototype.onloadedmetadata has setter to model.
+onloadedmetadata ReadOnly &undefined HTMLTitleElement.prototype.onloadedmetadata
+%%% @HTMLTitleElement@prototype.onloadstart has getter to model.
+%%% @HTMLTitleElement@prototype.onloadstart has setter to model.
+onloadstart ReadOnly &undefined HTMLTitleElement.prototype.onloadstart
+%%% @HTMLTitleElement@prototype.onmousedown has getter to model.
+%%% @HTMLTitleElement@prototype.onmousedown has setter to model.
+onmousedown ReadOnly &undefined HTMLTitleElement.prototype.onmousedown
+onmouseenter - &null HTMLTitleElement.prototype.onmouseenter
+onmouseleave - &null HTMLTitleElement.prototype.onmouseleave
+%%% @HTMLTitleElement@prototype.onmousemove has getter to model.
+%%% @HTMLTitleElement@prototype.onmousemove has setter to model.
+onmousemove ReadOnly &undefined HTMLTitleElement.prototype.onmousemove
+%%% @HTMLTitleElement@prototype.onmouseout has getter to model.
+%%% @HTMLTitleElement@prototype.onmouseout has setter to model.
+onmouseout ReadOnly &undefined HTMLTitleElement.prototype.onmouseout
+%%% @HTMLTitleElement@prototype.onmouseover has getter to model.
+%%% @HTMLTitleElement@prototype.onmouseover has setter to model.
+onmouseover ReadOnly &undefined HTMLTitleElement.prototype.onmouseover
+%%% @HTMLTitleElement@prototype.onmouseup has getter to model.
+%%% @HTMLTitleElement@prototype.onmouseup has setter to model.
+onmouseup ReadOnly &undefined HTMLTitleElement.prototype.onmouseup
+%%% @HTMLTitleElement@prototype.onmozfullscreenchange has getter to model.
+%%% @HTMLTitleElement@prototype.onmozfullscreenchange has setter to model.
+onmozfullscreenchange ReadOnly &undefined HTMLTitleElement.prototype.onmozfullscreenchange
+%%% @HTMLTitleElement@prototype.onmozfullscreenerror has getter to model.
+%%% @HTMLTitleElement@prototype.onmozfullscreenerror has setter to model.
+onmozfullscreenerror ReadOnly &undefined HTMLTitleElement.prototype.onmozfullscreenerror
+%%% @HTMLTitleElement@prototype.onmozpointerlockchange has getter to model.
+%%% @HTMLTitleElement@prototype.onmozpointerlockchange has setter to model.
+onmozpointerlockchange ReadOnly &undefined HTMLTitleElement.prototype.onmozpointerlockchange
+%%% @HTMLTitleElement@prototype.onmozpointerlockerror has getter to model.
+%%% @HTMLTitleElement@prototype.onmozpointerlockerror has setter to model.
+onmozpointerlockerror ReadOnly &undefined HTMLTitleElement.prototype.onmozpointerlockerror
+%%% @HTMLTitleElement@prototype.onpaste has getter to model.
+%%% @HTMLTitleElement@prototype.onpaste has setter to model.
+onpaste ReadOnly &undefined HTMLTitleElement.prototype.onpaste
+%%% @HTMLTitleElement@prototype.onpause has getter to model.
+%%% @HTMLTitleElement@prototype.onpause has setter to model.
+onpause ReadOnly &undefined HTMLTitleElement.prototype.onpause
+%%% @HTMLTitleElement@prototype.onplay has getter to model.
+%%% @HTMLTitleElement@prototype.onplay has setter to model.
+onplay ReadOnly &undefined HTMLTitleElement.prototype.onplay
+%%% @HTMLTitleElement@prototype.onplaying has getter to model.
+%%% @HTMLTitleElement@prototype.onplaying has setter to model.
+onplaying ReadOnly &undefined HTMLTitleElement.prototype.onplaying
+%%% @HTMLTitleElement@prototype.onprogress has getter to model.
+%%% @HTMLTitleElement@prototype.onprogress has setter to model.
+onprogress ReadOnly &undefined HTMLTitleElement.prototype.onprogress
+%%% @HTMLTitleElement@prototype.onratechange has getter to model.
+%%% @HTMLTitleElement@prototype.onratechange has setter to model.
+onratechange ReadOnly &undefined HTMLTitleElement.prototype.onratechange
+%%% @HTMLTitleElement@prototype.onreset has getter to model.
+%%% @HTMLTitleElement@prototype.onreset has setter to model.
+onreset ReadOnly &undefined HTMLTitleElement.prototype.onreset
+%%% @HTMLTitleElement@prototype.onscroll has getter to model.
+%%% @HTMLTitleElement@prototype.onscroll has setter to model.
+onscroll ReadOnly &undefined HTMLTitleElement.prototype.onscroll
+%%% @HTMLTitleElement@prototype.onseeked has getter to model.
+%%% @HTMLTitleElement@prototype.onseeked has setter to model.
+onseeked ReadOnly &undefined HTMLTitleElement.prototype.onseeked
+%%% @HTMLTitleElement@prototype.onseeking has getter to model.
+%%% @HTMLTitleElement@prototype.onseeking has setter to model.
+onseeking ReadOnly &undefined HTMLTitleElement.prototype.onseeking
+%%% @HTMLTitleElement@prototype.onselect has getter to model.
+%%% @HTMLTitleElement@prototype.onselect has setter to model.
+onselect ReadOnly &undefined HTMLTitleElement.prototype.onselect
+%%% @HTMLTitleElement@prototype.onshow has getter to model.
+%%% @HTMLTitleElement@prototype.onshow has setter to model.
+onshow ReadOnly &undefined HTMLTitleElement.prototype.onshow
+%%% @HTMLTitleElement@prototype.onstalled has getter to model.
+%%% @HTMLTitleElement@prototype.onstalled has setter to model.
+onstalled ReadOnly &undefined HTMLTitleElement.prototype.onstalled
+%%% @HTMLTitleElement@prototype.onsubmit has getter to model.
+%%% @HTMLTitleElement@prototype.onsubmit has setter to model.
+onsubmit ReadOnly &undefined HTMLTitleElement.prototype.onsubmit
+%%% @HTMLTitleElement@prototype.onsuspend has getter to model.
+%%% @HTMLTitleElement@prototype.onsuspend has setter to model.
+onsuspend ReadOnly &undefined HTMLTitleElement.prototype.onsuspend
+%%% @HTMLTitleElement@prototype.ontimeupdate has getter to model.
+%%% @HTMLTitleElement@prototype.ontimeupdate has setter to model.
+ontimeupdate ReadOnly &undefined HTMLTitleElement.prototype.ontimeupdate
+%%% @HTMLTitleElement@prototype.onvolumechange has getter to model.
+%%% @HTMLTitleElement@prototype.onvolumechange has setter to model.
+onvolumechange ReadOnly &undefined HTMLTitleElement.prototype.onvolumechange
+%%% @HTMLTitleElement@prototype.onwaiting has getter to model.
+%%% @HTMLTitleElement@prototype.onwaiting has setter to model.
+onwaiting ReadOnly &undefined HTMLTitleElement.prototype.onwaiting
+%%% @HTMLTitleElement@prototype.onwheel has getter to model.
+%%% @HTMLTitleElement@prototype.onwheel has setter to model.
+onwheel ReadOnly &undefined HTMLTitleElement.prototype.onwheel
+%%% Unable to get descriptor info for property outerHTML.
+outerHTML - &null HTMLTitleElement.prototype.outerHTML
+%%% Unable to get descriptor info for property ownerDocument.
+ownerDocument - &null HTMLTitleElement.prototype.ownerDocument
+%%% Unable to get descriptor info for property parentElement.
+parentElement - &null HTMLTitleElement.prototype.parentElement
+%%% Unable to get descriptor info for property parentNode.
+parentNode - &null HTMLTitleElement.prototype.parentNode
+%%% Unable to get descriptor info for property prefix.
+prefix - &null HTMLTitleElement.prototype.prefix
+%%% Unable to get descriptor info for property previousElementSibling.
+previousElementSibling - &null HTMLTitleElement.prototype.previousElementSibling
+%%% Unable to get descriptor info for property previousSibling.
+previousSibling - &null HTMLTitleElement.prototype.previousSibling
+%%% Unable to get descriptor info for property properties.
+properties - &null HTMLTitleElement.prototype.properties
+querySelector - #HTMLTitleElement#prototype#querySelector HTMLTitleElement.prototype.querySelector
+querySelectorAll - #HTMLTitleElement#prototype#querySelectorAll HTMLTitleElement.prototype.querySelectorAll
+releaseCapture - #HTMLTitleElement#prototype#releaseCapture HTMLTitleElement.prototype.releaseCapture
+removeAttribute - #HTMLTitleElement#prototype#removeAttribute HTMLTitleElement.prototype.removeAttribute
+removeAttributeNS - #HTMLTitleElement#prototype#removeAttributeNS HTMLTitleElement.prototype.removeAttributeNS
+removeAttributeNode - #HTMLTitleElement#prototype#removeAttributeNode HTMLTitleElement.prototype.removeAttributeNode
+removeChild - #HTMLTitleElement#prototype#removeChild HTMLTitleElement.prototype.removeChild
+removeEventListener - #HTMLTitleElement#prototype#removeEventListener HTMLTitleElement.prototype.removeEventListener
+replaceChild - #HTMLTitleElement#prototype#replaceChild HTMLTitleElement.prototype.replaceChild
+%%% Unable to get descriptor info for property scrollHeight.
+scrollHeight - &null HTMLTitleElement.prototype.scrollHeight
+scrollIntoView - #HTMLTitleElement#prototype#scrollIntoView HTMLTitleElement.prototype.scrollIntoView
+%%% Unable to get descriptor info for property scrollLeft.
+scrollLeft - &null HTMLTitleElement.prototype.scrollLeft
+%%% @HTMLTitleElement@prototype.scrollLeftMax has getter to model.
+scrollLeftMax ReadOnly &undefined HTMLTitleElement.prototype.scrollLeftMax
+%%% Unable to get descriptor info for property scrollTop.
+scrollTop - &null HTMLTitleElement.prototype.scrollTop
+%%% @HTMLTitleElement@prototype.scrollTopMax has getter to model.
+scrollTopMax ReadOnly &undefined HTMLTitleElement.prototype.scrollTopMax
+%%% Unable to get descriptor info for property scrollWidth.
+scrollWidth - &null HTMLTitleElement.prototype.scrollWidth
+setAttribute - #HTMLTitleElement#prototype#setAttribute HTMLTitleElement.prototype.setAttribute
+setAttributeNS - #HTMLTitleElement#prototype#setAttributeNS HTMLTitleElement.prototype.setAttributeNS
+setAttributeNode - #HTMLTitleElement#prototype#setAttributeNode HTMLTitleElement.prototype.setAttributeNode
+setAttributeNodeNS - #HTMLTitleElement#prototype#setAttributeNodeNS HTMLTitleElement.prototype.setAttributeNodeNS
+setCapture - #HTMLTitleElement#prototype#setCapture HTMLTitleElement.prototype.setCapture
+setUserData - #HTMLTitleElement#prototype#setUserData HTMLTitleElement.prototype.setUserData
+%%% Unable to get descriptor info for property spellcheck.
+spellcheck - &null HTMLTitleElement.prototype.spellcheck
+%%% Unable to get descriptor info for property style.
+style - &null HTMLTitleElement.prototype.style
+%%% Unable to get descriptor info for property tabIndex.
+tabIndex - &null HTMLTitleElement.prototype.tabIndex
+%%% Unable to get descriptor info for property tagName.
+tagName - &null HTMLTitleElement.prototype.tagName
+%%% Unable to get descriptor info for property text.
+text - &null HTMLTitleElement.prototype.text
+%%% Unable to get descriptor info for property textContent.
+textContent - &null HTMLTitleElement.prototype.textContent
+%%% Unable to get descriptor info for property title.
+title - &null HTMLTitleElement.prototype.title
+
+
 @HTMLTextAreaElement@prototype
 
 % HTMLTextAreaElement#prototype properties
@@ -14979,4 +16256,5 @@ createDocument - #DOMImplementation#prototype#createDocument DOMImplementation.p
 createDocumentType - #DOMImplementation#prototype#createDocumentType DOMImplementation.prototype.createDocumentType
 createHTMLDocument - #DOMImplementation#prototype#createHTMLDocument DOMImplementation.prototype.createHTMLDocument
 hasFeature - #DOMImplementation#prototype#hasFeature DOMImplementation.prototype.hasFeature
+
 

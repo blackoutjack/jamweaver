@@ -7,6 +7,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
 import java.io.File;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -105,9 +108,9 @@ public class FileUtil {
     if (!srcdir.exists()) {
       try {
         boolean ok = srcdir.mkdirs();
-        if (!ok) throw new IOException("Unable to create working directory: " + srcdir.getAbsolutePath());
+        if (!ok) throw new IOException("Unable to create source directory: " + srcdir.getAbsolutePath());
       } catch (SecurityException ex) {
-        Dbg.fatal("Unable to initialize working directory");
+        Dbg.fatal("Unable to initialize source directory");
       } catch (IOException ex) {
         Dbg.fatal(ex.getMessage());
       }
@@ -216,6 +219,20 @@ public class FileUtil {
       file = new File(workingDir, file.getPath());
     }
     if (tmp) file.deleteOnExit();
+
+    File parentDir = new File(file.getParent());
+    if (!parentDir.exists()) {
+      try {
+        boolean ok = parentDir.mkdirs();
+        if (!ok) throw new IOException("Unable to create directory: " + parentDir.getAbsolutePath());
+      } catch (SecurityException ex) {
+        Dbg.err("Unable to initialize directory");
+        return null;
+      } catch (IOException ex) {
+        Dbg.err(ex.getMessage());
+        return null;
+      }
+    }
 
     String content = data.toString();
     BufferedWriter w = null;
@@ -333,6 +350,22 @@ public class FileUtil {
     return ret;
   }
 
+  public static Object deserialize(File objfile) throws IOException, ClassNotFoundException {
+    FileInputStream fis = new FileInputStream(objfile);
+    ObjectInputStream ois = new ObjectInputStream(fis);
+    
+    Object ret = ois.readObject();
+    ois.close();
+    return ret;
+  }
+
+  public static void serialize(Object obj, File objfile) throws IOException {
+    FileOutputStream fos = new FileOutputStream(objfile);
+    ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+    oos.writeObject(obj);
+    oos.close();
+  }
 }
 
 

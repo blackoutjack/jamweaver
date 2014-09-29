@@ -8,8 +8,15 @@ import java.util.List;
 // DefaultPassConfig.
 public class JAMPassConfig extends DefaultPassConfig {
 
-  public JAMPassConfig(CompilerOptions opts) {
+  boolean revert;
+
+  public JAMPassConfig(CompilerOptions opts, boolean revert) {
     super(opts);
+    this.revert = revert;
+  }
+
+  public JAMPassConfig(CompilerOptions opts) {
+    this(opts, false);
   }
 
   // Modify optimizations from DefaultPassConfig to prevent inverting
@@ -19,7 +26,9 @@ public class JAMPassConfig extends DefaultPassConfig {
     List<PassFactory> passes = super.getOptimizations();
 
     // Remove several passes that are unnecessary.
-    passes.remove(invertContextualRenaming);
+    if (!revert) {
+      passes.remove(invertContextualRenaming);
+    }
     passes.remove(stripSideEffectProtection);
     passes.remove(markUnnormalized);
     passes.remove(denormalize);

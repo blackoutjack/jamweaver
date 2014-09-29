@@ -279,7 +279,10 @@ public class JAM {
     // Save the final source files.
     sm.saveSources("final");
 
-    if (!Opts.noOut) System.out.println(sm);
+    String output = sm.toString();
+    if (!Opts.noOut)
+      System.out.println(output);
+    FileUtil.writeToMain(output, getApplicationName() + ".js");
 
     sm.finalize();
   }
@@ -305,7 +308,7 @@ public class JAM {
         jam.run();
       }
       // Output the instrumented source.
-      FileUtil.writeToMain(jam.getSourceManager(), FileUtil.getBaseName() + "-instrumented.js");
+      jam.getSourceManager().saveSources("instrumented");
       Dbg.out("Summary: " + jam.getCounterExampleCount() + " counterexamples found; "
         + jam.getCheckManager().getCheckCount() + " runtime checks inserted", 1);
     }
@@ -334,6 +337,9 @@ public class JAM {
 
     @Option(name="-Y", usage="policy file(s)", metaVar="POLFILE+", multiValued=true)
     public static List<String> policyFiles;
+
+    @Option(name="-X", usage="Indicates that the given source files are lists (see doc/RUNNING for formatting)")
+    public static boolean sourceIsList = false;
 
     @Option(name="-p", usage="Maximum number of learned predicates (-1 = unlimited)", metaVar="MAX")
     public static int refinementLimit = 0;

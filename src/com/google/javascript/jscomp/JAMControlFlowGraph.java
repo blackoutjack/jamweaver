@@ -126,11 +126,12 @@ public class JAMControlFlowGraph {
       // Traverse the graph one more step to get to the program that we're
       // actually going to be analyzing.
       List<DiGraphEdge<Node,Branch>> oes = dest.getOutEdges();
-      assert oes.size() == 1 : "Corrupt entry node for function: " + f.getName();
+      assert oes.size() == 1 : "Corrupt parent entry node for function: " + f.getName();
       dest = oes.get(0).getDestination();
     } else {
       // For functions other than the global one, the first node is
       // always just a BLOCK wrapper, so skip that.
+      assert dest.getValue().isBlock();
       List<DiGraphEdge<Node,Branch>> boes = dest.getOutEdges();
       assert boes.size() == 1 : "Corrupted function block symbol: " + dest;
       dest = boes.get(0).getDestination();
@@ -140,7 +141,6 @@ public class JAMControlFlowGraph {
     Node destNode = dest.getValue();
 
     if (destNode == null) {
-      //assert false : "Empty function: " + f.getName();
       // This indicates that we have an empty function, so add the
       // edges and the return state and be done with it.
       State destState = new State();
@@ -152,6 +152,11 @@ public class JAMControlFlowGraph {
       // Establish a mapping between a function and a return node.
       mapReturnState(f, destState);
     } else {
+      // The node may be a BLOCK, if the function begins with a labeled
+      // block. See flickr.js. It should not be a SCRIPT though.
+      // %%% What happens to the LABEL node?
+      assert !destNode.isScript() : "Script node found at function entry: " + f.getName() + " / " + destNode + " / " + sm.codeFromNode(destNode);
+
       // The normal case where we have more statements to process
       State destState = loadDestinationState(f, destNode);
       processStatement(f, entryState, sym, destState);
@@ -163,15 +168,13 @@ public class JAMControlFlowGraph {
   // code rooted at f.
   // @return the entry node to this function
   public void addFunction(Function f) {
-    
     // Get the CFG for this function.
     Node root = f.getAstNode();
     ControlFlowAnalysis cfa = new ControlFlowAnalysis(sm.getCompiler(), false, false);
     cfa.process(externs, root);
     ControlFlowGraph<Node> cfg = cfa.getCfg();
 
-    DiGraphNode<Node,Branch> entryNode =
-      cfg.getDirectedGraphNode(root); 
+    DiGraphNode<Node,Branch> entryNode = cfg.getDirectedGraphNode(root); 
 
     assert entryNode != null : "Null entry node for function " + f.getName();
     /*
@@ -209,25 +212,13 @@ public class JAMControlFlowGraph {
 
       List<DiGraphEdge<Node,Branch>> oes = curNode.getOutEdges();
 
-      /*
-      if (source.getType() == Token.BLOCK || source.getType() == Token.EMPTY) {
-        // Skip over BLOCK wrappers by altering stateMap without
-        // creating an automaton edge.
-        assert oes.size() <= 1 : "Block symbol with > 1 child: " + source;
-        if (oes.size() > 0) {
-          DiGraphNode<Node,Branch> dest = oes.get(0).getDestination();
-          Node destNode = dest.getValue();
-          // A null |destNode| indicates an empty block.
-          if (destNode != null) {
-            stateMap.put(destNode, srcState);
-            worklist.add(dest);
-          }
-        }
-        continue;
+      Exp s = null;
+      if (source.isScript() || source.isBlock()) {
+        // Use empty nodes to represent blocks.
+        s = JSExp.createEmpty(sm);
+      } else {
+        s = JSExp.create(sm, source);
       }
-      */
-
-      Exp s = JSExp.create(sm, source);
       ExpSymbol sym = new ExpSymbol(s);
 
       if (source.isThrow() && oes.size() == 0) {

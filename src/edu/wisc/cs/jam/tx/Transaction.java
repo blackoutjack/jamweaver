@@ -108,9 +108,11 @@ public class Transaction {
     Node parent = null;
     Node next = null;
     for (Node stmt : statements) {
+      assert !stmt.isBlock() && !stmt.isScript() : "Invalid statement for transaction: " + stmt + " / " + sm.codeFromNode(stmt);
       // If |stmt| is a condition for an if statement, for example, we
       // have to wrap the whole if statement in the transaction.
       stmt = NodeUtil.getEnclosingStatement(stmt);
+      assert !stmt.isBlock() && !stmt.isScript() : "Invalid statement for transaction: " + stmt + " / " + sm.codeFromNode(stmt);
 
       assert next == null || stmt == next : "Attempting to enclose disjoint statements in a transaction";
       next = stmt.getNext();

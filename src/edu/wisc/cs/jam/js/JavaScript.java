@@ -4,6 +4,9 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
+import java.io.IOException;
+import java.io.File;
+
 import edu.wisc.cs.jam.tx.TxManager;
 import edu.wisc.cs.jam.Semantics;
 import edu.wisc.cs.jam.PolicyLanguage;
@@ -13,6 +16,8 @@ import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Policy;
 import edu.wisc.cs.jam.Language;
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.Dbg;
+import edu.wisc.cs.jam.FileUtil;
 
 public class JavaScript implements Language {
 
@@ -60,9 +65,46 @@ public class JavaScript implements Language {
 
   @Override
   public SourceManager newSourceManager(List<String> srcPaths) {
-    SourceManager jsman = new JSSourceManager();    
+    SourceManager jsman = new JSSourceManager();
     for (String srcpath : srcPaths) {
-      jsman.addSource(new JSSource(srcpath));
+      if (JAM.Opts.sourceIsList) {
+        List<String> lines = null;
+        try {
+          lines = FileUtil.getLinesFromFile(srcpath);
+        } catch (IOException ex) {
+          Dbg.err("Unable to read source list: " + srcpath);
+          continue;
+        }
+        for (String line : lines) {
+          line = line.trim();
+          if (line.equals("") || line.startsWith("#")) {
+            continue;
+          }
+          String[] parts = line.split(":");
+          if (parts.length != 3) {
+            Dbg.warn("Invalid format for source list line: " + line);
+            continue;
+          }
+          String srctype = parts[0];
+          String srcid = parts[1];
+          String relpath = parts[2];
+
+          // The path is assumed to be relative to the list file itself.
+          File listfile = new File(srcpath);
+          String srctop = listfile.getParent();
+          File abspath = new File(srctop, relpath);
+
+          // These must be wrapped in a function to prevent "invalid
+          // return" errors.
+          boolean wrap = srctype.startsWith("script.event.") || srctype.equals("script.href");
+          JSSource newsrc = new JSSource(abspath.getAbsolutePath(), wrap);
+          
+          newsrc.setRelativePath(relpath);
+          jsman.addSource(newsrc);
+        }
+      } else {
+        jsman.addSource(new JSSource(srcpath, false));
+      }
     }
     return jsman;
   }

@@ -1399,7 +1399,7 @@ public class JSStatementTransform extends JSTransform {
 
     protected boolean transformForIn(NodeTraversal t, Node n, Node parent) {
       Node var = n.getFirstChild();
-      assert isVerySimple(var) : "Unknown for-in variable format: " + var;
+      assert isVerySimple(var) : "Unknown for-in variable format: " + var + " / " + sm.codeFromNode(var);
       Node obj = n.getChildAtIndex(1);
       if (isVerySimple(obj)) return false;
       return transformGeneric(t, obj, n);

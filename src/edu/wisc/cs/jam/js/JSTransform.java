@@ -15,14 +15,27 @@ import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.Transform;
 
-public abstract class JSTransform implements Transform {
+// This class contains utility functions related to JavaScript source
+// manipulation. It can be instantiated directly (perhaps to create
+// unique variable names) or it is subclassed by several specific
+// transformations.
+public class JSTransform implements Transform {
 
   // Generate unique variable names unique throughout the analysis.
-  protected static long varUnique = 0;
+  private static long varUnique = 0;
   public static final String prefix = "v";
 
   public String newVariableName() {
     return prefix + varUnique++;
+  }
+
+  public String newVariableName(String pref) {
+    return pref + varUnique++;
+  }
+
+  @Override
+  public void run(SourceManager src) {
+    Dbg.warn("Base JSTransform does nothing when run");
   }
 
   protected Node createNameNode(Scope s) {

@@ -48,9 +48,9 @@ public class JSCollapseTransform extends JSTransform {
 
   @Override
   public void run(SourceManager src) {
-    Node root = src.getRootNode();
-    Compiler comp = src.getCompiler();
     sm = src;
+    Node root = sm.getRootNode();
+    Compiler comp = sm.getCompiler();
 
     // This should be done after the JSCallTransform.
     Collector collect = new Collector();
@@ -71,9 +71,8 @@ public class JSCollapseTransform extends JSTransform {
       FileUtil.writeToMain("temporary-variables-collapsed:" + collapseCnt + "\n", JAMConfig.INFO_FILENAME, true);
 
     // Generate the transformed output.
-    src.reportCodeChange();
-    String filename = FileUtil.getBaseName() + "-collapsed.js";
-    FileUtil.writeToMain(src.toString() + "\n", filename);
+    sm.reportCodeChange();
+    sm.saveSources("collapsed");
   }
 
   public class ScopeInfo {
@@ -96,7 +95,7 @@ public class JSCollapseTransform extends JSTransform {
           assert par.isVar() || par.isFunction() || par.isParamList()
               || par.isCatch() : "Parent of declared name is not of expected type: " + par;
           if (temporaries.contains(name)) {
-            assert n.getParent().isVar() : "Parent of temporary name is not of expected type: " + n.getParent();
+            assert n.getParent().isVar() : "Parent of temporary " + name + " is not a declaration: " + n.getParent();
             tmps.put(name, n);
           }
         }

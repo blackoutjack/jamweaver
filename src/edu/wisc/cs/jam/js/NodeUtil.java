@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.LinkedHashSet;
 import java.io.IOException;
+import java.io.File;
 
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerInput;
@@ -142,35 +143,24 @@ public class NodeUtil {
     Token.SCRIPT
   };
 
+  // Text list of natives parsed the first time JAM is loaded.
   public static final String NATIVE_DAT_PATH = JAMConfig.JAMPKG + "/lib/native.props";
+  // Serializations of native information used on subsequent runs.
+  public static final String NATIVE_LOC_TO_EXP_PATH = JAMConfig.JAMPKG + "/lib/native-le.ser";
+  public static final String NATIVE_EXP_TO_LOC_PATH = JAMConfig.JAMPKG + "/lib/native-el.ser";
 
-  public static List<String> handlerList;
-  public static List<String> callbackList;
   public static Map<String,String> nativeLocationToExpression;
   public static Map<String,String> nativeExpressionToLocation;
   public static Map<String,String> closureExpression;
   
   static {
-    // %%% Load these from file similarly to |nativeLocationToExpression|.
-    handlerList = new ArrayList<String>();
-    handlerList.add("onclick");
-    handlerList.add("addEventListener");
-    handlerList.add("onmousedown");
-    handlerList.add("onblur");
-    handlerList.add("onmouseup");
-    handlerList.add("onkeyup");
-    handlerList.add("onkeydown");
-
-    callbackList = new ArrayList<String>();
-    callbackList.add("setTimeout");
-    callbackList.add("setInterval");
-
     
     // Map the Closure's extern.zip path to a particular native object
     // to the generated representation. These can be eliminated
     // one-by-one by modifying the extern file that is used.
     closureExpression = new HashMap<String,String>();
     closureExpression.put("alert","Window.prototype.alert");
+    closureExpression.put("confirm","Window.prototype.confirm");
     closureExpression.put("eval","window.eval");
     closureExpression.put("isNaN","window.isNaN");
     closureExpression.put("dump","Window.prototype.dump");
@@ -252,6 +242,11 @@ public class NodeUtil {
     closureExpression.put("Worker.prototype.onmessage","");
     closureExpression.put("WebSocket.prototype.onmessage","");
     closureExpression.put("Attr.prototype.value","");
+    closureExpression.put("Window.prototype.innerHeight","");
+    closureExpression.put("Window.prototype.outerHeight","");
+    closureExpression.put("Window.prototype.innerWidth","");
+    closureExpression.put("Window.prototype.outerWidth","");
+    closureExpression.put("HTMLElement.prototype.draggable","");
     closureExpression.put("HTMLSelectElement.prototype.value","");
     closureExpression.put("HTMLOptionElement.prototype.value","");
     closureExpression.put("HTMLInputElement.prototype.value","");
@@ -260,6 +255,11 @@ public class NodeUtil {
     closureExpression.put("HTMLLIElement.prototype.value","");
     closureExpression.put("HTMLParamElement.prototype.value","");
     closureExpression.put("HTMLBRElement.prototype.clear","");
+    closureExpression.put("HTMLTitleElement.prototype.text","");
+    closureExpression.put("HTMLScriptElement.prototype.text","");
+    closureExpression.put("HTMLBodyElement.prototype.text","");
+    closureExpression.put("HTMLAnchorElement.prototype.text","");
+    closureExpression.put("HTMLOptionElement.prototype.text","");
 
     // Oddly, these can't be examined by the in-browser analysis.
     closureExpression.put("Element.prototype.scrollLeft","");
@@ -279,35 +279,100 @@ public class NodeUtil {
     // Load a mapping of native locations to expressions (the latter
     // of which corresponds to a way to reference the location in the
     // initial environment of the browser).
-    // %%% Move this to a more appropriate class, like |JSSemantics|.
-    nativeLocationToExpression = new HashMap<String,String>();
-    nativeExpressionToLocation = new HashMap<String,String>();
-    try {
-      List<String> lines = FileUtil.getLinesFromFile(NATIVE_DAT_PATH);
-      for (String line : lines) {
-        line = line.trim();
-        // Disregard comments and empty lines.
-        if (line.equals("") || line.startsWith("%"))
-          continue;
-        // Disregard lines that name the object whose properties are
-        // being scanned.
-        if (line.startsWith("@"))
-          continue;
+    File nativeDatFile = new File(NATIVE_DAT_PATH);
+    File nativeLocToExpFile = new File(NATIVE_LOC_TO_EXP_PATH);
+    File nativeExpToLocFile = new File(NATIVE_EXP_TO_LOC_PATH);
 
-        // The line is expected to be of the following format.
-        // propName Attribute,List|- #location ref.expr
-        String[] parts = line.split(" ");
-        int len = parts.length;
-        assert len == 4 : "Invalid native property specification: " + line;
-        // Map location to expression, e.g. #window --> window.
-        if (parts[2].startsWith("#")) {
-          //Dbg.dbg("Natives: " + parts[2] + " / " + parts[3]);
-          nativeLocationToExpression.put(parts[2], parts[3]);
-          nativeExpressionToLocation.put(parts[3], parts[2]);
-        }
+    // Load the information from serialized form if available.
+    boolean loadFromSerializedLE = true;
+    if (!nativeLocToExpFile.exists()) {
+      loadFromSerializedLE = false;
+    } else if (nativeDatFile.exists() && nativeLocToExpFile.lastModified() < nativeDatFile.lastModified()) {
+      loadFromSerializedLE = false;
+    }
+    boolean loadFromSerializedEL = true;
+    if (!nativeExpToLocFile.exists()) {
+      loadFromSerializedEL = false;
+    } else if (nativeDatFile.exists() && nativeExpToLocFile.lastModified() < nativeDatFile.lastModified()) {
+      loadFromSerializedEL = false;
+    }
+
+    if (loadFromSerializedLE) {
+      try {
+        nativeLocationToExpression = (HashMap<String,String>)FileUtil.deserialize(nativeLocToExpFile);
+      } catch (IOException ex) {
+        Dbg.warn("Unable to load native expression-to-location map from serialized form, falling back to text version: " + ex.getMessage());
+        loadFromSerializedLE = false;
+      } catch(ClassNotFoundException ex) {
+        Dbg.warn("Unable to load native expression-to-location map from serialized form, falling back to text version: " + ex.getMessage());
+        loadFromSerializedLE = false;
       }
-    } catch (IOException ex) {
-      Dbg.err("Unable to access native object specification file: " + NATIVE_DAT_PATH);
+    } else {
+      nativeLocationToExpression = new HashMap<String,String>();
+    }
+
+    if (loadFromSerializedEL) {
+      try {
+        nativeExpressionToLocation = (HashMap<String,String>)FileUtil.deserialize(nativeExpToLocFile);
+      } catch (IOException ex) {
+        Dbg.warn("Unable to load native location-to-expression map from serialized form, falling back to text version: " + ex.getMessage());
+        loadFromSerializedEL = false;
+      } catch(ClassNotFoundException ex) {
+        Dbg.warn("Unable to load native location-to-expression map from serialized form, falling back to text version: " + ex.getMessage());
+        loadFromSerializedEL = false;
+      }
+    } else {
+      nativeExpressionToLocation = new HashMap<String,String>();
+    }
+
+    if (!loadFromSerializedEL || !loadFromSerializedLE) {
+      try {
+        List<String> lines = FileUtil.getLinesFromFile(NATIVE_DAT_PATH);
+        for (String line : lines) {
+          line = line.trim();
+          // Disregard comments and empty lines.
+          if (line.equals("") || line.startsWith("%"))
+            continue;
+          // Disregard lines that name the object whose properties are
+          // being scanned.
+          if (line.startsWith("@"))
+            continue;
+
+          // The line is expected to be of the following format.
+          // propName Attribute,List|- #location ref.expr
+          String[] parts = line.split(" ");
+          int len = parts.length;
+          assert len == 4 : "Invalid native property specification: " + line;
+          // Map location to expression, e.g. #window --> window.
+          if (parts[2].startsWith("#")) {
+            //Dbg.dbg("Natives: " + parts[2] + " / " + parts[3]);
+            if (!loadFromSerializedLE) {
+              nativeLocationToExpression.put(parts[2], parts[3]);
+            }
+            if (!loadFromSerializedEL) {
+              nativeExpressionToLocation.put(parts[3], parts[2]);
+            }
+          }
+        }
+      } catch (IOException ex) {
+        Dbg.err("Unable to access native object specification file: " + NATIVE_DAT_PATH);
+      }
+    }
+
+    if (!loadFromSerializedEL) {
+      try {
+        FileUtil.serialize(nativeExpressionToLocation, nativeExpToLocFile);
+      } catch (IOException ex) {
+        Dbg.warn("Unable to save serialization of native expression-to-location file: " + ex.getMessage());
+      }
+    }
+
+    if (!loadFromSerializedLE) {
+      try {
+        FileUtil.serialize(nativeLocationToExpression, nativeLocToExpFile);
+      } catch(IOException ex) {
+        Dbg.warn("Unable to save serialization of native expression-to-location file: " + ex.getMessage());
+      }
     }
   }
 

@@ -156,6 +156,7 @@
 #HTMLAnchorElement "HTMLAnchorElement" 0 c
 #HTMLAudioElement "HTMLAudioElement" 0 c
 #HTMLBRElement "HTMLBRElement" 0 c
+#HTMLBodyElement "HTMLBodyElement" 0 c
 #HTMLButtonElement "HTMLButtonElement" 0 c
 #HTMLCanvasElement "HTMLCanvasElement" 0 c
 #HTMLCollection "HTMLCollection" 0 c
@@ -163,6 +164,7 @@
 #HTMLElement "HTMLElement" 0 c
 #HTMLFormElement "HTMLFormElement" 0 c
 #HTMLFrameElement "HTMLFrameElement" 0 c
+#HTMLHeadElement "HTMLHeadElement" 0 c
 #HTMLHtmlElement "HTMLHtmlElement" 0 c
 #HTMLIFrameElement "HTMLIFrameElement" 0 c
 #HTMLImageElement "HTMLImageElement" 0 c
@@ -177,6 +179,7 @@
 #HTMLSelectElement "HTMLSelectElement" 0 c
 #HTMLSourceElement "HTMLSourceElement" 0 c
 #HTMLTextAreaElement "HTMLTextAreaElement" 0 c
+#HTMLTitleElement "HTMLTitleElement" 0 c
 #HTMLVideoElement "HTMLVideoElement" 0 c
 #History "History" 0 c
 #IDBDatabase "IDBDatabase" 0 c
@@ -975,6 +978,64 @@
 #HTMLAudioElement#prototype#setUserData "setUserData" 3
 
 
+% HTMLBodyElement#prototype methods
+#HTMLBodyElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLBodyElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLBodyElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLBodyElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLBodyElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLBodyElement#prototype#addEventListener "addEventListener" 4
+#HTMLBodyElement#prototype#appendChild "appendChild" 1
+#HTMLBodyElement#prototype#blur "blur" 0
+#HTMLBodyElement#prototype#click "click" 0
+#HTMLBodyElement#prototype#cloneNode "cloneNode" 1
+#HTMLBodyElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLBodyElement#prototype#contains "contains" 1
+#HTMLBodyElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLBodyElement#prototype#focus "focus" 0
+#HTMLBodyElement#prototype#getAttribute "getAttribute" 1
+#HTMLBodyElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLBodyElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLBodyElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLBodyElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLBodyElement#prototype#getClientRects "getClientRects" 0
+#HTMLBodyElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLBodyElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLBodyElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLBodyElement#prototype#getUserData "getUserData" 1
+#HTMLBodyElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLBodyElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLBodyElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLBodyElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLBodyElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLBodyElement#prototype#insertBefore "insertBefore" 2
+#HTMLBodyElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLBodyElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLBodyElement#prototype#isSupported "isSupported" 2
+#HTMLBodyElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLBodyElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLBodyElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLBodyElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLBodyElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLBodyElement#prototype#normalize "normalize" 0
+#HTMLBodyElement#prototype#querySelector "querySelector" 1
+#HTMLBodyElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLBodyElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLBodyElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLBodyElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLBodyElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLBodyElement#prototype#removeChild "removeChild" 1
+#HTMLBodyElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLBodyElement#prototype#replaceChild "replaceChild" 2
+#HTMLBodyElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLBodyElement#prototype#setAttribute "setAttribute" 2
+#HTMLBodyElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLBodyElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLBodyElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLBodyElement#prototype#setCapture "setCapture" 1
+#HTMLBodyElement#prototype#setUserData "setUserData" 3
+
+
 % HTMLBRElement#prototype methods
 #HTMLBRElement#prototype#QueryInterface "QueryInterface" 1 c
 #HTMLBRElement#prototype#__defineGetter__ "__defineGetter__" 2
@@ -1273,6 +1334,64 @@
 #HTMLFrameElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
 #HTMLFrameElement#prototype#setCapture "setCapture" 1
 #HTMLFrameElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLHeadElement#prototype methods
+#HTMLHeadElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLHeadElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLHeadElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLHeadElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLHeadElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLHeadElement#prototype#addEventListener "addEventListener" 4
+#HTMLHeadElement#prototype#appendChild "appendChild" 1
+#HTMLHeadElement#prototype#blur "blur" 0
+#HTMLHeadElement#prototype#click "click" 0
+#HTMLHeadElement#prototype#cloneNode "cloneNode" 1
+#HTMLHeadElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLHeadElement#prototype#contains "contains" 1
+#HTMLHeadElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLHeadElement#prototype#focus "focus" 0
+#HTMLHeadElement#prototype#getAttribute "getAttribute" 1
+#HTMLHeadElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLHeadElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLHeadElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLHeadElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLHeadElement#prototype#getClientRects "getClientRects" 0
+#HTMLHeadElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLHeadElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLHeadElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLHeadElement#prototype#getUserData "getUserData" 1
+#HTMLHeadElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLHeadElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLHeadElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLHeadElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLHeadElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLHeadElement#prototype#insertBefore "insertBefore" 2
+#HTMLHeadElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLHeadElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLHeadElement#prototype#isSupported "isSupported" 2
+#HTMLHeadElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLHeadElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLHeadElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLHeadElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLHeadElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLHeadElement#prototype#normalize "normalize" 0
+#HTMLHeadElement#prototype#querySelector "querySelector" 1
+#HTMLHeadElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLHeadElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLHeadElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLHeadElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLHeadElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLHeadElement#prototype#removeChild "removeChild" 1
+#HTMLHeadElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLHeadElement#prototype#replaceChild "replaceChild" 2
+#HTMLHeadElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLHeadElement#prototype#setAttribute "setAttribute" 2
+#HTMLHeadElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLHeadElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLHeadElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLHeadElement#prototype#setCapture "setCapture" 1
+#HTMLHeadElement#prototype#setUserData "setUserData" 3
 
 
 % HTMLHtmlElement#prototype methods
@@ -1988,6 +2107,64 @@
 #HTMLSourceElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
 #HTMLSourceElement#prototype#setCapture "setCapture" 1
 #HTMLSourceElement#prototype#setUserData "setUserData" 3
+
+
+% HTMLTitleElement#prototype methods
+#HTMLTitleElement#prototype#QueryInterface "QueryInterface" 1 c
+#HTMLTitleElement#prototype#__defineGetter__ "__defineGetter__" 2
+#HTMLTitleElement#prototype#__defineSetter__ "__defineSetter__" 2
+#HTMLTitleElement#prototype#__lookupGetter__ "__lookupGetter__" 1
+#HTMLTitleElement#prototype#__lookupSetter__ "__lookupSetter__" 1
+#HTMLTitleElement#prototype#addEventListener "addEventListener" 4
+#HTMLTitleElement#prototype#appendChild "appendChild" 1
+#HTMLTitleElement#prototype#blur "blur" 0
+#HTMLTitleElement#prototype#click "click" 0
+#HTMLTitleElement#prototype#cloneNode "cloneNode" 1
+#HTMLTitleElement#prototype#compareDocumentPosition "compareDocumentPosition" 1
+#HTMLTitleElement#prototype#contains "contains" 1
+#HTMLTitleElement#prototype#dispatchEvent "dispatchEvent" 1
+#HTMLTitleElement#prototype#focus "focus" 0
+#HTMLTitleElement#prototype#getAttribute "getAttribute" 1
+#HTMLTitleElement#prototype#getAttributeNS "getAttributeNS" 2
+#HTMLTitleElement#prototype#getAttributeNode "getAttributeNode" 1
+#HTMLTitleElement#prototype#getAttributeNodeNS "getAttributeNodeNS" 2
+#HTMLTitleElement#prototype#getBoundingClientRect "getBoundingClientRect" 0
+#HTMLTitleElement#prototype#getClientRects "getClientRects" 0
+#HTMLTitleElement#prototype#getElementsByClassName "getElementsByClassName" 1
+#HTMLTitleElement#prototype#getElementsByTagName "getElementsByTagName" 1
+#HTMLTitleElement#prototype#getElementsByTagNameNS "getElementsByTagNameNS" 2
+#HTMLTitleElement#prototype#getUserData "getUserData" 1
+#HTMLTitleElement#prototype#hasAttribute "hasAttribute" 1
+#HTMLTitleElement#prototype#hasAttributeNS "hasAttributeNS" 2
+#HTMLTitleElement#prototype#hasAttributes "hasAttributes" 0
+#HTMLTitleElement#prototype#hasChildNodes "hasChildNodes" 0
+#HTMLTitleElement#prototype#insertAdjacentHTML "insertAdjacentHTML" 2
+#HTMLTitleElement#prototype#insertBefore "insertBefore" 2
+#HTMLTitleElement#prototype#isDefaultNamespace "isDefaultNamespace" 1
+#HTMLTitleElement#prototype#isEqualNode "isEqualNode" 1
+#HTMLTitleElement#prototype#isSupported "isSupported" 2
+#HTMLTitleElement#prototype#lookupNamespaceURI "lookupNamespaceURI" 1
+#HTMLTitleElement#prototype#lookupPrefix "lookupPrefix" 1
+#HTMLTitleElement#prototype#mozMatchesSelector "mozMatchesSelector" 1
+#HTMLTitleElement#prototype#mozRequestFullScreen "mozRequestFullScreen" 0
+#HTMLTitleElement#prototype#mozRequestPointerLock "mozRequestPointerLock" 0
+#HTMLTitleElement#prototype#normalize "normalize" 0
+#HTMLTitleElement#prototype#querySelector "querySelector" 1
+#HTMLTitleElement#prototype#querySelectorAll "querySelectorAll" 1
+#HTMLTitleElement#prototype#releaseCapture "releaseCapture" 0
+#HTMLTitleElement#prototype#removeAttribute "removeAttribute" 1
+#HTMLTitleElement#prototype#removeAttributeNS "removeAttributeNS" 2
+#HTMLTitleElement#prototype#removeAttributeNode "removeAttributeNode" 1
+#HTMLTitleElement#prototype#removeChild "removeChild" 1
+#HTMLTitleElement#prototype#removeEventListener "removeEventListener" 3
+#HTMLTitleElement#prototype#replaceChild "replaceChild" 2
+#HTMLTitleElement#prototype#scrollIntoView "scrollIntoView" 1
+#HTMLTitleElement#prototype#setAttribute "setAttribute" 2
+#HTMLTitleElement#prototype#setAttributeNS "setAttributeNS" 3
+#HTMLTitleElement#prototype#setAttributeNode "setAttributeNode" 1
+#HTMLTitleElement#prototype#setAttributeNodeNS "setAttributeNodeNS" 1
+#HTMLTitleElement#prototype#setCapture "setCapture" 1
+#HTMLTitleElement#prototype#setUserData "setUserData" 3
 
 
 % HTMLTextAreaElement#prototype methods
@@ -2980,5 +3157,4 @@
 #DOMImplementation#prototype#createDocumentType "createDocumentType" 3
 #DOMImplementation#prototype#createHTMLDocument "createHTMLDocument" 1
 #DOMImplementation#prototype#hasFeature "hasFeature" 2
-
 

@@ -277,8 +277,7 @@ public class JSIndirectionTransform extends JSTransform {
 
     // Generate the transformed output.
     sm.reportCodeChange();
-    String filename = FileUtil.getBaseName() + "-indirection.js";
-    FileUtil.writeToMain(sm.toString() + "\n", filename);
+    sm.saveSources("indirection");
   }
 
   // Create an array literal holding the call receiver, followed by

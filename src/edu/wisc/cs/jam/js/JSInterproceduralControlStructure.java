@@ -36,16 +36,6 @@ import edu.wisc.cs.jam.Exp;
 
 public class JSInterproceduralControlStructure extends JSControlStructure implements Callback {
 
-  // Maps event handlers names to functions potentially assigned to the
-  // handler
-  // %%% The current system assumes that all DOM elements share a set
-  // of, e.g., "onclick" handlers. This overapproximates because every
-  // element can has its own unique handler for each event.
-  private Map<String,List<Function>> handlerAssignments;
-
-  // Set of program statements that set up callbacks/events
-  private Set<Node> callbackExpressions;
-
   // Maps callsite references to functions they might target
   private Map<String,Set<Function>> callTargetMap;
 
@@ -57,8 +47,6 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
   @Override
   protected void clearTemporaryState() {
     super.clearTemporaryState();
-    handlerAssignments = null;
-    callbackExpressions = null;
     callTargetMap = null;
   }
 
@@ -69,33 +57,6 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
 
   @Override
   public void visit(NodeTraversal t, Node n, Node parent) {
-
-    // Callback discovery
-    // Keep a lookout for calls that set up asynchronous callbacks.
-    // %%% All callback functions that we currently handle have 2 arguments.
-    if (n.getType() == Token.CALL && n.getChildCount() == 3) {
-      String callTarget = getCode(n.getFirstChild());
-      for (String curCallback : NodeUtil.callbackList) {
-        if (callTarget.equals(curCallback)) {
-          Node exp = n.getChildAtIndex(1);
-          callbackExpressions.add(exp);
-        }
-      }
-    }
-
-    // Collect assignments to event handlers, because
-    // the CG assumes they're all external, and provides no useful
-    // information.
-    String hdlr = setsHandler(n);
-    if (hdlr != null) {
-      // If so, make sure the RHS is just an identifier,
-      // and add the symbol name to the possible targets
-      // for this handler
-      Node c1 = n.getChildAtIndex(1);
-      if (NodeUtil.isName(c1)) {
-        addPossibleTarget(hdlr, getCode(c1));
-      }
-    }
 
     // Find all the call target assignments that might occur in the
     // program and populate callTargetMap with the results. Only 
@@ -162,38 +123,6 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
     }
   }
 
-  /* 
-   * Returns the function is assigned as an event handler, or null.
-   */
-  protected String setsHandler(Node n) {
-    if (NodeUtil.isAssign(n)) {
-      // See if the LHS mentions a handler
-      Node lhs = n.getChildAtIndex(0);
-      if (NodeUtil.isAccessor(lhs)) {
-        String prop = getCode(lhs.getChildAtIndex(1));
-        for (String cur : NodeUtil.handlerList) {
-          String curcomp = "\"" + cur + "\"";
-          if (prop.equals(curcomp)) {
-            return cur;
-          }
-        }
-      }
-    }
-    return null;
-  }
-
-  protected void addPossibleTarget(String handler, String target) {
-    Set<Function> targets = getPossibleTargetsOfName(target);
-    List<Function> curTargets;
-    if (handlerAssignments.containsKey(handler)) {
-      curTargets = handlerAssignments.get(handler);
-    } else {
-      curTargets = new ArrayList<Function>();
-      handlerAssignments.put(handler, curTargets);
-    }
-    curTargets.addAll(targets);
-  }
-
   // %%% This is incorrect because the reference represented by
   // this identifier may have been overwritten.
   private Set<Function> getPossibleTargetsOfName(String funcName) {
@@ -232,32 +161,6 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
     return ret;
   }
 
-  // Conservatively determine whether the string being invoked refers
-  // to an event handler.
-  protected boolean isHandlerInvocation(String invokeString) {
-    for (String curHandler : NodeUtil.handlerList) {
-      // %%% do better than grepping
-      if (invokeString.indexOf(curHandler) > -1) return true;
-    }
-
-    return false;
-  }
-
-  // Return the previously-determined potential targets of the event
-  // handler being invoked.
-  protected Collection<Function> getHandlerTargets(String invokeString) {
-    Set<Function> ret = new LinkedHashSet<Function>();
-    // %%% This is poor ... grepping for a function name.
-    for (String curHandler : NodeUtil.handlerList) {
-      if (invokeString.indexOf(curHandler) >= 0) {
-        Collection<Function> hAssigns = handlerAssignments.get(curHandler);
-        if (hAssigns != null) ret.addAll(hAssigns);
-      }
-    }
-
-    return ret;
-  }
-
   public void dumpCallsite(Callsite cs) {
     Node cn = cs.getAstNode();
     StringBuilder sb = new StringBuilder();
@@ -273,115 +176,6 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
     sb.append(cs.hasUnknownTarget());
     Dbg.err(sb.toString());
   }
-
-  /*
-  // %%% Old version
-  protected Map<Callsite,State> buildCallEdges() {
-    // We maintain a map of callsites with the states which begin 
-    // their actual call transition.
-    // This loop, and specifically the inner loop through all potential
-    // targets, can be a performance bottleneck.
-    Map<Callsite,State> callStateMap = new LinkedHashMap<Callsite,State>();
-    for (Callsite curSite : allCallsites) {
-      //dumpCallsite(curSite);
-      // Avoid repeated method calls by collecting some objects here.
-      Node curSiteNode = curSite.getAstNode();
-      Node curSiteStmt = NodeUtil.getEnclosingStatement(curSiteNode);
-      String curSiteName = getCode(curSiteNode.getFirstChild());
-      String curSiteCode = getCode(curSiteNode);
-
-      // There may be multiple potential targets, so we have to add 
-      // edges for all of them.
-      Collection<Function> targets = null;
-      if (false && isHandlerInvocation(curSiteCode)) {
-        // %%% This was never very rigorous.
-        targets = getHandlerTargets(curSiteCode);
-      } else {
-        targets = getAllPossibleTargets(curSite);
-      }
-
-      // To reduce redundant clutter, we implicitly represent callsites
-      // that can target any function.
-      if (targets == null) {
-        assert conservativeCalls.contains(curSite);
-        targets = allFunctions;
-      }
-      
-      if (targets.size() == 0) {
-        // If the Closure knows that the target is extern, the targets
-        // list will be empty and we let the semantics deal with it.
-        // We also hit this case if there are no user-defined functions.
-        continue;
-      }
-
-      // Get the source and destination NWA states, and add the call
-      // edges.
-      State origCallSource = stateMap.get(curSiteStmt);
-      
-      // The callsite may not have been added during the CFG building
-      // process if it is unreachable. This occur for code like the
-      // following.
-      //
-      // while (true) {
-      //   break;
-      //   f();
-      // }
-      //
-      // It would be nice if Closure removed these nodes altogether, but
-      // we can happily omit the call edges while issuing a warning.
-      if (origCallSource == null) {
-        Dbg.warn("Callsite on line " + curSiteNode.getLineno()
-          + " is unreachable (source state doesn't exist): "
-          + getCode(curSiteNode));
-        continue;
-      }
-        
-      State callDest = null;
-
-      // We need a transition that actually reflects the call statement
-      State newCallSource = new State();
-      callStateMap.put(curSite, newCallSource);
-
-      Exp s = JSExp.create(sm, curSiteStmt);
-      ExpSymbol sym = new ExpSymbol(s);
-
-      for (Function curFunc : targets) {
-        // And now for the real call edge
-        callDest = functionEntryMap.get(curFunc);
-        assert callDest != null :
-          "Cannot find call target entry state: " + curFunc.getName();
-        Edge invokeEdge = makeCallEdge(sym, newCallSource, callDest);
-        addEdge(invokeEdge);
-      }
-
-      // Mark the outgoing edge as representing the post-call.
-      // I.e. this is after the whatever function has executed
-      // and we're returning.
-      List<Edge> oes = getOutEdges(origCallSource);
-      for (Edge oe : oes) {
-        ExpSymbol callsym = oe.getSymbol();
-        assert callsym != null : "Null call symbol for edge: " + oe;
-        callsym.setPostCall(true);
-        // Associate this return node with the corresponding call.
-        // Since they share a Node, we may need to use this link to
-        // avoid duplicate runtime checks.
-        callsym.link(sym);
-      }
-
-      // Link incoming edges to the new call source.
-      List<Edge> incomingEdges = getInEdges(origCallSource);
-      // %%% Do we need to leave the original edge if the callsite
-      // may have extern targets?
-      for (Edge e : incomingEdges) {
-        removeEdge(e);
-        Edge newEdge = makeEdge(e.getSymbol(), e.getSource(), newCallSource);
-        addEdge(newEdge);
-      }
-    }
-    outputCallTargets();
-    return callStateMap;
-  }
-  */
 
   protected Map<Callsite,State> buildCallEdges() {
     // We maintain a map of callsites with the states which begin 
@@ -500,25 +294,6 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
     
         // Update the statement -> source-state mapping to return to.
         stateMap.put(curSiteStmt, retState);
-
-        /*
-        // Add a call and return from a symbolic extern function.
-        if (hasExternTargets) {
-          State externEntry = externCall.getSource();
-          Edge externEdge = makeCallEdge(callSymbol, callEdgeSource, externEntry);
-          addEdge(externEdge);
-          // Either use the global return symbol, or create a function-
-          // specific one, which can be useful for debugging.
-          // %%% Abstract this (duplicated in buildReturnEdges).
-          ExpSymbol retSym = globalReturn;
-          if (retSym == null) {
-            retSym = new ReturnSymbol(sm, null);
-          }
-          State externReturn = externCall.getDestination();
-          Edge externReturnEdge = makeReturnEdge(retSym, externReturn, callEdgeSource, retState);
-          addEdge(externReturnEdge);
-        }
-        */
       }
     }
     outputCallTargets();
@@ -631,42 +406,9 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
   }
 
   protected void buildCallbackEdges() {
-    if (JAM.Opts.standAloneMode) {
-      // Set of functions that may be invoked as event/callback handlers
-      Collection<Function> callbackTargets = new LinkedHashSet<Function>();
-
-      // Narrow down which functions may be the target of callbacks.
-      for (Node cbexp : callbackExpressions) {
-        // Callback setup functions can take a string to eval, or
-        // a function as the first argument. The flattener should
-        // have pulled out any function definitions and replaced
-        // with a simple name.
-        String funcname = getCode(cbexp);
-
-        Set<Function> possibleTargets = callTargetMap.get(funcname);
-
-        if (possibleTargets == null) {
-          possibleTargets = getPossibleTargetsOfName(funcname);
-        }
-        
-        // If we can identify the target function, just add it in
-        // the callback loop. Otherwise, we have to add all
-        // functions as potential targets.
-        if (possibleTargets.size() > 0) {
-          callbackTargets.addAll(possibleTargets);
-        } else {
-          // Avoid this if we can, because it's very conservative.
-          callbackTargets = allFunctions;
-          break;
-        }
-      }
-      // Do the callback control flow overapproximation.
-      if (callbackTargets.size() > 0) {
-        insertCallbackLoop(callbackTargets);
-      }
-    } else {
-      insertCallbackLoop(allFunctions);
-    }
+    // %%% Try to statically limit the set of functions that callbacks
+    // %%% can target.
+    insertCallbackLoop(allFunctions);
   }
 
   protected void buildInterproceduralEdges() {
@@ -685,8 +427,6 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
   @Override
   protected void load() {
     // Initialize all other class-global data.
-    handlerAssignments = new LinkedHashMap<String,List<Function>>();
-    callbackExpressions = new LinkedHashSet<Node>();
     callTargetMap = new LinkedHashMap<String,Set<Function>>();
 
     loadCallGraph();

@@ -183,6 +183,6 @@ Predicates listed prior to any edge specifications are applied globally.
 
 The seeded predicates can be of the same form, and using the same JAM
 predicate extensions as the policy language. The test cases in
-tests/micro-benchmarks contain a few example seed files.
+tests/micro-benchmarks/ contain a few example seed files.
 
 

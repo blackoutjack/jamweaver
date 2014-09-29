@@ -50,7 +50,7 @@ jamtests repository.
 
 1) Run the JAM weaver over the benchmark test suite.
 
-./tests/run.py -b
+./util/run.py -b
 
 2) Collect the results, insert profiling instrumentation, and transfer
 them to the jamtests repository. (Some modifications may be needed to

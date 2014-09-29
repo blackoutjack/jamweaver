@@ -114,13 +114,14 @@ usage: java edu.wisc.cs.jam.JAM SRCFILE [POLFILE+ ...] [--appsuffix VAL] [--bddf
 
 ##### Running test suites #####
 
-The tests/ directory contains a framework for running a series of test
-suites. Test cases typically include a .exp.js file containing the 
-expected output, which is compared by the framework against the actual
-output. Running the microbenchmarks is done with the following command.
-The microbenchmark suite typically takes around 0.75 hours to complete.
+The util/ directory contains scripts for running a series of test suites
+contained in tests/. Test cases typically include a .exp.js file
+containing the expected output, which is compared by the framework
+against the actual output. Running the microbenchmarks is done with the
+following command. The microbenchmark suite typically takes around 0.75
+hours to complete.
 
-$JAMPKG/tests/run.py -m
+$JAMPKG/util/run.py -m
 
 Larger benchmark tests are run with the -b option. The entire benchmark
 suite typically takes 2-4 days to complete, depending on the resources

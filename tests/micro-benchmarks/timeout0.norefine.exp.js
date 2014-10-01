@@ -1,3 +1,4 @@
+// timeout0.js
 var x = 5;
 introspect(JAM.policy.p1) {
   var GlyphsUnicode = {A:65, AE:198, AEacute:508, AEmacron:482, AEsmall:63462, Aacute:193, Aacutesmall:63457, Abreve:258, Abreveacute:7854, Abrevecyrillic:1232, Abrevedotbelow:7862, Abrevegrave:7856, Abrevehookabove:7858, Abrevetilde:7860, Acaron:461, Acircle:9398, Acircumflex:194, Acircumflexacute:7844, Acircumflexdotbelow:7852, Acircumflexgrave:7846, Acircumflexhookabove:7848, Acircumflexsmall:63458, Acircumflextilde:7850, Acute:63177, Acutesmall:63412, Acyrillic:1040, Adblgrave:512, Adieresis:196, 

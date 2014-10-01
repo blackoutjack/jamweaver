@@ -1,3 +1,4 @@
+// temporal.js
 x = 3;
 introspect(JAM.policy.p1) {
   x = 2

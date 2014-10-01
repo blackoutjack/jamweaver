@@ -1,3 +1,4 @@
+// scope2.js
 function f(p) {
   alert(p);
   return

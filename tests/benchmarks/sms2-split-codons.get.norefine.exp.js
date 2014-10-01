@@ -1,3 +1,4 @@
+// sms2-split-codons.js
 function v5() {
   document.forms[0].elements[0].value = " ";
   return

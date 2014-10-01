@@ -1,3 +1,4 @@
+// sms2-multi-rev-trans.js
 function v4() {
   document.forms[0].elements[0].value = " ";
   document.forms[0].elements[4].value = " ";

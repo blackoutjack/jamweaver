@@ -1,3 +1,4 @@
+// jsqrcode.js
 function v154(patterns) {
   function distance(pattern1$$1, pattern2$$1) {
     xDiff = pattern1$$1.X - pattern2$$1.X;

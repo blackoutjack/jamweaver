@@ -1,3 +1,4 @@
+// hanoi.js
 function Stack() {
   function v2() {
     var str$$6 = this.discs.join(",");

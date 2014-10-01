@@ -1,3 +1,4 @@
+// snote.js
 function v88() {
   function v87(a$$54, b$$34, d$$20, e$$34, f$$18, h$$15, i$$13, g$$11) {
     var l$$8 = this._nRounds;

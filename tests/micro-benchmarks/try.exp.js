@@ -1,3 +1,4 @@
+// try.js
 try {
   x = 1
 }catch(e$$4) {

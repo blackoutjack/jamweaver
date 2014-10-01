@@ -1,3 +1,4 @@
+// attribute0.js
 var elt = document.createElement("script");
 var node = document.createAttribute("src");
 node.value = "exfil.js";

@@ -1,3 +1,4 @@
+// jssec-bad.js
 function snipDisplay(c, p) {
   var v1;
   if(document.getElementById(c).checked == true) {

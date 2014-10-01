@@ -1,3 +1,4 @@
+// flickr.js
 function v316() {
   function v315(onready_handler$$2) {
     var m1 = window.addEventListener;

@@ -1,3 +1,4 @@
+// eval3.js
 var a = new String;
 if(JAM.isEval(eval)) {
   eval("introspect(JAM.policy.pFull) { " + "String = Boolean" + " }")

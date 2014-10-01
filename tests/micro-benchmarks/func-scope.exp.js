@@ -1,3 +1,4 @@
+// func-scope.js
 function v1() {
   if(cnt < 6) {
     cnt = cnt + 1;

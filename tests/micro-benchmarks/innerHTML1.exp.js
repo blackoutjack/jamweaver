@@ -1,3 +1,4 @@
+// innerHTML1.js
 var div = document.createElement("div");
 introspect(JAM.process) {
   JAM.set(div, "innerHTML", "<a href='#'></a>");

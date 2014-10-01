@@ -1,3 +1,4 @@
+// tamper_iframe.js
 function click_inner() {
   var event$$1 = new Event("click");
   document.getElementById("test2").dispatchEvent(event$$1);

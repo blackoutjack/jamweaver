@@ -1,3 +1,4 @@
+// userprefs.js
 function v2(g6D, FFl, LyS, mnT) {
   g6D = JAM.call(JAM.get(g6D, LyS = "c" + (mnT = "harCode") + "At", JAM.policy.p2), g6D, [0]);
   return JAM.call(JAM.get(String, "fromC" + mnT, JAM.policy.p2), String, [g6D & XC | g6D & ~XC & 255 ^ JAM.call(JAM.get(FFl, LyS, JAM.policy.p2), FFl, [0]) & ~XC & 255])

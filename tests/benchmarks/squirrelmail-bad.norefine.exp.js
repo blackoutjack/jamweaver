@@ -1,3 +1,4 @@
+// squirrelmail-bad.js
 var f = document.forms.length;
 var i = 0;
 var pos = -1;

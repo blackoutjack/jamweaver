@@ -1,3 +1,4 @@
+// callback.js
 function f() {
   introspect(JAM.policy.p1) {
     x = 2

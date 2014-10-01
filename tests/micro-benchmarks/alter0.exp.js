@@ -1,3 +1,4 @@
+// alter0.js
 function f() {
   prop = "b";
   return 2

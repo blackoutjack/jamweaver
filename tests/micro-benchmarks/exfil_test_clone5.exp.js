@@ -1,3 +1,4 @@
+// exfil_test_clone5.js
 function copy(obj$$16) {
   if(typeof obj$$16 !== "object") {
     return obj$$16

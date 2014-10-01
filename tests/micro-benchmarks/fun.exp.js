@@ -1,3 +1,4 @@
+// fun.js
 function f() {
   return 2
 }

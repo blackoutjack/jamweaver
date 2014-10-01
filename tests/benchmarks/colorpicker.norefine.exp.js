@@ -1,3 +1,4 @@
+// colorpicker.js
 function v485() {
   var v486 = JAM.call($, null, ["#red, #green, #blue"]);
   JAM.call(v486.slider, v486, [{orientation:"horizontal", range:"min", max:255, value:127, slide:refreshSwatch, change:refreshSwatch}]);

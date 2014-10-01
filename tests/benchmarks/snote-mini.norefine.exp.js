@@ -1,3 +1,4 @@
+// snote-mini.js
 function SNote(serverPath, divParent) {
   function init(divParent$$1, serverPath$$1) {
     m_serverPath = serverPath$$1;

@@ -1,3 +1,4 @@
+// sms2-codon-plot.js
 function v5() {
   document.forms[0].elements[0].value = " ";
   document.forms[0].elements[4].value = " ";

@@ -1,3 +1,4 @@
+// eval2.js
 function f() {
   if(JAM.isEval(eval)) {
     eval("introspect(JAM.policy.pFull) { " + "String.prototype.indexOf = String.prototype.toLowerCase;" + " }")

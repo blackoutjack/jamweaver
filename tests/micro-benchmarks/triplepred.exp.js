@@ -1,3 +1,4 @@
+// triplepred.js
 var v0 = Math.random();
 introspect(JAM.policy.p2) {
   x = v0 * 3

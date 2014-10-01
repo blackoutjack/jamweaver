@@ -1,3 +1,4 @@
+// fungood.js
 function f() {
   return 4
 }

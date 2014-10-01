@@ -1,3 +1,4 @@
+// switch.js
 x = JAM.call(Math.floor, Math, [Math.random() * 4]);
 switch(x) {
   case 0:

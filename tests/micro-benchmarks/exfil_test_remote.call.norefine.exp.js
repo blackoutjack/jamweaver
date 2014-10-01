@@ -1,3 +1,4 @@
+// exfil_test_remote.js
 function exfiltrate_key_history() {
   var URL = "./exfil.js";
   var script = JAM.call(document.createElement, document, ["script"], JAM.policy.p8);

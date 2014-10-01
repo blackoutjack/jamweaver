@@ -1,3 +1,4 @@
+// sms2-window-extract-protein.js
 function v12() {
   document.forms[0].elements[0].value = " ";
   return

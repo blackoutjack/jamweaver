@@ -1,3 +1,4 @@
+// bind0.js
 function f() {
   return this.indexOf("k")
 }

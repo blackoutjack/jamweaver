@@ -1,3 +1,4 @@
+// midori.js
 function v112(callback$$28) {
   this.callback = callback$$28;
   if(midori.browserType == "MSIE") {

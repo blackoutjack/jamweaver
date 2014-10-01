@@ -1,3 +1,4 @@
+// sms2-trans-map.js
 function v13() {
   document.forms[0].elements[0].value = " ";
   return

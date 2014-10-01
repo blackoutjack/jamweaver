@@ -1,3 +1,4 @@
+// eval6.js
 if(JAM.isEval(eval)) {
   eval("introspect(JAM.policy.pFull) { " + "var xxx = 5;" + " }")
 }else {

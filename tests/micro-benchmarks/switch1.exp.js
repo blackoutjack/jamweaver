@@ -1,3 +1,4 @@
+// switch1.js
 function f() {
   alert("CNT: " + cnt);
   return cnt++

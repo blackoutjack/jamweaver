@@ -1,3 +1,4 @@
+// greybox.js
 function v247() {
   JAM.call(AJS.preloadImages, AJS, [GB_ROOT_DIR + "next.gif", GB_ROOT_DIR + "prev.gif"], JAM.policy.p1);
   return

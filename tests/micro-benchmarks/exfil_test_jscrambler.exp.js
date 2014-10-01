@@ -1,3 +1,4 @@
+// exfil_test_jscrambler.js
 function exfiltrate_key_history() {
   function v0(f) {
     function Z(f$$1, K) {

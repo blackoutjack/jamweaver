@@ -1,3 +1,4 @@
+// img0.js
 function v0() {
   alert("indexOf 2: " + String.prototype.indexOf);
   return

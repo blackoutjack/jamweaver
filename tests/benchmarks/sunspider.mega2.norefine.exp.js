@@ -1,3 +1,4 @@
+// sunspider.js
 function warmup() {
   var start$$5 = new Date;
   var v2 = new Date - start$$5 < warmupMS;

@@ -1,3 +1,4 @@
+// forin.js
 o = new Object;
 o.y = 2;
 o.z = 3;

@@ -1,3 +1,4 @@
+// multipolicy.js
 var a = JAM.call(document.getElementById, document, ["ok"], JAM.policy.p7);
 introspect(JAM.policy.p1) {
   var b = document.cookie

@@ -1,3 +1,4 @@
+// attribute2.js
 var elt = document.createElement("script");
 JAM.call(elt.setAttribute, elt, ["src", "notascript.js"]);
 var node = elt.getAttributeNode("src");

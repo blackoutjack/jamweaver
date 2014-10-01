@@ -1,3 +1,4 @@
+// innerHTML2.js
 var elt = document.createElement("script");
 JAM.set(elt, "innerHTML", "x = 2; alert('gotcha');");
 var v0 = document.body;

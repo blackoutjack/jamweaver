@@ -1,3 +1,4 @@
+// mwwidgets.js
 function v98() {
   function v97(a$$54, b$$34, d$$20, e$$34, f$$18, h$$15, i$$16, g$$11) {
     var l$$8 = this._nRounds;

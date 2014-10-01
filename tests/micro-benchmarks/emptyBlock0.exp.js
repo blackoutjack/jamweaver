@@ -1,3 +1,4 @@
+// emptyBlock0.js
 function f() {
   if(typeof x === "undefined") {
   }else {

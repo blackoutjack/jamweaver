@@ -1,3 +1,4 @@
+// sms2-embl-trans.js
 function v4() {
   document.forms[0].elements[0].value = " ";
   return

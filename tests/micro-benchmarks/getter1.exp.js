@@ -1,3 +1,4 @@
+// getter1.js
 function hello() {
   return"hello"
 }

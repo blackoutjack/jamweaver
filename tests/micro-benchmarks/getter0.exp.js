@@ -1,3 +1,4 @@
+// getter0.js
 function v0() {
   return"ok"
 }

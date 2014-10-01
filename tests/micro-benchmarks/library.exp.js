@@ -1,3 +1,4 @@
+// library.js
 function f() {
   function v0() {
     introspect(JAM.policy.p2) {

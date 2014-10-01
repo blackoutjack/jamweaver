@@ -1,3 +1,4 @@
+// jsbeautifier.js
 function v1() {
   var tabsize = get_var("tabsize");
   var brace_style = get_var("braces");

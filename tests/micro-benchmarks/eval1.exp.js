@@ -1,3 +1,4 @@
+// eval1.js
 function f() {
   if(JAM.isEval(eval)) {
     eval("introspect(JAM.policy.pFull) { " + "x = 2" + " }")

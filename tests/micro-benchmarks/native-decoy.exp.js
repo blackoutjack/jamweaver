@@ -1,3 +1,4 @@
+// native-decoy.js
 function f() {
   return
 }

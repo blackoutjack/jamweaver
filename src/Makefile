@@ -5,7 +5,7 @@ BINDIR?=../bin
 # Java compiler
 JAVAC=javac
 # Java compilation flags
-JFLAGS=-g# -Xlint
+JFLAGS=-g -Xlint
 
 # The JAM jar file
 JAMJAR=$(BINDIR)/jam.jar
@@ -21,8 +21,8 @@ WALAVERSION=1.3.4-SNAPSHOT
 COMMONSIOVERSION=2.4
 JERICHOVERSION=3.2
 RHINOVERSION=1.7R3
-WALACLASSPATH=../commons-io-$(COMMONSIOVERSION)/commons-io-$(COMMONSIOVERSION).jar ../wala/com.ibm.wala.cast.js/lib/jericho-html-$(JERICHOVERSION).jar:../wala/com.ibm.wala.core/target/com.ibm.wala.core-$(WALAVERSION).jar:../wala/com.ibm.wala.shrike/target/com.ibm.wala.shrike-$(WALAVERSION).jar:../wala/com.ibm.wala.cast/target/com.ibm.wala.cast-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js/target/com.ibm.wala.cast.js-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js.rhino/target/com.ibm.wala.cast.js.rhino-$(WALAVERSION).jar:../wala/com.ibm.wala.util/target/com.ibm.wala.util-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js.rhino/lib/rhino-$(RHINOVERSION).jar
-JCLASSPATH=".:../closure/build/compiler.jar:../JavaBDD/javabdd-$(JAVABDDVERSION).jar:../commons-lang$(COMMONSVERSION)/commons-lang$(COMMONSVERSION).jar:../closure/lib/junit.jar:$(WALACLASSPATH):$(JAMJAR):../JavaBDD/jdd.jar"
+WALACLASSPATH=../commons-io-$(COMMONSIOVERSION)/commons-io-$(COMMONSIOVERSION).jar:../wala/com.ibm.wala.cast.js/lib/jericho-html-$(JERICHOVERSION).jar:../wala/com.ibm.wala.core/target/com.ibm.wala.core-$(WALAVERSION).jar:../wala/com.ibm.wala.shrike/target/com.ibm.wala.shrike-$(WALAVERSION).jar:../wala/com.ibm.wala.cast/target/com.ibm.wala.cast-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js/target/com.ibm.wala.cast.js-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js.rhino/target/com.ibm.wala.cast.js.rhino-$(WALAVERSION).jar:../wala/com.ibm.wala.util/target/com.ibm.wala.util-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js.rhino/lib/rhino-$(RHINOVERSION).jar
+JCLASSPATH=".:../closure/build/compiler.jar:../JavaBDD/javabdd-$(JAVABDDVERSION).jar:../commons-lang$(COMMONSVERSION)/commons-lang$(COMMONSVERSION).jar:../closure/lib/junit.jar:$(WALACLASSPATH):../JavaBDD/jdd.jar"
   
 
 # Relative Java source directories
@@ -35,6 +35,7 @@ NWADIR=$(MAINDIR)/opennwa
 TXDIR=$(MAINDIR)/tx
 UTLDIR=$(MAINDIR)/util
 WALADIR=$(MAINDIR)/wala
+HTMLDIR=$(MAINDIR)/html
 COMDIR=com/google/javascript/jscomp
 
 # Java classes in the edu.wisc.cs.jam package
@@ -77,6 +78,11 @@ TXBASE=Evaluator EvaluatorNode Introspector PolicyTransition Transaction Transac
 TXSRC=$(TXBASE:%=$(TXDIR)/%.java)
 TXCLS=$(TXSRC:.java=.class)
 
+# Java classes in the edu.wisc.cs.jam.html package
+HTMLBASE=HTMLSource
+HTMLSRC=$(HTMLBASE:%=$(HTMLDIR)/%.java)
+HTMLCLS=$(HTMLSRC:.java=.class)
+
 # Java utility classes
 UTLBASE=Main NativeIdentifier ASTPrint BDDClient Utility
 UTLSRC=$(UTLBASE:%=$(UTLDIR)/%.java)
@@ -90,9 +96,9 @@ WALACLS=$(WALASRC:.java=.class)
 
 jam: $(JAMJAR)
 
-$(JAMJAR): $(JSCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(NWACLS) $(TXCLS) $(COMCLS) $(MAINCLS)
+$(JAMJAR): $(JSCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(NWACLS) $(TXCLS) $(HTMLCLS) $(COMCLS) $(MAINCLS)
 	mkdir -p ../bin
-	jar cfm $@ MANIFEST.MF $(MAINDIR)/*.class $(COMDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class
+	jar cfm $@ MANIFEST.MF $(MAINDIR)/*.class $(COMDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class
 
 util: $(UTILJAR)
 
@@ -111,7 +117,7 @@ walaclean:
 	rm -f $(WALADIR)/*.class $(WALAJAR)
 
 clean: utilclean walaclean
-	rm -f $(COMDIR)/*.class $(MAINDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TSTDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class
+	rm -f $(COMDIR)/*.class $(MAINDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TSTDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class
 
 .java.class:
 	$(JAVAC) -classpath $(JCLASSPATH) $(JFLAGS) $*.java

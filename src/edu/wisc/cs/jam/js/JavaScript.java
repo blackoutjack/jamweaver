@@ -19,6 +19,8 @@ import edu.wisc.cs.jam.JAM;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.FileUtil;
 
+import edu.wisc.cs.jam.html.HTMLSource;
+
 public class JavaScript implements Language {
 
   private JSSemantics sem;
@@ -70,16 +72,12 @@ public class JavaScript implements Language {
       if (JAM.Opts.sourceIsList) {
         List<String> lines = null;
         try {
-          lines = FileUtil.getLinesFromFile(srcpath);
+          lines = FileUtil.getLinesFromFile(srcpath, "#");
         } catch (IOException ex) {
           Dbg.err("Unable to read source list: " + srcpath);
           continue;
         }
         for (String line : lines) {
-          line = line.trim();
-          if (line.equals("") || line.startsWith("#")) {
-            continue;
-          }
           String[] parts = line.split(":");
           if (parts.length != 3) {
             Dbg.warn("Invalid format for source list line: " + line);
@@ -105,6 +103,9 @@ public class JavaScript implements Language {
       } else {
         jsman.addSource(new JSSource(srcpath, false));
       }
+    }
+    if (JAM.Opts.htmlFile != null) {
+      jsman.addSource(new HTMLSource(JAM.Opts.htmlFile));
     }
     return jsman;
   }

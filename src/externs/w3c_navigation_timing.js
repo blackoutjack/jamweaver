@@ -101,21 +101,22 @@ function Performance() {}
  * PerformanceResourceTiming resources.
  * @return {undefined}
  */
-Performance.prototype.clearResourceTimings = function() {};
+//Performance.prototype.clearResourceTimings = function() {};
 
 /**
  * Set the maximum number of PerformanceResourceTiming resources that may be
  * stored in the buffer.
  * @param {number} maxSize
  */
-Performance.prototype.setResourceTimingBufferSize = function(maxSize) {};
+//Performance.prototype.setResourceTimingBufferSize = function(maxSize) {};
 
 /**
  * @return {Array.<PerformanceEntry>} A copy of the PerformanceEntry list,
  *     in chronological order with respect to startTime.
  * @nosideeffects
  */
-Performance.prototype.getEntries = function() {};
+// Doesn't exist in Firefox 17.0.5esr.
+//Performance.prototype.getEntries = function() {};
 
 /**
  * @param {string} entryType Only return {@code PerformanceEntry}s with this
@@ -124,7 +125,8 @@ Performance.prototype.getEntries = function() {};
  *     in chronological order with respect to startTime.
  * @nosideeffects
  */
-Performance.prototype.getEntriesByType = function(entryType) {};
+// Doesn't exist in Firefox 17.0.5esr.
+//Performance.prototype.getEntriesByType = function(entryType) {};
 
 /**
  * @param {string} name Only return {@code PerformanceEntry}s with this name.
@@ -134,10 +136,12 @@ Performance.prototype.getEntriesByType = function(entryType) {};
  *     order with respect to startTime.
  * @nosideeffects
  */
-Performance.prototype.getEntriesByName = function(name, opt_entryType) {};
+// Doesn't exist in Firefox 17.0.5esr.
+//Performance.prototype.getEntriesByName = function(name, opt_entryType) {};
 
 // Only available in WebKit, and only with the --enable-memory-info flag.
-/** @type {PerformanceMemory} */ Performance.prototype.memory;
+/** @type {PerformanceMemory} */
+//Performance.prototype.memory;
 
 /**
  * @return {number}

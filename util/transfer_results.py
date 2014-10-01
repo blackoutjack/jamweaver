@@ -278,14 +278,17 @@ def prepare_dir(tgtdir):
       return False
 
   for fileattrs in cfg.SYMLINK_FILES:
-    assert len(fileattrs) == 3, 'Invalid SYMLINK_FILES configuration: %r' % fileattrs
-    srcdir, destname, srcname = fileattrs
-    cfg.symlink(srcdir, tgtdir, destname, srcname, relative=True)
+    assert len(fileattrs) == 2, 'Invalid SYMLINK_FILES configuration: %r' % fileattrs
+    srcpath, linkname = fileattrs
+    cfg.symlink(srcpath, tgtdir, linkname=linkname, relative=True)
 
   tgtbase = os.path.basename(tgtdir)
   if tgtbase.startswith('sms2-'):
-    cfg.symlink(cfg.SMS2DIR, tgtdir, 'includes', relative=True)
-    cfg.symlink(cfg.SMS2DIR, tgtdir, tgtbase + '.head.html', 'sms2.head.html', relative=True)
+    srcpath = os.path.join(cfg.SMS2DIR, 'includes')
+    cfg.symlink(srcpath, tgtdir, relative=True)
+    srcpath = os.path.join(cfg.SMS2DIR, 'sms2.head.html')
+    linkname = tgtbase + '.head.html'
+    cfg.symlink(srcpath, tgtdir, linkname=linkname, relative=True)
     # %%% Specialness for policy upgrade
     part = None
     if tgtbase.endswith('-newcall'):
@@ -302,7 +305,8 @@ def prepare_dir(tgtdir):
       sms2base = part + 'call-big'
     if part is not None:
       sms2src = cfg.SMS2DIR + sms2base
-      cfg.symlink(sms2src, tgtdir, tgtbase + '.html', 'sms2' + sms2base + '.html', relative=True)
+      srcpath = os.path.join(sms2src, tgtbase + '.html')
+      cfg.symlink(srcpath, tgtdir, linkname='sms2' + sms2base + '.html', relative=True)
   return True
   
 def copy_files(appfiles, tgtdir, wrap=False, iso=False):

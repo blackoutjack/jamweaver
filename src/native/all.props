@@ -1,5 +1,5 @@
 
-% Generated: Tue Sep 23 2014 22:56:20 GMT-0400 (EDT)
+% Generated: Mon Sep 29 2014 23:26:27 GMT-0500 (CDT)
 % User agent: Mozilla/5.0 (X11; Linux x86_64; rv:17.0) Gecko/20140807 Firefox/17.0
 
 @Object@prototype
@@ -485,6 +485,7 @@ ArrayBuffer DontEnum #ArrayBuffer ArrayBuffer
 Attr DontEnum #Attr Attr
 Blob DontEnum #Blob Blob
 Boolean DontEnum #Boolean Boolean
+CSS2Properties DontEnum #Global#CSS2Properties window.CSS2Properties
 CSSCharsetRule DontEnum #CSSCharsetRule CSSCharsetRule
 CSSFontFaceRule DontEnum #CSSFontFaceRule CSSFontFaceRule
 CSSImportRule DontEnum #CSSImportRule CSSImportRule
@@ -586,6 +587,7 @@ Node DontEnum #Node Node
 NodeList DontEnum #NodeList NodeList
 Number DontEnum #Number Number
 Object DontEnum #Object Object
+Option DontEnum #Option Option
 ParallelArray DontEnum #Global#ParallelArray window.ParallelArray
 Parser DontEnum #Global#Parser window.Parser
 Performance DontEnum #Performance Performance
@@ -625,6 +627,7 @@ XMLHttpRequest DontEnum #XMLHttpRequest XMLHttpRequest
 XMLHttpRequestEventTarget DontEnum #XMLHttpRequestEventTarget XMLHttpRequestEventTarget
 XMLSerializer DontEnum #XMLSerializer XMLSerializer
 XPCNativeWrapper ReadOnly,DontEnum,DontDelete #Global#XPCNativeWrapper window.XPCNativeWrapper
+XPathResult DontEnum #XPathResult XPathResult
 __proto__ DontEnum #Window#prototype Window.prototype
 console - #console console
 decodeURI DontEnum #Global#decodeURI window.decodeURI
@@ -791,6 +794,49 @@ __proto__ DontEnum #NodeList#__proto__ NodeList.__proto__
 prototype ReadOnly,DontEnum,DontDelete #NodeList#prototype NodeList.prototype
 
 
+@CSSStyleDeclaration
+
+% CSSStyleDeclaration properties
+__proto__ DontEnum #Function#prototype Object.__proto__
+prototype ReadOnly,DontEnum,DontDelete #CSSStyleDeclaration#prototype CSSStyleDeclaration.prototype
+
+
+@HTMLBodyElement
+
+% HTMLBodyElement properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #HTMLBodyElement#prototype HTMLBodyElement.prototype
+
+
+@HTMLHtmlElement
+
+% HTMLHtmlElement properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #HTMLHtmlElement#prototype HTMLHtmlElement.prototype
+
+
+@console
+
+% console properties
+__mozillaConsole__ ReadOnly,DontEnum,DontDelete true console.__mozillaConsole__
+__noSuchMethod__ - #console#__noSuchMethod__ console.__noSuchMethod__
+__proto__ DontEnum #Object#prototype Object.prototype
+debug - #console#debug console.debug
+dir - #console#dir console.dir
+error - #console#error console.error
+group - #console#group console.group
+groupCollapsed - #console#groupCollapsed console.groupCollapsed
+groupEnd - #console#groupEnd console.groupEnd
+info - #console#info console.info
+log - #console#log console.log
+profile - #console#profile console.profile
+profileEnd - #console#profileEnd console.profileEnd
+time - #console#time console.time
+timeEnd - #console#timeEnd console.timeEnd
+trace - #console#trace console.trace
+warn - #console#warn console.warn
+
+
 @Event
 
 % Event properties
@@ -833,7 +879,7 @@ SUBMIT ReadOnly,DontDelete 131072 Event.SUBMIT
 TEXT ReadOnly,DontDelete 1073741824 Event.TEXT
 UNLOAD ReadOnly,DontDelete 1048576 Event.UNLOAD
 XFER_DONE ReadOnly,DontDelete 2097152 Event.XFER_DONE
-__proto__ DontEnum #FormData#__proto__ FormData.__proto__
+__proto__ DontEnum #Option#__proto__ Option.__proto__
 prototype ReadOnly,DontEnum,DontDelete #Event#prototype Event.prototype
 
 
@@ -1037,13 +1083,6 @@ __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #HTMLAudioElement#prototype#__proto__ HTMLMediaElement.prototype
 
 
-@HTMLBodyElement
-
-% HTMLBodyElement properties
-__proto__ DontEnum #Window#__proto__ Window.__proto__
-prototype ReadOnly,DontEnum,DontDelete #HTMLBodyElement#prototype HTMLBodyElement.prototype
-
-
 @HTMLBRElement
 
 % HTMLBRElement properties
@@ -1084,13 +1123,6 @@ prototype ReadOnly,DontEnum,DontDelete #HTMLFrameElement#prototype HTMLFrameElem
 % HTMLHeadElement properties
 __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #HTMLHeadElement#prototype HTMLHeadElement.prototype
-
-
-@HTMLHtmlElement
-
-% HTMLHtmlElement properties
-__proto__ DontEnum #Window#__proto__ Window.__proto__
-prototype ReadOnly,DontEnum,DontDelete #HTMLHtmlElement#prototype HTMLHtmlElement.prototype
 
 
 @HTMLIFrameElement
@@ -1184,6 +1216,13 @@ __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #HTMLVideoElement#prototype HTMLVideoElement.prototype
 
 
+@Option
+
+% Option properties
+__proto__ DontEnum #Option#__proto__ Option.__proto__
+prototype ReadOnly,DontEnum,DontDelete #Option#prototype Option.prototype
+
+
 @DocumentFragment
 
 % DocumentFragment properties
@@ -1201,7 +1240,7 @@ prototype ReadOnly,DontEnum,DontDelete #DocumentType#prototype DocumentType.prot
 @FormData
 
 % FormData properties
-__proto__ DontEnum #FormData#__proto__ FormData.__proto__
+__proto__ DontEnum #Option#__proto__ Option.__proto__
 prototype ReadOnly,DontEnum,DontDelete #FormData#prototype FormData.prototype
 
 
@@ -1218,7 +1257,7 @@ prototype ReadOnly,DontEnum,DontDelete #Date#prototype Date.prototype
 @Image
 
 % Image properties
-__proto__ DontEnum #FormData#__proto__ FormData.__proto__
+__proto__ DontEnum #Option#__proto__ Option.__proto__
 prototype ReadOnly,DontEnum,DontDelete #Image#prototype Image.prototype
 
 
@@ -1430,13 +1469,6 @@ __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #CSSRuleList#prototype CSSRuleList.prototype
 
 
-@CSSStyleDeclaration
-
-% CSSStyleDeclaration properties
-__proto__ DontEnum #Function#prototype Object.__proto__
-prototype ReadOnly,DontEnum,DontDelete #CSSStyleDeclaration#prototype CSSStyleDeclaration.prototype
-
-
 @CSSStyleSheet
 
 % CSSStyleSheet properties
@@ -1477,7 +1509,7 @@ CLOSED ReadOnly,DontDelete 3 WebSocket.CLOSED
 CLOSING ReadOnly,DontDelete 2 WebSocket.CLOSING
 CONNECTING ReadOnly,DontDelete 0 WebSocket.CONNECTING
 OPEN ReadOnly,DontDelete 1 WebSocket.OPEN
-__proto__ DontEnum #FormData#__proto__ FormData.__proto__
+__proto__ DontEnum #Option#__proto__ Option.__proto__
 prototype ReadOnly,DontEnum,DontDelete #WebSocket#prototype WebSocket.prototype
 
 
@@ -1493,7 +1525,7 @@ toSource DontEnum #JSON#toSource JSON.toSource
 @Blob
 
 % Blob properties
-__proto__ DontEnum #FormData#__proto__ FormData.__proto__
+__proto__ DontEnum #Option#__proto__ Option.__proto__
 prototype ReadOnly,DontEnum,DontDelete #Blob#prototype Blob.prototype
 
 
@@ -1503,7 +1535,7 @@ prototype ReadOnly,DontEnum,DontDelete #Blob#prototype Blob.prototype
 DONE ReadOnly,DontDelete 2 FileReader.DONE
 EMPTY ReadOnly,DontDelete 0 FileReader.EMPTY
 LOADING ReadOnly,DontDelete 1 FileReader.LOADING
-__proto__ DontEnum #FormData#__proto__ FormData.__proto__
+__proto__ DontEnum #Option#__proto__ Option.__proto__
 prototype ReadOnly,DontEnum,DontDelete #FileReader#prototype FileReader.prototype
 
 
@@ -1558,28 +1590,6 @@ __proto__ DontEnum #Object#prototype Object.prototype
 prototype ReadOnly,DontEnum,DontDelete #DOMTokenList#prototype DOMTokenList.prototype
 
 
-@console
-
-% console properties
-__mozillaConsole__ ReadOnly,DontEnum,DontDelete true console.__mozillaConsole__
-__noSuchMethod__ - #console#__noSuchMethod__ console.__noSuchMethod__
-__proto__ DontEnum #Object#prototype Object.prototype
-debug - #console#debug console.debug
-dir - #console#dir console.dir
-error - #console#error console.error
-group - #console#group console.group
-groupCollapsed - #console#groupCollapsed console.groupCollapsed
-groupEnd - #console#groupEnd console.groupEnd
-info - #console#info console.info
-log - #console#log console.log
-profile - #console#profile console.profile
-profileEnd - #console#profileEnd console.profileEnd
-time - #console#time console.time
-timeEnd - #console#timeEnd console.timeEnd
-trace - #console#trace console.trace
-warn - #console#warn console.warn
-
-
 @IDBRequest
 
 % IDBRequest properties
@@ -1613,7 +1623,7 @@ prototype ReadOnly,DontEnum,DontDelete #IDBIndex#prototype IDBIndex.prototype
 @File
 
 % File properties
-__proto__ DontEnum #FormData#__proto__ FormData.__proto__
+__proto__ DontEnum #Option#__proto__ Option.__proto__
 prototype ReadOnly,DontEnum,DontDelete #File#prototype File.prototype
 
 
@@ -1697,7 +1707,7 @@ prototype ReadOnly,DontEnum,DontDelete #NamedNodeMap#prototype NamedNodeMap.prot
 @DOMParser
 
 % DOMParser properties
-__proto__ DontEnum #FormData#__proto__ FormData.__proto__
+__proto__ DontEnum #Option#__proto__ Option.__proto__
 prototype ReadOnly,DontEnum,DontDelete #DOMParser#prototype DOMParser.prototype
 
 
@@ -2006,7 +2016,7 @@ prototype ReadOnly,DontEnum,DontDelete #WebGLRenderingContext#prototype WebGLRen
 @XMLSerializer
 
 % XMLSerializer properties
-__proto__ DontEnum #FormData#__proto__ FormData.__proto__
+__proto__ DontEnum #Option#__proto__ Option.__proto__
 prototype ReadOnly,DontEnum,DontDelete #XMLSerializer#prototype XMLSerializer.prototype
 
 
@@ -2030,7 +2040,7 @@ prototype ReadOnly,DontEnum,DontDelete #IDBTransaction#prototype IDBTransaction.
 @CustomEvent
 
 % CustomEvent properties
-__proto__ DontEnum #FormData#__proto__ FormData.__proto__
+__proto__ DontEnum #Option#__proto__ Option.__proto__
 prototype ReadOnly,DontEnum,DontDelete #CustomEvent#prototype CustomEvent.prototype
 
 
@@ -2071,6 +2081,23 @@ prototype ReadOnly,DontEnum,DontDelete #DOMException#prototype DOMException.prot
 % DOMImplementation properties
 __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #DOMImplementation#prototype DOMImplementation.prototype
+
+
+@XPathResult
+
+% XPathResult properties
+ANY_TYPE ReadOnly,DontDelete 0 XPathResult.ANY_TYPE
+ANY_UNORDERED_NODE_TYPE ReadOnly,DontDelete 8 XPathResult.ANY_UNORDERED_NODE_TYPE
+BOOLEAN_TYPE ReadOnly,DontDelete 3 XPathResult.BOOLEAN_TYPE
+FIRST_ORDERED_NODE_TYPE ReadOnly,DontDelete 9 XPathResult.FIRST_ORDERED_NODE_TYPE
+NUMBER_TYPE ReadOnly,DontDelete 1 XPathResult.NUMBER_TYPE
+ORDERED_NODE_ITERATOR_TYPE ReadOnly,DontDelete 5 XPathResult.ORDERED_NODE_ITERATOR_TYPE
+ORDERED_NODE_SNAPSHOT_TYPE ReadOnly,DontDelete 7 XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+STRING_TYPE ReadOnly,DontDelete 2 XPathResult.STRING_TYPE
+UNORDERED_NODE_ITERATOR_TYPE ReadOnly,DontDelete 4 XPathResult.UNORDERED_NODE_ITERATOR_TYPE
+UNORDERED_NODE_SNAPSHOT_TYPE ReadOnly,DontDelete 6 XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #XPathResult#prototype XPathResult.prototype
 
 
 @Boolean@prototype
@@ -13726,6 +13753,12 @@ volume ReadOnly &undefined HTMLVideoElement.prototype.volume
 width ReadOnly &undefined HTMLVideoElement.prototype.width
 
 
+@Option@prototype
+
+% Option#prototype properties
+__proto__ DontEnum #HTMLElement#prototype HTMLElement.prototype
+
+
 @Document@prototype
 
 % Document#prototype properties
@@ -16256,5 +16289,42 @@ createDocument - #DOMImplementation#prototype#createDocument DOMImplementation.p
 createDocumentType - #DOMImplementation#prototype#createDocumentType DOMImplementation.prototype.createDocumentType
 createHTMLDocument - #DOMImplementation#prototype#createHTMLDocument DOMImplementation.prototype.createHTMLDocument
 hasFeature - #DOMImplementation#prototype#hasFeature DOMImplementation.prototype.hasFeature
+
+
+@XPathResult@prototype
+
+% XPathResult#prototype properties
+ANY_TYPE - 0 XPathResult.prototype.ANY_TYPE
+ANY_UNORDERED_NODE_TYPE - 8 XPathResult.prototype.ANY_UNORDERED_NODE_TYPE
+BOOLEAN_TYPE - 3 XPathResult.prototype.BOOLEAN_TYPE
+FIRST_ORDERED_NODE_TYPE - 9 XPathResult.prototype.FIRST_ORDERED_NODE_TYPE
+NUMBER_TYPE - 1 XPathResult.prototype.NUMBER_TYPE
+ORDERED_NODE_ITERATOR_TYPE - 5 XPathResult.prototype.ORDERED_NODE_ITERATOR_TYPE
+ORDERED_NODE_SNAPSHOT_TYPE - 7 XPathResult.prototype.ORDERED_NODE_SNAPSHOT_TYPE
+QueryInterface DontEnum #XPathResult#prototype#QueryInterface XPathResult.prototype.QueryInterface
+STRING_TYPE - 2 XPathResult.prototype.STRING_TYPE
+UNORDERED_NODE_ITERATOR_TYPE - 4 XPathResult.prototype.UNORDERED_NODE_ITERATOR_TYPE
+UNORDERED_NODE_SNAPSHOT_TYPE - 6 XPathResult.prototype.UNORDERED_NODE_SNAPSHOT_TYPE
+__defineGetter__ DontEnum #XPathResult#prototype#__defineGetter__ XPathResult.prototype.__defineGetter__
+__defineSetter__ DontEnum #XPathResult#prototype#__defineSetter__ XPathResult.prototype.__defineSetter__
+__lookupGetter__ DontEnum #XPathResult#prototype#__lookupGetter__ XPathResult.prototype.__lookupGetter__
+__lookupSetter__ DontEnum #XPathResult#prototype#__lookupSetter__ XPathResult.prototype.__lookupSetter__
+__proto__ DontEnum #Object#prototype Object.prototype
+%%% Unable to get descriptor info for property booleanValue.
+booleanValue - &null XPathResult.prototype.booleanValue
+%%% @XPathResult@prototype.invalidIteratorState has getter to model.
+invalidIteratorState ReadOnly &undefined XPathResult.prototype.invalidIteratorState
+iterateNext - #XPathResult#prototype#iterateNext XPathResult.prototype.iterateNext
+%%% Unable to get descriptor info for property numberValue.
+numberValue - &null XPathResult.prototype.numberValue
+%%% Unable to get descriptor info for property resultType.
+resultType - &null XPathResult.prototype.resultType
+%%% Unable to get descriptor info for property singleNodeValue.
+singleNodeValue - &null XPathResult.prototype.singleNodeValue
+snapshotItem - #XPathResult#prototype#snapshotItem XPathResult.prototype.snapshotItem
+%%% Unable to get descriptor info for property snapshotLength.
+snapshotLength - &null XPathResult.prototype.snapshotLength
+%%% Unable to get descriptor info for property stringValue.
+stringValue - &null XPathResult.prototype.stringValue
 
 

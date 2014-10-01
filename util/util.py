@@ -191,7 +191,6 @@ def env_error(varname):
   err(varname + "is not a valid directory: " + eval(varname))
 
 def make(target, workingdir=JAMPKG):
-  outfl = open('/dev/null', 'w')
   cmd = ['make', '-C', workingdir, target]
   mk = subprocess.Popen(cmd, stdout=PIPE, stderr=STDOUT)
   mkout = mk.communicate()[0]
@@ -327,11 +326,6 @@ def load_policies(from_dir, base_name, polsuf='.policy'):
   return ret
 
 def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=True, moreopts=[]):
-  # Print the name of the file being analyzed.
-  jsname = os.path.basename(jspath)
-  sys.stdout.write(jsname)
-  sys.stdout.write('\n')
-  sys.stdout.flush()
 
   if perf:
     cmd = ['/usr/bin/time', '-f', 'real:%Es user:%Us sys:%Ss maxrss:%MKB']
@@ -345,6 +339,8 @@ def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=
 
   # The refine param can specify a predicate limit or unlimited/no
   # refinement.
+  if not refine:
+    refine = 0
   cmd.append('-p')
   cmd.append(str(refine))
 
@@ -402,7 +398,6 @@ def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=
   sys.stdout.write('\n')
   sys.stdout.flush()
 
-  outfl = tempfile.TemporaryFile('r+')
   # Let the user see the debugging output, demonstrating progress.
   jam = subprocess.Popen(cmd, stdout=PIPE)
 
@@ -413,6 +408,65 @@ def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=
     outp = outp[endl:]
 
   return outp
+# /run_jam
+
+def run_repacker(htmlfile, srclist, outdir, polpath=None, debug=False):
+  cmd = [REPACK_SCRIPT, htmlfile, srclist, '-d', outdir]
+  if debug:
+    cmd.append('-v')
+  if polpath is not None:
+    cmd.append('-p')
+    cmd.append(polpath)
+
+  repacker = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
+  outp, errp = repacker.communicate()
+  code = repacker.returncode
+  if code != 0:
+    err('Non-zero error code repacking %s: %s' % (htmlfile, code))
+  return outp
+
+def run_unpacker(url, debug=False, saveall=False):
+  
+  cmd = [UNPACK_SCRIPT, url]
+  if debug:
+    cmd.append('-v')
+  if saveall:
+    cmd.append('-s')
+ 
+  unpacker = subprocess.Popen(cmd, stdout=PIPE, stderr=STDOUT)
+  outp = unpacker.communicate()[0]
+  code = unpacker.returncode
+  if code != 0:
+    out("OUTPUT: %s" % outp)
+    err('Non-zero error code unpacking %s: %s' % (url, code))
+    return None
+  
+  lines = outp.split('\n')
+  outdir = None
+  dirsearch = 'INFO: Output directory: '
+  for line in lines:
+    if debug:
+      # Print warnings, errors, fatals and exception traces.
+      if not line.startswith('INFO: '):
+        print(line)
+    if outdir is None:
+      # Return the output directory.
+      if line.startswith(dirsearch):
+        outdir = line[len(dirsearch):].strip()
+        # Break out early if not printing warnings.
+        if not debug: break
+  return outdir
+# /run_unpacker
+
+def get_lines(filename, comment=None):
+  fl = open(filename, 'r')
+  ret = []
+  for line in fl.readlines():
+    line = line.strip()
+    if comment is not None and line.startswith(comment):
+      continue
+    ret.append(line)
+  return ret
 
 def get_file_info(filepath):
   return {
@@ -450,21 +504,22 @@ def get_exp_path(testcase, suf='.exp'):
   expfile = basepath + suf
   return expfile
 
-def symlink(srcdir, tgtdir, name, srcname=None, relative=False): 
-  link = os.path.join(tgtdir, name)
+def symlink(srcpath, linkdir, linkname=None, relative=False): 
+  srcdir, srcname = os.path.split(srcpath)
+  if linkname is None:
+    linkpath = os.path.join(linkdir, srcname)
+  else:
+    linkpath = os.path.join(linkdir, linkname)
   # |lexists| is true for broken symbolic links.
   # %%% Should check to see if the link is correct or needs updating.
-  if not os.path.lexists(link):
-    if srcname is not None:
-      srcpath = os.path.join(srcdir, srcname)
-    else:
-      srcpath = os.path.join(srcdir, name)
+  if not os.path.lexists(linkpath):
     if relative:
       # Get the path relative to the target directory.
-      src = os.path.relpath(srcpath, tgtdir)
+      src = os.path.relpath(srcpath, linkdir)
     else:
       src = os.path.abspath(srcpath)
-    os.symlink(src, link)
+    os.symlink(src, linkpath)
+  return linkpath
 
 def get_variant_bases(directory):
   apps = load_sources(directory)
@@ -493,11 +548,10 @@ def get_ast(filename):
   astout, asterr = util.communicate()  
   return astout.strip()
 
-def overwrite_expected(srcfl, outp, suf):
-  if validate_output(srcfl, outp, suf) == "ok":
+def overwrite_expected(outp, expfile):
+  if validate_output(outp, expfile) == "ok":
     return "unchanged"
   
-  expfile = get_exp_path(srcfl, suf)
   expfl = open(expfile, 'w')
   expfl.write(outp)
   expfl.close()
@@ -510,12 +564,11 @@ def run_query(query):
   xsbout, xsberr = xsb.communicate(query)  
   return xsbout
 
-def validate_value(inp, outp, expsuf='.exp'):
-  expfile = get_exp_path(inp, expsuf)
-  if not os.path.exists(expfile):
+def validate_value(outp, exppath):
+  if not os.path.exists(exppath):
     return "missing .exp"
 
-  expfl = open(expfile, 'r')
+  expfl = open(exppath, 'r')
   exp = expfl.read().strip()
 
   lines = outp.split("\n")
@@ -530,13 +583,11 @@ def validate_value(inp, outp, expsuf='.exp'):
   return "fail"
 
 # Compare the resulting source code of a run to the expected output.
-def validate_output(inp, outp, expsuf=".exp.js"):
-  expfile = get_exp_path(inp, expsuf)
+def validate_output(outp, exppath):
+  if not os.path.exists(exppath):
+    return "missing " + exppath
 
-  if not os.path.exists(expfile):
-    return "missing " + expsuf
-
-  expfl = open(expfile, 'r')
+  expfl = open(exppath, 'r')
   exp = expfl.read().strip()
   outp = outp.strip()
 
@@ -605,8 +656,6 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
     # Display the command that's being invoked.
     sys.stdout.write('%s\n' % ' '.join(cmd))
 
-  outfl = tempfile.TemporaryFile('r+')
-
   # Combine stderr and stdout so that exception output is collected.
 #  if perf:
 #    errstrm = PIPE
@@ -631,4 +680,5 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
   outp = outp.replace(JAMSCRIPT_DIR + "/", "")
 
   return outp
+# /run_tx
 

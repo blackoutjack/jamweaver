@@ -260,6 +260,7 @@ public class JSStatementTransform extends JSTransform {
           return true;
         case Token.TRANSACTION:
           Dbg.warn("TRANSACTION expression encountered: " + n);
+          return true;
         case Token.CAST:
           Dbg.warn("CAST expression encountered: " + n);
           return true;

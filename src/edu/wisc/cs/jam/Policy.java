@@ -4,9 +4,6 @@ package edu.wisc.cs.jam;
 import edu.wisc.cs.automaton.Automaton;
 import edu.wisc.cs.automaton.State;
 
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 
 import java.security.MessageDigest;
@@ -256,24 +253,14 @@ public class Policy extends Automaton<State,PredicateSymbol> {
   protected void load(String filename) throws IOException {
     //Dbg.writeQueryHeader("Loading policy predicates", true);
 
-    File pfile = new File(filename);
-    // %%% Check existence.
+    List<String> lines = FileUtil.getLinesFromFile(filename, "#");
 
-    BufferedReader reader = null;
-    reader = new BufferedReader(new FileReader(pfile));
-
-    int idx = 0;
-    String line;
     // Each line specifies a policy transition in the following form.
     // src,dest: predicate
     // Where src and dest are integers referring to states and
     // predicate is a psuedo-JavaScript condition.
     // See doc/POLICIES for details.
-    while ((line = reader.readLine()) != null) {
-      // Skip blank lines and comments.
-      line = line.trim();
-      if (FileUtil.isComment(line)) continue;
-
+    for (String line : lines) {
       Edge edge = parseEdge(line);
       addEdge(edge);
     }

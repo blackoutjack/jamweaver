@@ -35,7 +35,7 @@ public class SeedPredicates {
 
     List<String> lines = null;
     try {
-      lines = FileUtil.getLinesFromFile(seedFilePath);
+      lines = FileUtil.getLinesFromFile(seedFilePath, "#");
     } catch (IOException ex) {
       System.err.println("Unable to read predicate seed file at " + JAM.Opts.seedFile + ": " + ex.getMessage());
       return;
@@ -44,9 +44,6 @@ public class SeedPredicates {
     List<Policy.Edge> seedPolicyEdges = null;
     boolean reset = true;
     for (String line : lines) {
-      line = line.trim();
-      if (FileUtil.isComment(line)) continue;
-
       // If the line has the form of a policy edge specification,
       // collect the edge in an association group. If this is the second
       // or more of consecutive edge specs, then the edge will be added

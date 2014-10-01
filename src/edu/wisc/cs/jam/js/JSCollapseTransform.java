@@ -69,10 +69,6 @@ public class JSCollapseTransform extends JSTransform {
     Dbg.out("Temporary variables collapsed: " + collapseCnt, 1);
     if (JAM.Opts.countNodes)
       FileUtil.writeToMain("temporary-variables-collapsed:" + collapseCnt + "\n", JAMConfig.INFO_FILENAME, true);
-
-    // Generate the transformed output.
-    sm.reportCodeChange();
-    sm.saveSources("collapsed");
   }
 
   public class ScopeInfo {
@@ -280,6 +276,7 @@ public class JSCollapseTransform extends JSTransform {
       parent.replaceChild(n, replacement);
       
       collapseCnt++;
+      sm.reportCodeChange();
       return true;
     }
   }

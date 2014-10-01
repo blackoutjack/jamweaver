@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -53,10 +54,14 @@ import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.Dbg;
+import edu.wisc.cs.jam.html.HTMLSource;
 
 public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
   protected List<JSSource> sourceFiles;
+  // Used to check for duplicates.
+  protected Set<String> sourceSet;
+  protected List<HTMLSource> htmlFiles;
   protected Compiler compiler;
   protected CallGraph callGraph;
   protected TypeFacts typeFacts;
@@ -67,6 +72,8 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
   public JSSourceManager() {
     sourceFiles = new ArrayList<JSSource>();
+    sourceSet = new HashSet<String>();
+    htmlFiles = new ArrayList<HTMLSource>();
     boolean useExterns = !JAM.Opts.noExterns;
     needsCallGraphUpdate = true;
     try {
@@ -86,8 +93,8 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
   @Override
   public void saveSources(String dirsuffix) {
+    File dir = FileUtil.getSourceDir(dirsuffix);
     for (JSSource src : sourceFiles) {
-      File dir = FileUtil.getSourceDir(dirsuffix);
       String relpath = src.getRelativePath();
       if (relpath == null) {
         relpath = src.getName();
@@ -109,15 +116,31 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
       FileUtil.writeToFile(contents, destfile, false, false);
     }
+
+    for (HTMLSource src : htmlFiles) {
+      String relpath = src.getName();
+      File destfile = new File(dir, relpath);
+      String contents = src.getContents();
+      FileUtil.writeToFile(contents, destfile, false, false);
+    }
   }
 
   @Override
   public void addSource(Source src) {
-    if (!(src instanceof JSSource)) {
-      Dbg.err("Incompatible source file: " + src.getPath());
+    // Closure will error out if there are duplicate SourceFiles.
+    if (sourceSet.contains(src.getPath())) {
+      Dbg.warn("Duplicate source detected: " + src.getPath());
       return;
     }
-    sourceFiles.add((JSSource)src);
+    sourceSet.add(src.getPath());
+
+    if (src instanceof JSSource) {
+      sourceFiles.add((JSSource)src);
+    } else if (src instanceof HTMLSource) {
+      htmlFiles.add((HTMLSource)src);
+    } else {
+      Dbg.err("Incompatible source file: " + src.getPath());
+    }
   }
 
   // Get the compiler if it needs to be used directly.
@@ -279,7 +302,6 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     // Compiling JSModules instead of SourceFiles means that declared
     // functions and variables are not all lifted to the top.
     List<JSModule> modules = new ArrayList<JSModule>();
-    //List<SourceFile> sources = new ArrayList<SourceFile>();
     JSModule prevmod = null;
     for (JSSource src : sourceFiles) {
       JSModule mod = new JSModule(src.getPath());
@@ -292,10 +314,8 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
       prevmod = mod;
 
       modules.add(mod);
-      //sources.add(src.getClosureSourceFile());
     }
 
-    //Result r = compiler.compile(externList, sources, opts);
     Result r = compiler.compileModules(externList, modules, opts);
     if (!r.success) {
       Dbg.err("Closure compiler failed with errors:");
@@ -311,9 +331,6 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   }
 
   protected void update() {
-    // %%% Need to generalize for multiple files.
-    reportCodeChange();
-
     // For each user script root node, find the script.
     Node root = getRootNode();
     for (int i=0; i<root.getChildCount(); i++) {
@@ -547,7 +564,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     options.setUnaliasableGlobals(JAMConfig.TRANSACTION_LIBRARY);
 
     // Suppress debug information because it's overly verbose.
-    boolean success = runPass(options, null, false, true);
+    boolean success = runPass(options, null, false, false);
     if (!success) {
       Dbg.err("Type inference pass failed.");
     }
@@ -576,17 +593,21 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   // analysis since it will foul up various assumptions that JAM needs.
   @Override
   public void postprocess(ControlAutomaton c, CheckManager cm) {
-   
     // Perform the transformation to isolate higher-order scripts. 
     // %%% Remove the need for ControlAutomaton.
     Transform it = new JSIndirectionTransform(c, cm);
     it.run(this);
+    update();
+    // Save the transformed output.
+    saveSources("indirection");
 
     if (temporaries != null) {
       Transform collapse = new JSCollapseTransform(temporaries);
       collapse.run(this);
+      update();
     }
-    update();
+    // Save the collapsed output (whether we did anything or not).
+    saveSources("collapsed");
   }
   
   @Override

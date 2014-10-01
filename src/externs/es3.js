@@ -2071,7 +2071,7 @@ function Error(opt_message, opt_file, opt_line) {}
  * @type {number}
  * @see http://code.google.com/p/v8/wiki/JavaScriptStackTraceApi
  */
-Error.stackTraceLimit;
+//Error.stackTraceLimit;
 
 
 /**
@@ -2083,7 +2083,7 @@ Error.stackTraceLimit;
  * @param {Function=} opt_constructor A function in the stack trace
  * @see http://code.google.com/p/v8/wiki/JavaScriptStackTraceApi
  */
-Error.captureStackTrace = function(error, opt_constructor){};
+//Error.captureStackTrace = function(error, opt_constructor){};
 
 
 /**
@@ -2091,7 +2091,7 @@ Error.captureStackTrace = function(error, opt_constructor){};
  * @type {string}
  * @see http://msdn.microsoft.com/en-us/library/2w6a45b5.aspx
  */
-Error.prototype.description;
+//Error.prototype.description;
 
 
 /**

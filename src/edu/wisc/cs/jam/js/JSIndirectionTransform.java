@@ -274,10 +274,6 @@ public class JSIndirectionTransform extends JSTransform {
       FileUtil.writeToMain("property-write-indirection:" + propertyWriteTransformCnt + "\n", JAMConfig.INFO_FILENAME, true);
       FileUtil.writeToMain("property-read-indirection:" + propertyReadTransformCnt + "\n", JAMConfig.INFO_FILENAME, true);
     }
-
-    // Generate the transformed output.
-    sm.reportCodeChange();
-    sm.saveSources("indirection");
   }
 
   // Create an array literal holding the call receiver, followed by
@@ -657,24 +653,30 @@ public class JSIndirectionTransform extends JSTransform {
         if (NodeUtil.isAccessor(lhs)) {
           if (ptypes != null && ptypes.contains(JSPolicyType.WRITE)) {
             indirectPropertyWrite(t, n, parent, ispect);
+            sm.reportCodeChange();
             propertyWriteTransformCnt++;
           } else if (shouldIndirectAssign(n)) {
             indirectPropertyWrite(t, n, parent, null);
+            sm.reportCodeChange();
             propertyWriteTransformCnt++;
           }
         }
       } else if (n.isCall() || n.isNew()) {
         if (maybeDirectEvalCall(n)) {
           indirectDirectEvalCall(t, n, parent, null);
+          sm.reportCodeChange();
           callTransformCnt++;
         } else if (ptypes != null && ptypes.contains(JSPolicyType.CALL)) {
           indirectCallsite(t, n, parent, ispect);
+          sm.reportCodeChange();
           callTransformCnt++;
         } else if (shouldIndirectCall(n)) {
           indirectCallsite(t, n, parent, null);
+          sm.reportCodeChange();
           callTransformCnt++;
         } else if (callsWithTransformedTargets.contains(n)) {
           indirectCallsite(t, n, parent, null);
+          sm.reportCodeChange();
           callTransformCnt++;
         }
       // Don't mess with transactions that aren't JAM-woven.
@@ -687,6 +689,7 @@ public class JSIndirectionTransform extends JSTransform {
         }
         // Remove the empty transaction.
         n.detachFromParent();
+        sm.reportCodeChange();
       }
     }
   }
@@ -719,9 +722,11 @@ public class JSIndirectionTransform extends JSTransform {
 
         if (maybeDirectEvalCall(n)) {
           indirectDirectEvalCall(t, n, parent, null);
+          sm.reportCodeChange();
           callTransformCnt++;
         } else if (shouldIndirectCall(n)) {
           indirectCallsite(t, n, parent, null);
+          sm.reportCodeChange();
           callTransformCnt++;
         }
       } else if (n.isAssign()) {
@@ -733,6 +738,7 @@ public class JSIndirectionTransform extends JSTransform {
             return;
           }
           indirectPropertyWrite(t, n, parent, null);
+          sm.reportCodeChange();
           propertyWriteTransformCnt++;
         }
       } else if (NodeUtil.isTransaction(n)) {

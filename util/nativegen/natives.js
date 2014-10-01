@@ -77,6 +77,7 @@ var LOCATION_MAP = [
   "HTMLTitleElement",
   "HTMLTextAreaElement",
   "HTMLVideoElement",
+  "Option",
 
   "Document",
   "HTMLDocument",
@@ -163,6 +164,7 @@ var LOCATION_MAP = [
   "CustomEvent",
   "DOMException",
   "DOMImplementation",
+  "XPathResult",
  
   // Non-existent in Firefox 17.0.3.esr.
   //"DOMImplementationList",

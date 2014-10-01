@@ -33,7 +33,11 @@ PERFDIR = os.path.join(JAMPKG, 'perf')
 UNPACKDIR = os.path.join(JAMPKG, 'unpacked')
 BENCHMARK_DIR = os.path.join(TESTDIR, 'benchmarks')
 MICROBENCHMARK_DIR = os.path.join(TESTDIR, 'micro-benchmarks')
+WEBSITE_DIR = os.path.join(TESTDIR, 'websites')
+WEBSITE_FILE = os.path.join(WEBSITE_DIR, 'sites.txt')
 INTERPRETER_TEST_DIR = os.path.join(TESTDIR, 'interpreter')
+UNPACK_SCRIPT = os.path.join(UTILDIR, 'unpack.py')
+REPACK_SCRIPT = os.path.join(UTILDIR, 'repack.py')
 
 JAMSCRIPT_DOCDIR = os.path.join(JAMSCRIPT_DIR, 'doc')
 JSTESTDIR = os.path.join(JAMSCRIPT_DIR, 'tests', 'browser')
@@ -55,10 +59,10 @@ JAMUTILCOMMAND = os.getenv('JAMUTILCOMMAND', 'java -jar ' + JAMUTILJAR).split(' 
 
 # Configure files that are symlinked in woven test case directories. 
 SYMLINK_FILES = [
-  (JSLIBDIR, 'libTx.js', None),
-  (JSTESTDIR, 'test.php', None),
-  (JSTESTDIR, 'index.php', 'testindex.php'),
-  (JSTESTDIR, 'auto.js', None),
+  (JAMSCRIPT_LIB, None),
+  (os.path.join(JSTESTDIR, 'test.php'), None),
+  (os.path.join(JSTESTDIR, 'testindex.php'), 'index.php'),
+  (os.path.join(JSTESTDIR, 'auto.js'), None),
 ]
 
 # Operating system specific configuration

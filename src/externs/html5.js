@@ -2707,13 +2707,15 @@ HTMLEmbedElement.prototype.type;
 /**
  * @see http://www.w3.org/TR/2012/WD-fullscreen-20120703/#dom-element-requestfullscreen
  */
-Element.prototype.requestFullscreen = function() {};
+// Doesn't exist in Firefox 17.0.5esr.
+//Element.prototype.requestFullscreen = function() {};
 
 /**
  * @type {boolean}
  * @see http://www.w3.org/TR/2012/WD-fullscreen-20120703/#dom-document-fullscreenenabled
  */
-Document.prototype.fullscreenEnabled;
+// Doesn't exist in Firefox 17.0.5esr.
+//Document.prototype.fullscreenEnabled;
 
 /**
  * @type {Element}
@@ -2773,13 +2775,13 @@ Document.prototype.mozFullScreenEnabled;
 
 // IE 11 implementation.
 // http://msdn.microsoft.com/en-us/library/ie/dn265028(v=vs.85).aspx
-Element.prototype.msRequestFullscreen = function() {};
+//Element.prototype.msRequestFullscreen = function() {};
 
 /** @type {boolean} */
-Document.prototype.msFullscreenEnabled;
+//Document.prototype.msFullscreenEnabled;
 
 /** @type {Element} */
-Document.prototype.msFullscreenElement;
+//Document.prototype.msFullscreenElement;
 
 /** @type {number} */
 Element.ALLOW_KEYBOARD_INPUT = 1;

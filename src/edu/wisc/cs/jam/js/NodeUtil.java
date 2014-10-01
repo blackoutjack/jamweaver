@@ -211,6 +211,7 @@ public class NodeUtil {
     closureExpression.put("Element.prototype.focus","HTMLElement.prototype.focus");
     closureExpression.put("Element.prototype.blur","HTMLElement.prototype.blur");
     closureExpression.put("Element.prototype.click","HTMLElement.prototype.click");
+    closureExpression.put("Element.prototype.scrollIntoView","HTMLElement.prototype.scrollIntoView");
 
     closureExpression.put("Node.prototype.removeChild","Element.prototype.removeChild");
     closureExpression.put("Node.prototype.appendChild","Element.prototype.appendChild");
@@ -327,12 +328,8 @@ public class NodeUtil {
 
     if (!loadFromSerializedEL || !loadFromSerializedLE) {
       try {
-        List<String> lines = FileUtil.getLinesFromFile(NATIVE_DAT_PATH);
+        List<String> lines = FileUtil.getLinesFromFile(NATIVE_DAT_PATH, "%");
         for (String line : lines) {
-          line = line.trim();
-          // Disregard comments and empty lines.
-          if (line.equals("") || line.startsWith("%"))
-            continue;
           // Disregard lines that name the object whose properties are
           // being scanned.
           if (line.startsWith("@"))

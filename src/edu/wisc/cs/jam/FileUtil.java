@@ -143,11 +143,20 @@ public class FileUtil {
     return new String[] { basename, ext };
   }
 
-  public static List<String> getLinesFromFile(String filePath) throws IOException {
+  // Return a list of trimmed lines with empty lines and comments
+  // (optionally indicated by a prefix) removed.
+  public static List<String> getLinesFromFile(String filePath, String commentPrefix) throws IOException {
     List<String> ret = new ArrayList<String>();
     BufferedReader reader = new BufferedReader(new FileReader(filePath));
     String line = null;
     while ((line = reader.readLine()) != null) {
+      line = line.trim();
+      if (line.equals("")) {
+        continue;
+      }
+      if (commentPrefix != null && line.startsWith(commentPrefix)) {
+        continue;
+      }
       ret.add(line);
     }
     reader.close();

@@ -115,6 +115,7 @@
 #Attr "Attr" 0 c
 #Blob "Blob" 0 c
 #Boolean "Boolean" 1 c
+#Global#CSS2Properties "CSS2Properties" 0 c
 #CSSCharsetRule "CSSCharsetRule" 0 c
 #CSSFontFaceRule "CSSFontFaceRule" 0 c
 #CSSImportRule "CSSImportRule" 0 c
@@ -206,6 +207,7 @@
 #NodeList "NodeList" 0 c
 #Number "Number" 1 c
 #Object "Object" 1 c
+#Option "Option" 0 c
 #Global#ParallelArray "ParallelArray" 0 c
 #Global#Parser "Parser" 0 c
 #Performance "Performance" 0 c
@@ -244,6 +246,7 @@
 #XMLHttpRequestEventTarget "XMLHttpRequestEventTarget" 0 c
 #XMLSerializer "XMLSerializer" 0 c
 #Global#XPCNativeWrapper "XPCNativeWrapper" 1 c
+#XPathResult "XPathResult" 0 c
 #Global#decodeURI "decodeURI" 1
 #Global#decodeURIComponent "decodeURIComponent" 1
 #Global#encodeURI "encodeURI" 1
@@ -295,8 +298,30 @@
 #NodeList#__proto__ "__proto__" 0
 
 
+% CSSStyleDeclaration methods
+#Function#prototype "" 0
+
+
+% console methods
+#console#__noSuchMethod__ "__noSuchMethod__" 0
+#console#debug "debug" 0
+#console#dir "dir" 0
+#console#error "error" 0
+#console#group "group" 0
+#console#groupCollapsed "groupCollapsed" 0
+#console#groupEnd "groupEnd" 0
+#console#info "info" 0
+#console#log "log" 0
+#console#profile "profile" 0
+#console#profileEnd "profileEnd" 0
+#console#time "time" 0
+#console#timeEnd "timeEnd" 0
+#console#trace "trace" 0
+#console#warn "warn" 0
+
+
 % Event methods
-#FormData#__proto__ "__proto__" 0
+#Option#__proto__ "__proto__" 0
 
 
 % Boolean methods
@@ -386,8 +411,12 @@
 #HTMLObjectElement#prototype "undefined" 0
 
 
+% Option methods
+#Option#__proto__ "__proto__" 0
+
+
 % FormData methods
-#FormData#__proto__ "__proto__" 0
+#Option#__proto__ "__proto__" 0
 
 
 % Date methods
@@ -398,7 +427,7 @@
 
 
 % Image methods
-#FormData#__proto__ "__proto__" 0
+#Option#__proto__ "__proto__" 0
 
 
 % Int8Array methods
@@ -460,16 +489,12 @@
 #ArrayBuffer#slice "slice" 3
 
 
-% CSSStyleDeclaration methods
-#Function#prototype "" 0
-
-
 % XMLHttpRequest methods
 #Function#prototype "" 0
 
 
 % WebSocket methods
-#FormData#__proto__ "__proto__" 0
+#Option#__proto__ "__proto__" 0
 
 
 % JSON methods
@@ -479,37 +504,19 @@
 
 
 % Blob methods
-#FormData#__proto__ "__proto__" 0
+#Option#__proto__ "__proto__" 0
 
 
 % FileReader methods
-#FormData#__proto__ "__proto__" 0
+#Option#__proto__ "__proto__" 0
 
 
 % Worker methods
 #Function#prototype "" 0
 
 
-% console methods
-#console#__noSuchMethod__ "__noSuchMethod__" 0
-#console#debug "debug" 0
-#console#dir "dir" 0
-#console#error "error" 0
-#console#group "group" 0
-#console#groupCollapsed "groupCollapsed" 0
-#console#groupEnd "groupEnd" 0
-#console#info "info" 0
-#console#log "log" 0
-#console#profile "profile" 0
-#console#profileEnd "profileEnd" 0
-#console#time "time" 0
-#console#timeEnd "timeEnd" 0
-#console#trace "trace" 0
-#console#warn "warn" 0
-
-
 % File methods
-#FormData#__proto__ "__proto__" 0
+#Option#__proto__ "__proto__" 0
 
 
 % Performance methods
@@ -517,7 +524,7 @@
 
 
 % DOMParser methods
-#FormData#__proto__ "__proto__" 0
+#Option#__proto__ "__proto__" 0
 
 
 % WebGLRenderingContext methods
@@ -525,11 +532,11 @@
 
 
 % XMLSerializer methods
-#FormData#__proto__ "__proto__" 0
+#Option#__proto__ "__proto__" 0
 
 
 % CustomEvent methods
-#FormData#__proto__ "__proto__" 0
+#Option#__proto__ "__proto__" 0
 
 
 % Boolean#prototype methods
@@ -3157,4 +3164,14 @@
 #DOMImplementation#prototype#createDocumentType "createDocumentType" 3
 #DOMImplementation#prototype#createHTMLDocument "createHTMLDocument" 1
 #DOMImplementation#prototype#hasFeature "hasFeature" 2
+
+
+% XPathResult#prototype methods
+#XPathResult#prototype#QueryInterface "QueryInterface" 1 c
+#XPathResult#prototype#__defineGetter__ "__defineGetter__" 2
+#XPathResult#prototype#__defineSetter__ "__defineSetter__" 2
+#XPathResult#prototype#__lookupGetter__ "__lookupGetter__" 1
+#XPathResult#prototype#__lookupSetter__ "__lookupSetter__" 1
+#XPathResult#prototype#iterateNext "iterateNext" 0
+#XPathResult#prototype#snapshotItem "snapshotItem" 1
 

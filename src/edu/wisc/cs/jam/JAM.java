@@ -207,12 +207,12 @@ public class JAM {
     ensureFilesExist(Opts.sourceFiles);
     ensureFilesExist(Opts.policyFiles);
 
-    sm = language.newSourceManager(Opts.sourceFiles);
-    // %%% Check for errors in JSSourceManager constructor. 
-
     // Initialize the FileUtil module to facilitate gathering
     // all intermediate/debugging output in a single location.
     FileUtil.init(getApplicationName());
+
+    sm = language.newSourceManager(Opts.sourceFiles);
+    // %%% Check for errors in JSSourceManager constructor. 
 
     // Save the original source files.
     sm.saveSources("original");
@@ -275,9 +275,6 @@ public class JAM {
     }
 
     sm.postprocess(getControlAutomaton(), getCheckManager());
-
-    // Save the final source files.
-    sm.saveSources("final");
 
     String output = sm.toString();
     if (!Opts.noOut)
@@ -439,6 +436,9 @@ public class JAM {
 
     @Option(name="-N", usage="JavaScript application name", metaVar="APPNAME")
     public static String appName;
+
+    @Option(name="-h", usage="HTML file", metaVar="HTMLFILE")
+    public static String htmlFile;
 
     @Option(name="--appsuffix", usage="Append this suffix to the application name in output files")
     public static String appSuffix;

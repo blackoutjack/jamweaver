@@ -88,7 +88,7 @@ IMAGE_CONTENT_TYPES = [
   'image/x-icon',
 ]
 
-EMBED_CONTENT_TYPES = [
+OBJECT_CONTENT_TYPES = [
   'application/x-shockwave-flash',
 ]
 
@@ -163,6 +163,37 @@ EVENT_ATTRIBUTES = [
   'onwaiting',
 ]
 
+JS_RESOURCE_TYPES = [
+  'script.inline',
+  'script.src',
+  'script.href',
+]
+for eventattr in EVENT_ATTRIBUTES:
+  if eventattr.startswith('on'):
+    event = eventattr[2:]
+  else:
+    event = eventattr
+  JS_RESOURCE_TYPES.append('script.event.' + event)
+
+HTML_RESOURCE_TYPES = [
+  'root.html',
+]
+
+CSS_RESOURCE_TYPES = [
+  'link.stylesheet',  
+]
+
+IMAGE_RESOURCE_TYPES = [
+  'img.src',
+  'input.src',
+  'link.stylesheet.image',
+  'link.icon',
+  'element.background',
+]
+
+OBJECT_RESOURCE_TYPES = [
+  'embed.src',
+]
 
 class Resource:
   COOKIE_POLICY = http.cookiejar.DefaultCookiePolicy(blocked_domains=None, allowed_domains=None, netscape=True, rfc2965=False, rfc2109_as_netscape=None, hide_cookie2=False, strict_domain=False, strict_rfc2965_unverifiable=True, strict_ns_unverifiable=False, strict_ns_domain=http.cookiejar.DefaultCookiePolicy.DomainLiberal, strict_ns_set_initial_dollar=False, strict_ns_set_path=False)
@@ -170,6 +201,7 @@ class Resource:
   OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(COOKIES))
   
   def __init__(self, type, url=None, element=None, status=None, ctype=None, data=None, encoding=None, filepath=None):
+    self.type = type
     self.url = url
     self.status = status
     self.setContentType(ctype)
@@ -183,7 +215,7 @@ class Resource:
       self.filename = None
 
     self.element = element
-    self.type = type
+    self.fetched = False
   # /Resource.__init__
 
   def getElement(self):
@@ -194,9 +226,21 @@ class Resource:
     return self.type
   # /getType
 
+  # Return the *original* URL.
   def getURL(self):
     return self.url
   # /getURL
+
+  # Return the URI of the current resource.
+  def getURI(self):
+    uri = None
+    if self.isFetched():
+      uri = self.getRelativeFilePath()
+    if uri is None:
+      uri = self.getURL()
+    if uri is None:
+      warn('Unable to determine resource URI: %s' % self.getType())
+    return uri
 
   def getStatus(self):
     return self.status
@@ -209,6 +253,31 @@ class Resource:
   def getContentType(self):
     return self.contenttype
   # /getType
+
+  def checkContentType(self):
+    ct = self.getContentType()
+    u = self.getURL()
+    t = self.getType()
+    if ct is None:
+      return False
+
+    if self.isScript() and ct not in JS_CONTENT_TYPES:
+      warn('Non-JavaScript content type for %s %s: %s' % (t, u, ct))
+      return False
+    elif self.isImage() and ct not in IMAGE_CONTENT_TYPES:
+      warn('Non-image content type for %s %s: %s' % (t, u, ct))
+      return False
+    elif self.isHTML() and ct not in HTML_CONTENT_TYPES:
+      warn('Non-HTML content type for %s %s: %s' % (t, u, ct))
+      return False
+    elif self.isCSS() and ct not in CSS_CONTENT_TYPES:
+      warn('Non-CSS content type for %s %s: %s' % (t, u, ct))
+      return False
+    elif self.isObject() and ct not in OBJECT_CONTENT_TYPES:
+      warn('Non-object content type for %s %s: %s' % (t, u, ct))
+      return False
+
+    return True
   
   def setContentType(self, ctype):
     if isinstance(ctype, str):
@@ -217,6 +286,7 @@ class Resource:
       self.contenttype = ctype.lower()
     else:
       self.contenttype = ctype
+    self.checkContentType()
   # /setContentType
 
   def getData(self):
@@ -246,28 +316,28 @@ class Resource:
   # /setFilePath
 
   def getStoragePrefix(self):
-    if self.type in ['img.src', 'input.src', 'link.stylesheet.image']:
+    if self.type in IMAGE_RESOURCE_TYPES:
       return 'images'
-    elif self.type.startswith('script.'):
+    elif self.type in JS_RESOURCE_TYPES:
       return 'scripts'
-    elif self.type == 'link.stylesheet':
+    elif self.type in CSS_RESOURCE_TYPES:
       return 'css'
     return None
   
   def isScript(self):
-    return self.getContentType() in JS_CONTENT_TYPES
+    return self.getType() in JS_RESOURCE_TYPES
 
   def isImage(self):
-    return self.getContentType() in IMAGE_CONTENT_TYPES
+    return self.getType() in IMAGE_RESOURCE_TYPES
 
   def isHTML(self):
-    return self.getContentType() in HTML_CONTENT_TYPES
+    return self.getType() in HTML_RESOURCE_TYPES
 
   def isCSS(self):
-    return self.getContentType() in CSS_CONTENT_TYPES
+    return self.getType() in CSS_RESOURCE_TYPES
 
   def isObject(self):
-    return self.getContentType() in EMBED_CONTENT_TYPES
+    return self.getType() in OBJECT_RESOURCE_TYPES
 
   def getRelativeFilePath(self):
     relpath = None
@@ -311,6 +381,32 @@ class Resource:
         self.filename += '.' + ext
     return self.filename
   # /getFileName
+
+  def isFetched(self):
+    return self.fetched
+
+  def setFetched(self):
+    self.fetched = True
+
+  def updateAttribute(self, attr, val):
+    elt = self.getElement()
+    if elt is None:
+      warn('Cannot update resource attribute without element: %s' % self.getType())
+      return False
+    
+    t = self.getType()
+    if attr not in elt.attrs:
+      elt[attr] = val
+      if VERBOSE:
+        out('Set %s %s: %s' % (t, attr, val))
+      return True
+    elif elt[attr] != val:
+      prev = elt[attr]
+      elt[attr] = val
+      if VERBOSE:
+        out('Replaced %s %s: %s -> %s' % (t, attr, prev, val))
+      return True
+    return False
 
   def fetch(self, referer=None, accept=None):
     url = self.url
@@ -392,11 +488,11 @@ class Resource:
     if VERBOSE:
       out('Downloaded %s %s' % (ctype, url))
 
-    if SAVEALL:
-      relpath = self.getRelativeFilePath()
-      filepath = createFile(relpath, content)
-      self.setFilePath(filepath)
-
+    relpath = self.getRelativeFilePath()
+    filepath = createFile(relpath, content)
+    self.setFilePath(filepath)
+    
+    self.setFetched()
     return True
   # /fetch
 
@@ -534,7 +630,9 @@ class HTMLParser():
       resource = self.remoteresources[url]
     else:
       resource = Resource(restype, url=url, element=element, encoding=self.encoding)
-      resource.fetch(referer=referer)
+      # Fetch scripts always, but other types only if SAVEALL.
+      if resource.isScript() or SAVEALL:
+        resource.fetch(referer=referer)
       self.remoteresources[url] = resource
     self.resources.append(resource)
     return resource
@@ -591,11 +689,7 @@ class HTMLParser():
     ctype = resource.getContentType()
     encoding = resource.getEncoding()
     data = resource.getData()
-    if not resource.isScript():
-      warn('Non-JavaScript content type for %s: %s' % (url, ctype))
-      return resource
     if data is None:
-      warn('No contents for remote script: %s' % (url))
       return resource
 
     text = normalizeText(data.decode(encoding, errors='replace')) + '\n'
@@ -612,9 +706,6 @@ class HTMLParser():
     attrs = elt.attrs
     if 'type' in attrs:
       ctype = attrs['type'].strip()
-      if ctype not in JS_CONTENT_TYPES:
-        warn('Skipping script element with non-JS content type: %s' % attrs['type'])
-        return None
     else:
       if VERYVERBOSE:
         warn('Script element with no type attribute: %s' % str(elt))
@@ -628,6 +719,12 @@ class HTMLParser():
     text = normalizeText(text).strip()
     resource = self.loadInlineResource(restype, elt, ctype, text) 
     self.saveInlineResource(resource, self.app + '.js')
+
+    if not resource.checkContentType():
+      # Don't add these to the JS script catalog or clear the contents.
+      warn('Skipping script element with non-JS content type: %s' % attrs['type'])
+      return resource
+
     self.addToCatalog('scripts.txt', resource)
 
     newjs = '// %s\n%s\n\n' % (restype, text)
@@ -666,12 +763,12 @@ class HTMLParser():
       # Make the link target absolute.
       restype = 'a.href'
       url = combineURLs(self.url, href)
+      # %%% Make a resource
 
       if url != href:
         elt['href'] = url
         if VERBOSE:
           out('Replaced %s: %s -> %s' % (restype, href, url))
-      # %%% Make a resource
       return None
 
   def extractLink(self, elt):
@@ -698,47 +795,40 @@ class HTMLParser():
 
         resource = self.loadRemoteResource(restype, ssurl, self.url, elt)
 
-        ctype = resource.getContentType()
-        status = resource.getStatus()
         encoding = resource.getEncoding()
         data = resource.getData()
-        if not resource.isCSS():
-          warn('Non-CSS content type for %s: %s' % (ssurl, ctype))
 
-        cssparser = CSSParser()
-        newdata, imgs, imports = cssparser.extractResources(data, encoding, ssurl)
-        # Transitively follow imports.
-        stylesheets.extend(imports)
+        if data is not None:
+          cssparser = CSSParser()
+          newdata, imgs, imports = cssparser.extractResources(data, encoding, ssurl)
+          # Transitively follow imports.
+          stylesheets.extend(imports)
 
-        for img in imgs:
-          iresource = self.loadRemoteResource('link.stylesheet.image', img, ssurl, elt)
-          self.addToCatalog('images.txt', iresource)
-          istatus = iresource.getStatus()
-          ictype = iresource.getContentType()
-          
-        # Rename the original CSS file for posterity.
-        filepath = resource.getFilePath()
-        if filepath is not None:
-          relpath = resource.getRelativeFilePath()
-          origparts = os.path.splitext(relpath)
-          newparts = (origparts[0], '.original', origparts[1])
-          origfilename = ''.join(newparts)
-          origfilepath = os.path.join(OUTDIR, origfilename)
-          os.rename(filepath, origfilepath)
+          for img in imgs:
+            iresource = self.loadRemoteResource('link.stylesheet.image', img, ssurl, elt)
+            self.addToCatalog('images.txt', iresource)
+            
+          # Rename the original CSS file for posterity.
+          filepath = resource.getFilePath()
+          if filepath is not None:
+            relpath = resource.getRelativeFilePath()
+            origparts = os.path.splitext(relpath)
+            newparts = (origparts[0], '.original', origparts[1])
+            origfilename = ''.join(newparts)
+            origfilepath = os.path.join(OUTDIR, origfilename)
+            os.rename(filepath, origfilepath)
 
-          # Save the modified CSS file.
-          createFile(relpath, newdata)
-          self.addToCatalog('stylesheets.txt', resource)
+            # Save the modified CSS file.
+            createFile(relpath, newdata)
+            self.addToCatalog('stylesheets.txt', resource)
 
         # Collect the root CSS file.
         if resource0 is None:
           resource0 = resource
 
       # Replace the href in the original link element.
-      filename = resource0.getRelativeFilePath()
-      elt['href'] = filename
-      if VERBOSE:
-        out('Replaced %s: %s -> %s' % (restype, href, filename))
+      uri = resource0.getURI()
+      resource0.updateAttribute('href', uri)
       return resource0
 
     if 'icon' in attrs['rel']:
@@ -746,15 +836,8 @@ class HTMLParser():
       resource = self.loadRemoteResource(restype, url, self.url, elt)
       self.addToCatalog('images.txt', resource)
 
-      ctype = resource.getContentType()
-      status = resource.getStatus()
-      if not resource.isImage():
-        warn('Non-image content type for icon %s: %s' % (url, ctype))
-
-      filename = resource.getRelativeFilePath()
-      elt['href'] = filename
-      if VERBOSE:
-        out('Replaced %s: %s -> %s' % (restype, href, filename))
+      uri = resource.getURI()
+      resource.updateAttribute('href', uri)
       return resource
 
   def extractImage(self, elt):
@@ -779,18 +862,9 @@ class HTMLParser():
     resource = self.loadRemoteResource(restype, url, self.url, elt)
     self.addToCatalog('images.txt', resource)
 
-    filename = resource.getRelativeFilePath()
-    if filename is not None:
-      elt['src'] = filename
-      if VERBOSE:
-        out('Replaced %s: %s -> %s' % (restype, url, filename))
-    else:
-      warn('Unable to determine file name for image: %s' % url)
+    uri = resource.getURI()
+    resource.updateAttribute('src', uri)
 
-    ctype = resource.getContentType()
-    status = resource.getStatus()
-    if not resource.isImage():
-      warn('Non-image content type for img %s: %s' % (url, ctype))
     return resource
 
   def extractInput(self, elt):
@@ -815,18 +889,9 @@ class HTMLParser():
     resource = self.loadRemoteResource(restype, url, self.url, elt)
     self.addToCatalog('images.txt', resource)
 
-    filename = resource.getRelativeFilePath()
-    if filename is not None:
-      elt['src'] = filename
-      if VERBOSE:
-        out('Replaced %s: %s -> %s' % (restype, url, filename))
-    else:
-      warn('Unable to determine file name for image: %s' % url)
+    uri = resource.getURI()
+    resource.updateAttribute('src', uri)
 
-    ctype = resource.getContentType()
-    status = resource.getStatus()
-    if not resource.isImage():
-      warn('Non-image content type for input %s: %s' % (url, ctype))
     return resource
 
   def extractEmbed(self, elt):
@@ -847,18 +912,9 @@ class HTMLParser():
     resource = self.loadRemoteResource(restype, url, self.url, elt)
     self.addToCatalog('objects.txt', resource)
 
-    filename = resource.getRelativeFilePath()
-    if filename is not None:
-      elt['src'] = filename
-      if VERBOSE:
-        out('Replaced %s: %s -> %s' % (restype, url, filename))
-    else:
-      warn('Unable to determine file name for embed: %s' % url)
+    uri = resource.getURI()
+    resource.updateAttribute('src', uri)
 
-    ctype = resource.getContentType()
-    status = resource.getStatus()
-    if not resource.isEmbed():
-      warn('Unknown content type for embed %s: %s' % (url, ctype))
     return resource
 
   def extractResources(self, htmltext):
@@ -918,6 +974,7 @@ class HTMLParser():
           # A couple elements need special handling for the load event.
           if elt.name == 'body':
             text = attrs['onload'].strip()
+            text = normalizeText(text, removenl=True)
 
             restype = 'script.event.load'
             ctype = 'text/javascript'
@@ -927,8 +984,8 @@ class HTMLParser():
 
             # %%% Probably not sufficient escaping.
             #newtext = re.sub('\\', '\\\\', eltvals[k])
-            newtext = normalizeText(text, removenl=True, quote=True)
-            newjs = "document.body.onload = %s;" % newtext
+            text = normalizeText(text, quote=True)
+            newjs = "document.body.onload = %s;" % text
             self.js += '// %s %s\n%s\n\n' % (restype, 'body', newjs)
 
             del elt['onload']
@@ -942,6 +999,7 @@ class HTMLParser():
             eltid = self.loadId(elt)
 
             text = attrs['onload'].strip()
+            text = normalizeText(text, removenl=True)
 
             restype = 'script.event.load'
             ctype = 'text/javascript'
@@ -951,8 +1009,8 @@ class HTMLParser():
 
             # %%% Probably not sufficient escaping.
             #newtext = re.sub('\\', '\\\\', eltvals[k])
-            newtext = normalizeText(text, removenl=True, quote=True)
-            newjs = "document.getElementById('%s').onload = %s;" % (eltid, newtext)
+            text = normalizeText(text, quote=True)
+            newjs = "document.getElementById('%s').onload = %s;" % (eltid, text)
 
             if 'src' in attrs:
               # This URL should already be normalized.
@@ -980,6 +1038,7 @@ class HTMLParser():
           eltid = self.loadId(elt)
 
           text = attrs[attr].strip()
+          text = normalizeText(text, removenl=True)
           # %%% Could parse for valid JS syntax.
 
           if attr.startswith('on'):
@@ -994,8 +1053,8 @@ class HTMLParser():
 
           # %%% Probably not sufficient escaping.
           #newtext = re.sub('\\', '\\\\', eltvals[k])
-          newtext = normalizeText(text, removenl=True, quote=True)
-          newjs = "document.getElementById('%s').%s = %s;" % (eltid, attr, newtext)
+          text = normalizeText(text, quote=True)
+          newjs = "document.getElementById('%s').%s = %s;" % (eltid, attr, text)
           newjs = '// %s %s %s\n%s\n\n' % (restype, elt.name, eltid, newjs)
           self.js += newjs
 
@@ -1010,22 +1069,12 @@ class HTMLParser():
           src = attrs['background']
           url = combineURLs(self.url, src)
 
-          restype = '%s.background' % elt.name
+          restype = 'element.background'
           resource = self.loadRemoteResource(restype, url, self.url, elt)
           self.addToCatalog('images.txt', resource)
 
-          filename = resource.getRelativeFilePath()
-          if filename is not None:
-            elt['background'] = filename
-            if VERBOSE:
-              out('Replaced %s.%s: %s -> %s' % (elt.name, 'background', url, filename))
-          else:
-            warn('Unable to determine file name for %s background: %s' % (elt.name, url))
-
-          ctype = resource.getContentType()
-          status = resource.getStatus()
-          if not resource.isImage():
-            warn('Unknown content type for %s background %s: %s' % (elt.name, url, ctype))
+          uri = resource.getURI()
+          resource.updateAttribute('background', uri)
           
     self.js = '// %s\n\n%s' % (self.url, self.js)
   # /extractResources
@@ -1103,29 +1152,22 @@ class Unpacker():
     # Done setup, now initialize the decoding.
     self.startTime = time.time()
 
-    if VERBOSE:
-      out('Unpacking URL: %s' % self.url)
-    resource = Resource('root', url=self.url)
+    # Function |run_unpacker| in util.py relies on this output.
+    out('Unpacking: %s' % self.url)
+    out('Output directory: %s' % (OUTDIR))
+    filepath = os.path.join(OUTDIR, self.app + '.original.html')
+    resource = Resource('root.html', url=self.url, filepath=filepath)
     resource.fetch(accept='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
 
-    ctype = resource.getContentType()
     encoding = resource.getEncoding()
     data = resource.getData()
     if data is not None:
-      if not resource.isHTML():
-        warn('Non-HTML content type for %s: %s' % (self.url, ctype))
       text = data.decode(encoding, errors='replace')
-
-      if SAVEALL:
-        filepath = resource.getFilePath()
-        newfilename = self.app + '.original.html'
-        newfilepath = os.path.join(OUTDIR, newfilename)
-        os.rename(filepath, newfilepath)
 
       hparser = HTMLParser(self.url, encoding, self.app)
       hparser.extractResources(text)
       js = hparser.js
-      strippedhtml = hparser.soup.prettify()
+      htmltext = hparser.soup.prettify()
       headhtml = hparser.getHead()
       bodyhtml = hparser.getBody()
 
@@ -1133,19 +1175,19 @@ class Unpacker():
         filename = self.app + '.js'
         createFile(filename, js)
       if len(bodyhtml) > 0:
-        filename = self.app + '.html'
+        filename = self.app + '.body.html'
         createFile(filename, bodyhtml)
       if len(headhtml) > 0:
         filename = self.app + '.head.html'
         createFile(filename, headhtml)
-      if len(strippedhtml) > 0:
-        filename = self.app + '.stripped.html'
-        createFile(filename, strippedhtml)
+      if len(htmltext) > 0:
+        filename = self.app + '.html'
+        createFile(filename, htmltext)
 
       for fileattrs in SYMLINK_FILES:
-        assert len(fileattrs) == 3, 'Invalid SYMLINK_FILES configuration: %r' % fileattrs
-        srcdir, destname, srcname = fileattrs
-        symlink(srcdir, OUTDIR, destname, srcname)
+        assert len(fileattrs) == 2, 'Invalid SYMLINK_FILES configuration: %r' % fileattrs
+        srcpath, linkname = fileattrs
+        symlink(srcpath, OUTDIR, linkname=linkname)
   # /unpack
 
 # /Unpacker
@@ -1187,9 +1229,9 @@ def appendToFile(relpath, content):
 
   # Don't ever write to these.
   for fileattrs in SYMLINK_FILES:
-    if len(fileattrs) == 3:
-      srcname = fileattrs[2]
-      if srcname == relpath:
+    if len(fileattrs) == 2:
+      linkname = fileattrs[1]
+      if linkname == relpath:
         warn('File name conflict with %s, unable to append' % relpath) 
         return None
     else:
@@ -1207,7 +1249,8 @@ def appendToFile(relpath, content):
     outfl.write(content)
     outfl.close()
     if VERBOSE:
-      out('Appended to %s: %s' % (outpath, content.strip()))
+      outfile = os.path.basename(outpath)
+      out('Appended to %s: %s' % (outfile, content.strip()))
   else:
     err('Unable to append to file: %s' % outpath)
     return None
@@ -1231,9 +1274,9 @@ def createFile(relpath, content):
 
   # Don't ever clobber these.
   for fileattrs in SYMLINK_FILES:
-    if len(fileattrs) == 3:
-      srcname = fileattrs[2]
-      if srcname == relpath:
+    if len(fileattrs) == 2:
+      linkname = fileattrs[1]
+      if linkname == relpath:
         newpath = makeNewFileName(relpath, 'new-')
         warn('File name conflict with %s, trying new filename %s' % (relpath, newpath)) 
         return createFile(newpath, content)

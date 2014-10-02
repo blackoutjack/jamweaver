@@ -1,15 +1,25 @@
+% Generic *Error constructor
+makeerror(H,L,This,Args,HP) :-
+	length(Args,ArgsLen),
+  (ArgsLen=0->Msg='""',H1=H;
+  Args=[Arg0|_],ects(H,L,Arg0,H1,_,Msg)),
+	heapprop(H1,This,'"message"',Msg,HP,_).
 
-aexe(H,_,'#Error',This,Args,HP,This) :-
-	length(Args,0),
-	aexe(H,_,'#Error',This,'""~&EOL',HP,This).
+% Error
 
 aexe(H,L,'#Error',This,Args,HP,This) :-
-	length(Args,ArgsLen),ArgsLen\=0,
-	Args=[V|_],
-	ects(H,L,V,H1,_,M),
-	heapprop(H1,This,'"message"',M,HP,_).
+  makeerror(H,L,This,Args,HP).
 	
-aexe(H,L,'#Error#prototype#toString',This,_,HP,RetVal) :-
-	hasprop(This,'"message"',Val),
-	ects(H,L,Val,HP,_,RetVal).
+aexe(H,L,'#Error#prototype#toString',This,_,HP,EP) :-
+	hasprop(This,'"message"',V),
+	ects(H,L,V,HP,_,EP).
+
+% RangeError
+
+aexe(H,L,'#RangeError',This,Args,HP,This) :-
+  makeerror(H,L,This,Args,HP).
+
+aexe(H,L,'#RangeError#prototype#toString',This,_,HP,EP) :-
+	hasprop(This,'"message"',V),
+	ects(H,L,V,HP,_,EP).
 

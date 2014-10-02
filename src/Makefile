@@ -5,7 +5,7 @@ BINDIR?=../bin
 # Java compiler
 JAVAC=javac
 # Java compilation flags
-JFLAGS=-g -Xlint
+JFLAGS=-g #-Xlint
 
 # The JAM jar file
 JAMJAR=$(BINDIR)/jam.jar

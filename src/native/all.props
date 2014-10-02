@@ -1,5 +1,4 @@
-
-% Generated: Mon Sep 29 2014 23:26:27 GMT-0500 (CDT)
+% Generated: Wed Oct 01 2014 09:05:17 GMT-0500 (CDT)
 % User agent: Mozilla/5.0 (X11; Linux x86_64; rv:17.0) Gecko/20140807 Firefox/17.0
 
 @Object@prototype
@@ -485,7 +484,6 @@ ArrayBuffer DontEnum #ArrayBuffer ArrayBuffer
 Attr DontEnum #Attr Attr
 Blob DontEnum #Blob Blob
 Boolean DontEnum #Boolean Boolean
-CSS2Properties DontEnum #Global#CSS2Properties window.CSS2Properties
 CSSCharsetRule DontEnum #CSSCharsetRule CSSCharsetRule
 CSSFontFaceRule DontEnum #CSSFontFaceRule CSSFontFaceRule
 CSSImportRule DontEnum #CSSImportRule CSSImportRule
@@ -501,6 +499,7 @@ CSSValue DontEnum #CSSValue CSSValue
 CSSValueList DontEnum #CSSValueList CSSValueList
 CanvasGradient DontEnum #CanvasGradient CanvasGradient
 CanvasRenderingContext2D DontEnum #CanvasRenderingContext2D CanvasRenderingContext2D
+CharacterData DontEnum #CharacterData CharacterData
 ClientRectList DontEnum #ClientRectList ClientRectList
 Components ReadOnly,DontEnum,DontDelete #Global#Components window.Components
 CustomEvent DontEnum #CustomEvent CustomEvent
@@ -552,6 +551,9 @@ HTMLParamElement DontEnum #HTMLParamElement HTMLParamElement
 HTMLScriptElement DontEnum #HTMLScriptElement HTMLScriptElement
 HTMLSelectElement DontEnum #HTMLSelectElement HTMLSelectElement
 HTMLSourceElement DontEnum #HTMLSourceElement HTMLSourceElement
+HTMLTableElement DontEnum #HTMLTableElement HTMLTableElement
+HTMLTableRowElement DontEnum #HTMLTableRowElement HTMLTableRowElement
+HTMLTableSectionElement DontEnum #HTMLTableSectionElement HTMLTableSectionElement
 HTMLTextAreaElement DontEnum #HTMLTextAreaElement HTMLTextAreaElement
 HTMLTitleElement DontEnum #HTMLTitleElement HTMLTitleElement
 HTMLVideoElement DontEnum #HTMLVideoElement HTMLVideoElement
@@ -563,6 +565,7 @@ IDBObjectStore DontEnum #IDBObjectStore IDBObjectStore
 IDBRequest DontEnum #IDBRequest IDBRequest
 IDBTransaction DontEnum #IDBTransaction IDBTransaction
 Image DontEnum #Image Image
+ImageData DontEnum #ImageData ImageData
 Infinity ReadOnly,DontEnum,DontDelete &Infinity window.Infinity
 %%% @Global.InstallTrigger has getter to model.
 InstallTrigger ReadOnly &undefined window.InstallTrigger
@@ -578,8 +581,10 @@ Map DontEnum #Global#Map window.Map
 Math DontEnum #Math Math
 MediaList DontEnum #MediaList MediaList
 MediaQueryList DontEnum #MediaQueryList MediaQueryList
+MessageEvent DontEnum #MessageEvent MessageEvent
 MimeTypeArray DontEnum #MimeTypeArray MimeTypeArray
 MouseEvent DontEnum #Global#MouseEvent window.MouseEvent
+MutationObserver DontEnum #MutationObserver MutationObserver
 NaN ReadOnly,DontEnum,DontDelete NaN window.NaN
 NamedNodeMap DontEnum #NamedNodeMap NamedNodeMap
 Navigator DontEnum #Navigator Navigator
@@ -592,9 +597,10 @@ ParallelArray DontEnum #Global#ParallelArray window.ParallelArray
 Parser DontEnum #Global#Parser window.Parser
 Performance DontEnum #Performance Performance
 PluginArray DontEnum #PluginArray PluginArray
+ProcessingInstruction DontEnum #ProcessingInstruction ProcessingInstruction
 ProgressEvent DontEnum #Global#ProgressEvent window.ProgressEvent
 Range DontEnum #Range Range
-RangeError DontEnum #Global#RangeError window.RangeError
+RangeError DontEnum #RangeError RangeError
 ReferenceError DontEnum #ReferenceError ReferenceError
 RegExp DontEnum #RegExp RegExp
 Screen DontEnum #Screen Screen
@@ -610,7 +616,7 @@ SyntaxError DontEnum #SyntaxError SyntaxError
 Tx DontEnum #Global#Tx window.Tx
 TypeError DontEnum #TypeError TypeError
 UIEvent DontEnum #Global#UIEvent window.UIEvent
-URIError DontEnum #Global#URIError window.URIError
+URIError DontEnum #URIError URIError
 Uint16Array DontEnum #Uint16Array Uint16Array
 Uint32Array DontEnum #Uint32Array Uint32Array
 Uint8Array DontEnum #Uint8Array Uint8Array
@@ -794,49 +800,6 @@ __proto__ DontEnum #NodeList#__proto__ NodeList.__proto__
 prototype ReadOnly,DontEnum,DontDelete #NodeList#prototype NodeList.prototype
 
 
-@CSSStyleDeclaration
-
-% CSSStyleDeclaration properties
-__proto__ DontEnum #Function#prototype Object.__proto__
-prototype ReadOnly,DontEnum,DontDelete #CSSStyleDeclaration#prototype CSSStyleDeclaration.prototype
-
-
-@HTMLBodyElement
-
-% HTMLBodyElement properties
-__proto__ DontEnum #Window#__proto__ Window.__proto__
-prototype ReadOnly,DontEnum,DontDelete #HTMLBodyElement#prototype HTMLBodyElement.prototype
-
-
-@HTMLHtmlElement
-
-% HTMLHtmlElement properties
-__proto__ DontEnum #Window#__proto__ Window.__proto__
-prototype ReadOnly,DontEnum,DontDelete #HTMLHtmlElement#prototype HTMLHtmlElement.prototype
-
-
-@console
-
-% console properties
-__mozillaConsole__ ReadOnly,DontEnum,DontDelete true console.__mozillaConsole__
-__noSuchMethod__ - #console#__noSuchMethod__ console.__noSuchMethod__
-__proto__ DontEnum #Object#prototype Object.prototype
-debug - #console#debug console.debug
-dir - #console#dir console.dir
-error - #console#error console.error
-group - #console#group console.group
-groupCollapsed - #console#groupCollapsed console.groupCollapsed
-groupEnd - #console#groupEnd console.groupEnd
-info - #console#info console.info
-log - #console#log console.log
-profile - #console#profile console.profile
-profileEnd - #console#profileEnd console.profileEnd
-time - #console#time console.time
-timeEnd - #console#timeEnd console.timeEnd
-trace - #console#trace console.trace
-warn - #console#warn console.warn
-
-
 @Event
 
 % Event properties
@@ -977,6 +940,13 @@ __proto__ DontEnum #Function#prototype Object.__proto__
 prototype ReadOnly,DontEnum,DontDelete #Error#prototype Error.prototype
 
 
+@RangeError
+
+% RangeError properties
+__proto__ DontEnum #Function#prototype Object.__proto__
+prototype ReadOnly,DontEnum,DontDelete #RangeError#prototype RangeError.prototype
+
+
 @ReferenceError
 
 % ReferenceError properties
@@ -996,6 +966,13 @@ prototype ReadOnly,DontEnum,DontDelete #SyntaxError#prototype SyntaxError.protot
 % TypeError properties
 __proto__ DontEnum #Function#prototype Object.__proto__
 prototype ReadOnly,DontEnum,DontDelete #TypeError#prototype TypeError.prototype
+
+
+@URIError
+
+% URIError properties
+__proto__ DontEnum #Function#prototype Object.__proto__
+prototype ReadOnly,DontEnum,DontDelete #URIError#prototype URIError.prototype
 
 
 @History
@@ -1083,6 +1060,13 @@ __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #HTMLAudioElement#prototype#__proto__ HTMLMediaElement.prototype
 
 
+@HTMLBodyElement
+
+% HTMLBodyElement properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #HTMLBodyElement#prototype HTMLBodyElement.prototype
+
+
 @HTMLBRElement
 
 % HTMLBRElement properties
@@ -1123,6 +1107,13 @@ prototype ReadOnly,DontEnum,DontDelete #HTMLFrameElement#prototype HTMLFrameElem
 % HTMLHeadElement properties
 __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #HTMLHeadElement#prototype HTMLHeadElement.prototype
+
+
+@HTMLHtmlElement
+
+% HTMLHtmlElement properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #HTMLHtmlElement#prototype HTMLHtmlElement.prototype
 
 
 @HTMLIFrameElement
@@ -1193,6 +1184,27 @@ prototype ReadOnly,DontEnum,DontDelete #HTMLSelectElement#prototype HTMLSelectEl
 % HTMLSourceElement properties
 __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #HTMLSourceElement#prototype HTMLSourceElement.prototype
+
+
+@HTMLTableElement
+
+% HTMLTableElement properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #HTMLTableElement#prototype HTMLTableElement.prototype
+
+
+@HTMLTableRowElement
+
+% HTMLTableRowElement properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #HTMLTableRowElement#prototype HTMLTableRowElement.prototype
+
+
+@HTMLTableSectionElement
+
+% HTMLTableSectionElement properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #HTMLTableSectionElement#prototype HTMLTableSectionElement.prototype
 
 
 @HTMLTitleElement
@@ -1469,6 +1481,13 @@ __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #CSSRuleList#prototype CSSRuleList.prototype
 
 
+@CSSStyleDeclaration
+
+% CSSStyleDeclaration properties
+__proto__ DontEnum #Function#prototype Object.__proto__
+prototype ReadOnly,DontEnum,DontDelete #CSSStyleDeclaration#prototype CSSStyleDeclaration.prototype
+
+
 @CSSStyleSheet
 
 % CSSStyleSheet properties
@@ -1511,6 +1530,20 @@ CONNECTING ReadOnly,DontDelete 0 WebSocket.CONNECTING
 OPEN ReadOnly,DontDelete 1 WebSocket.OPEN
 __proto__ DontEnum #Option#__proto__ Option.__proto__
 prototype ReadOnly,DontEnum,DontDelete #WebSocket#prototype WebSocket.prototype
+
+
+@CustomEvent
+
+% CustomEvent properties
+__proto__ DontEnum #Option#__proto__ Option.__proto__
+prototype ReadOnly,DontEnum,DontDelete #CustomEvent#prototype CustomEvent.prototype
+
+
+@MessageEvent
+
+% MessageEvent properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #MessageEvent#prototype MessageEvent.prototype
 
 
 @JSON
@@ -1588,6 +1621,28 @@ prototype ReadOnly,DontEnum,DontDelete #IDBFactory#prototype IDBFactory.prototyp
 % DOMTokenList properties
 __proto__ DontEnum #Object#prototype Object.prototype
 prototype ReadOnly,DontEnum,DontDelete #DOMTokenList#prototype DOMTokenList.prototype
+
+
+@console
+
+% console properties
+__mozillaConsole__ ReadOnly,DontEnum,DontDelete true console.__mozillaConsole__
+__noSuchMethod__ - #console#__noSuchMethod__ console.__noSuchMethod__
+__proto__ DontEnum #Object#prototype Object.prototype
+debug - #console#debug console.debug
+dir - #console#dir console.dir
+error - #console#error console.error
+group - #console#group console.group
+groupCollapsed - #console#groupCollapsed console.groupCollapsed
+groupEnd - #console#groupEnd console.groupEnd
+info - #console#info console.info
+log - #console#log console.log
+profile - #console#profile console.profile
+profileEnd - #console#profileEnd console.profileEnd
+time - #console#time console.time
+timeEnd - #console#timeEnd console.timeEnd
+trace - #console#trace console.trace
+warn - #console#warn console.warn
 
 
 @IDBRequest
@@ -2037,13 +2092,6 @@ __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #IDBTransaction#prototype IDBTransaction.prototype
 
 
-@CustomEvent
-
-% CustomEvent properties
-__proto__ DontEnum #Option#__proto__ Option.__proto__
-prototype ReadOnly,DontEnum,DontDelete #CustomEvent#prototype CustomEvent.prototype
-
-
 @DOMException
 
 % DOMException properties
@@ -2098,6 +2146,34 @@ UNORDERED_NODE_ITERATOR_TYPE ReadOnly,DontDelete 4 XPathResult.UNORDERED_NODE_IT
 UNORDERED_NODE_SNAPSHOT_TYPE ReadOnly,DontDelete 6 XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE
 __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #XPathResult#prototype XPathResult.prototype
+
+
+@MutationObserver
+
+% MutationObserver properties
+__proto__ DontEnum #Option#__proto__ Option.__proto__
+prototype ReadOnly,DontEnum,DontDelete #MutationObserver#prototype MutationObserver.prototype
+
+
+@CharacterData
+
+% CharacterData properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #CharacterData#prototype CharacterData.prototype
+
+
+@ProcessingInstruction
+
+% ProcessingInstruction properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #ProcessingInstruction#prototype ProcessingInstruction.prototype
+
+
+@ImageData
+
+% ImageData properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #ImageData#prototype ImageData.prototype
 
 
 @Boolean@prototype
@@ -2253,6 +2329,30 @@ message DontEnum "" SyntaxError.prototype.message
 name DontEnum "SyntaxError" SyntaxError.prototype.name
 
 
+@URIError@prototype
+
+% URIError#prototype properties
+__proto__ DontEnum #Error#prototype Error.prototype
+columnNumber - 0 URIError.prototype.columnNumber
+constructor DontEnum #URIError URIError
+fileName - "" URIError.prototype.fileName
+lineNumber - 0 URIError.prototype.lineNumber
+message DontEnum "" URIError.prototype.message
+name DontEnum "URIError" URIError.prototype.name
+
+
+@RangeError@prototype
+
+% RangeError#prototype properties
+__proto__ DontEnum #Error#prototype Error.prototype
+columnNumber - 0 RangeError.prototype.columnNumber
+constructor DontEnum #RangeError RangeError
+fileName - "" RangeError.prototype.fileName
+lineNumber - 0 RangeError.prototype.lineNumber
+message DontEnum "" RangeError.prototype.message
+name DontEnum "RangeError" RangeError.prototype.name
+
+
 @History@prototype
 
 % History#prototype properties
@@ -2285,6 +2385,8 @@ state ReadOnly &undefined History.prototype.state
 1 - &null history.1
 %%% Unable to get descriptor info for property 2.
 2 - &null history.2
+%%% Unable to get descriptor info for property 3.
+3 - &null history.3
 __proto__ DontEnum #History#prototype History.prototype
 
 
@@ -12391,6 +12493,1286 @@ title - &null HTMLSourceElement.prototype.title
 type ReadOnly &undefined HTMLSourceElement.prototype.type
 
 
+@HTMLTableElement@prototype
+
+% HTMLTableElement#prototype properties
+ATTRIBUTE_NODE - 2 HTMLTableElement.prototype.ATTRIBUTE_NODE
+CDATA_SECTION_NODE - 4 HTMLTableElement.prototype.CDATA_SECTION_NODE
+COMMENT_NODE - 8 HTMLTableElement.prototype.COMMENT_NODE
+DOCUMENT_FRAGMENT_NODE - 11 HTMLTableElement.prototype.DOCUMENT_FRAGMENT_NODE
+DOCUMENT_NODE - 9 HTMLTableElement.prototype.DOCUMENT_NODE
+DOCUMENT_POSITION_CONTAINED_BY - 16 HTMLTableElement.prototype.DOCUMENT_POSITION_CONTAINED_BY
+DOCUMENT_POSITION_CONTAINS - 8 HTMLTableElement.prototype.DOCUMENT_POSITION_CONTAINS
+DOCUMENT_POSITION_DISCONNECTED - 1 HTMLTableElement.prototype.DOCUMENT_POSITION_DISCONNECTED
+DOCUMENT_POSITION_FOLLOWING - 4 HTMLTableElement.prototype.DOCUMENT_POSITION_FOLLOWING
+DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC - 32 HTMLTableElement.prototype.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+DOCUMENT_POSITION_PRECEDING - 2 HTMLTableElement.prototype.DOCUMENT_POSITION_PRECEDING
+DOCUMENT_TYPE_NODE - 10 HTMLTableElement.prototype.DOCUMENT_TYPE_NODE
+ELEMENT_NODE - 1 HTMLTableElement.prototype.ELEMENT_NODE
+ENTITY_NODE - 6 HTMLTableElement.prototype.ENTITY_NODE
+ENTITY_REFERENCE_NODE - 5 HTMLTableElement.prototype.ENTITY_REFERENCE_NODE
+NOTATION_NODE - 12 HTMLTableElement.prototype.NOTATION_NODE
+PROCESSING_INSTRUCTION_NODE - 7 HTMLTableElement.prototype.PROCESSING_INSTRUCTION_NODE
+QueryInterface DontEnum #HTMLTableElement#prototype#QueryInterface HTMLTableElement.prototype.QueryInterface
+TEXT_NODE - 3 HTMLTableElement.prototype.TEXT_NODE
+__defineGetter__ DontEnum #HTMLTableElement#prototype#__defineGetter__ HTMLTableElement.prototype.__defineGetter__
+__defineSetter__ DontEnum #HTMLTableElement#prototype#__defineSetter__ HTMLTableElement.prototype.__defineSetter__
+__lookupGetter__ DontEnum #HTMLTableElement#prototype#__lookupGetter__ HTMLTableElement.prototype.__lookupGetter__
+__lookupSetter__ DontEnum #HTMLTableElement#prototype#__lookupSetter__ HTMLTableElement.prototype.__lookupSetter__
+__proto__ DontEnum #HTMLElement#prototype HTMLElement.prototype
+%%% Unable to get descriptor info for property accessKey.
+accessKey - &null HTMLTableElement.prototype.accessKey
+%%% Unable to get descriptor info for property accessKeyLabel.
+accessKeyLabel - &null HTMLTableElement.prototype.accessKeyLabel
+addEventListener - #HTMLTableElement#prototype#addEventListener HTMLTableElement.prototype.addEventListener
+%%% @HTMLTableElement@prototype.align has getter to model.
+%%% @HTMLTableElement@prototype.align has setter to model.
+align ReadOnly &undefined HTMLTableElement.prototype.align
+appendChild - #HTMLTableElement#prototype#appendChild HTMLTableElement.prototype.appendChild
+%%% Unable to get descriptor info for property attributes.
+attributes - &null HTMLTableElement.prototype.attributes
+%%% Unable to get descriptor info for property baseURI.
+baseURI - &null HTMLTableElement.prototype.baseURI
+%%% @HTMLTableElement@prototype.bgColor has getter to model.
+%%% @HTMLTableElement@prototype.bgColor has setter to model.
+bgColor ReadOnly &undefined HTMLTableElement.prototype.bgColor
+blur - #HTMLTableElement#prototype#blur HTMLTableElement.prototype.blur
+%%% @HTMLTableElement@prototype.border has getter to model.
+%%% @HTMLTableElement@prototype.border has setter to model.
+border ReadOnly &undefined HTMLTableElement.prototype.border
+%%% @HTMLTableElement@prototype.caption has getter to model.
+%%% @HTMLTableElement@prototype.caption has setter to model.
+caption ReadOnly &undefined HTMLTableElement.prototype.caption
+%%% @HTMLTableElement@prototype.cellPadding has getter to model.
+%%% @HTMLTableElement@prototype.cellPadding has setter to model.
+cellPadding ReadOnly &undefined HTMLTableElement.prototype.cellPadding
+%%% @HTMLTableElement@prototype.cellSpacing has getter to model.
+%%% @HTMLTableElement@prototype.cellSpacing has setter to model.
+cellSpacing ReadOnly &undefined HTMLTableElement.prototype.cellSpacing
+%%% Unable to get descriptor info for property childElementCount.
+childElementCount - &null HTMLTableElement.prototype.childElementCount
+%%% Unable to get descriptor info for property childNodes.
+childNodes - &null HTMLTableElement.prototype.childNodes
+%%% Unable to get descriptor info for property children.
+children - &null HTMLTableElement.prototype.children
+%%% Unable to get descriptor info for property classList.
+classList - &null HTMLTableElement.prototype.classList
+%%% Unable to get descriptor info for property className.
+className - &null HTMLTableElement.prototype.className
+click - #HTMLTableElement#prototype#click HTMLTableElement.prototype.click
+%%% Unable to get descriptor info for property clientHeight.
+clientHeight - &null HTMLTableElement.prototype.clientHeight
+%%% Unable to get descriptor info for property clientLeft.
+clientLeft - &null HTMLTableElement.prototype.clientLeft
+%%% Unable to get descriptor info for property clientTop.
+clientTop - &null HTMLTableElement.prototype.clientTop
+%%% Unable to get descriptor info for property clientWidth.
+clientWidth - &null HTMLTableElement.prototype.clientWidth
+cloneNode - #HTMLTableElement#prototype#cloneNode HTMLTableElement.prototype.cloneNode
+compareDocumentPosition - #HTMLTableElement#prototype#compareDocumentPosition HTMLTableElement.prototype.compareDocumentPosition
+contains - #HTMLTableElement#prototype#contains HTMLTableElement.prototype.contains
+%%% Unable to get descriptor info for property contentEditable.
+contentEditable - &null HTMLTableElement.prototype.contentEditable
+%%% Unable to get descriptor info for property contextMenu.
+contextMenu - &null HTMLTableElement.prototype.contextMenu
+createCaption - #HTMLTableElement#prototype#createCaption HTMLTableElement.prototype.createCaption
+createTFoot - #HTMLTableElement#prototype#createTFoot HTMLTableElement.prototype.createTFoot
+createTHead - #HTMLTableElement#prototype#createTHead HTMLTableElement.prototype.createTHead
+%%% Unable to get descriptor info for property dataset.
+dataset - &null HTMLTableElement.prototype.dataset
+deleteCaption - #HTMLTableElement#prototype#deleteCaption HTMLTableElement.prototype.deleteCaption
+deleteRow - #HTMLTableElement#prototype#deleteRow HTMLTableElement.prototype.deleteRow
+deleteTFoot - #HTMLTableElement#prototype#deleteTFoot HTMLTableElement.prototype.deleteTFoot
+deleteTHead - #HTMLTableElement#prototype#deleteTHead HTMLTableElement.prototype.deleteTHead
+%%% Unable to get descriptor info for property dir.
+dir - &null HTMLTableElement.prototype.dir
+dispatchEvent - #HTMLTableElement#prototype#dispatchEvent HTMLTableElement.prototype.dispatchEvent
+%%% Unable to get descriptor info for property draggable.
+draggable - &null HTMLTableElement.prototype.draggable
+%%% Unable to get descriptor info for property firstChild.
+firstChild - &null HTMLTableElement.prototype.firstChild
+%%% Unable to get descriptor info for property firstElementChild.
+firstElementChild - &null HTMLTableElement.prototype.firstElementChild
+focus - #HTMLTableElement#prototype#focus HTMLTableElement.prototype.focus
+%%% @HTMLTableElement@prototype.frame has getter to model.
+%%% @HTMLTableElement@prototype.frame has setter to model.
+frame ReadOnly &undefined HTMLTableElement.prototype.frame
+getAttribute - #HTMLTableElement#prototype#getAttribute HTMLTableElement.prototype.getAttribute
+getAttributeNS - #HTMLTableElement#prototype#getAttributeNS HTMLTableElement.prototype.getAttributeNS
+getAttributeNode - #HTMLTableElement#prototype#getAttributeNode HTMLTableElement.prototype.getAttributeNode
+getAttributeNodeNS - #HTMLTableElement#prototype#getAttributeNodeNS HTMLTableElement.prototype.getAttributeNodeNS
+getBoundingClientRect - #HTMLTableElement#prototype#getBoundingClientRect HTMLTableElement.prototype.getBoundingClientRect
+getClientRects - #HTMLTableElement#prototype#getClientRects HTMLTableElement.prototype.getClientRects
+getElementsByClassName - #HTMLTableElement#prototype#getElementsByClassName HTMLTableElement.prototype.getElementsByClassName
+getElementsByTagName - #HTMLTableElement#prototype#getElementsByTagName HTMLTableElement.prototype.getElementsByTagName
+getElementsByTagNameNS - #HTMLTableElement#prototype#getElementsByTagNameNS HTMLTableElement.prototype.getElementsByTagNameNS
+getUserData - #HTMLTableElement#prototype#getUserData HTMLTableElement.prototype.getUserData
+hasAttribute - #HTMLTableElement#prototype#hasAttribute HTMLTableElement.prototype.hasAttribute
+hasAttributeNS - #HTMLTableElement#prototype#hasAttributeNS HTMLTableElement.prototype.hasAttributeNS
+hasAttributes - #HTMLTableElement#prototype#hasAttributes HTMLTableElement.prototype.hasAttributes
+hasChildNodes - #HTMLTableElement#prototype#hasChildNodes HTMLTableElement.prototype.hasChildNodes
+%%% Unable to get descriptor info for property hidden.
+hidden - &null HTMLTableElement.prototype.hidden
+%%% Unable to get descriptor info for property id.
+id - &null HTMLTableElement.prototype.id
+%%% Unable to get descriptor info for property innerHTML.
+innerHTML - &null HTMLTableElement.prototype.innerHTML
+insertAdjacentHTML - #HTMLTableElement#prototype#insertAdjacentHTML HTMLTableElement.prototype.insertAdjacentHTML
+insertBefore - #HTMLTableElement#prototype#insertBefore HTMLTableElement.prototype.insertBefore
+insertRow - #HTMLTableElement#prototype#insertRow HTMLTableElement.prototype.insertRow
+%%% Unable to get descriptor info for property isContentEditable.
+isContentEditable - &null HTMLTableElement.prototype.isContentEditable
+isDefaultNamespace - #HTMLTableElement#prototype#isDefaultNamespace HTMLTableElement.prototype.isDefaultNamespace
+isEqualNode - #HTMLTableElement#prototype#isEqualNode HTMLTableElement.prototype.isEqualNode
+isSupported - #HTMLTableElement#prototype#isSupported HTMLTableElement.prototype.isSupported
+%%% Unable to get descriptor info for property itemId.
+itemId - &null HTMLTableElement.prototype.itemId
+%%% @HTMLTableElement@prototype.itemProp has getter to model.
+%%% @HTMLTableElement@prototype.itemProp has setter to model.
+itemProp ReadOnly &undefined HTMLTableElement.prototype.itemProp
+%%% @HTMLTableElement@prototype.itemRef has getter to model.
+%%% @HTMLTableElement@prototype.itemRef has setter to model.
+itemRef ReadOnly &undefined HTMLTableElement.prototype.itemRef
+%%% Unable to get descriptor info for property itemScope.
+itemScope - &null HTMLTableElement.prototype.itemScope
+%%% @HTMLTableElement@prototype.itemType has getter to model.
+%%% @HTMLTableElement@prototype.itemType has setter to model.
+itemType ReadOnly &undefined HTMLTableElement.prototype.itemType
+%%% @HTMLTableElement@prototype.itemValue has getter to model.
+%%% @HTMLTableElement@prototype.itemValue has setter to model.
+itemValue ReadOnly &undefined HTMLTableElement.prototype.itemValue
+%%% Unable to get descriptor info for property lang.
+lang - &null HTMLTableElement.prototype.lang
+%%% Unable to get descriptor info for property lastChild.
+lastChild - &null HTMLTableElement.prototype.lastChild
+%%% Unable to get descriptor info for property lastElementChild.
+lastElementChild - &null HTMLTableElement.prototype.lastElementChild
+%%% Unable to get descriptor info for property localName.
+localName - &null HTMLTableElement.prototype.localName
+lookupNamespaceURI - #HTMLTableElement#prototype#lookupNamespaceURI HTMLTableElement.prototype.lookupNamespaceURI
+lookupPrefix - #HTMLTableElement#prototype#lookupPrefix HTMLTableElement.prototype.lookupPrefix
+mozMatchesSelector - #HTMLTableElement#prototype#mozMatchesSelector HTMLTableElement.prototype.mozMatchesSelector
+mozRequestFullScreen - #HTMLTableElement#prototype#mozRequestFullScreen HTMLTableElement.prototype.mozRequestFullScreen
+mozRequestPointerLock - #HTMLTableElement#prototype#mozRequestPointerLock HTMLTableElement.prototype.mozRequestPointerLock
+%%% Unable to get descriptor info for property namespaceURI.
+namespaceURI - &null HTMLTableElement.prototype.namespaceURI
+%%% Unable to get descriptor info for property nextElementSibling.
+nextElementSibling - &null HTMLTableElement.prototype.nextElementSibling
+%%% Unable to get descriptor info for property nextSibling.
+nextSibling - &null HTMLTableElement.prototype.nextSibling
+%%% Unable to get descriptor info for property nodeName.
+nodeName - &null HTMLTableElement.prototype.nodeName
+%%% Unable to get descriptor info for property nodeType.
+nodeType - &null HTMLTableElement.prototype.nodeType
+%%% Unable to get descriptor info for property nodeValue.
+nodeValue - &null HTMLTableElement.prototype.nodeValue
+normalize - #HTMLTableElement#prototype#normalize HTMLTableElement.prototype.normalize
+%%% Unable to get descriptor info for property offsetHeight.
+offsetHeight - &null HTMLTableElement.prototype.offsetHeight
+%%% Unable to get descriptor info for property offsetLeft.
+offsetLeft - &null HTMLTableElement.prototype.offsetLeft
+%%% Unable to get descriptor info for property offsetParent.
+offsetParent - &null HTMLTableElement.prototype.offsetParent
+%%% Unable to get descriptor info for property offsetTop.
+offsetTop - &null HTMLTableElement.prototype.offsetTop
+%%% Unable to get descriptor info for property offsetWidth.
+offsetWidth - &null HTMLTableElement.prototype.offsetWidth
+%%% @HTMLTableElement@prototype.onabort has getter to model.
+%%% @HTMLTableElement@prototype.onabort has setter to model.
+onabort ReadOnly &undefined HTMLTableElement.prototype.onabort
+%%% @HTMLTableElement@prototype.onafterscriptexecute has getter to model.
+%%% @HTMLTableElement@prototype.onafterscriptexecute has setter to model.
+onafterscriptexecute ReadOnly &undefined HTMLTableElement.prototype.onafterscriptexecute
+%%% @HTMLTableElement@prototype.onbeforescriptexecute has getter to model.
+%%% @HTMLTableElement@prototype.onbeforescriptexecute has setter to model.
+onbeforescriptexecute ReadOnly &undefined HTMLTableElement.prototype.onbeforescriptexecute
+%%% @HTMLTableElement@prototype.onblur has getter to model.
+%%% @HTMLTableElement@prototype.onblur has setter to model.
+onblur ReadOnly &undefined HTMLTableElement.prototype.onblur
+%%% @HTMLTableElement@prototype.oncanplay has getter to model.
+%%% @HTMLTableElement@prototype.oncanplay has setter to model.
+oncanplay ReadOnly &undefined HTMLTableElement.prototype.oncanplay
+%%% @HTMLTableElement@prototype.oncanplaythrough has getter to model.
+%%% @HTMLTableElement@prototype.oncanplaythrough has setter to model.
+oncanplaythrough ReadOnly &undefined HTMLTableElement.prototype.oncanplaythrough
+%%% @HTMLTableElement@prototype.onchange has getter to model.
+%%% @HTMLTableElement@prototype.onchange has setter to model.
+onchange ReadOnly &undefined HTMLTableElement.prototype.onchange
+%%% @HTMLTableElement@prototype.onclick has getter to model.
+%%% @HTMLTableElement@prototype.onclick has setter to model.
+onclick ReadOnly &undefined HTMLTableElement.prototype.onclick
+%%% @HTMLTableElement@prototype.oncontextmenu has getter to model.
+%%% @HTMLTableElement@prototype.oncontextmenu has setter to model.
+oncontextmenu ReadOnly &undefined HTMLTableElement.prototype.oncontextmenu
+%%% @HTMLTableElement@prototype.oncopy has getter to model.
+%%% @HTMLTableElement@prototype.oncopy has setter to model.
+oncopy ReadOnly &undefined HTMLTableElement.prototype.oncopy
+%%% @HTMLTableElement@prototype.oncut has getter to model.
+%%% @HTMLTableElement@prototype.oncut has setter to model.
+oncut ReadOnly &undefined HTMLTableElement.prototype.oncut
+%%% @HTMLTableElement@prototype.ondblclick has getter to model.
+%%% @HTMLTableElement@prototype.ondblclick has setter to model.
+ondblclick ReadOnly &undefined HTMLTableElement.prototype.ondblclick
+%%% @HTMLTableElement@prototype.ondrag has getter to model.
+%%% @HTMLTableElement@prototype.ondrag has setter to model.
+ondrag ReadOnly &undefined HTMLTableElement.prototype.ondrag
+%%% @HTMLTableElement@prototype.ondragend has getter to model.
+%%% @HTMLTableElement@prototype.ondragend has setter to model.
+ondragend ReadOnly &undefined HTMLTableElement.prototype.ondragend
+%%% @HTMLTableElement@prototype.ondragenter has getter to model.
+%%% @HTMLTableElement@prototype.ondragenter has setter to model.
+ondragenter ReadOnly &undefined HTMLTableElement.prototype.ondragenter
+%%% @HTMLTableElement@prototype.ondragleave has getter to model.
+%%% @HTMLTableElement@prototype.ondragleave has setter to model.
+ondragleave ReadOnly &undefined HTMLTableElement.prototype.ondragleave
+%%% @HTMLTableElement@prototype.ondragover has getter to model.
+%%% @HTMLTableElement@prototype.ondragover has setter to model.
+ondragover ReadOnly &undefined HTMLTableElement.prototype.ondragover
+%%% @HTMLTableElement@prototype.ondragstart has getter to model.
+%%% @HTMLTableElement@prototype.ondragstart has setter to model.
+ondragstart ReadOnly &undefined HTMLTableElement.prototype.ondragstart
+%%% @HTMLTableElement@prototype.ondrop has getter to model.
+%%% @HTMLTableElement@prototype.ondrop has setter to model.
+ondrop ReadOnly &undefined HTMLTableElement.prototype.ondrop
+%%% @HTMLTableElement@prototype.ondurationchange has getter to model.
+%%% @HTMLTableElement@prototype.ondurationchange has setter to model.
+ondurationchange ReadOnly &undefined HTMLTableElement.prototype.ondurationchange
+%%% @HTMLTableElement@prototype.onemptied has getter to model.
+%%% @HTMLTableElement@prototype.onemptied has setter to model.
+onemptied ReadOnly &undefined HTMLTableElement.prototype.onemptied
+%%% @HTMLTableElement@prototype.onended has getter to model.
+%%% @HTMLTableElement@prototype.onended has setter to model.
+onended ReadOnly &undefined HTMLTableElement.prototype.onended
+%%% @HTMLTableElement@prototype.onerror has getter to model.
+%%% @HTMLTableElement@prototype.onerror has setter to model.
+onerror ReadOnly &undefined HTMLTableElement.prototype.onerror
+%%% @HTMLTableElement@prototype.onfocus has getter to model.
+%%% @HTMLTableElement@prototype.onfocus has setter to model.
+onfocus ReadOnly &undefined HTMLTableElement.prototype.onfocus
+%%% @HTMLTableElement@prototype.oninput has getter to model.
+%%% @HTMLTableElement@prototype.oninput has setter to model.
+oninput ReadOnly &undefined HTMLTableElement.prototype.oninput
+%%% @HTMLTableElement@prototype.oninvalid has getter to model.
+%%% @HTMLTableElement@prototype.oninvalid has setter to model.
+oninvalid ReadOnly &undefined HTMLTableElement.prototype.oninvalid
+%%% @HTMLTableElement@prototype.onkeydown has getter to model.
+%%% @HTMLTableElement@prototype.onkeydown has setter to model.
+onkeydown ReadOnly &undefined HTMLTableElement.prototype.onkeydown
+%%% @HTMLTableElement@prototype.onkeypress has getter to model.
+%%% @HTMLTableElement@prototype.onkeypress has setter to model.
+onkeypress ReadOnly &undefined HTMLTableElement.prototype.onkeypress
+%%% @HTMLTableElement@prototype.onkeyup has getter to model.
+%%% @HTMLTableElement@prototype.onkeyup has setter to model.
+onkeyup ReadOnly &undefined HTMLTableElement.prototype.onkeyup
+%%% @HTMLTableElement@prototype.onload has getter to model.
+%%% @HTMLTableElement@prototype.onload has setter to model.
+onload ReadOnly &undefined HTMLTableElement.prototype.onload
+%%% @HTMLTableElement@prototype.onloadeddata has getter to model.
+%%% @HTMLTableElement@prototype.onloadeddata has setter to model.
+onloadeddata ReadOnly &undefined HTMLTableElement.prototype.onloadeddata
+%%% @HTMLTableElement@prototype.onloadedmetadata has getter to model.
+%%% @HTMLTableElement@prototype.onloadedmetadata has setter to model.
+onloadedmetadata ReadOnly &undefined HTMLTableElement.prototype.onloadedmetadata
+%%% @HTMLTableElement@prototype.onloadstart has getter to model.
+%%% @HTMLTableElement@prototype.onloadstart has setter to model.
+onloadstart ReadOnly &undefined HTMLTableElement.prototype.onloadstart
+%%% @HTMLTableElement@prototype.onmousedown has getter to model.
+%%% @HTMLTableElement@prototype.onmousedown has setter to model.
+onmousedown ReadOnly &undefined HTMLTableElement.prototype.onmousedown
+onmouseenter - &null HTMLTableElement.prototype.onmouseenter
+onmouseleave - &null HTMLTableElement.prototype.onmouseleave
+%%% @HTMLTableElement@prototype.onmousemove has getter to model.
+%%% @HTMLTableElement@prototype.onmousemove has setter to model.
+onmousemove ReadOnly &undefined HTMLTableElement.prototype.onmousemove
+%%% @HTMLTableElement@prototype.onmouseout has getter to model.
+%%% @HTMLTableElement@prototype.onmouseout has setter to model.
+onmouseout ReadOnly &undefined HTMLTableElement.prototype.onmouseout
+%%% @HTMLTableElement@prototype.onmouseover has getter to model.
+%%% @HTMLTableElement@prototype.onmouseover has setter to model.
+onmouseover ReadOnly &undefined HTMLTableElement.prototype.onmouseover
+%%% @HTMLTableElement@prototype.onmouseup has getter to model.
+%%% @HTMLTableElement@prototype.onmouseup has setter to model.
+onmouseup ReadOnly &undefined HTMLTableElement.prototype.onmouseup
+%%% @HTMLTableElement@prototype.onmozfullscreenchange has getter to model.
+%%% @HTMLTableElement@prototype.onmozfullscreenchange has setter to model.
+onmozfullscreenchange ReadOnly &undefined HTMLTableElement.prototype.onmozfullscreenchange
+%%% @HTMLTableElement@prototype.onmozfullscreenerror has getter to model.
+%%% @HTMLTableElement@prototype.onmozfullscreenerror has setter to model.
+onmozfullscreenerror ReadOnly &undefined HTMLTableElement.prototype.onmozfullscreenerror
+%%% @HTMLTableElement@prototype.onmozpointerlockchange has getter to model.
+%%% @HTMLTableElement@prototype.onmozpointerlockchange has setter to model.
+onmozpointerlockchange ReadOnly &undefined HTMLTableElement.prototype.onmozpointerlockchange
+%%% @HTMLTableElement@prototype.onmozpointerlockerror has getter to model.
+%%% @HTMLTableElement@prototype.onmozpointerlockerror has setter to model.
+onmozpointerlockerror ReadOnly &undefined HTMLTableElement.prototype.onmozpointerlockerror
+%%% @HTMLTableElement@prototype.onpaste has getter to model.
+%%% @HTMLTableElement@prototype.onpaste has setter to model.
+onpaste ReadOnly &undefined HTMLTableElement.prototype.onpaste
+%%% @HTMLTableElement@prototype.onpause has getter to model.
+%%% @HTMLTableElement@prototype.onpause has setter to model.
+onpause ReadOnly &undefined HTMLTableElement.prototype.onpause
+%%% @HTMLTableElement@prototype.onplay has getter to model.
+%%% @HTMLTableElement@prototype.onplay has setter to model.
+onplay ReadOnly &undefined HTMLTableElement.prototype.onplay
+%%% @HTMLTableElement@prototype.onplaying has getter to model.
+%%% @HTMLTableElement@prototype.onplaying has setter to model.
+onplaying ReadOnly &undefined HTMLTableElement.prototype.onplaying
+%%% @HTMLTableElement@prototype.onprogress has getter to model.
+%%% @HTMLTableElement@prototype.onprogress has setter to model.
+onprogress ReadOnly &undefined HTMLTableElement.prototype.onprogress
+%%% @HTMLTableElement@prototype.onratechange has getter to model.
+%%% @HTMLTableElement@prototype.onratechange has setter to model.
+onratechange ReadOnly &undefined HTMLTableElement.prototype.onratechange
+%%% @HTMLTableElement@prototype.onreset has getter to model.
+%%% @HTMLTableElement@prototype.onreset has setter to model.
+onreset ReadOnly &undefined HTMLTableElement.prototype.onreset
+%%% @HTMLTableElement@prototype.onscroll has getter to model.
+%%% @HTMLTableElement@prototype.onscroll has setter to model.
+onscroll ReadOnly &undefined HTMLTableElement.prototype.onscroll
+%%% @HTMLTableElement@prototype.onseeked has getter to model.
+%%% @HTMLTableElement@prototype.onseeked has setter to model.
+onseeked ReadOnly &undefined HTMLTableElement.prototype.onseeked
+%%% @HTMLTableElement@prototype.onseeking has getter to model.
+%%% @HTMLTableElement@prototype.onseeking has setter to model.
+onseeking ReadOnly &undefined HTMLTableElement.prototype.onseeking
+%%% @HTMLTableElement@prototype.onselect has getter to model.
+%%% @HTMLTableElement@prototype.onselect has setter to model.
+onselect ReadOnly &undefined HTMLTableElement.prototype.onselect
+%%% @HTMLTableElement@prototype.onshow has getter to model.
+%%% @HTMLTableElement@prototype.onshow has setter to model.
+onshow ReadOnly &undefined HTMLTableElement.prototype.onshow
+%%% @HTMLTableElement@prototype.onstalled has getter to model.
+%%% @HTMLTableElement@prototype.onstalled has setter to model.
+onstalled ReadOnly &undefined HTMLTableElement.prototype.onstalled
+%%% @HTMLTableElement@prototype.onsubmit has getter to model.
+%%% @HTMLTableElement@prototype.onsubmit has setter to model.
+onsubmit ReadOnly &undefined HTMLTableElement.prototype.onsubmit
+%%% @HTMLTableElement@prototype.onsuspend has getter to model.
+%%% @HTMLTableElement@prototype.onsuspend has setter to model.
+onsuspend ReadOnly &undefined HTMLTableElement.prototype.onsuspend
+%%% @HTMLTableElement@prototype.ontimeupdate has getter to model.
+%%% @HTMLTableElement@prototype.ontimeupdate has setter to model.
+ontimeupdate ReadOnly &undefined HTMLTableElement.prototype.ontimeupdate
+%%% @HTMLTableElement@prototype.onvolumechange has getter to model.
+%%% @HTMLTableElement@prototype.onvolumechange has setter to model.
+onvolumechange ReadOnly &undefined HTMLTableElement.prototype.onvolumechange
+%%% @HTMLTableElement@prototype.onwaiting has getter to model.
+%%% @HTMLTableElement@prototype.onwaiting has setter to model.
+onwaiting ReadOnly &undefined HTMLTableElement.prototype.onwaiting
+%%% @HTMLTableElement@prototype.onwheel has getter to model.
+%%% @HTMLTableElement@prototype.onwheel has setter to model.
+onwheel ReadOnly &undefined HTMLTableElement.prototype.onwheel
+%%% Unable to get descriptor info for property outerHTML.
+outerHTML - &null HTMLTableElement.prototype.outerHTML
+%%% Unable to get descriptor info for property ownerDocument.
+ownerDocument - &null HTMLTableElement.prototype.ownerDocument
+%%% Unable to get descriptor info for property parentElement.
+parentElement - &null HTMLTableElement.prototype.parentElement
+%%% Unable to get descriptor info for property parentNode.
+parentNode - &null HTMLTableElement.prototype.parentNode
+%%% Unable to get descriptor info for property prefix.
+prefix - &null HTMLTableElement.prototype.prefix
+%%% Unable to get descriptor info for property previousElementSibling.
+previousElementSibling - &null HTMLTableElement.prototype.previousElementSibling
+%%% Unable to get descriptor info for property previousSibling.
+previousSibling - &null HTMLTableElement.prototype.previousSibling
+%%% Unable to get descriptor info for property properties.
+properties - &null HTMLTableElement.prototype.properties
+querySelector - #HTMLTableElement#prototype#querySelector HTMLTableElement.prototype.querySelector
+querySelectorAll - #HTMLTableElement#prototype#querySelectorAll HTMLTableElement.prototype.querySelectorAll
+releaseCapture - #HTMLTableElement#prototype#releaseCapture HTMLTableElement.prototype.releaseCapture
+removeAttribute - #HTMLTableElement#prototype#removeAttribute HTMLTableElement.prototype.removeAttribute
+removeAttributeNS - #HTMLTableElement#prototype#removeAttributeNS HTMLTableElement.prototype.removeAttributeNS
+removeAttributeNode - #HTMLTableElement#prototype#removeAttributeNode HTMLTableElement.prototype.removeAttributeNode
+removeChild - #HTMLTableElement#prototype#removeChild HTMLTableElement.prototype.removeChild
+removeEventListener - #HTMLTableElement#prototype#removeEventListener HTMLTableElement.prototype.removeEventListener
+replaceChild - #HTMLTableElement#prototype#replaceChild HTMLTableElement.prototype.replaceChild
+%%% Unable to get descriptor info for property rows.
+rows - &null HTMLTableElement.prototype.rows
+%%% @HTMLTableElement@prototype.rules has getter to model.
+%%% @HTMLTableElement@prototype.rules has setter to model.
+rules ReadOnly &undefined HTMLTableElement.prototype.rules
+%%% Unable to get descriptor info for property scrollHeight.
+scrollHeight - &null HTMLTableElement.prototype.scrollHeight
+scrollIntoView - #HTMLTableElement#prototype#scrollIntoView HTMLTableElement.prototype.scrollIntoView
+%%% Unable to get descriptor info for property scrollLeft.
+scrollLeft - &null HTMLTableElement.prototype.scrollLeft
+%%% @HTMLTableElement@prototype.scrollLeftMax has getter to model.
+scrollLeftMax ReadOnly &undefined HTMLTableElement.prototype.scrollLeftMax
+%%% Unable to get descriptor info for property scrollTop.
+scrollTop - &null HTMLTableElement.prototype.scrollTop
+%%% @HTMLTableElement@prototype.scrollTopMax has getter to model.
+scrollTopMax ReadOnly &undefined HTMLTableElement.prototype.scrollTopMax
+%%% Unable to get descriptor info for property scrollWidth.
+scrollWidth - &null HTMLTableElement.prototype.scrollWidth
+setAttribute - #HTMLTableElement#prototype#setAttribute HTMLTableElement.prototype.setAttribute
+setAttributeNS - #HTMLTableElement#prototype#setAttributeNS HTMLTableElement.prototype.setAttributeNS
+setAttributeNode - #HTMLTableElement#prototype#setAttributeNode HTMLTableElement.prototype.setAttributeNode
+setAttributeNodeNS - #HTMLTableElement#prototype#setAttributeNodeNS HTMLTableElement.prototype.setAttributeNodeNS
+setCapture - #HTMLTableElement#prototype#setCapture HTMLTableElement.prototype.setCapture
+setUserData - #HTMLTableElement#prototype#setUserData HTMLTableElement.prototype.setUserData
+%%% Unable to get descriptor info for property spellcheck.
+spellcheck - &null HTMLTableElement.prototype.spellcheck
+%%% Unable to get descriptor info for property style.
+style - &null HTMLTableElement.prototype.style
+%%% Unable to get descriptor info for property summary.
+summary - &null HTMLTableElement.prototype.summary
+%%% @HTMLTableElement@prototype.tBodies has getter to model.
+tBodies ReadOnly &undefined HTMLTableElement.prototype.tBodies
+%%% @HTMLTableElement@prototype.tFoot has getter to model.
+%%% @HTMLTableElement@prototype.tFoot has setter to model.
+tFoot ReadOnly &undefined HTMLTableElement.prototype.tFoot
+%%% @HTMLTableElement@prototype.tHead has getter to model.
+%%% @HTMLTableElement@prototype.tHead has setter to model.
+tHead ReadOnly &undefined HTMLTableElement.prototype.tHead
+%%% Unable to get descriptor info for property tabIndex.
+tabIndex - &null HTMLTableElement.prototype.tabIndex
+%%% Unable to get descriptor info for property tagName.
+tagName - &null HTMLTableElement.prototype.tagName
+%%% Unable to get descriptor info for property textContent.
+textContent - &null HTMLTableElement.prototype.textContent
+%%% Unable to get descriptor info for property title.
+title - &null HTMLTableElement.prototype.title
+%%% @HTMLTableElement@prototype.width has getter to model.
+%%% @HTMLTableElement@prototype.width has setter to model.
+width ReadOnly &undefined HTMLTableElement.prototype.width
+
+
+@HTMLTableRowElement@prototype
+
+% HTMLTableRowElement#prototype properties
+ATTRIBUTE_NODE - 2 HTMLTableRowElement.prototype.ATTRIBUTE_NODE
+CDATA_SECTION_NODE - 4 HTMLTableRowElement.prototype.CDATA_SECTION_NODE
+COMMENT_NODE - 8 HTMLTableRowElement.prototype.COMMENT_NODE
+DOCUMENT_FRAGMENT_NODE - 11 HTMLTableRowElement.prototype.DOCUMENT_FRAGMENT_NODE
+DOCUMENT_NODE - 9 HTMLTableRowElement.prototype.DOCUMENT_NODE
+DOCUMENT_POSITION_CONTAINED_BY - 16 HTMLTableRowElement.prototype.DOCUMENT_POSITION_CONTAINED_BY
+DOCUMENT_POSITION_CONTAINS - 8 HTMLTableRowElement.prototype.DOCUMENT_POSITION_CONTAINS
+DOCUMENT_POSITION_DISCONNECTED - 1 HTMLTableRowElement.prototype.DOCUMENT_POSITION_DISCONNECTED
+DOCUMENT_POSITION_FOLLOWING - 4 HTMLTableRowElement.prototype.DOCUMENT_POSITION_FOLLOWING
+DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC - 32 HTMLTableRowElement.prototype.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+DOCUMENT_POSITION_PRECEDING - 2 HTMLTableRowElement.prototype.DOCUMENT_POSITION_PRECEDING
+DOCUMENT_TYPE_NODE - 10 HTMLTableRowElement.prototype.DOCUMENT_TYPE_NODE
+ELEMENT_NODE - 1 HTMLTableRowElement.prototype.ELEMENT_NODE
+ENTITY_NODE - 6 HTMLTableRowElement.prototype.ENTITY_NODE
+ENTITY_REFERENCE_NODE - 5 HTMLTableRowElement.prototype.ENTITY_REFERENCE_NODE
+NOTATION_NODE - 12 HTMLTableRowElement.prototype.NOTATION_NODE
+PROCESSING_INSTRUCTION_NODE - 7 HTMLTableRowElement.prototype.PROCESSING_INSTRUCTION_NODE
+QueryInterface DontEnum #HTMLTableRowElement#prototype#QueryInterface HTMLTableRowElement.prototype.QueryInterface
+TEXT_NODE - 3 HTMLTableRowElement.prototype.TEXT_NODE
+__defineGetter__ DontEnum #HTMLTableRowElement#prototype#__defineGetter__ HTMLTableRowElement.prototype.__defineGetter__
+__defineSetter__ DontEnum #HTMLTableRowElement#prototype#__defineSetter__ HTMLTableRowElement.prototype.__defineSetter__
+__lookupGetter__ DontEnum #HTMLTableRowElement#prototype#__lookupGetter__ HTMLTableRowElement.prototype.__lookupGetter__
+__lookupSetter__ DontEnum #HTMLTableRowElement#prototype#__lookupSetter__ HTMLTableRowElement.prototype.__lookupSetter__
+__proto__ DontEnum #HTMLElement#prototype HTMLElement.prototype
+%%% Unable to get descriptor info for property accessKey.
+accessKey - &null HTMLTableRowElement.prototype.accessKey
+%%% Unable to get descriptor info for property accessKeyLabel.
+accessKeyLabel - &null HTMLTableRowElement.prototype.accessKeyLabel
+addEventListener - #HTMLTableRowElement#prototype#addEventListener HTMLTableRowElement.prototype.addEventListener
+%%% @HTMLTableRowElement@prototype.align has getter to model.
+%%% @HTMLTableRowElement@prototype.align has setter to model.
+align ReadOnly &undefined HTMLTableRowElement.prototype.align
+appendChild - #HTMLTableRowElement#prototype#appendChild HTMLTableRowElement.prototype.appendChild
+%%% Unable to get descriptor info for property attributes.
+attributes - &null HTMLTableRowElement.prototype.attributes
+%%% Unable to get descriptor info for property baseURI.
+baseURI - &null HTMLTableRowElement.prototype.baseURI
+%%% @HTMLTableRowElement@prototype.bgColor has getter to model.
+%%% @HTMLTableRowElement@prototype.bgColor has setter to model.
+bgColor ReadOnly &undefined HTMLTableRowElement.prototype.bgColor
+blur - #HTMLTableRowElement#prototype#blur HTMLTableRowElement.prototype.blur
+%%% Unable to get descriptor info for property cells.
+cells - &null HTMLTableRowElement.prototype.cells
+%%% @HTMLTableRowElement@prototype.ch has getter to model.
+%%% @HTMLTableRowElement@prototype.ch has setter to model.
+ch ReadOnly &undefined HTMLTableRowElement.prototype.ch
+%%% @HTMLTableRowElement@prototype.chOff has getter to model.
+%%% @HTMLTableRowElement@prototype.chOff has setter to model.
+chOff ReadOnly &undefined HTMLTableRowElement.prototype.chOff
+%%% Unable to get descriptor info for property childElementCount.
+childElementCount - &null HTMLTableRowElement.prototype.childElementCount
+%%% Unable to get descriptor info for property childNodes.
+childNodes - &null HTMLTableRowElement.prototype.childNodes
+%%% Unable to get descriptor info for property children.
+children - &null HTMLTableRowElement.prototype.children
+%%% Unable to get descriptor info for property classList.
+classList - &null HTMLTableRowElement.prototype.classList
+%%% Unable to get descriptor info for property className.
+className - &null HTMLTableRowElement.prototype.className
+click - #HTMLTableRowElement#prototype#click HTMLTableRowElement.prototype.click
+%%% Unable to get descriptor info for property clientHeight.
+clientHeight - &null HTMLTableRowElement.prototype.clientHeight
+%%% Unable to get descriptor info for property clientLeft.
+clientLeft - &null HTMLTableRowElement.prototype.clientLeft
+%%% Unable to get descriptor info for property clientTop.
+clientTop - &null HTMLTableRowElement.prototype.clientTop
+%%% Unable to get descriptor info for property clientWidth.
+clientWidth - &null HTMLTableRowElement.prototype.clientWidth
+cloneNode - #HTMLTableRowElement#prototype#cloneNode HTMLTableRowElement.prototype.cloneNode
+compareDocumentPosition - #HTMLTableRowElement#prototype#compareDocumentPosition HTMLTableRowElement.prototype.compareDocumentPosition
+contains - #HTMLTableRowElement#prototype#contains HTMLTableRowElement.prototype.contains
+%%% Unable to get descriptor info for property contentEditable.
+contentEditable - &null HTMLTableRowElement.prototype.contentEditable
+%%% Unable to get descriptor info for property contextMenu.
+contextMenu - &null HTMLTableRowElement.prototype.contextMenu
+%%% Unable to get descriptor info for property dataset.
+dataset - &null HTMLTableRowElement.prototype.dataset
+deleteCell - #HTMLTableRowElement#prototype#deleteCell HTMLTableRowElement.prototype.deleteCell
+%%% Unable to get descriptor info for property dir.
+dir - &null HTMLTableRowElement.prototype.dir
+dispatchEvent - #HTMLTableRowElement#prototype#dispatchEvent HTMLTableRowElement.prototype.dispatchEvent
+%%% Unable to get descriptor info for property draggable.
+draggable - &null HTMLTableRowElement.prototype.draggable
+%%% Unable to get descriptor info for property firstChild.
+firstChild - &null HTMLTableRowElement.prototype.firstChild
+%%% Unable to get descriptor info for property firstElementChild.
+firstElementChild - &null HTMLTableRowElement.prototype.firstElementChild
+focus - #HTMLTableRowElement#prototype#focus HTMLTableRowElement.prototype.focus
+getAttribute - #HTMLTableRowElement#prototype#getAttribute HTMLTableRowElement.prototype.getAttribute
+getAttributeNS - #HTMLTableRowElement#prototype#getAttributeNS HTMLTableRowElement.prototype.getAttributeNS
+getAttributeNode - #HTMLTableRowElement#prototype#getAttributeNode HTMLTableRowElement.prototype.getAttributeNode
+getAttributeNodeNS - #HTMLTableRowElement#prototype#getAttributeNodeNS HTMLTableRowElement.prototype.getAttributeNodeNS
+getBoundingClientRect - #HTMLTableRowElement#prototype#getBoundingClientRect HTMLTableRowElement.prototype.getBoundingClientRect
+getClientRects - #HTMLTableRowElement#prototype#getClientRects HTMLTableRowElement.prototype.getClientRects
+getElementsByClassName - #HTMLTableRowElement#prototype#getElementsByClassName HTMLTableRowElement.prototype.getElementsByClassName
+getElementsByTagName - #HTMLTableRowElement#prototype#getElementsByTagName HTMLTableRowElement.prototype.getElementsByTagName
+getElementsByTagNameNS - #HTMLTableRowElement#prototype#getElementsByTagNameNS HTMLTableRowElement.prototype.getElementsByTagNameNS
+getUserData - #HTMLTableRowElement#prototype#getUserData HTMLTableRowElement.prototype.getUserData
+hasAttribute - #HTMLTableRowElement#prototype#hasAttribute HTMLTableRowElement.prototype.hasAttribute
+hasAttributeNS - #HTMLTableRowElement#prototype#hasAttributeNS HTMLTableRowElement.prototype.hasAttributeNS
+hasAttributes - #HTMLTableRowElement#prototype#hasAttributes HTMLTableRowElement.prototype.hasAttributes
+hasChildNodes - #HTMLTableRowElement#prototype#hasChildNodes HTMLTableRowElement.prototype.hasChildNodes
+%%% Unable to get descriptor info for property hidden.
+hidden - &null HTMLTableRowElement.prototype.hidden
+%%% Unable to get descriptor info for property id.
+id - &null HTMLTableRowElement.prototype.id
+%%% Unable to get descriptor info for property innerHTML.
+innerHTML - &null HTMLTableRowElement.prototype.innerHTML
+insertAdjacentHTML - #HTMLTableRowElement#prototype#insertAdjacentHTML HTMLTableRowElement.prototype.insertAdjacentHTML
+insertBefore - #HTMLTableRowElement#prototype#insertBefore HTMLTableRowElement.prototype.insertBefore
+insertCell - #HTMLTableRowElement#prototype#insertCell HTMLTableRowElement.prototype.insertCell
+%%% Unable to get descriptor info for property isContentEditable.
+isContentEditable - &null HTMLTableRowElement.prototype.isContentEditable
+isDefaultNamespace - #HTMLTableRowElement#prototype#isDefaultNamespace HTMLTableRowElement.prototype.isDefaultNamespace
+isEqualNode - #HTMLTableRowElement#prototype#isEqualNode HTMLTableRowElement.prototype.isEqualNode
+isSupported - #HTMLTableRowElement#prototype#isSupported HTMLTableRowElement.prototype.isSupported
+%%% Unable to get descriptor info for property itemId.
+itemId - &null HTMLTableRowElement.prototype.itemId
+%%% @HTMLTableRowElement@prototype.itemProp has getter to model.
+%%% @HTMLTableRowElement@prototype.itemProp has setter to model.
+itemProp ReadOnly &undefined HTMLTableRowElement.prototype.itemProp
+%%% @HTMLTableRowElement@prototype.itemRef has getter to model.
+%%% @HTMLTableRowElement@prototype.itemRef has setter to model.
+itemRef ReadOnly &undefined HTMLTableRowElement.prototype.itemRef
+%%% Unable to get descriptor info for property itemScope.
+itemScope - &null HTMLTableRowElement.prototype.itemScope
+%%% @HTMLTableRowElement@prototype.itemType has getter to model.
+%%% @HTMLTableRowElement@prototype.itemType has setter to model.
+itemType ReadOnly &undefined HTMLTableRowElement.prototype.itemType
+%%% @HTMLTableRowElement@prototype.itemValue has getter to model.
+%%% @HTMLTableRowElement@prototype.itemValue has setter to model.
+itemValue ReadOnly &undefined HTMLTableRowElement.prototype.itemValue
+%%% Unable to get descriptor info for property lang.
+lang - &null HTMLTableRowElement.prototype.lang
+%%% Unable to get descriptor info for property lastChild.
+lastChild - &null HTMLTableRowElement.prototype.lastChild
+%%% Unable to get descriptor info for property lastElementChild.
+lastElementChild - &null HTMLTableRowElement.prototype.lastElementChild
+%%% Unable to get descriptor info for property localName.
+localName - &null HTMLTableRowElement.prototype.localName
+lookupNamespaceURI - #HTMLTableRowElement#prototype#lookupNamespaceURI HTMLTableRowElement.prototype.lookupNamespaceURI
+lookupPrefix - #HTMLTableRowElement#prototype#lookupPrefix HTMLTableRowElement.prototype.lookupPrefix
+mozMatchesSelector - #HTMLTableRowElement#prototype#mozMatchesSelector HTMLTableRowElement.prototype.mozMatchesSelector
+mozRequestFullScreen - #HTMLTableRowElement#prototype#mozRequestFullScreen HTMLTableRowElement.prototype.mozRequestFullScreen
+mozRequestPointerLock - #HTMLTableRowElement#prototype#mozRequestPointerLock HTMLTableRowElement.prototype.mozRequestPointerLock
+%%% Unable to get descriptor info for property namespaceURI.
+namespaceURI - &null HTMLTableRowElement.prototype.namespaceURI
+%%% Unable to get descriptor info for property nextElementSibling.
+nextElementSibling - &null HTMLTableRowElement.prototype.nextElementSibling
+%%% Unable to get descriptor info for property nextSibling.
+nextSibling - &null HTMLTableRowElement.prototype.nextSibling
+%%% Unable to get descriptor info for property nodeName.
+nodeName - &null HTMLTableRowElement.prototype.nodeName
+%%% Unable to get descriptor info for property nodeType.
+nodeType - &null HTMLTableRowElement.prototype.nodeType
+%%% Unable to get descriptor info for property nodeValue.
+nodeValue - &null HTMLTableRowElement.prototype.nodeValue
+normalize - #HTMLTableRowElement#prototype#normalize HTMLTableRowElement.prototype.normalize
+%%% Unable to get descriptor info for property offsetHeight.
+offsetHeight - &null HTMLTableRowElement.prototype.offsetHeight
+%%% Unable to get descriptor info for property offsetLeft.
+offsetLeft - &null HTMLTableRowElement.prototype.offsetLeft
+%%% Unable to get descriptor info for property offsetParent.
+offsetParent - &null HTMLTableRowElement.prototype.offsetParent
+%%% Unable to get descriptor info for property offsetTop.
+offsetTop - &null HTMLTableRowElement.prototype.offsetTop
+%%% Unable to get descriptor info for property offsetWidth.
+offsetWidth - &null HTMLTableRowElement.prototype.offsetWidth
+%%% @HTMLTableRowElement@prototype.onabort has getter to model.
+%%% @HTMLTableRowElement@prototype.onabort has setter to model.
+onabort ReadOnly &undefined HTMLTableRowElement.prototype.onabort
+%%% @HTMLTableRowElement@prototype.onafterscriptexecute has getter to model.
+%%% @HTMLTableRowElement@prototype.onafterscriptexecute has setter to model.
+onafterscriptexecute ReadOnly &undefined HTMLTableRowElement.prototype.onafterscriptexecute
+%%% @HTMLTableRowElement@prototype.onbeforescriptexecute has getter to model.
+%%% @HTMLTableRowElement@prototype.onbeforescriptexecute has setter to model.
+onbeforescriptexecute ReadOnly &undefined HTMLTableRowElement.prototype.onbeforescriptexecute
+%%% @HTMLTableRowElement@prototype.onblur has getter to model.
+%%% @HTMLTableRowElement@prototype.onblur has setter to model.
+onblur ReadOnly &undefined HTMLTableRowElement.prototype.onblur
+%%% @HTMLTableRowElement@prototype.oncanplay has getter to model.
+%%% @HTMLTableRowElement@prototype.oncanplay has setter to model.
+oncanplay ReadOnly &undefined HTMLTableRowElement.prototype.oncanplay
+%%% @HTMLTableRowElement@prototype.oncanplaythrough has getter to model.
+%%% @HTMLTableRowElement@prototype.oncanplaythrough has setter to model.
+oncanplaythrough ReadOnly &undefined HTMLTableRowElement.prototype.oncanplaythrough
+%%% @HTMLTableRowElement@prototype.onchange has getter to model.
+%%% @HTMLTableRowElement@prototype.onchange has setter to model.
+onchange ReadOnly &undefined HTMLTableRowElement.prototype.onchange
+%%% @HTMLTableRowElement@prototype.onclick has getter to model.
+%%% @HTMLTableRowElement@prototype.onclick has setter to model.
+onclick ReadOnly &undefined HTMLTableRowElement.prototype.onclick
+%%% @HTMLTableRowElement@prototype.oncontextmenu has getter to model.
+%%% @HTMLTableRowElement@prototype.oncontextmenu has setter to model.
+oncontextmenu ReadOnly &undefined HTMLTableRowElement.prototype.oncontextmenu
+%%% @HTMLTableRowElement@prototype.oncopy has getter to model.
+%%% @HTMLTableRowElement@prototype.oncopy has setter to model.
+oncopy ReadOnly &undefined HTMLTableRowElement.prototype.oncopy
+%%% @HTMLTableRowElement@prototype.oncut has getter to model.
+%%% @HTMLTableRowElement@prototype.oncut has setter to model.
+oncut ReadOnly &undefined HTMLTableRowElement.prototype.oncut
+%%% @HTMLTableRowElement@prototype.ondblclick has getter to model.
+%%% @HTMLTableRowElement@prototype.ondblclick has setter to model.
+ondblclick ReadOnly &undefined HTMLTableRowElement.prototype.ondblclick
+%%% @HTMLTableRowElement@prototype.ondrag has getter to model.
+%%% @HTMLTableRowElement@prototype.ondrag has setter to model.
+ondrag ReadOnly &undefined HTMLTableRowElement.prototype.ondrag
+%%% @HTMLTableRowElement@prototype.ondragend has getter to model.
+%%% @HTMLTableRowElement@prototype.ondragend has setter to model.
+ondragend ReadOnly &undefined HTMLTableRowElement.prototype.ondragend
+%%% @HTMLTableRowElement@prototype.ondragenter has getter to model.
+%%% @HTMLTableRowElement@prototype.ondragenter has setter to model.
+ondragenter ReadOnly &undefined HTMLTableRowElement.prototype.ondragenter
+%%% @HTMLTableRowElement@prototype.ondragleave has getter to model.
+%%% @HTMLTableRowElement@prototype.ondragleave has setter to model.
+ondragleave ReadOnly &undefined HTMLTableRowElement.prototype.ondragleave
+%%% @HTMLTableRowElement@prototype.ondragover has getter to model.
+%%% @HTMLTableRowElement@prototype.ondragover has setter to model.
+ondragover ReadOnly &undefined HTMLTableRowElement.prototype.ondragover
+%%% @HTMLTableRowElement@prototype.ondragstart has getter to model.
+%%% @HTMLTableRowElement@prototype.ondragstart has setter to model.
+ondragstart ReadOnly &undefined HTMLTableRowElement.prototype.ondragstart
+%%% @HTMLTableRowElement@prototype.ondrop has getter to model.
+%%% @HTMLTableRowElement@prototype.ondrop has setter to model.
+ondrop ReadOnly &undefined HTMLTableRowElement.prototype.ondrop
+%%% @HTMLTableRowElement@prototype.ondurationchange has getter to model.
+%%% @HTMLTableRowElement@prototype.ondurationchange has setter to model.
+ondurationchange ReadOnly &undefined HTMLTableRowElement.prototype.ondurationchange
+%%% @HTMLTableRowElement@prototype.onemptied has getter to model.
+%%% @HTMLTableRowElement@prototype.onemptied has setter to model.
+onemptied ReadOnly &undefined HTMLTableRowElement.prototype.onemptied
+%%% @HTMLTableRowElement@prototype.onended has getter to model.
+%%% @HTMLTableRowElement@prototype.onended has setter to model.
+onended ReadOnly &undefined HTMLTableRowElement.prototype.onended
+%%% @HTMLTableRowElement@prototype.onerror has getter to model.
+%%% @HTMLTableRowElement@prototype.onerror has setter to model.
+onerror ReadOnly &undefined HTMLTableRowElement.prototype.onerror
+%%% @HTMLTableRowElement@prototype.onfocus has getter to model.
+%%% @HTMLTableRowElement@prototype.onfocus has setter to model.
+onfocus ReadOnly &undefined HTMLTableRowElement.prototype.onfocus
+%%% @HTMLTableRowElement@prototype.oninput has getter to model.
+%%% @HTMLTableRowElement@prototype.oninput has setter to model.
+oninput ReadOnly &undefined HTMLTableRowElement.prototype.oninput
+%%% @HTMLTableRowElement@prototype.oninvalid has getter to model.
+%%% @HTMLTableRowElement@prototype.oninvalid has setter to model.
+oninvalid ReadOnly &undefined HTMLTableRowElement.prototype.oninvalid
+%%% @HTMLTableRowElement@prototype.onkeydown has getter to model.
+%%% @HTMLTableRowElement@prototype.onkeydown has setter to model.
+onkeydown ReadOnly &undefined HTMLTableRowElement.prototype.onkeydown
+%%% @HTMLTableRowElement@prototype.onkeypress has getter to model.
+%%% @HTMLTableRowElement@prototype.onkeypress has setter to model.
+onkeypress ReadOnly &undefined HTMLTableRowElement.prototype.onkeypress
+%%% @HTMLTableRowElement@prototype.onkeyup has getter to model.
+%%% @HTMLTableRowElement@prototype.onkeyup has setter to model.
+onkeyup ReadOnly &undefined HTMLTableRowElement.prototype.onkeyup
+%%% @HTMLTableRowElement@prototype.onload has getter to model.
+%%% @HTMLTableRowElement@prototype.onload has setter to model.
+onload ReadOnly &undefined HTMLTableRowElement.prototype.onload
+%%% @HTMLTableRowElement@prototype.onloadeddata has getter to model.
+%%% @HTMLTableRowElement@prototype.onloadeddata has setter to model.
+onloadeddata ReadOnly &undefined HTMLTableRowElement.prototype.onloadeddata
+%%% @HTMLTableRowElement@prototype.onloadedmetadata has getter to model.
+%%% @HTMLTableRowElement@prototype.onloadedmetadata has setter to model.
+onloadedmetadata ReadOnly &undefined HTMLTableRowElement.prototype.onloadedmetadata
+%%% @HTMLTableRowElement@prototype.onloadstart has getter to model.
+%%% @HTMLTableRowElement@prototype.onloadstart has setter to model.
+onloadstart ReadOnly &undefined HTMLTableRowElement.prototype.onloadstart
+%%% @HTMLTableRowElement@prototype.onmousedown has getter to model.
+%%% @HTMLTableRowElement@prototype.onmousedown has setter to model.
+onmousedown ReadOnly &undefined HTMLTableRowElement.prototype.onmousedown
+onmouseenter - &null HTMLTableRowElement.prototype.onmouseenter
+onmouseleave - &null HTMLTableRowElement.prototype.onmouseleave
+%%% @HTMLTableRowElement@prototype.onmousemove has getter to model.
+%%% @HTMLTableRowElement@prototype.onmousemove has setter to model.
+onmousemove ReadOnly &undefined HTMLTableRowElement.prototype.onmousemove
+%%% @HTMLTableRowElement@prototype.onmouseout has getter to model.
+%%% @HTMLTableRowElement@prototype.onmouseout has setter to model.
+onmouseout ReadOnly &undefined HTMLTableRowElement.prototype.onmouseout
+%%% @HTMLTableRowElement@prototype.onmouseover has getter to model.
+%%% @HTMLTableRowElement@prototype.onmouseover has setter to model.
+onmouseover ReadOnly &undefined HTMLTableRowElement.prototype.onmouseover
+%%% @HTMLTableRowElement@prototype.onmouseup has getter to model.
+%%% @HTMLTableRowElement@prototype.onmouseup has setter to model.
+onmouseup ReadOnly &undefined HTMLTableRowElement.prototype.onmouseup
+%%% @HTMLTableRowElement@prototype.onmozfullscreenchange has getter to model.
+%%% @HTMLTableRowElement@prototype.onmozfullscreenchange has setter to model.
+onmozfullscreenchange ReadOnly &undefined HTMLTableRowElement.prototype.onmozfullscreenchange
+%%% @HTMLTableRowElement@prototype.onmozfullscreenerror has getter to model.
+%%% @HTMLTableRowElement@prototype.onmozfullscreenerror has setter to model.
+onmozfullscreenerror ReadOnly &undefined HTMLTableRowElement.prototype.onmozfullscreenerror
+%%% @HTMLTableRowElement@prototype.onmozpointerlockchange has getter to model.
+%%% @HTMLTableRowElement@prototype.onmozpointerlockchange has setter to model.
+onmozpointerlockchange ReadOnly &undefined HTMLTableRowElement.prototype.onmozpointerlockchange
+%%% @HTMLTableRowElement@prototype.onmozpointerlockerror has getter to model.
+%%% @HTMLTableRowElement@prototype.onmozpointerlockerror has setter to model.
+onmozpointerlockerror ReadOnly &undefined HTMLTableRowElement.prototype.onmozpointerlockerror
+%%% @HTMLTableRowElement@prototype.onpaste has getter to model.
+%%% @HTMLTableRowElement@prototype.onpaste has setter to model.
+onpaste ReadOnly &undefined HTMLTableRowElement.prototype.onpaste
+%%% @HTMLTableRowElement@prototype.onpause has getter to model.
+%%% @HTMLTableRowElement@prototype.onpause has setter to model.
+onpause ReadOnly &undefined HTMLTableRowElement.prototype.onpause
+%%% @HTMLTableRowElement@prototype.onplay has getter to model.
+%%% @HTMLTableRowElement@prototype.onplay has setter to model.
+onplay ReadOnly &undefined HTMLTableRowElement.prototype.onplay
+%%% @HTMLTableRowElement@prototype.onplaying has getter to model.
+%%% @HTMLTableRowElement@prototype.onplaying has setter to model.
+onplaying ReadOnly &undefined HTMLTableRowElement.prototype.onplaying
+%%% @HTMLTableRowElement@prototype.onprogress has getter to model.
+%%% @HTMLTableRowElement@prototype.onprogress has setter to model.
+onprogress ReadOnly &undefined HTMLTableRowElement.prototype.onprogress
+%%% @HTMLTableRowElement@prototype.onratechange has getter to model.
+%%% @HTMLTableRowElement@prototype.onratechange has setter to model.
+onratechange ReadOnly &undefined HTMLTableRowElement.prototype.onratechange
+%%% @HTMLTableRowElement@prototype.onreset has getter to model.
+%%% @HTMLTableRowElement@prototype.onreset has setter to model.
+onreset ReadOnly &undefined HTMLTableRowElement.prototype.onreset
+%%% @HTMLTableRowElement@prototype.onscroll has getter to model.
+%%% @HTMLTableRowElement@prototype.onscroll has setter to model.
+onscroll ReadOnly &undefined HTMLTableRowElement.prototype.onscroll
+%%% @HTMLTableRowElement@prototype.onseeked has getter to model.
+%%% @HTMLTableRowElement@prototype.onseeked has setter to model.
+onseeked ReadOnly &undefined HTMLTableRowElement.prototype.onseeked
+%%% @HTMLTableRowElement@prototype.onseeking has getter to model.
+%%% @HTMLTableRowElement@prototype.onseeking has setter to model.
+onseeking ReadOnly &undefined HTMLTableRowElement.prototype.onseeking
+%%% @HTMLTableRowElement@prototype.onselect has getter to model.
+%%% @HTMLTableRowElement@prototype.onselect has setter to model.
+onselect ReadOnly &undefined HTMLTableRowElement.prototype.onselect
+%%% @HTMLTableRowElement@prototype.onshow has getter to model.
+%%% @HTMLTableRowElement@prototype.onshow has setter to model.
+onshow ReadOnly &undefined HTMLTableRowElement.prototype.onshow
+%%% @HTMLTableRowElement@prototype.onstalled has getter to model.
+%%% @HTMLTableRowElement@prototype.onstalled has setter to model.
+onstalled ReadOnly &undefined HTMLTableRowElement.prototype.onstalled
+%%% @HTMLTableRowElement@prototype.onsubmit has getter to model.
+%%% @HTMLTableRowElement@prototype.onsubmit has setter to model.
+onsubmit ReadOnly &undefined HTMLTableRowElement.prototype.onsubmit
+%%% @HTMLTableRowElement@prototype.onsuspend has getter to model.
+%%% @HTMLTableRowElement@prototype.onsuspend has setter to model.
+onsuspend ReadOnly &undefined HTMLTableRowElement.prototype.onsuspend
+%%% @HTMLTableRowElement@prototype.ontimeupdate has getter to model.
+%%% @HTMLTableRowElement@prototype.ontimeupdate has setter to model.
+ontimeupdate ReadOnly &undefined HTMLTableRowElement.prototype.ontimeupdate
+%%% @HTMLTableRowElement@prototype.onvolumechange has getter to model.
+%%% @HTMLTableRowElement@prototype.onvolumechange has setter to model.
+onvolumechange ReadOnly &undefined HTMLTableRowElement.prototype.onvolumechange
+%%% @HTMLTableRowElement@prototype.onwaiting has getter to model.
+%%% @HTMLTableRowElement@prototype.onwaiting has setter to model.
+onwaiting ReadOnly &undefined HTMLTableRowElement.prototype.onwaiting
+%%% @HTMLTableRowElement@prototype.onwheel has getter to model.
+%%% @HTMLTableRowElement@prototype.onwheel has setter to model.
+onwheel ReadOnly &undefined HTMLTableRowElement.prototype.onwheel
+%%% Unable to get descriptor info for property outerHTML.
+outerHTML - &null HTMLTableRowElement.prototype.outerHTML
+%%% Unable to get descriptor info for property ownerDocument.
+ownerDocument - &null HTMLTableRowElement.prototype.ownerDocument
+%%% Unable to get descriptor info for property parentElement.
+parentElement - &null HTMLTableRowElement.prototype.parentElement
+%%% Unable to get descriptor info for property parentNode.
+parentNode - &null HTMLTableRowElement.prototype.parentNode
+%%% Unable to get descriptor info for property prefix.
+prefix - &null HTMLTableRowElement.prototype.prefix
+%%% Unable to get descriptor info for property previousElementSibling.
+previousElementSibling - &null HTMLTableRowElement.prototype.previousElementSibling
+%%% Unable to get descriptor info for property previousSibling.
+previousSibling - &null HTMLTableRowElement.prototype.previousSibling
+%%% Unable to get descriptor info for property properties.
+properties - &null HTMLTableRowElement.prototype.properties
+querySelector - #HTMLTableRowElement#prototype#querySelector HTMLTableRowElement.prototype.querySelector
+querySelectorAll - #HTMLTableRowElement#prototype#querySelectorAll HTMLTableRowElement.prototype.querySelectorAll
+releaseCapture - #HTMLTableRowElement#prototype#releaseCapture HTMLTableRowElement.prototype.releaseCapture
+removeAttribute - #HTMLTableRowElement#prototype#removeAttribute HTMLTableRowElement.prototype.removeAttribute
+removeAttributeNS - #HTMLTableRowElement#prototype#removeAttributeNS HTMLTableRowElement.prototype.removeAttributeNS
+removeAttributeNode - #HTMLTableRowElement#prototype#removeAttributeNode HTMLTableRowElement.prototype.removeAttributeNode
+removeChild - #HTMLTableRowElement#prototype#removeChild HTMLTableRowElement.prototype.removeChild
+removeEventListener - #HTMLTableRowElement#prototype#removeEventListener HTMLTableRowElement.prototype.removeEventListener
+replaceChild - #HTMLTableRowElement#prototype#replaceChild HTMLTableRowElement.prototype.replaceChild
+%%% Unable to get descriptor info for property rowIndex.
+rowIndex - &null HTMLTableRowElement.prototype.rowIndex
+%%% Unable to get descriptor info for property scrollHeight.
+scrollHeight - &null HTMLTableRowElement.prototype.scrollHeight
+scrollIntoView - #HTMLTableRowElement#prototype#scrollIntoView HTMLTableRowElement.prototype.scrollIntoView
+%%% Unable to get descriptor info for property scrollLeft.
+scrollLeft - &null HTMLTableRowElement.prototype.scrollLeft
+%%% @HTMLTableRowElement@prototype.scrollLeftMax has getter to model.
+scrollLeftMax ReadOnly &undefined HTMLTableRowElement.prototype.scrollLeftMax
+%%% Unable to get descriptor info for property scrollTop.
+scrollTop - &null HTMLTableRowElement.prototype.scrollTop
+%%% @HTMLTableRowElement@prototype.scrollTopMax has getter to model.
+scrollTopMax ReadOnly &undefined HTMLTableRowElement.prototype.scrollTopMax
+%%% Unable to get descriptor info for property scrollWidth.
+scrollWidth - &null HTMLTableRowElement.prototype.scrollWidth
+%%% Unable to get descriptor info for property sectionRowIndex.
+sectionRowIndex - &null HTMLTableRowElement.prototype.sectionRowIndex
+setAttribute - #HTMLTableRowElement#prototype#setAttribute HTMLTableRowElement.prototype.setAttribute
+setAttributeNS - #HTMLTableRowElement#prototype#setAttributeNS HTMLTableRowElement.prototype.setAttributeNS
+setAttributeNode - #HTMLTableRowElement#prototype#setAttributeNode HTMLTableRowElement.prototype.setAttributeNode
+setAttributeNodeNS - #HTMLTableRowElement#prototype#setAttributeNodeNS HTMLTableRowElement.prototype.setAttributeNodeNS
+setCapture - #HTMLTableRowElement#prototype#setCapture HTMLTableRowElement.prototype.setCapture
+setUserData - #HTMLTableRowElement#prototype#setUserData HTMLTableRowElement.prototype.setUserData
+%%% Unable to get descriptor info for property spellcheck.
+spellcheck - &null HTMLTableRowElement.prototype.spellcheck
+%%% Unable to get descriptor info for property style.
+style - &null HTMLTableRowElement.prototype.style
+%%% Unable to get descriptor info for property tabIndex.
+tabIndex - &null HTMLTableRowElement.prototype.tabIndex
+%%% Unable to get descriptor info for property tagName.
+tagName - &null HTMLTableRowElement.prototype.tagName
+%%% Unable to get descriptor info for property textContent.
+textContent - &null HTMLTableRowElement.prototype.textContent
+%%% Unable to get descriptor info for property title.
+title - &null HTMLTableRowElement.prototype.title
+%%% @HTMLTableRowElement@prototype.vAlign has getter to model.
+%%% @HTMLTableRowElement@prototype.vAlign has setter to model.
+vAlign ReadOnly &undefined HTMLTableRowElement.prototype.vAlign
+
+
+@HTMLTableSectionElement@prototype
+
+% HTMLTableSectionElement#prototype properties
+ATTRIBUTE_NODE - 2 HTMLTableSectionElement.prototype.ATTRIBUTE_NODE
+CDATA_SECTION_NODE - 4 HTMLTableSectionElement.prototype.CDATA_SECTION_NODE
+COMMENT_NODE - 8 HTMLTableSectionElement.prototype.COMMENT_NODE
+DOCUMENT_FRAGMENT_NODE - 11 HTMLTableSectionElement.prototype.DOCUMENT_FRAGMENT_NODE
+DOCUMENT_NODE - 9 HTMLTableSectionElement.prototype.DOCUMENT_NODE
+DOCUMENT_POSITION_CONTAINED_BY - 16 HTMLTableSectionElement.prototype.DOCUMENT_POSITION_CONTAINED_BY
+DOCUMENT_POSITION_CONTAINS - 8 HTMLTableSectionElement.prototype.DOCUMENT_POSITION_CONTAINS
+DOCUMENT_POSITION_DISCONNECTED - 1 HTMLTableSectionElement.prototype.DOCUMENT_POSITION_DISCONNECTED
+DOCUMENT_POSITION_FOLLOWING - 4 HTMLTableSectionElement.prototype.DOCUMENT_POSITION_FOLLOWING
+DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC - 32 HTMLTableSectionElement.prototype.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+DOCUMENT_POSITION_PRECEDING - 2 HTMLTableSectionElement.prototype.DOCUMENT_POSITION_PRECEDING
+DOCUMENT_TYPE_NODE - 10 HTMLTableSectionElement.prototype.DOCUMENT_TYPE_NODE
+ELEMENT_NODE - 1 HTMLTableSectionElement.prototype.ELEMENT_NODE
+ENTITY_NODE - 6 HTMLTableSectionElement.prototype.ENTITY_NODE
+ENTITY_REFERENCE_NODE - 5 HTMLTableSectionElement.prototype.ENTITY_REFERENCE_NODE
+NOTATION_NODE - 12 HTMLTableSectionElement.prototype.NOTATION_NODE
+PROCESSING_INSTRUCTION_NODE - 7 HTMLTableSectionElement.prototype.PROCESSING_INSTRUCTION_NODE
+QueryInterface DontEnum #HTMLTableSectionElement#prototype#QueryInterface HTMLTableSectionElement.prototype.QueryInterface
+TEXT_NODE - 3 HTMLTableSectionElement.prototype.TEXT_NODE
+__defineGetter__ DontEnum #HTMLTableSectionElement#prototype#__defineGetter__ HTMLTableSectionElement.prototype.__defineGetter__
+__defineSetter__ DontEnum #HTMLTableSectionElement#prototype#__defineSetter__ HTMLTableSectionElement.prototype.__defineSetter__
+__lookupGetter__ DontEnum #HTMLTableSectionElement#prototype#__lookupGetter__ HTMLTableSectionElement.prototype.__lookupGetter__
+__lookupSetter__ DontEnum #HTMLTableSectionElement#prototype#__lookupSetter__ HTMLTableSectionElement.prototype.__lookupSetter__
+__proto__ DontEnum #HTMLElement#prototype HTMLElement.prototype
+%%% Unable to get descriptor info for property accessKey.
+accessKey - &null HTMLTableSectionElement.prototype.accessKey
+%%% Unable to get descriptor info for property accessKeyLabel.
+accessKeyLabel - &null HTMLTableSectionElement.prototype.accessKeyLabel
+addEventListener - #HTMLTableSectionElement#prototype#addEventListener HTMLTableSectionElement.prototype.addEventListener
+%%% @HTMLTableSectionElement@prototype.align has getter to model.
+%%% @HTMLTableSectionElement@prototype.align has setter to model.
+align ReadOnly &undefined HTMLTableSectionElement.prototype.align
+appendChild - #HTMLTableSectionElement#prototype#appendChild HTMLTableSectionElement.prototype.appendChild
+%%% Unable to get descriptor info for property attributes.
+attributes - &null HTMLTableSectionElement.prototype.attributes
+%%% Unable to get descriptor info for property baseURI.
+baseURI - &null HTMLTableSectionElement.prototype.baseURI
+blur - #HTMLTableSectionElement#prototype#blur HTMLTableSectionElement.prototype.blur
+%%% @HTMLTableSectionElement@prototype.ch has getter to model.
+%%% @HTMLTableSectionElement@prototype.ch has setter to model.
+ch ReadOnly &undefined HTMLTableSectionElement.prototype.ch
+%%% @HTMLTableSectionElement@prototype.chOff has getter to model.
+%%% @HTMLTableSectionElement@prototype.chOff has setter to model.
+chOff ReadOnly &undefined HTMLTableSectionElement.prototype.chOff
+%%% Unable to get descriptor info for property childElementCount.
+childElementCount - &null HTMLTableSectionElement.prototype.childElementCount
+%%% Unable to get descriptor info for property childNodes.
+childNodes - &null HTMLTableSectionElement.prototype.childNodes
+%%% Unable to get descriptor info for property children.
+children - &null HTMLTableSectionElement.prototype.children
+%%% Unable to get descriptor info for property classList.
+classList - &null HTMLTableSectionElement.prototype.classList
+%%% Unable to get descriptor info for property className.
+className - &null HTMLTableSectionElement.prototype.className
+click - #HTMLTableSectionElement#prototype#click HTMLTableSectionElement.prototype.click
+%%% Unable to get descriptor info for property clientHeight.
+clientHeight - &null HTMLTableSectionElement.prototype.clientHeight
+%%% Unable to get descriptor info for property clientLeft.
+clientLeft - &null HTMLTableSectionElement.prototype.clientLeft
+%%% Unable to get descriptor info for property clientTop.
+clientTop - &null HTMLTableSectionElement.prototype.clientTop
+%%% Unable to get descriptor info for property clientWidth.
+clientWidth - &null HTMLTableSectionElement.prototype.clientWidth
+cloneNode - #HTMLTableSectionElement#prototype#cloneNode HTMLTableSectionElement.prototype.cloneNode
+compareDocumentPosition - #HTMLTableSectionElement#prototype#compareDocumentPosition HTMLTableSectionElement.prototype.compareDocumentPosition
+contains - #HTMLTableSectionElement#prototype#contains HTMLTableSectionElement.prototype.contains
+%%% Unable to get descriptor info for property contentEditable.
+contentEditable - &null HTMLTableSectionElement.prototype.contentEditable
+%%% Unable to get descriptor info for property contextMenu.
+contextMenu - &null HTMLTableSectionElement.prototype.contextMenu
+%%% Unable to get descriptor info for property dataset.
+dataset - &null HTMLTableSectionElement.prototype.dataset
+deleteRow - #HTMLTableSectionElement#prototype#deleteRow HTMLTableSectionElement.prototype.deleteRow
+%%% Unable to get descriptor info for property dir.
+dir - &null HTMLTableSectionElement.prototype.dir
+dispatchEvent - #HTMLTableSectionElement#prototype#dispatchEvent HTMLTableSectionElement.prototype.dispatchEvent
+%%% Unable to get descriptor info for property draggable.
+draggable - &null HTMLTableSectionElement.prototype.draggable
+%%% Unable to get descriptor info for property firstChild.
+firstChild - &null HTMLTableSectionElement.prototype.firstChild
+%%% Unable to get descriptor info for property firstElementChild.
+firstElementChild - &null HTMLTableSectionElement.prototype.firstElementChild
+focus - #HTMLTableSectionElement#prototype#focus HTMLTableSectionElement.prototype.focus
+getAttribute - #HTMLTableSectionElement#prototype#getAttribute HTMLTableSectionElement.prototype.getAttribute
+getAttributeNS - #HTMLTableSectionElement#prototype#getAttributeNS HTMLTableSectionElement.prototype.getAttributeNS
+getAttributeNode - #HTMLTableSectionElement#prototype#getAttributeNode HTMLTableSectionElement.prototype.getAttributeNode
+getAttributeNodeNS - #HTMLTableSectionElement#prototype#getAttributeNodeNS HTMLTableSectionElement.prototype.getAttributeNodeNS
+getBoundingClientRect - #HTMLTableSectionElement#prototype#getBoundingClientRect HTMLTableSectionElement.prototype.getBoundingClientRect
+getClientRects - #HTMLTableSectionElement#prototype#getClientRects HTMLTableSectionElement.prototype.getClientRects
+getElementsByClassName - #HTMLTableSectionElement#prototype#getElementsByClassName HTMLTableSectionElement.prototype.getElementsByClassName
+getElementsByTagName - #HTMLTableSectionElement#prototype#getElementsByTagName HTMLTableSectionElement.prototype.getElementsByTagName
+getElementsByTagNameNS - #HTMLTableSectionElement#prototype#getElementsByTagNameNS HTMLTableSectionElement.prototype.getElementsByTagNameNS
+getUserData - #HTMLTableSectionElement#prototype#getUserData HTMLTableSectionElement.prototype.getUserData
+hasAttribute - #HTMLTableSectionElement#prototype#hasAttribute HTMLTableSectionElement.prototype.hasAttribute
+hasAttributeNS - #HTMLTableSectionElement#prototype#hasAttributeNS HTMLTableSectionElement.prototype.hasAttributeNS
+hasAttributes - #HTMLTableSectionElement#prototype#hasAttributes HTMLTableSectionElement.prototype.hasAttributes
+hasChildNodes - #HTMLTableSectionElement#prototype#hasChildNodes HTMLTableSectionElement.prototype.hasChildNodes
+%%% Unable to get descriptor info for property hidden.
+hidden - &null HTMLTableSectionElement.prototype.hidden
+%%% Unable to get descriptor info for property id.
+id - &null HTMLTableSectionElement.prototype.id
+%%% Unable to get descriptor info for property innerHTML.
+innerHTML - &null HTMLTableSectionElement.prototype.innerHTML
+insertAdjacentHTML - #HTMLTableSectionElement#prototype#insertAdjacentHTML HTMLTableSectionElement.prototype.insertAdjacentHTML
+insertBefore - #HTMLTableSectionElement#prototype#insertBefore HTMLTableSectionElement.prototype.insertBefore
+insertRow - #HTMLTableSectionElement#prototype#insertRow HTMLTableSectionElement.prototype.insertRow
+%%% Unable to get descriptor info for property isContentEditable.
+isContentEditable - &null HTMLTableSectionElement.prototype.isContentEditable
+isDefaultNamespace - #HTMLTableSectionElement#prototype#isDefaultNamespace HTMLTableSectionElement.prototype.isDefaultNamespace
+isEqualNode - #HTMLTableSectionElement#prototype#isEqualNode HTMLTableSectionElement.prototype.isEqualNode
+isSupported - #HTMLTableSectionElement#prototype#isSupported HTMLTableSectionElement.prototype.isSupported
+%%% Unable to get descriptor info for property itemId.
+itemId - &null HTMLTableSectionElement.prototype.itemId
+%%% @HTMLTableSectionElement@prototype.itemProp has getter to model.
+%%% @HTMLTableSectionElement@prototype.itemProp has setter to model.
+itemProp ReadOnly &undefined HTMLTableSectionElement.prototype.itemProp
+%%% @HTMLTableSectionElement@prototype.itemRef has getter to model.
+%%% @HTMLTableSectionElement@prototype.itemRef has setter to model.
+itemRef ReadOnly &undefined HTMLTableSectionElement.prototype.itemRef
+%%% Unable to get descriptor info for property itemScope.
+itemScope - &null HTMLTableSectionElement.prototype.itemScope
+%%% @HTMLTableSectionElement@prototype.itemType has getter to model.
+%%% @HTMLTableSectionElement@prototype.itemType has setter to model.
+itemType ReadOnly &undefined HTMLTableSectionElement.prototype.itemType
+%%% @HTMLTableSectionElement@prototype.itemValue has getter to model.
+%%% @HTMLTableSectionElement@prototype.itemValue has setter to model.
+itemValue ReadOnly &undefined HTMLTableSectionElement.prototype.itemValue
+%%% Unable to get descriptor info for property lang.
+lang - &null HTMLTableSectionElement.prototype.lang
+%%% Unable to get descriptor info for property lastChild.
+lastChild - &null HTMLTableSectionElement.prototype.lastChild
+%%% Unable to get descriptor info for property lastElementChild.
+lastElementChild - &null HTMLTableSectionElement.prototype.lastElementChild
+%%% Unable to get descriptor info for property localName.
+localName - &null HTMLTableSectionElement.prototype.localName
+lookupNamespaceURI - #HTMLTableSectionElement#prototype#lookupNamespaceURI HTMLTableSectionElement.prototype.lookupNamespaceURI
+lookupPrefix - #HTMLTableSectionElement#prototype#lookupPrefix HTMLTableSectionElement.prototype.lookupPrefix
+mozMatchesSelector - #HTMLTableSectionElement#prototype#mozMatchesSelector HTMLTableSectionElement.prototype.mozMatchesSelector
+mozRequestFullScreen - #HTMLTableSectionElement#prototype#mozRequestFullScreen HTMLTableSectionElement.prototype.mozRequestFullScreen
+mozRequestPointerLock - #HTMLTableSectionElement#prototype#mozRequestPointerLock HTMLTableSectionElement.prototype.mozRequestPointerLock
+%%% Unable to get descriptor info for property namespaceURI.
+namespaceURI - &null HTMLTableSectionElement.prototype.namespaceURI
+%%% Unable to get descriptor info for property nextElementSibling.
+nextElementSibling - &null HTMLTableSectionElement.prototype.nextElementSibling
+%%% Unable to get descriptor info for property nextSibling.
+nextSibling - &null HTMLTableSectionElement.prototype.nextSibling
+%%% Unable to get descriptor info for property nodeName.
+nodeName - &null HTMLTableSectionElement.prototype.nodeName
+%%% Unable to get descriptor info for property nodeType.
+nodeType - &null HTMLTableSectionElement.prototype.nodeType
+%%% Unable to get descriptor info for property nodeValue.
+nodeValue - &null HTMLTableSectionElement.prototype.nodeValue
+normalize - #HTMLTableSectionElement#prototype#normalize HTMLTableSectionElement.prototype.normalize
+%%% Unable to get descriptor info for property offsetHeight.
+offsetHeight - &null HTMLTableSectionElement.prototype.offsetHeight
+%%% Unable to get descriptor info for property offsetLeft.
+offsetLeft - &null HTMLTableSectionElement.prototype.offsetLeft
+%%% Unable to get descriptor info for property offsetParent.
+offsetParent - &null HTMLTableSectionElement.prototype.offsetParent
+%%% Unable to get descriptor info for property offsetTop.
+offsetTop - &null HTMLTableSectionElement.prototype.offsetTop
+%%% Unable to get descriptor info for property offsetWidth.
+offsetWidth - &null HTMLTableSectionElement.prototype.offsetWidth
+%%% @HTMLTableSectionElement@prototype.onabort has getter to model.
+%%% @HTMLTableSectionElement@prototype.onabort has setter to model.
+onabort ReadOnly &undefined HTMLTableSectionElement.prototype.onabort
+%%% @HTMLTableSectionElement@prototype.onafterscriptexecute has getter to model.
+%%% @HTMLTableSectionElement@prototype.onafterscriptexecute has setter to model.
+onafterscriptexecute ReadOnly &undefined HTMLTableSectionElement.prototype.onafterscriptexecute
+%%% @HTMLTableSectionElement@prototype.onbeforescriptexecute has getter to model.
+%%% @HTMLTableSectionElement@prototype.onbeforescriptexecute has setter to model.
+onbeforescriptexecute ReadOnly &undefined HTMLTableSectionElement.prototype.onbeforescriptexecute
+%%% @HTMLTableSectionElement@prototype.onblur has getter to model.
+%%% @HTMLTableSectionElement@prototype.onblur has setter to model.
+onblur ReadOnly &undefined HTMLTableSectionElement.prototype.onblur
+%%% @HTMLTableSectionElement@prototype.oncanplay has getter to model.
+%%% @HTMLTableSectionElement@prototype.oncanplay has setter to model.
+oncanplay ReadOnly &undefined HTMLTableSectionElement.prototype.oncanplay
+%%% @HTMLTableSectionElement@prototype.oncanplaythrough has getter to model.
+%%% @HTMLTableSectionElement@prototype.oncanplaythrough has setter to model.
+oncanplaythrough ReadOnly &undefined HTMLTableSectionElement.prototype.oncanplaythrough
+%%% @HTMLTableSectionElement@prototype.onchange has getter to model.
+%%% @HTMLTableSectionElement@prototype.onchange has setter to model.
+onchange ReadOnly &undefined HTMLTableSectionElement.prototype.onchange
+%%% @HTMLTableSectionElement@prototype.onclick has getter to model.
+%%% @HTMLTableSectionElement@prototype.onclick has setter to model.
+onclick ReadOnly &undefined HTMLTableSectionElement.prototype.onclick
+%%% @HTMLTableSectionElement@prototype.oncontextmenu has getter to model.
+%%% @HTMLTableSectionElement@prototype.oncontextmenu has setter to model.
+oncontextmenu ReadOnly &undefined HTMLTableSectionElement.prototype.oncontextmenu
+%%% @HTMLTableSectionElement@prototype.oncopy has getter to model.
+%%% @HTMLTableSectionElement@prototype.oncopy has setter to model.
+oncopy ReadOnly &undefined HTMLTableSectionElement.prototype.oncopy
+%%% @HTMLTableSectionElement@prototype.oncut has getter to model.
+%%% @HTMLTableSectionElement@prototype.oncut has setter to model.
+oncut ReadOnly &undefined HTMLTableSectionElement.prototype.oncut
+%%% @HTMLTableSectionElement@prototype.ondblclick has getter to model.
+%%% @HTMLTableSectionElement@prototype.ondblclick has setter to model.
+ondblclick ReadOnly &undefined HTMLTableSectionElement.prototype.ondblclick
+%%% @HTMLTableSectionElement@prototype.ondrag has getter to model.
+%%% @HTMLTableSectionElement@prototype.ondrag has setter to model.
+ondrag ReadOnly &undefined HTMLTableSectionElement.prototype.ondrag
+%%% @HTMLTableSectionElement@prototype.ondragend has getter to model.
+%%% @HTMLTableSectionElement@prototype.ondragend has setter to model.
+ondragend ReadOnly &undefined HTMLTableSectionElement.prototype.ondragend
+%%% @HTMLTableSectionElement@prototype.ondragenter has getter to model.
+%%% @HTMLTableSectionElement@prototype.ondragenter has setter to model.
+ondragenter ReadOnly &undefined HTMLTableSectionElement.prototype.ondragenter
+%%% @HTMLTableSectionElement@prototype.ondragleave has getter to model.
+%%% @HTMLTableSectionElement@prototype.ondragleave has setter to model.
+ondragleave ReadOnly &undefined HTMLTableSectionElement.prototype.ondragleave
+%%% @HTMLTableSectionElement@prototype.ondragover has getter to model.
+%%% @HTMLTableSectionElement@prototype.ondragover has setter to model.
+ondragover ReadOnly &undefined HTMLTableSectionElement.prototype.ondragover
+%%% @HTMLTableSectionElement@prototype.ondragstart has getter to model.
+%%% @HTMLTableSectionElement@prototype.ondragstart has setter to model.
+ondragstart ReadOnly &undefined HTMLTableSectionElement.prototype.ondragstart
+%%% @HTMLTableSectionElement@prototype.ondrop has getter to model.
+%%% @HTMLTableSectionElement@prototype.ondrop has setter to model.
+ondrop ReadOnly &undefined HTMLTableSectionElement.prototype.ondrop
+%%% @HTMLTableSectionElement@prototype.ondurationchange has getter to model.
+%%% @HTMLTableSectionElement@prototype.ondurationchange has setter to model.
+ondurationchange ReadOnly &undefined HTMLTableSectionElement.prototype.ondurationchange
+%%% @HTMLTableSectionElement@prototype.onemptied has getter to model.
+%%% @HTMLTableSectionElement@prototype.onemptied has setter to model.
+onemptied ReadOnly &undefined HTMLTableSectionElement.prototype.onemptied
+%%% @HTMLTableSectionElement@prototype.onended has getter to model.
+%%% @HTMLTableSectionElement@prototype.onended has setter to model.
+onended ReadOnly &undefined HTMLTableSectionElement.prototype.onended
+%%% @HTMLTableSectionElement@prototype.onerror has getter to model.
+%%% @HTMLTableSectionElement@prototype.onerror has setter to model.
+onerror ReadOnly &undefined HTMLTableSectionElement.prototype.onerror
+%%% @HTMLTableSectionElement@prototype.onfocus has getter to model.
+%%% @HTMLTableSectionElement@prototype.onfocus has setter to model.
+onfocus ReadOnly &undefined HTMLTableSectionElement.prototype.onfocus
+%%% @HTMLTableSectionElement@prototype.oninput has getter to model.
+%%% @HTMLTableSectionElement@prototype.oninput has setter to model.
+oninput ReadOnly &undefined HTMLTableSectionElement.prototype.oninput
+%%% @HTMLTableSectionElement@prototype.oninvalid has getter to model.
+%%% @HTMLTableSectionElement@prototype.oninvalid has setter to model.
+oninvalid ReadOnly &undefined HTMLTableSectionElement.prototype.oninvalid
+%%% @HTMLTableSectionElement@prototype.onkeydown has getter to model.
+%%% @HTMLTableSectionElement@prototype.onkeydown has setter to model.
+onkeydown ReadOnly &undefined HTMLTableSectionElement.prototype.onkeydown
+%%% @HTMLTableSectionElement@prototype.onkeypress has getter to model.
+%%% @HTMLTableSectionElement@prototype.onkeypress has setter to model.
+onkeypress ReadOnly &undefined HTMLTableSectionElement.prototype.onkeypress
+%%% @HTMLTableSectionElement@prototype.onkeyup has getter to model.
+%%% @HTMLTableSectionElement@prototype.onkeyup has setter to model.
+onkeyup ReadOnly &undefined HTMLTableSectionElement.prototype.onkeyup
+%%% @HTMLTableSectionElement@prototype.onload has getter to model.
+%%% @HTMLTableSectionElement@prototype.onload has setter to model.
+onload ReadOnly &undefined HTMLTableSectionElement.prototype.onload
+%%% @HTMLTableSectionElement@prototype.onloadeddata has getter to model.
+%%% @HTMLTableSectionElement@prototype.onloadeddata has setter to model.
+onloadeddata ReadOnly &undefined HTMLTableSectionElement.prototype.onloadeddata
+%%% @HTMLTableSectionElement@prototype.onloadedmetadata has getter to model.
+%%% @HTMLTableSectionElement@prototype.onloadedmetadata has setter to model.
+onloadedmetadata ReadOnly &undefined HTMLTableSectionElement.prototype.onloadedmetadata
+%%% @HTMLTableSectionElement@prototype.onloadstart has getter to model.
+%%% @HTMLTableSectionElement@prototype.onloadstart has setter to model.
+onloadstart ReadOnly &undefined HTMLTableSectionElement.prototype.onloadstart
+%%% @HTMLTableSectionElement@prototype.onmousedown has getter to model.
+%%% @HTMLTableSectionElement@prototype.onmousedown has setter to model.
+onmousedown ReadOnly &undefined HTMLTableSectionElement.prototype.onmousedown
+onmouseenter - &null HTMLTableSectionElement.prototype.onmouseenter
+onmouseleave - &null HTMLTableSectionElement.prototype.onmouseleave
+%%% @HTMLTableSectionElement@prototype.onmousemove has getter to model.
+%%% @HTMLTableSectionElement@prototype.onmousemove has setter to model.
+onmousemove ReadOnly &undefined HTMLTableSectionElement.prototype.onmousemove
+%%% @HTMLTableSectionElement@prototype.onmouseout has getter to model.
+%%% @HTMLTableSectionElement@prototype.onmouseout has setter to model.
+onmouseout ReadOnly &undefined HTMLTableSectionElement.prototype.onmouseout
+%%% @HTMLTableSectionElement@prototype.onmouseover has getter to model.
+%%% @HTMLTableSectionElement@prototype.onmouseover has setter to model.
+onmouseover ReadOnly &undefined HTMLTableSectionElement.prototype.onmouseover
+%%% @HTMLTableSectionElement@prototype.onmouseup has getter to model.
+%%% @HTMLTableSectionElement@prototype.onmouseup has setter to model.
+onmouseup ReadOnly &undefined HTMLTableSectionElement.prototype.onmouseup
+%%% @HTMLTableSectionElement@prototype.onmozfullscreenchange has getter to model.
+%%% @HTMLTableSectionElement@prototype.onmozfullscreenchange has setter to model.
+onmozfullscreenchange ReadOnly &undefined HTMLTableSectionElement.prototype.onmozfullscreenchange
+%%% @HTMLTableSectionElement@prototype.onmozfullscreenerror has getter to model.
+%%% @HTMLTableSectionElement@prototype.onmozfullscreenerror has setter to model.
+onmozfullscreenerror ReadOnly &undefined HTMLTableSectionElement.prototype.onmozfullscreenerror
+%%% @HTMLTableSectionElement@prototype.onmozpointerlockchange has getter to model.
+%%% @HTMLTableSectionElement@prototype.onmozpointerlockchange has setter to model.
+onmozpointerlockchange ReadOnly &undefined HTMLTableSectionElement.prototype.onmozpointerlockchange
+%%% @HTMLTableSectionElement@prototype.onmozpointerlockerror has getter to model.
+%%% @HTMLTableSectionElement@prototype.onmozpointerlockerror has setter to model.
+onmozpointerlockerror ReadOnly &undefined HTMLTableSectionElement.prototype.onmozpointerlockerror
+%%% @HTMLTableSectionElement@prototype.onpaste has getter to model.
+%%% @HTMLTableSectionElement@prototype.onpaste has setter to model.
+onpaste ReadOnly &undefined HTMLTableSectionElement.prototype.onpaste
+%%% @HTMLTableSectionElement@prototype.onpause has getter to model.
+%%% @HTMLTableSectionElement@prototype.onpause has setter to model.
+onpause ReadOnly &undefined HTMLTableSectionElement.prototype.onpause
+%%% @HTMLTableSectionElement@prototype.onplay has getter to model.
+%%% @HTMLTableSectionElement@prototype.onplay has setter to model.
+onplay ReadOnly &undefined HTMLTableSectionElement.prototype.onplay
+%%% @HTMLTableSectionElement@prototype.onplaying has getter to model.
+%%% @HTMLTableSectionElement@prototype.onplaying has setter to model.
+onplaying ReadOnly &undefined HTMLTableSectionElement.prototype.onplaying
+%%% @HTMLTableSectionElement@prototype.onprogress has getter to model.
+%%% @HTMLTableSectionElement@prototype.onprogress has setter to model.
+onprogress ReadOnly &undefined HTMLTableSectionElement.prototype.onprogress
+%%% @HTMLTableSectionElement@prototype.onratechange has getter to model.
+%%% @HTMLTableSectionElement@prototype.onratechange has setter to model.
+onratechange ReadOnly &undefined HTMLTableSectionElement.prototype.onratechange
+%%% @HTMLTableSectionElement@prototype.onreset has getter to model.
+%%% @HTMLTableSectionElement@prototype.onreset has setter to model.
+onreset ReadOnly &undefined HTMLTableSectionElement.prototype.onreset
+%%% @HTMLTableSectionElement@prototype.onscroll has getter to model.
+%%% @HTMLTableSectionElement@prototype.onscroll has setter to model.
+onscroll ReadOnly &undefined HTMLTableSectionElement.prototype.onscroll
+%%% @HTMLTableSectionElement@prototype.onseeked has getter to model.
+%%% @HTMLTableSectionElement@prototype.onseeked has setter to model.
+onseeked ReadOnly &undefined HTMLTableSectionElement.prototype.onseeked
+%%% @HTMLTableSectionElement@prototype.onseeking has getter to model.
+%%% @HTMLTableSectionElement@prototype.onseeking has setter to model.
+onseeking ReadOnly &undefined HTMLTableSectionElement.prototype.onseeking
+%%% @HTMLTableSectionElement@prototype.onselect has getter to model.
+%%% @HTMLTableSectionElement@prototype.onselect has setter to model.
+onselect ReadOnly &undefined HTMLTableSectionElement.prototype.onselect
+%%% @HTMLTableSectionElement@prototype.onshow has getter to model.
+%%% @HTMLTableSectionElement@prototype.onshow has setter to model.
+onshow ReadOnly &undefined HTMLTableSectionElement.prototype.onshow
+%%% @HTMLTableSectionElement@prototype.onstalled has getter to model.
+%%% @HTMLTableSectionElement@prototype.onstalled has setter to model.
+onstalled ReadOnly &undefined HTMLTableSectionElement.prototype.onstalled
+%%% @HTMLTableSectionElement@prototype.onsubmit has getter to model.
+%%% @HTMLTableSectionElement@prototype.onsubmit has setter to model.
+onsubmit ReadOnly &undefined HTMLTableSectionElement.prototype.onsubmit
+%%% @HTMLTableSectionElement@prototype.onsuspend has getter to model.
+%%% @HTMLTableSectionElement@prototype.onsuspend has setter to model.
+onsuspend ReadOnly &undefined HTMLTableSectionElement.prototype.onsuspend
+%%% @HTMLTableSectionElement@prototype.ontimeupdate has getter to model.
+%%% @HTMLTableSectionElement@prototype.ontimeupdate has setter to model.
+ontimeupdate ReadOnly &undefined HTMLTableSectionElement.prototype.ontimeupdate
+%%% @HTMLTableSectionElement@prototype.onvolumechange has getter to model.
+%%% @HTMLTableSectionElement@prototype.onvolumechange has setter to model.
+onvolumechange ReadOnly &undefined HTMLTableSectionElement.prototype.onvolumechange
+%%% @HTMLTableSectionElement@prototype.onwaiting has getter to model.
+%%% @HTMLTableSectionElement@prototype.onwaiting has setter to model.
+onwaiting ReadOnly &undefined HTMLTableSectionElement.prototype.onwaiting
+%%% @HTMLTableSectionElement@prototype.onwheel has getter to model.
+%%% @HTMLTableSectionElement@prototype.onwheel has setter to model.
+onwheel ReadOnly &undefined HTMLTableSectionElement.prototype.onwheel
+%%% Unable to get descriptor info for property outerHTML.
+outerHTML - &null HTMLTableSectionElement.prototype.outerHTML
+%%% Unable to get descriptor info for property ownerDocument.
+ownerDocument - &null HTMLTableSectionElement.prototype.ownerDocument
+%%% Unable to get descriptor info for property parentElement.
+parentElement - &null HTMLTableSectionElement.prototype.parentElement
+%%% Unable to get descriptor info for property parentNode.
+parentNode - &null HTMLTableSectionElement.prototype.parentNode
+%%% Unable to get descriptor info for property prefix.
+prefix - &null HTMLTableSectionElement.prototype.prefix
+%%% Unable to get descriptor info for property previousElementSibling.
+previousElementSibling - &null HTMLTableSectionElement.prototype.previousElementSibling
+%%% Unable to get descriptor info for property previousSibling.
+previousSibling - &null HTMLTableSectionElement.prototype.previousSibling
+%%% Unable to get descriptor info for property properties.
+properties - &null HTMLTableSectionElement.prototype.properties
+querySelector - #HTMLTableSectionElement#prototype#querySelector HTMLTableSectionElement.prototype.querySelector
+querySelectorAll - #HTMLTableSectionElement#prototype#querySelectorAll HTMLTableSectionElement.prototype.querySelectorAll
+releaseCapture - #HTMLTableSectionElement#prototype#releaseCapture HTMLTableSectionElement.prototype.releaseCapture
+removeAttribute - #HTMLTableSectionElement#prototype#removeAttribute HTMLTableSectionElement.prototype.removeAttribute
+removeAttributeNS - #HTMLTableSectionElement#prototype#removeAttributeNS HTMLTableSectionElement.prototype.removeAttributeNS
+removeAttributeNode - #HTMLTableSectionElement#prototype#removeAttributeNode HTMLTableSectionElement.prototype.removeAttributeNode
+removeChild - #HTMLTableSectionElement#prototype#removeChild HTMLTableSectionElement.prototype.removeChild
+removeEventListener - #HTMLTableSectionElement#prototype#removeEventListener HTMLTableSectionElement.prototype.removeEventListener
+replaceChild - #HTMLTableSectionElement#prototype#replaceChild HTMLTableSectionElement.prototype.replaceChild
+%%% Unable to get descriptor info for property rows.
+rows - &null HTMLTableSectionElement.prototype.rows
+%%% Unable to get descriptor info for property scrollHeight.
+scrollHeight - &null HTMLTableSectionElement.prototype.scrollHeight
+scrollIntoView - #HTMLTableSectionElement#prototype#scrollIntoView HTMLTableSectionElement.prototype.scrollIntoView
+%%% Unable to get descriptor info for property scrollLeft.
+scrollLeft - &null HTMLTableSectionElement.prototype.scrollLeft
+%%% @HTMLTableSectionElement@prototype.scrollLeftMax has getter to model.
+scrollLeftMax ReadOnly &undefined HTMLTableSectionElement.prototype.scrollLeftMax
+%%% Unable to get descriptor info for property scrollTop.
+scrollTop - &null HTMLTableSectionElement.prototype.scrollTop
+%%% @HTMLTableSectionElement@prototype.scrollTopMax has getter to model.
+scrollTopMax ReadOnly &undefined HTMLTableSectionElement.prototype.scrollTopMax
+%%% Unable to get descriptor info for property scrollWidth.
+scrollWidth - &null HTMLTableSectionElement.prototype.scrollWidth
+setAttribute - #HTMLTableSectionElement#prototype#setAttribute HTMLTableSectionElement.prototype.setAttribute
+setAttributeNS - #HTMLTableSectionElement#prototype#setAttributeNS HTMLTableSectionElement.prototype.setAttributeNS
+setAttributeNode - #HTMLTableSectionElement#prototype#setAttributeNode HTMLTableSectionElement.prototype.setAttributeNode
+setAttributeNodeNS - #HTMLTableSectionElement#prototype#setAttributeNodeNS HTMLTableSectionElement.prototype.setAttributeNodeNS
+setCapture - #HTMLTableSectionElement#prototype#setCapture HTMLTableSectionElement.prototype.setCapture
+setUserData - #HTMLTableSectionElement#prototype#setUserData HTMLTableSectionElement.prototype.setUserData
+%%% Unable to get descriptor info for property spellcheck.
+spellcheck - &null HTMLTableSectionElement.prototype.spellcheck
+%%% Unable to get descriptor info for property style.
+style - &null HTMLTableSectionElement.prototype.style
+%%% Unable to get descriptor info for property tabIndex.
+tabIndex - &null HTMLTableSectionElement.prototype.tabIndex
+%%% Unable to get descriptor info for property tagName.
+tagName - &null HTMLTableSectionElement.prototype.tagName
+%%% Unable to get descriptor info for property textContent.
+textContent - &null HTMLTableSectionElement.prototype.textContent
+%%% Unable to get descriptor info for property title.
+title - &null HTMLTableSectionElement.prototype.title
+%%% @HTMLTableSectionElement@prototype.vAlign has getter to model.
+%%% @HTMLTableSectionElement@prototype.vAlign has setter to model.
+vAlign ReadOnly &undefined HTMLTableSectionElement.prototype.vAlign
+
+
 @HTMLTitleElement@prototype
 
 % HTMLTitleElement#prototype properties
@@ -15061,6 +16443,176 @@ timeStamp - &null Event.prototype.timeStamp
 type - &null Event.prototype.type
 
 
+@CustomEvent@prototype
+
+% CustomEvent#prototype properties
+ABORT - 4194304 CustomEvent.prototype.ABORT
+ALT_MASK - 1 CustomEvent.prototype.ALT_MASK
+AT_TARGET - 2 CustomEvent.prototype.AT_TARGET
+BACK - 536870912 CustomEvent.prototype.BACK
+BLUR - 8192 CustomEvent.prototype.BLUR
+BUBBLING_PHASE - 3 CustomEvent.prototype.BUBBLING_PHASE
+CAPTURING_PHASE - 1 CustomEvent.prototype.CAPTURING_PHASE
+CHANGE - 32768 CustomEvent.prototype.CHANGE
+CLICK - 64 CustomEvent.prototype.CLICK
+CONTROL_MASK - 2 CustomEvent.prototype.CONTROL_MASK
+DBLCLICK - 128 CustomEvent.prototype.DBLCLICK
+DRAGDROP - 2048 CustomEvent.prototype.DRAGDROP
+ERROR - 8388608 CustomEvent.prototype.ERROR
+FOCUS - 4096 CustomEvent.prototype.FOCUS
+FORWARD - 134217728 CustomEvent.prototype.FORWARD
+HELP - 268435456 CustomEvent.prototype.HELP
+KEYDOWN - 256 CustomEvent.prototype.KEYDOWN
+KEYPRESS - 1024 CustomEvent.prototype.KEYPRESS
+KEYUP - 512 CustomEvent.prototype.KEYUP
+LOAD - 524288 CustomEvent.prototype.LOAD
+LOCATE - 16777216 CustomEvent.prototype.LOCATE
+META_MASK - 8 CustomEvent.prototype.META_MASK
+MOUSEDOWN - 1 CustomEvent.prototype.MOUSEDOWN
+MOUSEDRAG - 32 CustomEvent.prototype.MOUSEDRAG
+MOUSEMOVE - 16 CustomEvent.prototype.MOUSEMOVE
+MOUSEOUT - 8 CustomEvent.prototype.MOUSEOUT
+MOUSEOVER - 4 CustomEvent.prototype.MOUSEOVER
+MOUSEUP - 2 CustomEvent.prototype.MOUSEUP
+MOVE - 33554432 CustomEvent.prototype.MOVE
+NONE - 0 CustomEvent.prototype.NONE
+QueryInterface DontEnum #CustomEvent#prototype#QueryInterface CustomEvent.prototype.QueryInterface
+RESET - 65536 CustomEvent.prototype.RESET
+RESIZE - 67108864 CustomEvent.prototype.RESIZE
+SCROLL - 262144 CustomEvent.prototype.SCROLL
+SELECT - 16384 CustomEvent.prototype.SELECT
+SHIFT_MASK - 4 CustomEvent.prototype.SHIFT_MASK
+SUBMIT - 131072 CustomEvent.prototype.SUBMIT
+TEXT - 1073741824 CustomEvent.prototype.TEXT
+UNLOAD - 1048576 CustomEvent.prototype.UNLOAD
+XFER_DONE - 2097152 CustomEvent.prototype.XFER_DONE
+__defineGetter__ DontEnum #CustomEvent#prototype#__defineGetter__ CustomEvent.prototype.__defineGetter__
+__defineSetter__ DontEnum #CustomEvent#prototype#__defineSetter__ CustomEvent.prototype.__defineSetter__
+__lookupGetter__ DontEnum #CustomEvent#prototype#__lookupGetter__ CustomEvent.prototype.__lookupGetter__
+__lookupSetter__ DontEnum #CustomEvent#prototype#__lookupSetter__ CustomEvent.prototype.__lookupSetter__
+__proto__ DontEnum #Event#prototype Event.prototype
+%%% Unable to get descriptor info for property bubbles.
+bubbles - &null CustomEvent.prototype.bubbles
+%%% Unable to get descriptor info for property cancelable.
+cancelable - &null CustomEvent.prototype.cancelable
+%%% Unable to get descriptor info for property currentTarget.
+currentTarget - &null CustomEvent.prototype.currentTarget
+%%% Unable to get descriptor info for property defaultPrevented.
+defaultPrevented - &null CustomEvent.prototype.defaultPrevented
+%%% @CustomEvent@prototype.detail has getter to model.
+detail ReadOnly &undefined CustomEvent.prototype.detail
+%%% Unable to get descriptor info for property eventPhase.
+eventPhase - &null CustomEvent.prototype.eventPhase
+%%% @CustomEvent@prototype.explicitOriginalTarget has getter to model.
+explicitOriginalTarget ReadOnly &undefined CustomEvent.prototype.explicitOriginalTarget
+getPreventDefault - #CustomEvent#prototype#getPreventDefault CustomEvent.prototype.getPreventDefault
+initCustomEvent - #CustomEvent#prototype#initCustomEvent CustomEvent.prototype.initCustomEvent
+initEvent - #CustomEvent#prototype#initEvent CustomEvent.prototype.initEvent
+%%% @CustomEvent@prototype.isTrusted has getter to model.
+isTrusted ReadOnly &undefined CustomEvent.prototype.isTrusted
+%%% @CustomEvent@prototype.originalTarget has getter to model.
+originalTarget ReadOnly &undefined CustomEvent.prototype.originalTarget
+preventBubble - #CustomEvent#prototype#preventBubble CustomEvent.prototype.preventBubble
+preventCapture - #CustomEvent#prototype#preventCapture CustomEvent.prototype.preventCapture
+preventDefault - #CustomEvent#prototype#preventDefault CustomEvent.prototype.preventDefault
+stopImmediatePropagation - #CustomEvent#prototype#stopImmediatePropagation CustomEvent.prototype.stopImmediatePropagation
+stopPropagation - #CustomEvent#prototype#stopPropagation CustomEvent.prototype.stopPropagation
+%%% Unable to get descriptor info for property target.
+target - &null CustomEvent.prototype.target
+%%% Unable to get descriptor info for property timeStamp.
+timeStamp - &null CustomEvent.prototype.timeStamp
+%%% Unable to get descriptor info for property type.
+type - &null CustomEvent.prototype.type
+
+
+@MessageEvent@prototype
+
+% MessageEvent#prototype properties
+ABORT - 4194304 MessageEvent.prototype.ABORT
+ALT_MASK - 1 MessageEvent.prototype.ALT_MASK
+AT_TARGET - 2 MessageEvent.prototype.AT_TARGET
+BACK - 536870912 MessageEvent.prototype.BACK
+BLUR - 8192 MessageEvent.prototype.BLUR
+BUBBLING_PHASE - 3 MessageEvent.prototype.BUBBLING_PHASE
+CAPTURING_PHASE - 1 MessageEvent.prototype.CAPTURING_PHASE
+CHANGE - 32768 MessageEvent.prototype.CHANGE
+CLICK - 64 MessageEvent.prototype.CLICK
+CONTROL_MASK - 2 MessageEvent.prototype.CONTROL_MASK
+DBLCLICK - 128 MessageEvent.prototype.DBLCLICK
+DRAGDROP - 2048 MessageEvent.prototype.DRAGDROP
+ERROR - 8388608 MessageEvent.prototype.ERROR
+FOCUS - 4096 MessageEvent.prototype.FOCUS
+FORWARD - 134217728 MessageEvent.prototype.FORWARD
+HELP - 268435456 MessageEvent.prototype.HELP
+KEYDOWN - 256 MessageEvent.prototype.KEYDOWN
+KEYPRESS - 1024 MessageEvent.prototype.KEYPRESS
+KEYUP - 512 MessageEvent.prototype.KEYUP
+LOAD - 524288 MessageEvent.prototype.LOAD
+LOCATE - 16777216 MessageEvent.prototype.LOCATE
+META_MASK - 8 MessageEvent.prototype.META_MASK
+MOUSEDOWN - 1 MessageEvent.prototype.MOUSEDOWN
+MOUSEDRAG - 32 MessageEvent.prototype.MOUSEDRAG
+MOUSEMOVE - 16 MessageEvent.prototype.MOUSEMOVE
+MOUSEOUT - 8 MessageEvent.prototype.MOUSEOUT
+MOUSEOVER - 4 MessageEvent.prototype.MOUSEOVER
+MOUSEUP - 2 MessageEvent.prototype.MOUSEUP
+MOVE - 33554432 MessageEvent.prototype.MOVE
+NONE - 0 MessageEvent.prototype.NONE
+QueryInterface DontEnum #MessageEvent#prototype#QueryInterface MessageEvent.prototype.QueryInterface
+RESET - 65536 MessageEvent.prototype.RESET
+RESIZE - 67108864 MessageEvent.prototype.RESIZE
+SCROLL - 262144 MessageEvent.prototype.SCROLL
+SELECT - 16384 MessageEvent.prototype.SELECT
+SHIFT_MASK - 4 MessageEvent.prototype.SHIFT_MASK
+SUBMIT - 131072 MessageEvent.prototype.SUBMIT
+TEXT - 1073741824 MessageEvent.prototype.TEXT
+UNLOAD - 1048576 MessageEvent.prototype.UNLOAD
+XFER_DONE - 2097152 MessageEvent.prototype.XFER_DONE
+__defineGetter__ DontEnum #MessageEvent#prototype#__defineGetter__ MessageEvent.prototype.__defineGetter__
+__defineSetter__ DontEnum #MessageEvent#prototype#__defineSetter__ MessageEvent.prototype.__defineSetter__
+__lookupGetter__ DontEnum #MessageEvent#prototype#__lookupGetter__ MessageEvent.prototype.__lookupGetter__
+__lookupSetter__ DontEnum #MessageEvent#prototype#__lookupSetter__ MessageEvent.prototype.__lookupSetter__
+__proto__ DontEnum #Event#prototype Event.prototype
+%%% Unable to get descriptor info for property bubbles.
+bubbles - &null MessageEvent.prototype.bubbles
+%%% Unable to get descriptor info for property cancelable.
+cancelable - &null MessageEvent.prototype.cancelable
+%%% Unable to get descriptor info for property currentTarget.
+currentTarget - &null MessageEvent.prototype.currentTarget
+%%% Unable to get descriptor info for property data.
+data - &null MessageEvent.prototype.data
+%%% Unable to get descriptor info for property defaultPrevented.
+defaultPrevented - &null MessageEvent.prototype.defaultPrevented
+%%% Unable to get descriptor info for property eventPhase.
+eventPhase - &null MessageEvent.prototype.eventPhase
+%%% @MessageEvent@prototype.explicitOriginalTarget has getter to model.
+explicitOriginalTarget ReadOnly &undefined MessageEvent.prototype.explicitOriginalTarget
+getPreventDefault - #MessageEvent#prototype#getPreventDefault MessageEvent.prototype.getPreventDefault
+initEvent - #MessageEvent#prototype#initEvent MessageEvent.prototype.initEvent
+initMessageEvent - #MessageEvent#prototype#initMessageEvent MessageEvent.prototype.initMessageEvent
+%%% @MessageEvent@prototype.isTrusted has getter to model.
+isTrusted ReadOnly &undefined MessageEvent.prototype.isTrusted
+%%% Unable to get descriptor info for property lastEventId.
+lastEventId - &null MessageEvent.prototype.lastEventId
+%%% Unable to get descriptor info for property origin.
+origin - &null MessageEvent.prototype.origin
+%%% @MessageEvent@prototype.originalTarget has getter to model.
+originalTarget ReadOnly &undefined MessageEvent.prototype.originalTarget
+preventBubble - #MessageEvent#prototype#preventBubble MessageEvent.prototype.preventBubble
+preventCapture - #MessageEvent#prototype#preventCapture MessageEvent.prototype.preventCapture
+preventDefault - #MessageEvent#prototype#preventDefault MessageEvent.prototype.preventDefault
+%%% Unable to get descriptor info for property source.
+source - &null MessageEvent.prototype.source
+stopImmediatePropagation - #MessageEvent#prototype#stopImmediatePropagation MessageEvent.prototype.stopImmediatePropagation
+stopPropagation - #MessageEvent#prototype#stopPropagation MessageEvent.prototype.stopPropagation
+%%% Unable to get descriptor info for property target.
+target - &null MessageEvent.prototype.target
+%%% Unable to get descriptor info for property timeStamp.
+timeStamp - &null MessageEvent.prototype.timeStamp
+%%% Unable to get descriptor info for property type.
+type - &null MessageEvent.prototype.type
+
+
 @Blob@prototype
 
 % Blob#prototype properties
@@ -16145,88 +17697,6 @@ onerror - &null IDBTransaction.prototype.onerror
 removeEventListener - #IDBTransaction#prototype#removeEventListener IDBTransaction.prototype.removeEventListener
 
 
-@CustomEvent@prototype
-
-% CustomEvent#prototype properties
-ABORT - 4194304 CustomEvent.prototype.ABORT
-ALT_MASK - 1 CustomEvent.prototype.ALT_MASK
-AT_TARGET - 2 CustomEvent.prototype.AT_TARGET
-BACK - 536870912 CustomEvent.prototype.BACK
-BLUR - 8192 CustomEvent.prototype.BLUR
-BUBBLING_PHASE - 3 CustomEvent.prototype.BUBBLING_PHASE
-CAPTURING_PHASE - 1 CustomEvent.prototype.CAPTURING_PHASE
-CHANGE - 32768 CustomEvent.prototype.CHANGE
-CLICK - 64 CustomEvent.prototype.CLICK
-CONTROL_MASK - 2 CustomEvent.prototype.CONTROL_MASK
-DBLCLICK - 128 CustomEvent.prototype.DBLCLICK
-DRAGDROP - 2048 CustomEvent.prototype.DRAGDROP
-ERROR - 8388608 CustomEvent.prototype.ERROR
-FOCUS - 4096 CustomEvent.prototype.FOCUS
-FORWARD - 134217728 CustomEvent.prototype.FORWARD
-HELP - 268435456 CustomEvent.prototype.HELP
-KEYDOWN - 256 CustomEvent.prototype.KEYDOWN
-KEYPRESS - 1024 CustomEvent.prototype.KEYPRESS
-KEYUP - 512 CustomEvent.prototype.KEYUP
-LOAD - 524288 CustomEvent.prototype.LOAD
-LOCATE - 16777216 CustomEvent.prototype.LOCATE
-META_MASK - 8 CustomEvent.prototype.META_MASK
-MOUSEDOWN - 1 CustomEvent.prototype.MOUSEDOWN
-MOUSEDRAG - 32 CustomEvent.prototype.MOUSEDRAG
-MOUSEMOVE - 16 CustomEvent.prototype.MOUSEMOVE
-MOUSEOUT - 8 CustomEvent.prototype.MOUSEOUT
-MOUSEOVER - 4 CustomEvent.prototype.MOUSEOVER
-MOUSEUP - 2 CustomEvent.prototype.MOUSEUP
-MOVE - 33554432 CustomEvent.prototype.MOVE
-NONE - 0 CustomEvent.prototype.NONE
-QueryInterface DontEnum #CustomEvent#prototype#QueryInterface CustomEvent.prototype.QueryInterface
-RESET - 65536 CustomEvent.prototype.RESET
-RESIZE - 67108864 CustomEvent.prototype.RESIZE
-SCROLL - 262144 CustomEvent.prototype.SCROLL
-SELECT - 16384 CustomEvent.prototype.SELECT
-SHIFT_MASK - 4 CustomEvent.prototype.SHIFT_MASK
-SUBMIT - 131072 CustomEvent.prototype.SUBMIT
-TEXT - 1073741824 CustomEvent.prototype.TEXT
-UNLOAD - 1048576 CustomEvent.prototype.UNLOAD
-XFER_DONE - 2097152 CustomEvent.prototype.XFER_DONE
-__defineGetter__ DontEnum #CustomEvent#prototype#__defineGetter__ CustomEvent.prototype.__defineGetter__
-__defineSetter__ DontEnum #CustomEvent#prototype#__defineSetter__ CustomEvent.prototype.__defineSetter__
-__lookupGetter__ DontEnum #CustomEvent#prototype#__lookupGetter__ CustomEvent.prototype.__lookupGetter__
-__lookupSetter__ DontEnum #CustomEvent#prototype#__lookupSetter__ CustomEvent.prototype.__lookupSetter__
-__proto__ DontEnum #Event#prototype Event.prototype
-%%% Unable to get descriptor info for property bubbles.
-bubbles - &null CustomEvent.prototype.bubbles
-%%% Unable to get descriptor info for property cancelable.
-cancelable - &null CustomEvent.prototype.cancelable
-%%% Unable to get descriptor info for property currentTarget.
-currentTarget - &null CustomEvent.prototype.currentTarget
-%%% Unable to get descriptor info for property defaultPrevented.
-defaultPrevented - &null CustomEvent.prototype.defaultPrevented
-%%% @CustomEvent@prototype.detail has getter to model.
-detail ReadOnly &undefined CustomEvent.prototype.detail
-%%% Unable to get descriptor info for property eventPhase.
-eventPhase - &null CustomEvent.prototype.eventPhase
-%%% @CustomEvent@prototype.explicitOriginalTarget has getter to model.
-explicitOriginalTarget ReadOnly &undefined CustomEvent.prototype.explicitOriginalTarget
-getPreventDefault - #CustomEvent#prototype#getPreventDefault CustomEvent.prototype.getPreventDefault
-initCustomEvent - #CustomEvent#prototype#initCustomEvent CustomEvent.prototype.initCustomEvent
-initEvent - #CustomEvent#prototype#initEvent CustomEvent.prototype.initEvent
-%%% @CustomEvent@prototype.isTrusted has getter to model.
-isTrusted ReadOnly &undefined CustomEvent.prototype.isTrusted
-%%% @CustomEvent@prototype.originalTarget has getter to model.
-originalTarget ReadOnly &undefined CustomEvent.prototype.originalTarget
-preventBubble - #CustomEvent#prototype#preventBubble CustomEvent.prototype.preventBubble
-preventCapture - #CustomEvent#prototype#preventCapture CustomEvent.prototype.preventCapture
-preventDefault - #CustomEvent#prototype#preventDefault CustomEvent.prototype.preventDefault
-stopImmediatePropagation - #CustomEvent#prototype#stopImmediatePropagation CustomEvent.prototype.stopImmediatePropagation
-stopPropagation - #CustomEvent#prototype#stopPropagation CustomEvent.prototype.stopPropagation
-%%% Unable to get descriptor info for property target.
-target - &null CustomEvent.prototype.target
-%%% Unable to get descriptor info for property timeStamp.
-timeStamp - &null CustomEvent.prototype.timeStamp
-%%% Unable to get descriptor info for property type.
-type - &null CustomEvent.prototype.type
-
-
 @DOMException@prototype
 
 % DOMException#prototype properties
@@ -16326,5 +17796,132 @@ snapshotItem - #XPathResult#prototype#snapshotItem XPathResult.prototype.snapsho
 snapshotLength - &null XPathResult.prototype.snapshotLength
 %%% Unable to get descriptor info for property stringValue.
 stringValue - &null XPathResult.prototype.stringValue
+
+
+@MutationObserver@prototype
+
+% MutationObserver#prototype properties
+QueryInterface DontEnum #MutationObserver#prototype#QueryInterface MutationObserver.prototype.QueryInterface
+__proto__ DontEnum #Object#prototype Object.prototype
+disconnect - #MutationObserver#prototype#disconnect MutationObserver.prototype.disconnect
+observe - #MutationObserver#prototype#observe MutationObserver.prototype.observe
+takeRecords - #MutationObserver#prototype#takeRecords MutationObserver.prototype.takeRecords
+
+
+@CharacterData@prototype
+
+% CharacterData#prototype properties
+__proto__ DontEnum #Node#prototype Node.prototype
+
+
+@ProcessingInstruction@prototype
+
+% ProcessingInstruction#prototype properties
+ATTRIBUTE_NODE - 2 ProcessingInstruction.prototype.ATTRIBUTE_NODE
+CDATA_SECTION_NODE - 4 ProcessingInstruction.prototype.CDATA_SECTION_NODE
+COMMENT_NODE - 8 ProcessingInstruction.prototype.COMMENT_NODE
+DOCUMENT_FRAGMENT_NODE - 11 ProcessingInstruction.prototype.DOCUMENT_FRAGMENT_NODE
+DOCUMENT_NODE - 9 ProcessingInstruction.prototype.DOCUMENT_NODE
+DOCUMENT_POSITION_CONTAINED_BY - 16 ProcessingInstruction.prototype.DOCUMENT_POSITION_CONTAINED_BY
+DOCUMENT_POSITION_CONTAINS - 8 ProcessingInstruction.prototype.DOCUMENT_POSITION_CONTAINS
+DOCUMENT_POSITION_DISCONNECTED - 1 ProcessingInstruction.prototype.DOCUMENT_POSITION_DISCONNECTED
+DOCUMENT_POSITION_FOLLOWING - 4 ProcessingInstruction.prototype.DOCUMENT_POSITION_FOLLOWING
+DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC - 32 ProcessingInstruction.prototype.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+DOCUMENT_POSITION_PRECEDING - 2 ProcessingInstruction.prototype.DOCUMENT_POSITION_PRECEDING
+DOCUMENT_TYPE_NODE - 10 ProcessingInstruction.prototype.DOCUMENT_TYPE_NODE
+ELEMENT_NODE - 1 ProcessingInstruction.prototype.ELEMENT_NODE
+ENTITY_NODE - 6 ProcessingInstruction.prototype.ENTITY_NODE
+ENTITY_REFERENCE_NODE - 5 ProcessingInstruction.prototype.ENTITY_REFERENCE_NODE
+NOTATION_NODE - 12 ProcessingInstruction.prototype.NOTATION_NODE
+PROCESSING_INSTRUCTION_NODE - 7 ProcessingInstruction.prototype.PROCESSING_INSTRUCTION_NODE
+QueryInterface DontEnum #ProcessingInstruction#prototype#QueryInterface ProcessingInstruction.prototype.QueryInterface
+TEXT_NODE - 3 ProcessingInstruction.prototype.TEXT_NODE
+__defineGetter__ DontEnum #ProcessingInstruction#prototype#__defineGetter__ ProcessingInstruction.prototype.__defineGetter__
+__defineSetter__ DontEnum #ProcessingInstruction#prototype#__defineSetter__ ProcessingInstruction.prototype.__defineSetter__
+__lookupGetter__ DontEnum #ProcessingInstruction#prototype#__lookupGetter__ ProcessingInstruction.prototype.__lookupGetter__
+__lookupSetter__ DontEnum #ProcessingInstruction#prototype#__lookupSetter__ ProcessingInstruction.prototype.__lookupSetter__
+__proto__ DontEnum #CharacterData#prototype CharacterData.prototype
+addEventListener - #ProcessingInstruction#prototype#addEventListener ProcessingInstruction.prototype.addEventListener
+appendChild - #ProcessingInstruction#prototype#appendChild ProcessingInstruction.prototype.appendChild
+appendData - #ProcessingInstruction#prototype#appendData ProcessingInstruction.prototype.appendData
+%%% Unable to get descriptor info for property attributes.
+attributes - &null ProcessingInstruction.prototype.attributes
+%%% Unable to get descriptor info for property baseURI.
+baseURI - &null ProcessingInstruction.prototype.baseURI
+%%% Unable to get descriptor info for property childNodes.
+childNodes - &null ProcessingInstruction.prototype.childNodes
+cloneNode - #ProcessingInstruction#prototype#cloneNode ProcessingInstruction.prototype.cloneNode
+compareDocumentPosition - #ProcessingInstruction#prototype#compareDocumentPosition ProcessingInstruction.prototype.compareDocumentPosition
+contains - #ProcessingInstruction#prototype#contains ProcessingInstruction.prototype.contains
+%%% Unable to get descriptor info for property data.
+data - &null ProcessingInstruction.prototype.data
+deleteData - #ProcessingInstruction#prototype#deleteData ProcessingInstruction.prototype.deleteData
+dispatchEvent - #ProcessingInstruction#prototype#dispatchEvent ProcessingInstruction.prototype.dispatchEvent
+%%% Unable to get descriptor info for property firstChild.
+firstChild - &null ProcessingInstruction.prototype.firstChild
+getUserData - #ProcessingInstruction#prototype#getUserData ProcessingInstruction.prototype.getUserData
+hasAttributes - #ProcessingInstruction#prototype#hasAttributes ProcessingInstruction.prototype.hasAttributes
+hasChildNodes - #ProcessingInstruction#prototype#hasChildNodes ProcessingInstruction.prototype.hasChildNodes
+insertBefore - #ProcessingInstruction#prototype#insertBefore ProcessingInstruction.prototype.insertBefore
+insertData - #ProcessingInstruction#prototype#insertData ProcessingInstruction.prototype.insertData
+isDefaultNamespace - #ProcessingInstruction#prototype#isDefaultNamespace ProcessingInstruction.prototype.isDefaultNamespace
+isEqualNode - #ProcessingInstruction#prototype#isEqualNode ProcessingInstruction.prototype.isEqualNode
+isSupported - #ProcessingInstruction#prototype#isSupported ProcessingInstruction.prototype.isSupported
+%%% Unable to get descriptor info for property lastChild.
+lastChild - &null ProcessingInstruction.prototype.lastChild
+%%% Unable to get descriptor info for property length.
+length - &null ProcessingInstruction.prototype.length
+%%% Unable to get descriptor info for property localName.
+localName - &null ProcessingInstruction.prototype.localName
+lookupNamespaceURI - #ProcessingInstruction#prototype#lookupNamespaceURI ProcessingInstruction.prototype.lookupNamespaceURI
+lookupPrefix - #ProcessingInstruction#prototype#lookupPrefix ProcessingInstruction.prototype.lookupPrefix
+%%% Unable to get descriptor info for property namespaceURI.
+namespaceURI - &null ProcessingInstruction.prototype.namespaceURI
+%%% Unable to get descriptor info for property nextSibling.
+nextSibling - &null ProcessingInstruction.prototype.nextSibling
+%%% Unable to get descriptor info for property nodeName.
+nodeName - &null ProcessingInstruction.prototype.nodeName
+%%% Unable to get descriptor info for property nodeType.
+nodeType - &null ProcessingInstruction.prototype.nodeType
+%%% Unable to get descriptor info for property nodeValue.
+nodeValue - &null ProcessingInstruction.prototype.nodeValue
+normalize - #ProcessingInstruction#prototype#normalize ProcessingInstruction.prototype.normalize
+%%% Unable to get descriptor info for property ownerDocument.
+ownerDocument - &null ProcessingInstruction.prototype.ownerDocument
+%%% Unable to get descriptor info for property parentElement.
+parentElement - &null ProcessingInstruction.prototype.parentElement
+%%% Unable to get descriptor info for property parentNode.
+parentNode - &null ProcessingInstruction.prototype.parentNode
+%%% Unable to get descriptor info for property prefix.
+prefix - &null ProcessingInstruction.prototype.prefix
+%%% Unable to get descriptor info for property previousSibling.
+previousSibling - &null ProcessingInstruction.prototype.previousSibling
+removeChild - #ProcessingInstruction#prototype#removeChild ProcessingInstruction.prototype.removeChild
+removeEventListener - #ProcessingInstruction#prototype#removeEventListener ProcessingInstruction.prototype.removeEventListener
+replaceChild - #ProcessingInstruction#prototype#replaceChild ProcessingInstruction.prototype.replaceChild
+replaceData - #ProcessingInstruction#prototype#replaceData ProcessingInstruction.prototype.replaceData
+setUserData - #ProcessingInstruction#prototype#setUserData ProcessingInstruction.prototype.setUserData
+substringData - #ProcessingInstruction#prototype#substringData ProcessingInstruction.prototype.substringData
+%%% @ProcessingInstruction@prototype.target has getter to model.
+target ReadOnly &undefined ProcessingInstruction.prototype.target
+%%% Unable to get descriptor info for property textContent.
+textContent - &null ProcessingInstruction.prototype.textContent
+
+
+@ImageData@prototype
+
+% ImageData#prototype properties
+QueryInterface DontEnum #ImageData#prototype#QueryInterface ImageData.prototype.QueryInterface
+__defineGetter__ DontEnum #ImageData#prototype#__defineGetter__ ImageData.prototype.__defineGetter__
+__defineSetter__ DontEnum #ImageData#prototype#__defineSetter__ ImageData.prototype.__defineSetter__
+__lookupGetter__ DontEnum #ImageData#prototype#__lookupGetter__ ImageData.prototype.__lookupGetter__
+__lookupSetter__ DontEnum #ImageData#prototype#__lookupSetter__ ImageData.prototype.__lookupSetter__
+__proto__ DontEnum #Object#prototype Object.prototype
+%%% Unable to get descriptor info for property data.
+data - &null ImageData.prototype.data
+%%% Unable to get descriptor info for property height.
+height - &null ImageData.prototype.height
+%%% Unable to get descriptor info for property width.
+width - &null ImageData.prototype.width
 
 

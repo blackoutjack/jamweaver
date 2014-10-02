@@ -152,7 +152,7 @@ public class JSExp extends Exp {
     int t = n.getType();
     return t == FOR || t == IF || t == SWITCH || t == CASE
       || t == DEFAULT_CASE || t == WHILE || t == DO || t == TRY
-      || t == CATCH;
+      || t == CATCH || t == WITH;
   }
 
   protected static boolean isBlockNode(Node n) {
@@ -365,6 +365,9 @@ public class JSExp extends Exp {
       case SWITCH:
         // Omit the block, but keep the expression.
         return new Node(SWITCH, node.getFirstChild().cloneTree());
+      case WITH:
+        // Omit contents of the block, but keep the object.
+        return new Node(WITH, node.getFirstChild().cloneTree(), new Node(EMPTY));
       case CASE:
         // The case expression is all that's evaluated here. This is
         // different than the branch condition.
@@ -553,6 +556,9 @@ public class JSExp extends Exp {
         case SWITCH:
           String exp = sm.codeFromNode(node.getFirstChild());
           return "switch (" + exp + ") {...}";
+        case WITH:
+          String obj = sm.codeFromNode(node.getFirstChild());
+          return "with (" + obj + ") {...}";
         case CASE:
           return "case " + sm.codeFromNode(node.getFirstChild()) + ": ...";
         case DEFAULT_CASE:

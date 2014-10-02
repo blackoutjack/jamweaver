@@ -103,7 +103,7 @@ def run_microbenchmarks(debug=False, overwrite=False):
         refine = 0
 
       # Print the name of the file being analyzed.
-      jsname = os.path.basename(jspath)
+      jsname = os.path.basename(srcfl)
       out(jsname)
 
       # Use the union of all policy files for a particular test.
@@ -161,7 +161,7 @@ def run_benchmarks(refine=0, debug=False, overwrite=False):
         opts.append('-P')
 
       # Print the name of the file being analyzed.
-      jsname = os.path.basename(jspath)
+      jsname = os.path.basename(srcfl)
       out(jsname)
       tot += 1
       outp = run_jam(srcfl, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
@@ -270,18 +270,16 @@ def run_websites(debug=False, overwrite=False):
       out("Repacking %s" % htmlfile)
       rpout = run_repacker(htmlfile, srclist, unpackdir, polpath=policy, debug=debug)
 
-      rpexpsuf = exppre + '.norefine.exp.html'
-      rpexppath = os.path.join(WEBSITE_DIR, site + rpexpsuf)
-      if process_result(rpout, rpexppath, overwrite):
-        html_ok += 1
-
       rpfile = os.path.splitext(htmlfile)[0] + '.repack.html'
       rpfl = open(rpfile, 'w')
       rpfl.write(rpout)
       rpfl.close()
       out("Saved to %s" % rpfile)
-    # %%% Temp, remove
-    break
+
+      rpexpsuf = exppre + '.norefine.exp.html'
+      rpexppath = os.path.join(WEBSITE_DIR, site + rpexpsuf)
+      if process_result(rpout, rpexppath, overwrite):
+        html_ok += 1
 
   end = time.time()
   tottime = end - start
@@ -310,7 +308,7 @@ def run_interpreter_tests(debug=False):
 
     if ok == 'ok':
       tot_ok += 1
-    out('%s %s\n' % (flname, ok))
+    out('%s %s\n' % (exppath, ok))
 
   out('%d of %d interpreter tests successful\n' % (tot_ok, tot))
 

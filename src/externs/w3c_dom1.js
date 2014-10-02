@@ -493,20 +493,21 @@ function CharacterData() {}
  * @type {string}
  * @see http://www.w3.org/TR/1998/REC-DOM-Level-1-19981001/level-one-core.html#ID-72AB8359
  */
-CharacterData.prototype.data;
+// CharacterData has no direct properties or methods in Firefox 17.0.4esr.
+//CharacterData.prototype.data;
 
 /**
  * @type {number}
  * @see http://www.w3.org/TR/1998/REC-DOM-Level-1-19981001/level-one-core.html#ID-7D61178C
  */
-CharacterData.prototype.length;
+//CharacterData.prototype.length;
 
 /**
  * @param {string} arg
  * @return {undefined}
  * @see http://www.w3.org/TR/1998/REC-DOM-Level-1-19981001/level-one-core.html#ID-32791A2F
  */
-CharacterData.prototype.appendData = function(arg) {};
+//CharacterData.prototype.appendData = function(arg) {};
 
 /**
  * @param {number} offset
@@ -514,7 +515,7 @@ CharacterData.prototype.appendData = function(arg) {};
  * @return {undefined}
  * @see http://www.w3.org/TR/1998/REC-DOM-Level-1-19981001/level-one-core.html#ID-7C603781
  */
-CharacterData.prototype.deleteData = function(offset, count) {};
+//CharacterData.prototype.deleteData = function(offset, count) {};
 
 /**
  * @param {number} offset
@@ -522,7 +523,7 @@ CharacterData.prototype.deleteData = function(offset, count) {};
  * @return {undefined}
  * @see http://www.w3.org/TR/1998/REC-DOM-Level-1-19981001/level-one-core.html#ID-3EDB695F
  */
-CharacterData.prototype.insertData = function(offset, arg) {};
+//CharacterData.prototype.insertData = function(offset, arg) {};
 
 /**
  * @param {number} offset
@@ -531,7 +532,7 @@ CharacterData.prototype.insertData = function(offset, arg) {};
  * @return {undefined}
  * @see http://www.w3.org/TR/1998/REC-DOM-Level-1-19981001/level-one-core.html#ID-E5CBA7FB
  */
-CharacterData.prototype.replaceData = function(offset, count, arg) {};
+//CharacterData.prototype.replaceData = function(offset, count, arg) {};
 
 /**
  * @param {number} offset
@@ -540,7 +541,7 @@ CharacterData.prototype.replaceData = function(offset, count, arg) {};
  * @see http://www.w3.org/TR/1998/REC-DOM-Level-1-19981001/level-one-core.html#ID-6531BCCF
  * @nosideeffects
  */
-CharacterData.prototype.substringData = function(offset, count) {};
+//CharacterData.prototype.substringData = function(offset, count) {};
 
 /**
  * @constructor

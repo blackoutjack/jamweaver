@@ -57,7 +57,8 @@ public class NodeUtil {
     Token.WHILE,
     Token.DO,
     Token.TRY,
-    Token.CATCH
+    Token.CATCH,
+    Token.WITH,
   };
   private static int[] LITERAL_TYPES = {
     Token.FALSE,
@@ -207,6 +208,8 @@ public class NodeUtil {
     closureExpression.put("Document.prototype.createElementNS","HTMLDocument.prototype.createElementNS");
     closureExpression.put("Document.prototype.querySelector","HTMLDocument.prototype.querySelector");
     closureExpression.put("Document.prototype.clear","HTMLDocument.prototype.clear");
+    closureExpression.put("Document.prototype.elementFromPoint","HTMLDocument.prototype.elementFromPoint");
+    closureExpression.put("Document.prototype.execCommand","HTMLDocument.prototype.execCommand");
 
     closureExpression.put("Element.prototype.focus","HTMLElement.prototype.focus");
     closureExpression.put("Element.prototype.blur","HTMLElement.prototype.blur");
@@ -261,6 +264,13 @@ public class NodeUtil {
     closureExpression.put("HTMLBodyElement.prototype.text","");
     closureExpression.put("HTMLAnchorElement.prototype.text","");
     closureExpression.put("HTMLOptionElement.prototype.text","");
+    closureExpression.put("HTMLObjectElement.prototype.data","");
+    closureExpression.put("ProcessingInstruction.prototype.data","");
+    closureExpression.put("MessageEvent.prototype.data","");
+    closureExpression.put("ImageData.prototype.data","");
+    closureExpression.put("Event.prototype.timeStamp","");
+    closureExpression.put("Element.prototype.onsubmit","");
+    closureExpression.put("Window.prototype.onsubmit","");
 
     // Oddly, these can't be examined by the in-browser analysis.
     closureExpression.put("Element.prototype.scrollLeft","");

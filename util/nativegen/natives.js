@@ -33,6 +33,8 @@ var LOCATION_MAP = [
   "TypeError",
   "ReferenceError",
   "SyntaxError",
+  "URIError",
+  "RangeError",
 
   // Window/framework related objects
   "History",
@@ -74,6 +76,9 @@ var LOCATION_MAP = [
   "HTMLScriptElement",
   "HTMLSelectElement",
   "HTMLSourceElement",
+  "HTMLTableElement",
+  "HTMLTableRowElement",
+  "HTMLTableSectionElement",
   "HTMLTitleElement",
   "HTMLTextAreaElement",
   "HTMLVideoElement",
@@ -124,6 +129,8 @@ var LOCATION_MAP = [
   // Events
   "Event",
   "EventTarget",
+  "CustomEvent",
+  "MessageEvent",
 
   // JSON
   "JSON",
@@ -161,10 +168,13 @@ var LOCATION_MAP = [
   "XMLSerializer",
   "CanvasGradient",
   "IDBTransaction",
-  "CustomEvent",
   "DOMException",
   "DOMImplementation",
   "XPathResult",
+  "MutationObserver",
+  "CharacterData",
+  "ProcessingInstruction",
+  "ImageData",
  
   // Non-existent in Firefox 17.0.3.esr.
   //"DOMImplementationList",

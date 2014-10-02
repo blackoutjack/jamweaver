@@ -20,7 +20,6 @@
 :- table(type_concrete/2).
 :- table(ref/3).
 :- table(tonumber/5).
-:- table(findscope/4).
 :- table(equals/3).
 :- table(equals/2).
 :- table(notequals/2).
@@ -194,6 +193,7 @@ isnum(V) :-
   N<58,
   % Match digit or -.
   (N>47->true;N=45).
+isnum('&-Infinity').
 isnum('&Infinity').
 isnum('&NaN').
 
@@ -269,6 +269,7 @@ exp(H,L,'null',H,L,'&null').
 exp(H,L,E,H,L,'&null') :- is_null(E).
 
 % undefined => &undefined
+%%% Identifier can be overwritten!
 exp(H,L,'undefined',H,L,'&undefined').
 
 % empty
@@ -1124,7 +1125,6 @@ binop_aux(H,L,Op,LHS,RHS,HP,LP,EP) :-
   evalbin(Op,V1,V2,EP);
   binary_fn(Op,V1,V2,EP)).
 
-
 %
 % Bitwise operators
 %
@@ -1268,9 +1268,17 @@ exp(H,L,E,HP,LP,EP) :-
 
 % with
 % [S-With-set]
-% exp(H,L,E,HP,LP,EP) :- is_with(E,E1),exp(H,L,E1,H1,L1,R1),ecgv(H1,L1,R1,H2,L2,V1),setscope(L,V1,H,HP,L3,L4),push_scope(L),push_scope(L3),push_scope(L4),LP=V1,EP='true'.
-% [S-With-reset] (leaving a with scope)
-% exp(H,L,E,HP,LP,EP) :- is_with(E,E1),E1='END',popscope(LN2),popscope(LN1),popscope(LO),resetscope(LO,LN1,LN2,H,HP),LP=LO.
+%%% For now, just evaluate the object and assume the block has been
+%%% transformed. Deleted setscope/findscope/resetscope because they
+%%% were resulting in non-termination.
+exp(H,L,E,HP,LP,EP) :-
+  is_with(E,E1,_),
+  exp(H,L,E1,H1,L1,R1),
+  ecgv(H1,L1,R1,H2,L2,V1),
+  ecto(H2,L2,V1,H3,L3,_),
+  HP=H3,
+  LP=L3,
+  EP='&undefined'.
 
 % [S-ForVarIn]
 % This case is should be effectively removed by the
@@ -1369,17 +1377,17 @@ exp(H,L,E,HP,LP,EP) :-
   exp(H,L,EN,HP,LP,EP).
 
 % [E-Void]
-exp(H,L,E,H1,L1,'&undefined') :- is_void(E,E1),exp(H,L,E1,H1,L1,VA),ispureval(VA).
+exp(H,L,E,H1,L1,'&undefined') :- is_void(E,E1),exp(H,L,E1,H1,L1,_).
 
 % [E-Delete-true]
 exp(H,L,E,H1,L1,'true') :- is_delete(E,E1),exp(H,L,E1,H1,L1,VA),ispureval(VA).
 
 % [E-Delete-false]
-exp(H,L,E,H2,L1,'true') :-
+exp(H,L,E,H2,L1,B) :-
   is_delete(E,E1),
   exp(H,L,E1,H1,L1,R),
   isref(R),ref(R,LO,M),
-  adelete(H1,LO,M,H2,_).
+  adelete(H1,LO,M,H2,B).
 
 % [I-Delete-empty]
 adelete(H,L,M,H,'true') :-
@@ -1389,15 +1397,13 @@ adelete(H,L,M,H,'true') :-
 % [I-Delete-not]
 adelete(H,L,M,H,'false') :-
   maps(H,L,O),
+  hasprop(O,M,_),
   hasattr(O,M,'DontDelete').
 
 % [I-Delete-yes]
-adelete(H,L,M,H,'true') :-
-  maps(H,L,O),
-  not hasattr(O,M,'DontDelete'),
-  not hasprop(O,M,_).
 adelete(H,L,M,H1,'true') :-
   maps(H,L,O),
+  hasprop(O,M,_),
   not hasattr(O,M,'DontDelete'),
   delheapprop(H,L,M,H1,_).
 
@@ -1609,22 +1615,6 @@ copyscope(H,L,SS) :-
   always(H),
   symbolic(S,_),
   SS=[S].
-
-% auxiliary functions use by the with statement
-% SetScope
-% heapprop(H,L,M,VA,HP,O).
-setscope(L,L1,H,HP,L2,L3) :- L\=L1,findscope(L,L1,H,L3),maps(H,L1,O),hasprop(O,'@Scope',L2),heapprop(H,L3,'@Scope',L2,H2,_),heapprop(H2,L1,'@Scope',L,HP,_).
-setscope(L,L1,H,HP,L2,L3) :- L\=L1,findscope(L,L1,H,L3),null(L3),maps(H,L1,O),hasprop(O,'@Scope',L2),heapprop(H,L1,'@Scope',L,HP,_),L3='&null'.
-setscope(L,L1,H,HP,L2,L3) :- L\=L1,findscope(L,L1,H,L3),null(L3),maps(H,L1,O),not hasprop(O,'@Scope',_),heapprop(H,L1,'@Scope',L,HP,_),L2='&null',L3='&null'.
-setscope(L,L1,H,H,L2,L3) :- L=L1,L2='&null',L3='&null'.
-% FindScope
-findscope(L,L1,H,L2) :- null(L),always(L1),always(H),L2='&null'.
-findscope(L,L1,H,L2) :- maps(H,L,O),hasprop(O,'@Scope',L3),L3\=L1,findscope(L3,L1,H,L2).
-findscope(L,L1,H,L) :- maps(H,L,O),hasprop(O,'@Scope',L1).
-% ResetScope
-resetscope(_,L2,L3,H,H) :- null(L2),null(L3),always(H).
-resetscope(L1,L2,L3,H,HP) :- null(L3),heapprop(H,L1,'@Scope',L2,HP,_).
-resetscope(L1,L2,L3,H,HP) :- notnull(L2),notnull(L3),heapprop(H,L1,'@Scope',L2,H1,_),heapprop(H1,L2,'@Scope',L1,HP,_).
 
 % Update the structure representing JavaScript's arguments[i].
 updateargs(H,[],_,H).

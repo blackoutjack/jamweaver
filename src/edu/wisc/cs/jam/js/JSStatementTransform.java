@@ -1186,6 +1186,73 @@ public class JSStatementTransform extends JSTransform {
       return true;
     }
 
+    protected boolean transformWith(NodeTraversal t, Node n, Node parent) {
+      assert n.isWith();
+
+      boolean changed = false;
+
+      Node obj = n.getFirstChild();
+
+      if (!isVerySimple(obj)) {
+        // Create a temporary variable to hold the object value that
+        // the expression evaluates to.
+        Node tmp = createNameNode(t.getScope());
+
+        // Create a var initializer for the new variable.
+        Node tmpInit = tmp.cloneTree();
+        tmpDefs.add(tmpInit);
+        tmpInit.addChildToBack(obj.cloneTree());
+        tmpInit = new Node(Token.VAR, tmpInit);
+
+        // Replace the object expression with the new name.
+        n.replaceChild(obj, tmp);
+        tmpUses.add(tmp);
+          
+        // Insert the initializer prior to the WITH statement.
+        // It must also go prior to a potential label.
+        Node stmt = n;
+        Node stmtParent = parent;
+        if (stmtParent.getType() == Token.LABEL) {
+          stmt = stmtParent;
+          stmtParent = stmtParent.getParent();
+        }
+        stmtParent.addChildBefore(tmpInit, stmt);
+
+        changed = true;
+      }
+
+      // %%% It might be possible to implement the described transform.
+
+      // Get the block of statements within the WITH.
+
+      // In each statement, we want to replace each NAME access with a
+      // conditional to end up with something like this.
+      //
+      // x = y;
+      // ==>
+      // if ("y" in o) {
+      //  tmp = o.y;
+      // } else {
+      //  tmp = y; 
+      // }
+      // if ("x" in o) {
+      //   o.x = tmp;
+      // } else {
+      //   x = tmp;
+      // }
+      //
+      // Since this may require different logic for each node type,
+      // just maintain a mapping from statements to the object node that
+      // is in effect, and handle the cases when those statements are
+      // transformed.
+
+      // In particular, a direct eval needs to be rewrapped in a WITH
+      // (externally, or with string concatenation in the argument).
+
+
+      return changed;
+    }
+
     protected boolean isBlockEscape(Node n) {
       if (n == null) return false;
       if (n.isReturn()) return true;
@@ -1259,6 +1326,8 @@ public class JSStatementTransform extends JSTransform {
       } else if (NodeUtil.isStandardFor(ctrl)) {
         ret.add(ctrl.getLastChild());
       } else if (NodeUtil.isForIn(ctrl)) {
+        ret.add(ctrl.getLastChild());
+      } else if (ctrl.isWith()) {
         ret.add(ctrl.getLastChild());
       } else {
         Dbg.warn("Unhandled control block: " + ctrl);
@@ -1437,6 +1506,8 @@ public class JSStatementTransform extends JSTransform {
         case Token.WHILE:
         case Token.DO:
           return transformWhile(t, n, parent);
+        case Token.WITH:
+          return transformWith(t, n, parent);
         case Token.CASE:
         case Token.DEFAULT_CASE:
         case Token.TRY:

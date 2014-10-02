@@ -566,7 +566,7 @@ def run_query(query):
 
 def validate_value(outp, exppath):
   if not os.path.exists(exppath):
-    return "missing .exp"
+    return "missing"
 
   expfl = open(exppath, 'r')
   exp = expfl.read().strip()
@@ -585,7 +585,7 @@ def validate_value(outp, exppath):
 # Compare the resulting source code of a run to the expected output.
 def validate_output(outp, exppath):
   if not os.path.exists(exppath):
-    return "missing " + exppath
+    return "missing"
 
   expfl = open(exppath, 'r')
   exp = expfl.read().strip()

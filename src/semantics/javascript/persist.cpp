@@ -293,38 +293,6 @@ int hashcode(string s) {
   return string_hash(s);
 }
 
-char *c_trim_in_place(char *str)
-{
-  if (*str == '\0')
-  {
-    return str;
-  }
-
-  while (isspace(*str))
-  {
-    ++str;
-  }
-
-  char *end = str + strlen(str) - 1;
-  while (isspace(*end))
-  {
-    --end;
-  }
-
-  *(end + 1) = '\0';
-
-  return str;
-}
-
-string trim(string str)
-{
-  char *cstr = (char *) malloc(str.size() + 1);
-  strcpy(cstr, str.c_str());
-  string ret(c_trim_in_place(cstr));
-  free(cstr);
-  return ret;
-}
-
 vector<string> &split(const string &s, char delim, vector<string> &elems) {
   stringstream ss(s);
   string item;
@@ -353,6 +321,25 @@ string findreplace(string source, string searchString, string replaceString) {
   }
 
   return str;
+}
+
+char *fix_special_literals(char *in) {
+  return in[0] == '&' ? in + 1 : in;
+}
+
+string revert_special_literals(string in) {
+  if (in == "Infinity") {
+    return "&Infinity";
+  } else if (in == "-Infinity") {
+    return "&-Infinity";
+  } else if (in == "NaN") {
+    return "&NaN";
+  } else if (in == "undefined") {
+    return "&undefined";
+  } else if (in == "null") {
+    return "&null";
+  }
+  return in;
 }
 
 #if defined(USE_V8)
@@ -409,7 +396,7 @@ string eval(string source) {
     if (recd[last] == '\n')
       recd = recd.substr(0, last);
 
-    return recd;
+    return revert_special_literals(recd);
   }
 }
 
@@ -462,7 +449,7 @@ string eval(string source) {
 
   v8context->Exit();
 
-  return ret;
+  return revert_special_literals(ret);
 }
 #endif
 
@@ -522,7 +509,7 @@ string eval(string source) {
     if (recd[last] == '\n')
       recd = recd.substr(0, last);
 
-    return recd;
+    return revert_special_literals(recd);
   }
 }
 
@@ -658,7 +645,7 @@ string eval(string source) {
       ret = "\"" + ret + "\"";
     }
     
-    return ret;
+    return revert_special_literals(ret);
   } else {
     fprintf(stderr, "Error while evaluating script with SpiderMonkey: %s\n", src);
     return "ERROR 2";
@@ -671,10 +658,6 @@ string eval(string source) {
 #endif
 
 #endif
-
-char *fix_special_literals(char *in) {
-  return in[0] == '&' ? in + 1 : in;
-}
 
 // Generate a new value with the given base.
 string newval(const string &base) {
@@ -822,6 +805,7 @@ extern "C" int evalbin(CTXTdecl) {
   }
   //fprintf(stderr, "source: %s\n", source.c_str());
   string result = eval(source);
+  //fprintf(stderr, "result: %s\n", result.c_str());
 
   extern_ctop_string(4, result.c_str());
   return TRUE;
@@ -846,7 +830,6 @@ extern "C" int evalunary(CTXTdecl) {
 
   string source = given1 + given2;
   string result = eval(source);
-  
   extern_ctop_string(3, result.c_str());
   return TRUE;
 }

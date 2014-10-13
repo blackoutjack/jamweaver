@@ -7,7 +7,7 @@
 +      // JAM begin
 +      // %%% This is not efficient.
 +      // %%% Really need to update the unreachable code logic to mark
-+      // %%% transaction handler expressions as reachable.
++      // %%% transaction introspector expressions as reachable.
 +      Node p = n; 
 +      while (p != null) {
 +        // %%% And it's part of the handler expression. It should be

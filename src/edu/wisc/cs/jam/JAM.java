@@ -43,6 +43,8 @@ public class JAM {
   // Track the number of counter-examples found.
   private int counterExampleCount = 0;
 
+  private static List<String> sourceFiles;
+  private static List<String> policyFiles;
 
   // Public getters
 
@@ -86,7 +88,7 @@ public class JAM {
     Dbg.out("Initializing policy", 3);
     
     PolicyLanguage lang = language.policyLanguage();
-    policy = new Policy(this, lang, Opts.policyFiles);
+    policy = new Policy(this, lang, policyFiles);
 
     if (Opts.debug)
       FileUtil.writeToMain(policy, "policy.aut");
@@ -190,13 +192,13 @@ public class JAM {
     if (Opts.appName != null) {
       applicationName = Opts.appName;
     } else {
-      assert Opts.sourceFiles.size() > 0;
+      assert sourceFiles.size() > 0;
       // Legacy method
-      String filename = Opts.sourceFiles.get(0);
+      String filename = sourceFiles.get(0);
       String[] srcparts = FileUtil.getBaseParts(filename);
       applicationName = srcparts[0];
       if (Opts.appSuffix != null) {
-        applicationName += "-" + Opts.appSuffix;
+        applicationName += "." + Opts.appSuffix;
       }
     }
     return applicationName;
@@ -204,14 +206,14 @@ public class JAM {
 
   // Initial load and one-time processing of source.
   protected void preanalyze() {
-    ensureFilesExist(Opts.sourceFiles);
-    ensureFilesExist(Opts.policyFiles);
+    ensureFilesExist(sourceFiles);
+    ensureFilesExist(policyFiles);
 
     // Initialize the FileUtil module to facilitate gathering
     // all intermediate/debugging output in a single location.
     FileUtil.init(getApplicationName());
 
-    sm = language.newSourceManager(Opts.sourceFiles);
+    sm = language.newSourceManager(sourceFiles);
     // %%% Check for errors in JSSourceManager constructor. 
 
     // Save the original source files.
@@ -277,8 +279,10 @@ public class JAM {
     sm.postprocess(getControlAutomaton(), getCheckManager());
 
     String output = sm.toString();
-    if (!Opts.noOut)
+    if (!Opts.noOut) {
       System.out.println(output);
+      System.out.flush();
+    }
     FileUtil.writeToMain(output, getApplicationName() + ".js");
 
     sm.finalize();
@@ -320,6 +324,14 @@ public class JAM {
     OptionParser parser = new OptionParser(new Opts());
     parser.parseArgument(args);
 
+    sourceFiles = Opts.sourceFiles;
+    if (Opts.policyFiles == null) {
+      Dbg.warn("No policy files provided");
+      policyFiles = new ArrayList<String>();
+    } else {
+      policyFiles = StringUtil.parse(Opts.policyFiles, ',', '\\');
+    }
+
     // Adjust options as necessary.
     if (Opts.refinementLimit == -1)
       Opts.refinementLimit = Integer.MAX_VALUE;
@@ -332,11 +344,16 @@ public class JAM {
     @Argument(required=true, index=0, usage="source file(s)", metaVar="SRCFILE+", multiValued=true)
     public static List<String> sourceFiles;
 
-    @Option(name="-Y", usage="policy file(s)", metaVar="POLFILE+", multiValued=true)
-    public static List<String> policyFiles;
+    // Args4J removed support for multiValued Options in later versions,
+    // so multiple policies must be passed in a comma-separated list.
+    @Option(name="-Y", usage="policy file(s)", metaVar="POLFILE1[,POLFILE2...]")
+    public static String policyFiles;
 
     @Option(name="-X", usage="Indicates that the given source files are lists (see doc/RUNNING for formatting)")
     public static boolean sourceIsList = false;
+
+    @Option(name="-z", usage="Use only the conservative (but imprecise) syntax analysis")
+    public static boolean syntaxOnly = false;
 
     @Option(name="-p", usage="Maximum number of learned predicates (-1 = unlimited)", metaVar="MAX")
     public static int refinementLimit = 0;

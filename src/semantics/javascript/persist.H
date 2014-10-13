@@ -10,6 +10,7 @@
 :- export delheapprop/5.
 :- export makestr/2.
 :- export isaddr/1.
+:- export isobj/1.
 :- export list_test/2.
 :- export numprop/1.
 :- export inttostr/2.

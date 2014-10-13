@@ -10,7 +10,11 @@ aexe(H,L,'#Window#prototype#open',_,_,HP,EP) :-
   nativeconstruct(H,L,'#Window',[],HP,_,EP).
 
 % window.alert
-aexe(H,_,'#Window#prototype#alert',_,_,H,'&undefined').
+aexe(H,_,'#Window#prototype#alert',_,_,H,'#undefined').
+  %%% Potentially record that output was triggered.
+
+% window.print
+aexe(H,_,'#Window#prototype#print',_,_,H,'#undefined').
   %%% Potentially record that output was triggered.
 
 % window.escape
@@ -42,27 +46,27 @@ aexe(H,_,'#Global#parseFloat',_,_,H,R) :-
   symbolic(R,'Number').
 
 %%% Assumes undefined return value (unconfirmed).
-aexe(H,_,'#Window#prototype#focus',_,_,H,'&undefined').
+aexe(H,_,'#Window#prototype#focus',_,_,H,'#undefined').
 
 %%% Assumes undefined return value (unconfirmed).
-aexe(H,_,'#Window#prototype#setTimeout',_,_,H,'&undefined').
+aexe(H,_,'#Window#prototype#setTimeout',_,_,H,'#undefined').
 
 %%% Assumes undefined return value (unconfirmed).
-aexe(H,_,'#Window#prototype#clearTimeout',_,_,H,'&undefined').
+aexe(H,_,'#Window#prototype#clearTimeout',_,_,H,'#undefined').
 
 %%% Assumes undefined return value (unconfirmed).
-aexe(H,_,'#Window#prototype#setInterval',_,_,H,'&undefined').
+aexe(H,_,'#Window#prototype#setInterval',_,_,H,'#undefined').
 
 %%% Assumes undefined return value (unconfirmed).
-aexe(H,_,'#Window#prototype#clearInterval',_,_,H,'&undefined').
+aexe(H,_,'#Window#prototype#clearInterval',_,_,H,'#undefined').
 
 %%% Assumes undefined return value (unconfirmed).
-aexe(H,_,'#Window#prototype#addEventListener',_,_,H,'&undefined') :-
+aexe(H,_,'#Window#prototype#addEventListener',_,_,H,'#undefined') :-
   always(H).
 
 % Model of JAM instrumentation
 %%% Model effects
-%aexe(H,_,'#Window#checkState',_,_,H,'&undefined') :-
+%aexe(H,_,'#Window#checkState',_,_,H,'#undefined') :-
 %  always(H).
 
 %%% Move these to a separate Global object.
@@ -70,13 +74,13 @@ aexe(H,_,'#Global#isNaN',_,Args,H,EP) :-
   length(Args,1),
   Args=[Arg|_],
   (is_symbolic(Arg)->symbolic(EP,'Boolean');
-  Arg='&NaN'->EP='true';EP='false').
+  Arg='#NaN'->EP='true';EP='false').
 
 aexe(H,_,'#Global#isFinite',_,Args,H,EP) :-
   length(Args,1),
   Args=[Arg|_],
   (is_symbolic(Arg)->symbolic(EP,'Boolean');
-  Arg='&Infinity'->EP='false';EP='true').
+  Arg='#Infinity'->EP='false';EP='true').
 
 %%% Doesn't model arbitrary heap alterations.
 aexe(H,L,'#Global#eval',_,Args,HP,EP) :-

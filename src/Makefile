@@ -29,6 +29,7 @@ JCLASSPATH=".:../closure/build/compiler.jar:../JavaBDD/javabdd-$(JAVABDDVERSION)
 MAINDIR=edu/wisc/cs/jam
 AUTDIR=edu/wisc/cs/automaton
 JSDIR=$(MAINDIR)/js
+ENVDIR=$(MAINDIR)/env
 XSBDIR=$(MAINDIR)/xsb
 BDDDIR=$(MAINDIR)/bdd
 NWADIR=$(MAINDIR)/opennwa
@@ -39,14 +40,19 @@ HTMLDIR=$(MAINDIR)/html
 COMDIR=com/google/javascript/jscomp
 
 # Java classes in the edu.wisc.cs.jam package
-MAINBASE=JAM JAMAnalysis BackwardAnalysis BranchSymbol Clause CartesianAutomaton ControlAutomaton ControlStructure CounterExample DataState EvaluationAutomaton FileUtil FocusAutomaton FunctionEntrySymbol JAMConfig ExpSymbol OptionParser Options Policy PolicyPath Predicate PredicateValue PredicateLearner PredicateSymbol ProgramModel Relation RelationDomain ReturnSymbol Semantics SourceManager Source DataTransition SeedPredicates CleverCache RelationAutomaton Dbg DisjointAutomaton IncrementalAnalysis CheckManager RuntimeCheck Transform Tree SyntaxTree Exp PolicyLanguage Language #BooleanAutomaton MultiAnalysis ForkCheckManager ForkCheck
+MAINBASE=JAM JAMAnalysis BackwardAnalysis BranchSymbol Clause CartesianAutomaton ControlAutomaton ControlStructure CounterExample DataState EvaluationAutomaton FileUtil FocusAutomaton FunctionEntrySymbol JAMConfig ExpSymbol OptionParser Options Policy PolicyLanguage PolicyPath Predicate PredicateLearner PredicateSymbol PredicateType PredicateValue ProgramModel Relation RelationDomain ReturnSymbol Semantics SourceManager Source StringUtil DataTransition SeedPredicates CleverCache RelationAutomaton Dbg DisjointAutomaton IncrementalAnalysis CheckManager RuntimeCheck Transform Exp Language #BooleanAutomaton MultiAnalysis ForkCheckManager ForkCheck
 MAINSRC=$(MAINBASE:%=$(MAINDIR)/%.java)
 MAINCLS=$(MAINSRC:%.java=%.class)
 
 # Java classes in the edu.wisc.cs.jam.js package.
-JSBASE=JavaScript JSSourceManager JSSource JSSemantics JSTransform JSStatementTransform JSIndirectionTransform JSCollapseTransform JSControlStructure JSInterproceduralControlStructure JSExp JSPredicateLearner JSPolicyLanguage FunctionFacts NodeUtil TypeFacts
+JSBASE=JavaScript JSSourceManager JSSource JSSemantics JSTransform JSStatementTransform JSIndirectionTransform JSCollapseTransform JSControlStructure JSInterproceduralControlStructure JSExp JSPredicateLearner JSPolicyLanguage FunctionFacts ExpUtil TypeFacts JSSyntaxAnalysis
 JSSRC=$(JSBASE:%=$(JSDIR)/%.java)
 JSCLS=$(JSSRC:.java=.class)
+
+# Java classes in the edu.wisc.cs.jam.env package.
+ENVBASE=NativeUtil
+ENVSRC=$(ENVBASE:%=$(ENVDIR)/%.java)
+ENVCLS=$(ENVSRC:.java=.class)
 
 # Java classes in the edu.wisc.cs.jam.xsb package.
 XSBBASE=XSBInterface XSBSingleInterface XSBMultiInterface XSBProcess QueryCache
@@ -96,9 +102,9 @@ WALACLS=$(WALASRC:.java=.class)
 
 jam: $(JAMJAR)
 
-$(JAMJAR): $(JSCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(NWACLS) $(TXCLS) $(HTMLCLS) $(COMCLS) $(MAINCLS)
+$(JAMJAR): $(JSCLS) $(ENVCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(NWACLS) $(TXCLS) $(HTMLCLS) $(COMCLS) $(MAINCLS)
 	mkdir -p ../bin
-	jar cfm $@ MANIFEST.MF $(MAINDIR)/*.class $(COMDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class
+	jar cfm $@ MANIFEST.MF $(MAINDIR)/*.class $(COMDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(ENVDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class
 
 util: $(UTILJAR)
 

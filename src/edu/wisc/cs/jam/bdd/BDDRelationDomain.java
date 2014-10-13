@@ -159,11 +159,11 @@ public class BDDRelationDomain extends RelationDomain {
     BDD e = getOne();
     synchronized (getClass()) {
       for (PredicateValue pv : s0.getValues()) {
-        if (pv.isPolicyValue()) continue;
+        if (pv.isEventValue()) continue;
         e.andWith(getBDD(pv, true));
       }
       for (PredicateValue pv : s1.getValues()) {
-        if (pv.isPolicyValue()) continue;
+        if (pv.isEventValue()) continue;
         e.andWith(getBDD(pv, false));
       }
     }

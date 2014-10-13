@@ -292,14 +292,13 @@ def load_sources(from_dir, srcsuf='.js', excludesuf='.exp.js'):
     # Skip files that aren't suffixed with |srcsuf|.
     if srcsuf is not None and not flname.endswith(srcsuf):
       continue
-    # Skip files ending with |srcsuf|.
+    # Skip files ending with |excludesuf|.
     if excludesuf is not None and flname.endswith(excludesuf):
       continue
     srcpath = os.path.join(from_dir, flname)
     srcpaths.append(srcpath)
 
   return srcpaths
-  
 
 def load_seeds(from_dir, base_name):
   seedfile = os.path.join(from_dir, base_name + ".seeds")
@@ -307,23 +306,64 @@ def load_seeds(from_dir, base_name):
     return seedfile
   return None
 
-def load_policies(from_dir, base_name, polsuf='.policy'):
+def load_policy(polpath):
+  if polpath is None:
+    polpath = DEFAULT_POLICY
+
+  polpath = os.path.abspath(polpath)
+  if not os.path.isfile(polpath):
+    err("Unable to find policy file: %s" % (polpath))
+    pols = {}
+  else:
+    pols = {'': polpath}
+
+  return pols
+# /load_policy
+
+# Return a default policy dict object.
+def load_default_policy():
+  polpath = DEFAULT_POLICY
+  return load_policy(polpath)
+# /load_default_policy
+
+# Scan the given directory for policy filenames that match the given
+# basename. If a policy is not found, a part (delimited by '-', '.', or
+# '_') is removed from the basename and the files are scanned again.
+# This allows many similarly-named test cases use the same policy file.
+# Finally, if no policy is found, the DEFAULT_POLICY is used.
+def load_policies(fromdir, basename, polsuf='.policy'):
+  polfiles = []
+  for polname in os.listdir(fromdir):
+    if polname.endswith(polsuf):
+      polfiles.append(polname)
+
   ret = {}
-  for polname in os.listdir(from_dir):
-    if not polname.endswith(polsuf):
-      continue
-    if not polname.startswith(base_name + '.'):
-      continue
-    polbase = get_base(polname)
-    
-    if polbase == base_name:
-      # Strip the base, the suffix, and surrounding dots. This could
-      # result in the empty string, but that's no problem.
-      key = polname[len(base_name)+1:-len(polsuf)]
-      #if base_name.startswith('sms2') and (key == "get" or key == "call"): continue
-      ret[key] = os.path.join(from_dir, polname)
+  curbase = basename
+  while len(ret) == 0:
+    for polname in polfiles:
+      if polname.startswith(curbase + '.'):
+        polbase = get_base(polname)
+        
+        # Strip the base, the suffix, and surrounding dots. This could
+        # result in the empty string, but that's no problem.
+        key = polname[len(curbase)+1:-len(polsuf)]
+        ret[key] = os.path.join(fromdir, polname)
+    if len(ret) == 0:
+      # Calculate the next shortest basename.
+      idx0 = curbase.rfind('_')
+      idx1 = curbase.rfind('.')
+      idx2 = curbase.rfind('-')
+      maxidx = max(idx0, idx1, idx2)
+      if maxidx <= 0:
+        # Return this directly so we don't get into an infinite loop
+        # in case the default policy file can't be found.
+        warn('Using the default policy for %s' % basename)
+        return load_default_policy()
+      else:
+        curbase = curbase[:maxidx]
 
   return ret
+# /load_policies
 
 def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=True, moreopts=[]):
 
@@ -360,6 +400,7 @@ def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=
   # Output node counts.
   cmd.append('-C')
 
+  cmd.append('-z')
   #cmd.append('-P')
   cmd.append('-v')
   cmd.append('2')
@@ -439,23 +480,30 @@ def run_unpacker(url, debug=False, saveall=False):
   if code != 0:
     out("OUTPUT: %s" % outp)
     err('Non-zero error code unpacking %s: %s' % (url, code))
-    return None
+    return None, None
   
+  # %%% Ugly string searching. Instead, import and interact directly.
   lines = outp.split('\n')
   outdir = None
+  app = None
   dirsearch = 'INFO: Output directory: '
+  appsearch = 'INFO: Application name: '
   for line in lines:
     if debug:
       # Print warnings, errors, fatals and exception traces.
       if not line.startswith('INFO: '):
         print(line)
     if outdir is None:
-      # Return the output directory.
+      # Parse the output directory.
       if line.startswith(dirsearch):
         outdir = line[len(dirsearch):].strip()
-        # Break out early if not printing warnings.
-        if not debug: break
-  return outdir
+    if app is None:
+      # Parse the application name.
+      if line.startswith(appsearch):
+        app = line[len(appsearch):].strip()
+    if not debug and app is not None and outdir is not None:
+      break
+  return app, outdir
 # /run_unpacker
 
 def get_lines(filename, comment=None):
@@ -527,14 +575,11 @@ def get_variant_bases(directory):
   for app in apps:
     base = get_base(app)
     pols = load_policies(directory, base)
-    if len(pols) == 0:
-      bases.append(base)
-    else:
-      for poldesc, pol in pols.iteritems():
-        if poldesc != '':
-          bases.append(base + '-' + poldesc)
-        else:
-          bases.append(base)
+    for poldesc, pol in pols.iteritems():
+      if poldesc != '':
+        bases.append(base + '.' + poldesc)
+      else:
+        bases.append(base)
   return bases
 
 def get_ast(filename):
@@ -603,6 +648,7 @@ def evaluate_file(filename, verbose=False):
   #code = code.replace("'", "''").strip()
   #code = code.replace("\\", "\\\\").strip()
 
+  # %%% Needs updating
   query = '''
 [jsc].
 env_init(H0,L0),

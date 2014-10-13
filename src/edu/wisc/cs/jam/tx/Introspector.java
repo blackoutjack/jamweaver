@@ -9,7 +9,7 @@ import java.util.LinkedHashSet;
 
 import edu.wisc.cs.jam.JAM;
 import edu.wisc.cs.jam.Policy;
-import edu.wisc.cs.jam.PolicyType;
+import edu.wisc.cs.jam.PredicateType;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.automaton.State;
@@ -108,8 +108,8 @@ public class Introspector {
     return ret;
   }
 
-  public Set<PolicyType> getPolicyTypes() {
-    Set<PolicyType> ret = new HashSet<PolicyType>();
+  public Set<PredicateType> getPredicateTypes() {
+    Set<PredicateType> ret = new HashSet<PredicateType>();
     for (PolicyTransition pt : edgeSpecifications) {
       ret.add(pt.getType());
     }
@@ -151,7 +151,7 @@ public class Introspector {
   }
 
   public class TransitionGroup {
-    PolicyType type;
+    PredicateType type;
     State source;
     State destination;
     List<PolicyTransition> transitions;
@@ -182,7 +182,7 @@ public class Introspector {
       return destination;
     }
 
-    public PolicyType getType() {
+    public PredicateType getType() {
       return type;
     }
 

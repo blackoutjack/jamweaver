@@ -326,6 +326,7 @@ public abstract class XSBInterface {
     }
 
     if (result.equals("yes")) {
+      List<String> sentinels = xsb.readErrLines();
       putProcess(xsb);
       return null;
     }

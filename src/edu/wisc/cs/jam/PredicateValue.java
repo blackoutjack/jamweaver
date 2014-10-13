@@ -72,16 +72,16 @@ public class PredicateValue {
     return predicate.isPolicyPredicate();
   }
 
-  public boolean isPositivePolicyValue() {
-    if (!isPolicyValue()) return false;
-    if (!equals(predicate.getPositive())) return false;
-    return true;
+  public boolean isEventValue() {
+    return predicate.isEventPredicate();
   }
 
-  public boolean isNegativePolicyValue() {
-    if (!isPolicyValue()) return false;
-    if (!equals(predicate.getNegative())) return false;
-    return true;
+  public boolean isNegative() {
+    return this.equals(predicate.getNegative());
+  }
+
+  public boolean isPositive() {
+    return this.equals(predicate.getPositive());
   }
 
   @Override

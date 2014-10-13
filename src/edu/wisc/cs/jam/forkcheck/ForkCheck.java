@@ -13,7 +13,7 @@ import edu.wisc.cs.jam.RuntimeCheck;
 import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Policy;
 
-import edu.wisc.cs.jam.js.NodeUtil;
+import edu.wisc.cs.jam.js.ExpUtil;
 
 public class ForkCheck extends RuntimeCheck {
   
@@ -35,7 +35,7 @@ public class ForkCheck extends RuntimeCheck {
     // Checks need to be placed prior to control statements, but the
     // expression to actually check will be the branch condition.
     if (e.isControl()) {
-      e = NodeUtil.getCondition(e);
+      e = ExpUtil.getCondition(e);
       assert e != null : "Control statement has null condition: " + getLocation().toCode();
     }
     
@@ -82,7 +82,7 @@ public class ForkCheck extends RuntimeCheck {
 
     // Get the statement wrapper for this expression.
     Node n = getLocation();
-    n = NodeUtil.getEnclosingStatement(n);
+    n = ExpUtil.getEnclosingStatement(n);
 
     // We need to insert this check in the opposite order of the
     // current policy path, so that only one transition is taken at a
@@ -121,7 +121,7 @@ public class ForkCheck extends RuntimeCheck {
 
   @Override
   public String toString() {
-    return NodeUtil.codeFromNode(checkNode);
+    return sm.codeFromNode(checkNode);
   }
 }
 

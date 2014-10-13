@@ -14,7 +14,8 @@ import edu.wisc.cs.jam.OptionParser;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.JAM;
 
-import edu.wisc.cs.jam.js.JSFile;
+import edu.wisc.cs.jam.js.JSSourceManager;
+import edu.wisc.cs.jam.js.JSSource;
 import edu.wisc.cs.jam.js.JSExp;
 
 public class ASTPrint implements Utility {
@@ -30,7 +31,7 @@ public class ASTPrint implements Utility {
     SourceManager sm = new JSSourceManager();
     JAM.Opts.noExterns = true;
     if (options.expr) {
-      sm.addSourceFile(new JSSource("/dev/null"));
+      sm.addSource(new JSSource("/dev/null", false));
       // Interpret the argument as a JavaScript snippet.
       src = sm.nodeFromCode(options.source);
     } else {
@@ -41,7 +42,7 @@ public class ASTPrint implements Utility {
         System.err.println("Can't find file: " + options.source);
         return;
       }
-      sm.addSourceFile(new JSSource(options.source));
+      sm.addSource(new JSSource(options.source, false));
       src = sm.getRootNode();
       // Remove the boilerplate stuff.
       src = src.getChildAtIndex(src.getChildCount() - 1).getFirstChild();

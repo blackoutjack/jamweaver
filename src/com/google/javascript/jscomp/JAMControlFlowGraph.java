@@ -31,7 +31,6 @@ import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
 
 import edu.wisc.cs.jam.js.JSExp;
-import edu.wisc.cs.jam.js.NodeUtil;
 
 // Provide an interface to package-protected Closure classes.
 public class JAMControlFlowGraph {
@@ -251,6 +250,7 @@ public class JAMControlFlowGraph {
             caut.addEdge(caut.makeEdge(sym, srcState, midState));
             
             // Alter |sym| so that the implicit return is explicit.
+            // %%% This creates an Exp without a parent!
             sym = new ExpSymbol(JSExp.create(sm, new Node(Token.RETURN)));
             srcState = midState;
           }

@@ -48,6 +48,23 @@ public class DataState extends State {
 		return new ArrayList<PredicateValue>(values);
 	}
 
+  // Find the value of the given predicate that is true in this state,
+  // or null if the predicate is not represented.
+  public PredicateValue getValueForPredicate(Predicate pred) {
+    if (values == null) return null;
+    PredicateValue pos = pred.getPositive();
+    PredicateValue neg = pred.getNegative();
+    for (PredicateValue pv : values) {
+      if (pv.equals(pos)) {
+        return pos;
+      }
+      if (pv.equals(neg)) {
+        return neg;
+      }
+    }
+    return null;
+  }
+
 	// Print this state's ID and the predicate values it holds.
 	public String toStringFull() {
 		StringBuilder sb = new StringBuilder();

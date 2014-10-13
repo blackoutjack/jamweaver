@@ -323,21 +323,32 @@ string findreplace(string source, string searchString, string replaceString) {
   return str;
 }
 
-char *fix_special_literals(char *in) {
-  return in[0] == '&' ? in + 1 : in;
+string fix_special_literals(char *in) {
+  if (in == "#Infinity") {
+    return "Infinity";
+  } else if (in == "#-Infinity") {
+    return "-Infinity";
+  } else if (in == "#NaN") {
+    return "NaN";
+  } else if (in == "#undefined") {
+    return "undefined";
+  } else if (in == "#null") {
+    return "null";
+  }
+  return in;
 }
 
 string revert_special_literals(string in) {
   if (in == "Infinity") {
-    return "&Infinity";
+    return "#Infinity";
   } else if (in == "-Infinity") {
-    return "&-Infinity";
+    return "#-Infinity";
   } else if (in == "NaN") {
-    return "&NaN";
+    return "#NaN";
   } else if (in == "undefined") {
-    return "&undefined";
+    return "#undefined";
   } else if (in == "null") {
-    return "&null";
+    return "#null";
   }
   return in;
 }
@@ -949,6 +960,31 @@ extern "C" int isaddr(CTXTdecl) {
   return FALSE;
 }
 
+// Like |isaddr|, but exclude special primitives.
+extern "C" int isobj(CTXTdecl) {
+ 
+  REQ_STRING(1);
+
+  string given(extern_ptoc_string(1));
+
+  if (given == "#Infinity") {
+    return FALSE;
+  } else if (given == "#-Infinity") {
+    return FALSE;
+  } else if (given == "#NaN") {
+    return FALSE;
+  } else if (given == "#undefined") {
+    return FALSE;
+  } else if (given == "#null") {
+    return FALSE;
+  }
+  if (given[0] == '#') {
+    return TRUE;
+  }
+  
+  return FALSE;
+}
+
 // Avoid unused variable warnings.
 extern "C" int always(CTXTdecl) {
   return TRUE;
@@ -1206,11 +1242,9 @@ bool init_yices() {
     base_code += "))\n";
   }
 
-  /*
   FILE* outfl = fopen("/tmp/satbase", "a");
   fprintf(outfl, "#####\n%s\n", base_code.c_str());
   fclose(outfl);
-  */
 
   yices_ctxt = yices_mk_context();
   int ok = yices_parse_command(yices_ctxt, base_code.c_str());
@@ -1327,11 +1361,9 @@ bool query_yices(string fmla) {
 
   // Add the query in question.
   yicesin += "(assert " + fmla + ")\n";
-  /*
   FILE* outfl = fopen("/tmp/satin", "a");
   fprintf(outfl, "#####\n%s\n", yicesin.c_str());
   fclose(outfl);
-  */
 
   // Mark the baseline query to be able to revert.
   yices_push(yices_ctxt);
@@ -3011,7 +3043,7 @@ extern "C" int stringnumber(CTXTdecl) {
   else
   {
     // rejected
-    extern_ctop_string(2, "&NaN");
+    extern_ctop_string(2, "#NaN");
   }
   return TRUE;
 }
@@ -3109,7 +3141,7 @@ extern "C" int current_func(CTXTdecl) {
 
   string lastcall;
   if (calls.size() == 0) {
-    lastcall = "&null";
+    lastcall = "#null";
   } else {
     lastcall = calls.back();
   }
@@ -3156,7 +3188,7 @@ extern "C" int get_arg(CTXTdecl) {
 
   if (vals.empty()) {
     // If nothing was found, the argument value is undefined.
-    val = "&undefined";
+    val = "#undefined";
   } else if (vals.size() == 1) {
     // If only one value was logged at the given index, just return it.
     val = vals.front();

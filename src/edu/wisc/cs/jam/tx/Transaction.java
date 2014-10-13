@@ -13,7 +13,7 @@ import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.Dbg;
 
-import edu.wisc.cs.jam.js.NodeUtil;
+import edu.wisc.cs.jam.js.ExpUtil;
 
 public class Transaction {
 
@@ -111,8 +111,9 @@ public class Transaction {
       assert !stmt.isBlock() && !stmt.isScript() : "Invalid statement for transaction: " + stmt + " / " + sm.codeFromNode(stmt);
       // If |stmt| is a condition for an if statement, for example, we
       // have to wrap the whole if statement in the transaction.
-      stmt = NodeUtil.getEnclosingStatement(stmt);
-      assert !stmt.isBlock() && !stmt.isScript() : "Invalid statement for transaction: " + stmt + " / " + sm.codeFromNode(stmt);
+      Node newstmt = ExpUtil.getEnclosingStatement(stmt);
+      assert !newstmt.isBlock() && !newstmt.isScript() : "Invalid statement for transaction: " + stmt + " / " + sm.codeFromNode(stmt);
+      stmt = newstmt;
 
       assert next == null || stmt == next : "Attempting to enclose disjoint statements in a transaction";
       next = stmt.getNext();
@@ -120,7 +121,6 @@ public class Transaction {
       Node p = stmt.getParent();
       assert parent == null || p == parent : "Attempting to enclose disjoint statements in a transaction";
       parent = p;
-
       if (stmt.isCase()) {
         parent = stmt;
         stmt = stmt.getFirstChild();
@@ -128,10 +128,16 @@ public class Transaction {
         stmt = new Node(Token.EXPR_RESULT, stmt);
         next = null;
         assert statements.size() == 1 : "Multiple nodes cannot be enclosed if a CASE expression is included";
+      } else if (stmt.getParent() == null) {
+        Dbg.warn("No parent for transaction node: " + stmt);
       } else {
         stmt.detachFromParent();
       }
       block.addChildToBack(stmt);
+      if (parent == null) {
+        Dbg.warn("Enclosing an unconnected node in a transaction: " + stmt);
+        return;
+      }
     }
 
     if (next != null) {

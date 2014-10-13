@@ -7,14 +7,15 @@ import java.util.Map;
 import java.util.HashMap;
 
 import edu.wisc.cs.jam.PolicyLanguage;
-import edu.wisc.cs.jam.PolicyType;
+import edu.wisc.cs.jam.PredicateType;
 import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
 
-import edu.wisc.cs.jam.js.NodeUtil;
 import edu.wisc.cs.jam.js.JSExp;
-import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPolicyType;
+import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPredicateType;
+
+import edu.wisc.cs.jam.env.NativeUtil;
 
 // This represents a snippet of JavaScript that evaluates the
 // truth value of a single conjunct of a JAM policy predicate with
@@ -29,7 +30,7 @@ public class EvaluatorNode {
   // This is generated and saved when toString is called.
   private String code;
 
-  private PolicyType type;
+  private PredicateType type;
   private boolean not = false;
 
   // Mapping for wild card. This may be shared with other EvaluatorNode
@@ -51,7 +52,7 @@ public class EvaluatorNode {
       exp = exp.getFirstChild();
     }
 
-    type = pl.getPolicyType(exp);
+    type = pl.getPredicateType(exp);
     if (type == null)
       throw new UnsupportedOperationException("Unknown conjunct type: " + exp.toCode());
   }
@@ -76,7 +77,7 @@ public class EvaluatorNode {
     return wilds;
   }
 
-  public PolicyType getType() {
+  public PredicateType getType() {
     return type;
   }
 
@@ -112,7 +113,7 @@ public class EvaluatorNode {
     if (!language.isNativeLocation(nat)) return null;
 
     String natloc = nat.toCode();
-    String expr = NodeUtil.nativeLocationToExpression.get(natloc);
+    String expr = NativeUtil.nativeLocationToExpression.get(natloc);
     if (expr == null) {
       // %%% Handle this more gracefully.
       throw new UnsupportedOperationException("Unknown native location: " + natloc);
@@ -288,17 +289,17 @@ public class EvaluatorNode {
     // %%% Delegate this to PolicyLanguage.
     String op = null;
     boolean isInfix = true;
-    if (type == JSPolicyType.SHEQ) {
+    if (type == JSPredicateType.SHEQ) {
       op = "JAM.identical";
       isInfix = false;
-    } else if (type == JSPolicyType.EQ) {
+    } else if (type == JSPredicateType.EQ) {
       op = " == ";
-    } else if (type == JSPolicyType.SHNE) {
+    } else if (type == JSPredicateType.SHNE) {
       op = "!JAM.identical";
       isInfix = false;
-    } else if (type == JSPolicyType.NE) {
+    } else if (type == JSPredicateType.NE) {
       op = " != ";
-    } else if (type == JSPolicyType.INSTANCEOF) {
+    } else if (type == JSPredicateType.INSTANCEOF) {
       op = "JAM.instanceof";
       isInfix = false;
     } else {
@@ -361,7 +362,7 @@ public class EvaluatorNode {
     String opstr = op.toCode();
     if (opstr.equals("jam#regextest")) {
       String loc = "#RegExp#prototype#test";
-      String expr = NodeUtil.nativeLocationToExpression.get(loc);
+      String expr = NativeUtil.nativeLocationToExpression.get(loc);
       if (expr == null) {
         throw new UnsupportedOperationException("Unknown native location: " + loc);
       }
@@ -408,7 +409,7 @@ public class EvaluatorNode {
     String opstr = op.toCode();
     if (opstr.equals("jam#stringcontains")) {
       String loc = "#String#prototype#indexOf";
-      String expr = NodeUtil.nativeLocationToExpression.get(loc);
+      String expr = NativeUtil.nativeLocationToExpression.get(loc);
       if (expr == null) {
         throw new UnsupportedOperationException("Unknown native location: " + loc);
       }
@@ -430,7 +431,7 @@ public class EvaluatorNode {
     } else if (opstr.equals("jam#stringstartswith")) {
       // |startsWith| is not standard yet, but it exists in Firefox 17.
       String loc = "#String#prototype#startsWith";
-      String expr = NodeUtil.nativeLocationToExpression.get(loc);
+      String expr = NativeUtil.nativeLocationToExpression.get(loc);
       if (expr == null) {
         throw new UnsupportedOperationException("Unknown native location: " + loc);
       }
@@ -532,7 +533,7 @@ public class EvaluatorNode {
       // Output code that compares |varname === native| where |native|
       // is the native object corresponding to the location cited in the
       // policy predicate.
-      throw new UnsupportedOperationException("Unknown predicate call name: " + obj.toCode());
+      throw new UnsupportedOperationException("Unknown access object name: " + obj.toCode());
     }
 
     String propname = null;
@@ -553,7 +554,7 @@ public class EvaluatorNode {
       sb.append("true");
     }
 
-    if (type == JSPolicyType.WRITE) {
+    if (type == JSPredicateType.WRITE) {
       // Let subsequent nodes know to use |node.value| rather than
       // |node.obj.prop| to test the value.
       String[] objprop = { objstr, propstr };
@@ -571,7 +572,7 @@ public class EvaluatorNode {
       sb.append("!");
     }
     sb.append("(");
-    switch ((JSPolicyType)type) {
+    switch ((JSPredicateType)type) {
       case WRITE:
       case READ:
       case DELETE:

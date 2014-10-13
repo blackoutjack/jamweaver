@@ -7,10 +7,10 @@ import com.google.javascript.rhino.Token;
 
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.CheckManager;
-import edu.wisc.cs.jam.PolicyType;
+import edu.wisc.cs.jam.PredicateType;
 
-import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPolicyType;
-import edu.wisc.cs.jam.js.NodeUtil;
+import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPredicateType;
+import edu.wisc.cs.jam.js.ExpUtil;
 
 /*
  * Transaction-related utility functions
@@ -33,14 +33,14 @@ public class TxUtil {
   }
 
   public static Node getTxBlock(Node tx) {
-    assert NodeUtil.isTransaction(tx);
+    assert ExpUtil.isTransaction(tx);
     Node ret = tx.getChildAtIndex(1);
     assert ret.isBlock();
     return ret;
   }
   
   public static Node getTxIntrospector(Node tx) {
-    assert NodeUtil.isTransaction(tx);
+    assert ExpUtil.isTransaction(tx);
     Node ispect = tx.getFirstChild();
     return ispect;
   }
@@ -62,9 +62,9 @@ public class TxUtil {
     return getIntrospectorName(ispect);
   }
 
-  public static Set<PolicyType> getTxPolicyTypes(CheckManager cm, Node tx) {
+  public static Set<PredicateType> getTxPredicateTypes(CheckManager cm, Node tx) {
     Node ispect = getTxIntrospector(tx);
     String ispectName = TxUtil.getIntrospectorName(ispect);
-    return cm.getPolicyTypes(ispectName);
+    return cm.getPredicateTypes(ispectName);
   }
 }

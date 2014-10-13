@@ -20,7 +20,6 @@ import edu.wisc.cs.jam.Semantics;
 import edu.wisc.cs.jam.Policy;
 import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.RuntimeCheck;
-import edu.wisc.cs.jam.js.NodeUtil;
 import edu.wisc.cs.jam.FileUtil;
 
 public class ForkCheckManager implements CheckManager, Callback {
@@ -134,7 +133,7 @@ public class ForkCheckManager implements CheckManager, Callback {
   public void visit(NodeTraversal t, Node n, Node parent) {
     // Check this first to avoid recording an EXPR_RESULT and it's
     // child.
-    if (!NodeUtil.isCall(n)) return;
+    if (!n.isCall()) return;
     // We're interested in nodes representing pre-existing
     // instrumentation.
     if (!isInstrumentation(n)) return;
@@ -182,10 +181,10 @@ public class ForkCheckManager implements CheckManager, Callback {
   }
 
   public static Node getCheckLocation(Node check) {
-    if (NodeUtil.isExprResult(check)) check = check.getFirstChild();
+    if (check.isExprResult()) check = check.getFirstChild();
     assert isInstrumentation(check) : "Attempting to get the source state of a non-check node.";
 
-    Node loc = NodeUtil.getEnclosingStatement(check);
+    Node loc = ExpUtil.getEnclosingStatement(check);
     while (isInstrumentation(loc)) {
       loc = loc.getNext();
     }
@@ -198,11 +197,11 @@ public class ForkCheckManager implements CheckManager, Callback {
   // Get the state id of the policy transition source. This function
   // assumes that check is actually a runtime check.
   public static int getCheckSource(Node check) {
-    if (NodeUtil.isExprResult(check)) check = check.getFirstChild();
+    if (check.isExprResult()) check = check.getFirstChild();
     assert isInstrumentation(check) : "Attempting to get the source state of a non-check node.";
     
     // The second-to-last argument of checkState is the source state.
-    String arg = NodeUtil.codeFromNode(check.getChildAtIndex(ForkCheck.CHECK_ARGUMENT_COUNT - 1));
+    String arg = sm.codeFromNode(check.getChildAtIndex(ForkCheck.CHECK_ARGUMENT_COUNT - 1));
 
     int sid = -2;
     try {
@@ -217,11 +216,11 @@ public class ForkCheckManager implements CheckManager, Callback {
   // Get the state id of the policy transition destination. This
   // function assumes that check is actually a runtime check.
   public static int getCheckDestination(Node check) {
-    if (NodeUtil.isExprResult(check)) check = check.getFirstChild();
+    if (check.isExprResult()) check = check.getFirstChild();
     assert isInstrumentation(check) : "Attempting to get the destination state of a non-check node.";
 
     // The last argument of checkState is the destination state.
-    String arg = NodeUtil.codeFromNode(check.getChildAtIndex(ForkCheck.CHECK_ARGUMENT_COUNT));
+    String arg = sm.codeFromNode(check.getChildAtIndex(ForkCheck.CHECK_ARGUMENT_COUNT));
 
     int sid = -2;
     try {
@@ -242,13 +241,13 @@ public class ForkCheckManager implements CheckManager, Callback {
 
   public static boolean isInstrumentation(Node n) {
     if (n == null) return false;
-    if (NodeUtil.isExprResult(n)) n = n.getFirstChild();
-    if (!NodeUtil.isCall(n)) return false;
+    if (n.isExprResult()) n = n.getFirstChild();
+    if (!n.isCall()) return false;
 
     Node name = n.getFirstChild();
-    if (!NodeUtil.isName(name)) return false;
+    if (!name.isName()) return false;
 
-    String checktext = NodeUtil.codeFromNode(name);
+    String checktext = sm.codeFromNode(name);
     if (!checktext.equals(ForkCheck.CHECK_FUNCTION)) {
       return false;
     }

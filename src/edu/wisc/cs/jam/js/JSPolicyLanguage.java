@@ -1,9 +1,10 @@
 package edu.wisc.cs.jam.js;
 
 import java.util.Set;
+import java.util.List;
 
 import edu.wisc.cs.jam.PolicyLanguage;
-import edu.wisc.cs.jam.PolicyType;
+import edu.wisc.cs.jam.PredicateType;
 import edu.wisc.cs.jam.Policy;
 import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.Exp;
@@ -11,7 +12,7 @@ import edu.wisc.cs.jam.Dbg;
 
 public class JSPolicyLanguage extends PolicyLanguage {
 
-  public enum JSPolicyType implements PolicyType {
+  public enum JSPredicateType implements PredicateType {
     WRITE,
     READ,
     CALL,
@@ -25,11 +26,20 @@ public class JSPolicyLanguage extends PolicyLanguage {
     NE,
     INSTANCEOF,
     REGEXTEST,
+    TRUE,
     DUMMY
   }
 
-  public JSPolicyType getPolicyType(Exp e) {
-    JSPolicyType type = null;
+  public JSPredicateType getPredicateType(Predicate p) {
+    if (p == Predicate.TRUE) return JSPredicateType.TRUE;
+
+    List<Exp> conjs = p.getConjuncts();
+    assert conjs.size() > 0;
+    return getPredicateType(conjs.get(0));
+  }
+
+  public JSPredicateType getPredicateType(Exp e) {
+    JSPredicateType type = null;
 
     boolean not = false;
     if (e.isNot()) {
@@ -40,56 +50,46 @@ public class JSPolicyLanguage extends PolicyLanguage {
     if (e.isCall()) {
       String callName = e.getFirstChild().toCode();
       if (callName.equals("jam#called")) {
-        type = JSPolicyType.CALL;
+        type = JSPredicateType.CALL;
         if (not)
           throw new UnsupportedOperationException("Negated jam#called predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#set")) {
-        type = JSPolicyType.WRITE;
+        type = JSPredicateType.WRITE;
         if (not)
           throw new UnsupportedOperationException("Negative jam#set predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#get")) {
-        type = JSPolicyType.READ;
+        type = JSPredicateType.READ;
         if (not)
           throw new UnsupportedOperationException("Negative jam#get predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#delete")) {
-        type = JSPolicyType.DELETE;
+        type = JSPredicateType.DELETE;
         if (not)
           throw new UnsupportedOperationException("Negative jam#delete predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#type")) {
-        type = JSPolicyType.TYPE;
+        type = JSPredicateType.TYPE;
       } else if (callName.equals("jam#stringcontains")) {
-        type = JSPolicyType.STRINGCONTAINS;
+        type = JSPredicateType.STRINGCONTAINS;
       } else if (callName.equals("jam#stringstartswith")) {
-        type = JSPolicyType.STRINGSTARTSWITH;
+        type = JSPredicateType.STRINGSTARTSWITH;
       } else if (callName.equals("jam#regextest")) {
-        type = JSPolicyType.REGEXTEST;
+        type = JSPredicateType.REGEXTEST;
       } else {
         return null;
       }
     } else if (e.is(JSExp.SHEQ)) {
-      type = JSPolicyType.SHEQ;
+      type = JSPredicateType.SHEQ;
     } else if (e.is(JSExp.SHNE)) {
-      type = JSPolicyType.SHNE;
+      type = JSPredicateType.SHNE;
     } else if (e.is(JSExp.EQ)) {
-      type = JSPolicyType.EQ;
+      type = JSPredicateType.EQ;
     } else if (e.is(JSExp.NE)) {
-      type = JSPolicyType.NE;
+      type = JSPredicateType.NE;
     } else if (e.is(JSExp.INSTANCEOF)) {
-      type = JSPolicyType.INSTANCEOF;
+      type = JSPredicateType.INSTANCEOF;
     } else if (e.is(JSExp.FALSE)) {
-      type = JSPolicyType.DUMMY;
+      type = JSPredicateType.DUMMY;
     } else {
       return null;
-    }
-    return type;
-  }
-
-  @Override
-  public JSPolicyType getPolicyEdgeType(Policy.Edge edge) {
-    Exp e = edge.getSymbol().getPredicate().getConjuncts().get(0);
-    JSPolicyType type = getPolicyType(e);
-    if (type == null) {
-      throw new UnsupportedOperationException("Unknown policy type: " + e.toCode());
     }
     return type;
   }
@@ -112,11 +112,11 @@ public class JSPolicyLanguage extends PolicyLanguage {
 
   protected boolean findStringsOfInterest(Exp e, Exp parent, Set<String> strs) {
     boolean ret = false;
-    if (e.is(JSExp.STRING) && parent.is(JSExp.CALL)
-        && parent.getChildCount() == 3 && parent.getChild(2) == e) {
+    if (e.isString() && parent.isCall()
+        && parent.getChildCount() >= 3 && parent.getChild(2) == e) {
       String callName = parent.getFirstChild().toCode();
       if (callName.equals("jam#stringcontains") || callName.equals("jam#stringstartswith")) {
-        String str = NodeUtil.unquote(e.toCode());
+        String str = e.getString();
         strs.add(str);
         ret = true;
       }
@@ -131,16 +131,16 @@ public class JSPolicyLanguage extends PolicyLanguage {
 
   protected boolean findPropertiesOfInterest(Exp e, Exp parent, Set<String> props) {
     boolean ret = false;
-    if (e.is(JSExp.STRING)) {
+    if (e.isString()) {
       if (parent.isAccessor() && parent.getChild(1) == e) {
-        String memb = NodeUtil.unquote(e.toCode());
+        String memb = e.getString();
         props.add(memb);
         ret = true;
       } else if (parent.is(JSExp.CALL) && parent.getChildCount() == 3
           && parent.getChild(2) == e) {
         String callName = parent.getFirstChild().toCode();
         if (callName.equals("jam#get") || callName.equals("jam#set")) {
-          String memb = NodeUtil.unquote(e.toCode());
+          String memb = e.getString();
           props.add(memb);
           ret = true;
         }
@@ -149,7 +149,7 @@ public class JSPolicyLanguage extends PolicyLanguage {
         // set(`x,`y) && `y !== "prop"
         int otheridx = parent.getFirstChild() == e ? 1 : 0;
         if (isWild(parent.getChild(otheridx))) {
-          String memb = NodeUtil.unquote(e.toCode());
+          String memb = e.getString();
           props.add(memb);
           ret = true;
         }

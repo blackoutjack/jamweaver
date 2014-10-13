@@ -24,7 +24,7 @@ native_hasattr('@Global','"window"','ReadOnly').
 % Internal properties of the global object.
 builtin_maps('#Global','@Global').
 ghasprop('@Global','@this','#Global').
-ghasprop('@Global','@Scope','&null').
+ghasprop('@Global','@Scope','#null').
 
 %%% Need a more principled way of collecting elements.
 builtin_maps('#Elements','@elements').

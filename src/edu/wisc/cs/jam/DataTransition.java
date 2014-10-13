@@ -5,6 +5,10 @@ public class DataTransition {
   private ExpSymbol symbol;
   private DataState source;
   private DataState destination;
+  // This just associates the relation that should be updated after the
+  // satisfiability of this transition is determined by a query batch.
+  // It is not specific to this DataTransition, but is potentially
+  // shared by multiple.
   private Relation relation;
   
   public DataTransition(Relation rel, DataState src, ExpSymbol sym, DataState dest) {

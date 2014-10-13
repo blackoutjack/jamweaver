@@ -61,11 +61,11 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
     // Find all the call target assignments that might occur in the
     // program and populate callTargetMap with the results. Only 
     // consider normal assignment, not +=, -=, etc.
-    if (n.getType() == Token.ASSIGN || NodeUtil.isVarInitializer(n)) {
-      Node lhs = NodeUtil.getAssignLHS(n);
-      Node rhs = NodeUtil.getAssignRHS(n);
+    if (n.getType() == Token.ASSIGN || ExpUtil.isVarInitializer(n)) {
+      Node lhs = ExpUtil.getAssignLHS(n);
+      Node rhs = ExpUtil.getAssignRHS(n);
 
-      if (NodeUtil.isName(rhs)) {
+      if (ExpUtil.isName(rhs)) {
         String l = getCode(lhs);
         String r = getCode(rhs);
 
@@ -83,7 +83,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
           Node prop = rhs.getChildAtIndex(i);
           Node val = prop.getChildAtIndex(0);
 
-          if (!NodeUtil.isName(val)) continue;
+          if (!ExpUtil.isName(val)) continue;
 
           String l = getCode(prop);
           // Strip the quotes off of the property name.
@@ -197,7 +197,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
 
       // Avoid repeated method calls by collecting some objects here.
       Node curSiteNode = curSite.getAstNode();
-      Node curSiteStmt = NodeUtil.getEnclosingStatement(curSiteNode);
+      Node curSiteStmt = ExpUtil.getEnclosingStatement(curSiteNode);
       String curSiteCode = getCode(curSiteNode);
 
       // There may be multiple potential targets, so we have to add 
@@ -385,7 +385,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
           // If we haven't processed the node containing this call,
           // we have a problem.
           Node callNode = curSite.getAstNode();
-          Node stmt = NodeUtil.getEnclosingStatement(callNode);
+          Node stmt = ExpUtil.getEnclosingStatement(callNode);
           State callDest = stateMap.get(stmt);
           if (callDest == null) {
             Dbg.warn("Cannot find callsite state: " + callNode);

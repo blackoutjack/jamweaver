@@ -7,11 +7,11 @@ aexe(H,L,'#HTMLElement',This,_,HP,This) :-
   heapprop(H2,This,'"className"','""',HP,_).
 
 %%% Stub
-aexe(H,_,'#Element#prototype#setAttribute',_,_,H,'&undefined').
+aexe(H,_,'#Element#prototype#setAttribute',_,_,H,'#undefined').
 
 %%% Stub
-aexe(H,_,'#HTMLElement#prototype#click',_,_,H,'&undefined').
+aexe(H,_,'#HTMLElement#prototype#click',_,_,H,'#undefined').
 
 %%% Stub
 % Set an @ElementFocus metavariable to this value?
-aexe(H,_,'#HTMLElement#prototype#focus',_,_,H,'&undefined').
+aexe(H,_,'#HTMLElement#prototype#focus',_,_,H,'#undefined').

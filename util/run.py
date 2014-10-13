@@ -15,6 +15,7 @@ from util import run_repacker
 from util import validate_output
 from util import validate_value
 from util import load_policies
+from util import load_policy
 from util import load_seeds
 from util import load_sources
 from util import evaluate_file
@@ -31,28 +32,6 @@ def load_testcases(from_dir, default_policy=None):
 
     # Find any applicable policy files.
     policies = load_policies(from_dir, base) 
-
-    # Some benchmarks have a modified version with a "-bad"
-    # or "-ok" suffix. These can use the same policy as
-    # the non-modified version.
-    # %%% Generalize or remove
-    if len(policies) == 0:
-      subparts = base.split('-')
-      if subparts[-1] == 'bad' or subparts[-1] == 'ok':
-        xbase = '-'.join(subparts[:-1])
-        policies = load_policies(from_dir, xbase)
-        
-    # Default to the simple policy.
-    if len(policies) == 0:
-      if default_policy is not None:
-        polpath = os.path.join(from_dir, default_policy)
-        if not os.path.isfile(polpath):
-          err("Unable to find default policy file for %s: %s" % (base, polpath))
-        else:
-          policies = {'': polpath}
-      else:
-        err("Unable to find policy file for %s\n" % base)
-        continue
 
     seedfile = load_seeds(from_dir, base)
 
@@ -199,6 +178,90 @@ def process_result(outp, exppath, overwrite):
   out('%s %s\n' % (expname, stat))
   return ok
 
+class Result():
+  def __init__(self):
+    self.html_ok = False
+    self.js_ok = False
+
+def run_website(url, policies, debug=False, overwrite=False):
+  results = []
+
+  # Run the unpacker.
+  out("Unpacking %s" % url)
+  appname, unpackdir = run_unpacker(url, debug=debug, saveall=True)
+  if unpackdir is None:
+    warn('Unable to retrieve unpack directory: %s' % (url))
+    results.append(Result())
+    return results
+  if appname is None:
+    warn('Unable to retrieve application name: %s' % (url))
+    results.append(Result())
+    return results
+
+  srclist = os.path.join(unpackdir, 'scripts.txt')
+  htmlfile = os.path.join(unpackdir, appname + '.html')
+
+  if not os.path.isfile(srclist):
+    warn('No JavaScript found at URL: %s' % url)
+    results.append(Result())
+    return results
+
+  # Run with each policy file separately.
+  for poldesc, polfile in policies.iteritems():
+    # Generate a new Result for each policy.
+    result = Result()
+    results.append(result)
+
+    opts = ['-X', '-P', '-N', appname, '-h', htmlfile]
+
+    if poldesc != '':
+      opts.append('--appsuffix')
+      opts.append(poldesc)
+      exppre = '.' + poldesc
+    else:
+      exppre = ''
+
+    out("Analyzing %s" % appname)
+    outp = run_jam(srclist, [polfile], refine=0, debug=debug, seeds=None, moreopts=opts)
+
+    expsuf = exppre + ".norefine.exp.js"
+    exppath = os.path.join(WEBSITE_DIR, appname + expsuf)
+    result.js_ok = process_result(outp, exppath, overwrite)
+
+    # Repack the HTML file.
+
+    # Get the generated policy file.
+    # %%% Very ugly
+    allout = os.listdir(OUTDIR)
+    allout.sort()
+    gotone = False
+    outdir = None
+    for od in allout:
+      if od.startswith(appname + '-'):
+        outdir = os.path.join(OUTDIR, od)
+        gotone = True
+      elif gotone:
+        break
+    if outdir is None:
+      err('Could not determine JAM output directory: %s' % appname)
+      continue
+    genpol = os.path.join(outdir, 'policy.js')
+
+    out("Repacking %s" % htmlfile)
+    rpout = run_repacker(htmlfile, srclist, unpackdir, polpath=genpol, debug=debug)
+
+    rpfile = os.path.splitext(htmlfile)[0] + '.repack.html'
+    rpfl = open(rpfile, 'w')
+    rpfl.write(rpout)
+    rpfl.close()
+    out("Saved to %s" % rpfile)
+
+    rpexpsuf = exppre + '.norefine.exp.html'
+    rpexppath = os.path.join(WEBSITE_DIR, appname + rpexpsuf)
+    result.html_ok = process_result(rpout, rpexppath, overwrite)
+
+  return results
+
 def run_websites(debug=False, overwrite=False):
   tot = 0
   js_ok = 0
@@ -208,78 +271,16 @@ def run_websites(debug=False, overwrite=False):
   sites = get_lines(WEBSITE_FILE, comment='#')
   for site in sites:
 
-    # Run the unpacker.
-    url = 'http://' + site
-    out("Unpacking %s" % url)
-    unpackdir = run_unpacker(url, debug=debug, saveall=True)
-    if unpackdir is None:
-      warn('Unable to determine unpack directory for %s' % (url))
-      continue
-
     policies = load_policies(WEBSITE_DIR, site)
-    # Default to the simple policy.
-    if len(policies) == 0:
-      polpath = os.path.join(MICROBENCHMARK_DIR, 'exfil_test.policy')
-      if not os.path.isfile(polpath):
-        err("Unable to find default policy file for %s: %s" % (site, polpath))
-      else:
-        policies = {'': polpath}
+    
+    url = 'http://' + site
+    results = run_website(url, policies, debug=debug, overwrite=overwrite)
 
-    srclist = os.path.join(unpackdir, 'scripts.txt')
-    htmlfile = os.path.join(unpackdir, site + '.html')
-
-    # Run with each policy file separately.
-    for poldesc, polfile in policies.iteritems():
-      opts = ['-X', '-P', '-N', site, '-h', htmlfile]
-
-      if poldesc != '':
-        opts.append('--appsuffix')
-        opts.append(poldesc)
-        exppre = '.' + poldesc
-      else:
-        exppre = ''
-
-      out("Analyzing %s" % site)
-      tot += 1
-      outp = run_jam(srclist, [polfile], refine=0, debug=debug, seeds=None, moreopts=opts)
-
-      expsuf = exppre + ".norefine.exp.js"
-      exppath = os.path.join(WEBSITE_DIR, site + expsuf)
-      if process_result(outp, exppath, overwrite):
-        js_ok += 1
-
-      # Repack the HTML file.
-
-      # Get the generated policy file.
-      # %%% Very ugly
-      allout = os.listdir(OUTDIR)
-      allout.sort()
-      gotone = False
-      outdir = None
-      for od in allout:
-        if od.startswith(site + '-'):
-          outdir = os.path.join(OUTDIR, od)
-          gotone = True
-        elif gotone:
-          break
-      if outdir is None:
-        err('Could not determine JAM output directory: %s' % site)
-        continue
-      policy = os.path.join(outdir, 'policy.js')
-
-      out("Repacking %s" % htmlfile)
-      rpout = run_repacker(htmlfile, srclist, unpackdir, polpath=policy, debug=debug)
-
-      rpfile = os.path.splitext(htmlfile)[0] + '.repack.html'
-      rpfl = open(rpfile, 'w')
-      rpfl.write(rpout)
-      rpfl.close()
-      out("Saved to %s" % rpfile)
-
-      rpexpsuf = exppre + '.norefine.exp.html'
-      rpexppath = os.path.join(WEBSITE_DIR, site + rpexpsuf)
-      if process_result(rpout, rpexppath, overwrite):
-        html_ok += 1
+    # Track successful results
+    tot += len(results)
+    for result in results:
+      if result.html_ok: html_ok += 1
+      if result.js_ok: js_ok += 1
 
   end = time.time()
   tottime = end - start
@@ -325,6 +326,8 @@ def main():
   parser.add_option('-e', '--overwrite', action='store_true', default=False, dest='overwrite', help='overwrite expected output')
   #parser.add_option('-s', '--semantics', action='store_true', default=False, dest='semantics', help='test semantics')
   parser.add_option('-g', '--debug', action='store_true', default=False, dest='debug', help='generate debug output')
+  parser.add_option('-u', '--url', action='store', default=None, dest='url', help='analyze HTML/JS at given URL')
+  parser.add_option('-Y', '--policy', action='store', default=None, dest='policy', help='policy file to apply to URL')
 
   opts, args = parser.parse_args()
     
@@ -332,12 +335,15 @@ def main():
     parser.error("Invalid number of arguments")
 
   allmods = True
-  if opts.benchmarks or opts.micro or opts.websites:
+  if opts.benchmarks or opts.micro or opts.websites or opts.url is not None:
     allmods = False
 
   #if opts.interpreter:
   #  err('Interpreter tests are currently out-of-order')
   #  run_interpreter_tests(opts.debug)
+  if opts.url is not None:
+    pol = load_policy(opts.policy)
+    run_website(opts.url, pol, debug=opts.debug, overwrite=opts.overwrite)
   if allmods or opts.micro:
     run_microbenchmarks(opts.debug, opts.overwrite)
   if allmods or opts.benchmarks:

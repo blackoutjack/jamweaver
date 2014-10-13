@@ -5,7 +5,7 @@ aexe(H,L,'#RegExp',This,Args,HP,Ret) :-
 
 regexpcon_aux(H,L,This,P,F,HP,Ret) :-
 	is_concrete(F),
-	(F='&undefined'->F2='""';F2=F),
+	(F='#undefined'->F2='""';F2=F),
 	regexpcon_flags(F2,BG,BI,BM,_),
 	heapprop(H,This,'"source"',P,H1,_),
 	heapprop(H1,This,'"global"',BG,H2,_),

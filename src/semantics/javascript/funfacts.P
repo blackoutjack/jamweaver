@@ -6,7 +6,7 @@
 :- export fmaps/2.
 :- export reversescope/2.
 :- export calltarget/2.
-fundef('@Global',[],['a'],'&null','#Global',[],[],'@Global').
+fundef('@Global',[],['a'],'#null','#Global',[],[],'@Global').
 varlookup('NONE','NONE') :- fail.
 funalias('NONE','NONE') :- fail.
 ihasprop('NONE','NONE','NONE') :- fail.

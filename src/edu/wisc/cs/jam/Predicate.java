@@ -36,7 +36,8 @@ public class Predicate {
   private boolean isfunctionentry;
 
   // Flag indicating that this predicate is used in the policy.
-  private boolean ispolicypredicate;
+  private boolean isEvent;
+  private boolean isPolicy;
   
   /*
    * The "positive" clause is taken to be a policy-transitioning predicate,
@@ -45,7 +46,8 @@ public class Predicate {
    */
   public Predicate(String cond, Clause pos, Clause posinit, Clause neg, Clause neginit) {
     isfunctionentry = false;
-    ispolicypredicate = false;
+    isEvent = false;
+    isPolicy = false;
     id = ++NEXT_ID;
 
     String negcond = "!(" + cond + ")";
@@ -58,11 +60,19 @@ public class Predicate {
   }
 
   public boolean isPolicyPredicate() {
-    return ispolicypredicate;
+    return isPolicy;
   }
 
   public void setPolicyPredicate() {
-    ispolicypredicate = true;
+    isPolicy = true;
+  }
+
+  public boolean isEventPredicate() {
+    return isEvent;
+  }
+
+  public void setEventPredicate() {
+    isEvent = true;
   }
 
   public boolean isFunctionEntry() {
@@ -93,7 +103,7 @@ public class Predicate {
     boolean negSat = sem.query(neg, true);
     neg.setConcrete(false);
 
-    if (isPolicyPredicate()) {
+    if (isEventPredicate()) {
       // Policy predicates must be false in the initial environment.
       initialValue = negative;
       // Warn if this is not the case.
@@ -118,7 +128,7 @@ public class Predicate {
       } else if (posSat) {
         initialValue = positive;
       } else {
-        Dbg.out("WARNING: Learned predicate is not satisfiable in the initial environment: " + this, 2);
+        Dbg.out("WARNING: State predicate is not satisfiable in the initial environment: " + this, 2);
       }
     }
 
@@ -172,6 +182,19 @@ public class Predicate {
     return prerequisite;
   }
 
+  // Closure changed the structure of multilevel AND statements, so this
+  // recursive method should be robust against future changes.
+  protected void collectConjuncts(Exp e, List<Exp> conjuncts) {
+    if (e.isAnd()) {
+      Exp e1 = e.getFirstChild();
+      Exp e2 = e.getChild(1);
+      collectConjuncts(e1, conjuncts);
+      collectConjuncts(e2, conjuncts);
+    } else {
+      conjuncts.add(e);
+    }
+  }
+
   // Currently, all positive predicates must be a conjunction of calls
   // and equality checks. This allows the conjucts to be processed
   // individually.
@@ -180,15 +203,11 @@ public class Predicate {
       // %%% If predicate syntax is generalized, this may no longer work.
       // %%% It would also be helpful to do some semantic processing here,
       // %%% to determine what type of assertion each piece is.
-      conjuncts = new ArrayList<Exp>();
       Exp e = positive.getExpression();
       // Remove the Exp wrapper.
       e = e.getFirstChild();
-      while (e.isAnd()) {
-        conjuncts.add(e.getFirstChild());
-        e = e.getChild(1);
-      }
-      conjuncts.add(e);
+      conjuncts = new ArrayList<Exp>();
+      collectConjuncts(e, conjuncts);
     }
     return new ArrayList<Exp>(conjuncts);
   }

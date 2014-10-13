@@ -25,7 +25,7 @@ aexe(H,L,'#Math#round',_,Args,HP,EP) :-
 	math_round_aux(N,EP).
 
 math_round_aux(N,EP) :- is_symbolic(N),symbolic(EP,'Number').
-math_round_aux('&NaN','&NaN').
+math_round_aux('#NaN','#NaN').
 math_round_aux(N,EP) :- EP is round(N).
 
 aexe(H,_,'#Math#sin',_,Args,HP,EP) :- always(Args),H=HP,symbolic(EP,'Number').

@@ -21,7 +21,8 @@ import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.xsb.XSBInterface;
 import edu.wisc.cs.jam.xsb.XSBSingleInterface;
 
-import edu.wisc.cs.jam.js.JSFile;
+import edu.wisc.cs.jam.js.JSSource;
+import edu.wisc.cs.jam.js.JSSourceManager;
 import edu.wisc.cs.jam.js.JSSemantics;
 import edu.wisc.cs.jam.js.JSExp;
 
@@ -67,8 +68,8 @@ public class NativeIdentifier implements Utility {
   @Override
   public void run() {
     sm = new JSSourceManager();
-    sm.addSourceFile(new JSSource("/dev/null"));
-    FileUtil.init(sm);
+    sm.addSource(new JSSource("/dev/null", false));
+    //FileUtil.init(sm);
     semantics = new JSSemantics(sm);
 
     for (String phrase : options.phrases) {

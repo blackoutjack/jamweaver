@@ -26,7 +26,6 @@ import logging
 # TODO:
 # Fill out todo list
 #
-
 #
 
 from config import *

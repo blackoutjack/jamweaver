@@ -1115,7 +1115,7 @@ class HTMLParser():
 class Unpacker():
 
   # Create an Unpacker.
-  def __init__(self, infile, app, outdir) :
+  def __init__(self, infile, app=None, outdir=None) :
     prot = getProtocol(infile)
     if prot in ['http', 'https']:
       self.url = infile
@@ -1155,6 +1155,7 @@ class Unpacker():
     # Function |run_unpacker| in util.py relies on this output.
     out('Unpacking: %s' % self.url)
     out('Output directory: %s' % (OUTDIR))
+    out('Application name: %s' % (self.app))
     filepath = os.path.join(OUTDIR, self.app + '.original.html')
     resource = Resource('root.html', url=self.url, filepath=filepath)
     resource.fetch(accept='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')

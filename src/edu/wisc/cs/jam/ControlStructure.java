@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Collection;
 
@@ -30,7 +31,8 @@ import edu.wisc.cs.automaton.State;
 import edu.wisc.cs.jam.xsb.XSBInterface;
 
 import edu.wisc.cs.jam.js.JSExp;
-import edu.wisc.cs.jam.js.NodeUtil;
+import edu.wisc.cs.jam.js.ExpUtil;
+import edu.wisc.cs.jam.env.NativeUtil;
 
 // ControlStructure is a ControlAutomaton that has the ability to build
 // itself. This is separated out from ControlAutomaton so that other
@@ -83,6 +85,9 @@ public abstract class ControlStructure extends ControlAutomaton {
   // This models a symbolic extern call.
   //protected Edge externCall;
 
+  // This is just used to omit duplicate warnings.
+  protected Set<String> unknownExterns;
+
   // Clear all accumulated state to free memory.
   protected void clearTemporaryState() {
     stateMap = null;
@@ -97,6 +102,7 @@ public abstract class ControlStructure extends ControlAutomaton {
     lastMainState = null;
     globalReturn = null;
     callTargets = null;
+    unknownExterns = null;
   }
 
   protected boolean getPossibleUserTargets(Callsite curSite, Set<Function> targets) {
@@ -164,7 +170,7 @@ public abstract class ControlStructure extends ControlAutomaton {
         for (Node ext : externTargets) {
           String expr = getCode(ext);
           // Translate Closure natives to form matching the semantics.
-          String maybeExpr = NodeUtil.closureExpression.get(expr);
+          String maybeExpr = NativeUtil.closureExpression.get(expr);
           if (maybeExpr != null) {
             if (maybeExpr.equals("")) {
               // This indicates that the native is not a function but
@@ -174,11 +180,18 @@ public abstract class ControlStructure extends ControlAutomaton {
             expr = maybeExpr;
           }
 
-          String loc = NodeUtil.nativeExpressionToLocation.get(expr);
+          String loc = NativeUtil.nativeExpressionToLocation.get(expr);
           if (loc == null) {
             // Whoops! There's a mismatch between Closure's externs and
             // JAM-generated browser model.
-            Dbg.warn("Unknown extern target found: " + expr);
+            if (unknownExterns == null) {
+              unknownExterns = new HashSet<String>();
+            }
+            if (!unknownExterns.contains(expr)) {
+              // Only show this warning the first time.
+              Dbg.warn("Unknown extern target found: " + expr);
+              unknownExterns.add(expr);
+            }
             // If a native target isn't found in the loaded database,
             // conservatively model this call.
             conservativeCalls.add(curSite);
@@ -335,7 +348,7 @@ public abstract class ControlStructure extends ControlAutomaton {
   public void processCallEdges() {
     for (Callsite cs : allCallsites) {
       Node curSiteNode = cs.getAstNode();
-      Node curSiteStmt = NodeUtil.getEnclosingStatement(curSiteNode);
+      Node curSiteStmt = ExpUtil.getEnclosingStatement(curSiteNode);
       State callSource = stateMap.get(curSiteStmt);
       if (callSource == null) {
         Dbg.warn("Callsite on line " + curSiteNode.getLineno()
@@ -366,7 +379,7 @@ public abstract class ControlStructure extends ControlAutomaton {
   }
 
   protected String getCode(Node n) {
-    return NodeUtil.codeFromNode(n, sm);
+    return sm.codeFromNode(n);
   }
 
   // Dump the current size of the automaton.

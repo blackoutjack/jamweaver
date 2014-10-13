@@ -144,7 +144,7 @@ public class BDDRelation implements Relation {
 
   @Override
   public BDDRelation removeSelfEdges(PredicateValue pv) {
-    assert pv.isPolicyValue();
+    assert pv.isEventValue();
     BDDRelation ret = new BDDRelation(this);
 
     BDD edges = null;

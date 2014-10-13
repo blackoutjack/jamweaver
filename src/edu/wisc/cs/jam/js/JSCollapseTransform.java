@@ -126,7 +126,7 @@ public class JSCollapseTransform extends JSTransform {
       for (Node decl : toRemove) {
         Node varNode = decl.getParent();
         assert varNode.isVar();
-        assert NodeUtil.isBlock(varNode.getParent()) : "Declaration parent isn't a block: " + varNode.getParent();
+        assert ExpUtil.isBlock(varNode.getParent()) : "Declaration parent isn't a block: " + varNode.getParent();
         varNode.getParent().removeChild(varNode);
       }
       toRemove.clear(); 
@@ -238,15 +238,15 @@ public class JSCollapseTransform extends JSTransform {
 
     protected boolean collapse(NodeTraversal t, Node decl, Node n, Node parent) {
       // Don't pull expressions into or out of a transaction.
-      if (NodeUtil.isWithinTransaction(n) != null)
+      if (ExpUtil.isWithinTransaction(n) != null)
         return false;
-      if (NodeUtil.isWithinTransaction(decl) != null)
+      if (ExpUtil.isWithinTransaction(decl) != null)
         return false;
 
       // To be safe don't collapse references across other statements.
       // This avoids the case in which the reference may be
       // modified on the RHS of an assignment.
-      Node stmt = NodeUtil.getEnclosingStatement(n);
+      Node stmt = ExpUtil.getEnclosingStatement(n);
       Node stmtParent = stmt.getParent();
       if (stmtParent.getChildBefore(stmt) != decl.getParent()) {
         //Dbg.dbg("This one: " + n + " / " + sm.codeFromNode(stmt));
@@ -255,10 +255,10 @@ public class JSCollapseTransform extends JSTransform {
 
       // Get the rhs of the declaration.
       Node varNode = decl.getParent();
-      assert NodeUtil.isVarInitializer(varNode) : "Declaration is not a var initializer: " + varNode;
-      Node rhs = NodeUtil.getAssignRHS(varNode);
+      assert ExpUtil.isVarInitializer(varNode) : "Declaration is not a var initializer: " + varNode;
+      Node rhs = ExpUtil.getAssignRHS(varNode);
       assert rhs != null : "Null RHS for node: " + varNode;
-      // Can't assert equality |n == NodeUtil.getAssignLHS(varNode)|
+      // Can't assert equality |n == ExpUtil.getAssignLHS(varNode)|
       // because that function clones the LHS. |getAssignRHS| doesn't.
 
       // Don't collapse if there are multiple references to the name. 

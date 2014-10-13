@@ -44,6 +44,7 @@ public class Dbg {
     sb.append(id + " total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024) + "\n");
 
     System.err.print(sb);
+    System.err.flush();
   }
 
   public static void out(String message, int level) {
@@ -52,6 +53,7 @@ public class Dbg {
       appendHeader(sb);
       sb.append(message);
       System.err.println(sb);
+      System.err.flush();
 
       if (JAM.Opts.debug)
         FileUtil.writeToMain(sb, "out.txt", true);
@@ -64,6 +66,7 @@ public class Dbg {
     sb.append("ERROR: ");
     sb.append(message);
     System.err.println(sb);
+    System.err.flush();
 
     if (JAM.Opts.debug)
       FileUtil.writeToMain(sb, "err.txt", true);
@@ -75,6 +78,7 @@ public class Dbg {
     sb.append("FATAL: ");
     sb.append(message);
     System.err.println(sb);
+    System.err.flush();
 
     if (JAM.Opts.debug)
       FileUtil.writeToMain(sb, "err.txt", true);
@@ -88,6 +92,7 @@ public class Dbg {
     sb.append("WARNING: ");
     sb.append(message);
     System.err.println(sb);
+    System.err.flush();
 
     if (JAM.Opts.debug)
       FileUtil.writeToMain(sb, "err.txt", true);
@@ -100,6 +105,7 @@ public class Dbg {
     sb.append("DEBUG: ");
     sb.append(message);
     System.err.println(sb);
+    System.err.flush();
 
     FileUtil.writeToMain(sb, "dbg.txt", true);
   }

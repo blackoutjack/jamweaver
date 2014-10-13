@@ -193,9 +193,9 @@ isnum(V) :-
   N<58,
   % Match digit or -.
   (N>47->true;N=45).
-isnum('&-Infinity').
-isnum('&Infinity').
-isnum('&NaN').
+isnum('#-Infinity').
+isnum('#Infinity').
+isnum('#NaN').
 
 isstr(V) :-
   is_concrete(V),
@@ -217,8 +217,8 @@ is_location(M) :-
 isprimval(E) :- isstr(E).
 isprimval(E) :- isnum(E).
 isprimval(E) :- isbool(E).
-isprimval('&null').
-isprimval('&undefined').
+isprimval('#null').
+isprimval('#undefined').
 
 maybeprimval(E) :-
   type(E,T),
@@ -228,7 +228,7 @@ maybeprimval(E) :-
 
 % "va" (pure values)
 ispureval(E) :- isprimval(E).
-ispureval(E) :- isaddr(E).
+ispureval(E) :- isobj(E).
 
 % A program is the sequence of its children.
 exp(H,L,E,HP,LP,V) :-
@@ -264,13 +264,13 @@ exp(H,L,E,H,L,V) :- is_literal(E,V).
 %   EP = jarray(['NewExpr',jnode([]),EC,EB,EF]),
 %   exp(H,L,EP,HP,LP,V).
 
-% null => &null
-exp(H,L,'null',H,L,'&null').
-exp(H,L,E,H,L,'&null') :- is_null(E).
+% null => #null
+exp(H,L,'null',H,L,'#null').
+exp(H,L,E,H,L,'#null') :- is_null(E).
 
-% undefined => &undefined
-%%% Identifier can be overwritten!
-exp(H,L,'undefined',H,L,'&undefined').
+% undefined => #undefined
+%%% Identifier can be shadowed!
+exp(H,L,'undefined',H,L,'#undefined').
 
 % empty
 exp(H,L,E,H,L,'NONE') :- is_empty(E).
@@ -289,7 +289,7 @@ exp(H,L,E,HP,LP,EP) :-
 exp(H,L,E,H,L,EP) :-
   is_vardecl(E,V),
   is_id(V,_),
-  EP='&undefined'.
+  EP='#undefined'.
 
 % Branch entry
 % Evaluate [#true] and [#false] by checking that the
@@ -630,7 +630,7 @@ scope_aux(H,LN,Name,HP,Scope) :-
   (is_symbolic_mode->
   symbolic_scope(H,Name,Scope,H1),
   (H\=H1->
-  heapprop(H1,Scope,'@Scope','&null',H2,_),
+  heapprop(H1,Scope,'@Scope','#null',H2,_),
   symbolic(V,_),
   heapprop(H2,Scope,Name,V,HP,_);
   HP=H);
@@ -642,7 +642,7 @@ scope_aux(H,LN,Name,HP,Scope) :-
   null(LN)->
   (is_symbolic_mode->
   symbolic_object(H,Scope,H1),
-  heapprop(H1,Scope,'@Scope','&null',H2,_),
+  heapprop(H1,Scope,'@Scope','#null',H2,_),
   symbolic(V,_),
   heapprop(H2,Scope,Name,V,HP,_);
   Scope='#Global',HP=H);
@@ -653,7 +653,8 @@ scope_aux(H,LN,Name,HP,Scope) :-
 exp(H,L,E,HP,LP,EP) :-
   is_id(E,Name,Typ),
   % Closure parses undefined as a NAME node.
-  (Name='"undefined"',Typ='Undefined'->EP='&undefined',HP=H;
+  %%% This is only certains if in the global scope!
+  (Name='"undefined"',Typ='Undefined'->EP='#undefined',HP=H;
   scope(H,L,Name,LN),
   scope_aux(H,LN,Name,H1,Scope),
   newref(Scope,Name,EP),
@@ -664,7 +665,8 @@ exp(H,L,E,HP,LP,EP) :-
 exp(H,L,E,HP,L,EP) :-
   is_id(E,Name),
   % Closure parses undefined as a NAME node.
-  (Name='"undefined"'->EP='&undefined',HP=H;
+  %%% This is only certains if in the global scope!
+  (Name='"undefined"'->EP='#undefined',HP=H;
   scope(H,L,Name,LN),
   scope_aux(H,LN,Name,HP,Scope),
   newref(Scope,Name,EP)).
@@ -748,14 +750,14 @@ eqaux_symbolic(H,L,VA1,VA2,HP,EP) :-
   % Corresponds to [E-Eq-ns]
   (equals(T1,'Number'),equals(T2,'String'),
   % According to testing, nothing equals NaN (not even NaN).
-  tonumber(H,L,VA2,H1,VN2a),VN2a\='&NaN',restrict_type(VA1,'Number',VN1a)->
+  tonumber(H,L,VA2,H1,VN2a),VN2a\='#NaN',restrict_type(VA1,'Number',VN1a)->
   binary_fn('=',VN1a,VN2a,Tmp0),binary_fn('or',Accum2,Tmp0,Accum3);
   H1=H,Accum3=Accum2),
   always(Accum3),
   % Corresponds to [E-Eq-sn]
   (equals(T1,'String'),equals(T2,'Number'),
   % According to testing, nothing equals NaN (not even NaN).
-  tonumber(H1,L,VA1,H2,VN1b),VN1b\='&NaN',restrict_type(VA2,'Number',VN2b)->
+  tonumber(H1,L,VA1,H2,VN1b),VN1b\='#NaN',restrict_type(VA2,'Number',VN2b)->
   binary_fn('=',VN1b,VN2b,Tmp1),binary_fn('or',Accum3,Tmp1,Accum4);
   H2=H1,Accum4=Accum3),
   always(Accum4),
@@ -1278,7 +1280,7 @@ exp(H,L,E,HP,LP,EP) :-
   ecto(H2,L2,V1,H3,L3,_),
   HP=H3,
   LP=L3,
-  EP='&undefined'.
+  EP='#undefined'.
 
 % [S-ForVarIn]
 % This case is should be effectively removed by the
@@ -1306,7 +1308,7 @@ exp(H,L,E,HP,LP,EP) :-
   apforin(H3,L3,IterRef,'','&empty',ObjAddr,'&start',ID,H4,LP)),
   symbolic(B,'Boolean'),
   updatebranch(H4,B,HP),
-  EP='&undefined'.
+  EP='#undefined'.
 
 % "traditional" for loops
 exp(H,L,E,HP,LP,EP) :-
@@ -1326,7 +1328,7 @@ exp(H,L,E,HP,LP,EP) :-
   exp(H,L,Exp,H1,L1,Val),
   %%% Need to pass in Val to be compared somehow.
   always(Val),
-  (Cases=[]->EP='&undefined',HP=H1,LP=L1;
+  (Cases=[]->EP='#undefined',HP=H1,LP=L1;
   seq(H1,L1,Cases,HP,LP,EP)).
 
 exp(H,L,E,HP,LP,EP) :-
@@ -1334,26 +1336,26 @@ exp(H,L,E,HP,LP,EP) :-
   exp(H,L,B1,H1,L1,_),
   exp(H1,L1,B2,H2,L2,_),
   exp(H2,L2,B3,HP,LP,_),
-  EP='&undefined'.
+  EP='#undefined'.
 
 exp(H,L,E,HP,LP,EP) :-
   is_try(E,B1,B2),
   exp(H,L,B1,H1,L1,_),
   exp(H1,L1,B2,HP,LP,_),
-  EP='&undefined'.
+  EP='#undefined'.
 
 exp(H,L,E,HP,LP,EP) :-
   is_catch(E,_,Block),
   %%% Really should initialize the exception object.
   exp(H,L,Block,HP,LP,_),
-  EP='&undefined'.
+  EP='#undefined'.
 
 exp(H,L,E,HP,LP,EP) :-
   is_throw(E,Exp),
   %%% Really should alloc an exception object.
   exp(H,L,Exp,HP,LP,EP).
 
-exp(H,L,E,H,L,'&undefined') :-
+exp(H,L,E,H,L,'#undefined') :-
   is_block(E).
 
 % no-ops
@@ -1377,7 +1379,7 @@ exp(H,L,E,HP,LP,EP) :-
   exp(H,L,EN,HP,LP,EP).
 
 % [E-Void]
-exp(H,L,E,H1,L1,'&undefined') :- is_void(E,E1),exp(H,L,E1,H1,L1,_).
+exp(H,L,E,H1,L1,'#undefined') :- is_void(E,E1),exp(H,L,E1,H1,L1,_).
 
 % [E-Delete-true]
 exp(H,L,E,H1,L1,'true') :- is_delete(E,E1),exp(H,L,E1,H1,L1,VA),ispureval(VA).
@@ -1408,12 +1410,12 @@ adelete(H,L,M,H1,'true') :-
   delheapprop(H,L,M,H1,_).
 
 % [E-Typeof-null]
-exp(H,L,E,H1,L1,'&undefined') :-
+exp(H,L,E,H1,L1,'#undefined') :-
   is_typeof(E,E1),
   exp(H,L,E1,H1,L1,R),
   isref(R),
   ref(R,LR,_),
-  LR='&null'.
+  LR='#null'.
 
 % [E-Typeof-reference]
 exp(H,L,E,H2,L2,M) :-
@@ -1421,7 +1423,7 @@ exp(H,L,E,H2,L2,M) :-
   exp(H,L,E1,H1,L1,R),
   isref(R),
   ref(R,LR,_),
-  LR\='&null',
+  LR\='#null',
   atypeof(H1,L1,R,H2,L2,M).
 
 % [E-Typeof]
@@ -1502,7 +1504,7 @@ instof(H,L,V,L1,HP,B) :-
 
 % [I-HasInstance],[I-HasInstance-rec]
 ahasinstance(H,L1,VA,HP,B) :-
-  isaddr(VA),
+  isobj(VA),
   maps(H,L1,O),
   hasprop(O,'"prototype"',L2),
   type(L2,T),equals(T,'Object'),
@@ -1514,7 +1516,7 @@ ahasinstance(H,L1,VA,HP,B) :-
 
 % [I-HasInstance-Exc]
 ahasinstance(H,L1,VA,HP,ErrAddr) :-
-  isaddr(VA),
+  isobj(VA),
   maps(H,L1,O),
   hasprop(O,'"prototype"',PV),
   type(PV,T),notequals(T,'Object'),
@@ -1546,7 +1548,7 @@ opt_exp(H,L,E,HP,LP,EP) :- exp(H,L,E,HP,LP,EP).
 opt_exp(H,L,E,H,L,E) :- is_empty(E).
 
 % [E-In-Exc]
-in(H,L,VA,PV,H,L,'&undefined') :-
+in(H,L,VA,PV,H,L,'#undefined') :-
   ispureval(VA),
   isprimval(PV),
   type(PV,TPV),TPV\='Object'.
@@ -1556,13 +1558,13 @@ in(H,L,VA,PV,H,L,'&undefined') :-
 %%% in symbolic mode.
 in(H,L,M,L1,H,L,'true') :-
   isstr(M),
-  isaddr(L1),
+  isobj(L1),
   type(L1,T),T='Object',
   maps(H,L1,O),
   hasprop(O,M,_).
 in(H,L,M,L1,H,L,'false') :-
   isstr(M),
-  isaddr(L1),
+  isobj(L1),
   type(L1,T),T='Object',
   maps(H,L1,O),
   not hasprop(O,M,_).
@@ -1599,7 +1601,7 @@ pastescope(H,SS,HP) :-
 copyscope(H,L,SS) :-
   isnull(L),
   always(H),
-  SS=['&null'].
+  SS=['#null'].
 
 % [CopyScope]
 copyscope(H,L,SS) :-
@@ -1728,10 +1730,10 @@ sctb(V,B) :- V='NONE'->B='NONE';toboolean(V,B).
 % type rules
 type_concrete(V,T) :-
   % A constraint is already present for this case.
-  V='&undefined',T='Undefined'.
+  V='#undefined',T='Undefined'.
 type_concrete(V,T) :-
   % A constraint is already present for this case.
-  V='&null',T='Null'.
+  V='#null',T='Null'.
 type_concrete(V,T) :-
   % A constraint is already present for this case.
   V='true',T='Boolean'.
@@ -1754,7 +1756,7 @@ type_concrete(V,T) :-
   binary_fn('HasType',V,'String',IsStr),
   constraint(IsStr).
 type_concrete(V,T) :-
-  isaddr(V),T='Object',
+  isobj(V),T='Object',
   binary_fn('HasType',V,'Object',IsObj),
   constraint(IsObj).
 type_concrete(V,T) :- 
@@ -1798,7 +1800,7 @@ gettype(_,PV,M) :-
 
 % [T-GetType-obj]
 gettype(_,L,M) :-
-  isaddr(L),
+  isobj(L),
   %%% Not quite right
   not isnativefun(L),
   not is_user_fun(L),
@@ -1905,7 +1907,7 @@ acall(H,L,L1,L2,A,HP,L,EP) :-
   (is_concrete(N)->
   inttostr(NI,N),
   % Fill the arguments array with the prescribed number of
-  % &undefined arguments.
+  % #undefined arguments.
   fpn(A,NI,[],A1);
   % For symbolic length, just use all args.
   A1=A),
@@ -1915,7 +1917,7 @@ acall(H,L,L1,L2,A,HP,L,EP) :-
   heapprop(H1,L1,'@Actuals',N1,H2,_),
   new_arguments(N,A1,L,Args),
   alloc(H2,Args,H3,L3),
-  (N1=0->LArgs='&null';LArgs=L3),
+  (N1=0->LArgs='#null';LArgs=L3),
   aexe(H3,L,L1,L2,A1,H4,EP),
   HP=H4.
 
@@ -1950,7 +1952,7 @@ fpn(A,N,ACC,A1) :-
 fpn([],N,ACC,A1) :-
   N>0,
   M is N-1,
-  append(ACC,['&undefined'],ACC2),
+  append(ACC,['#undefined'],ACC2),
   fpn([],M,ACC2,A1).
 
 % Wrapper for aconstruct which prevents meta-data from being
@@ -2033,7 +2035,7 @@ fp(H,L,Attr,Args,N1,N2,HP) :-
   N1>=N2,
   Args=[First|Rest],
   makestr(First,Fstr),
-  heapprop(H,L,Fstr,'&undefined',H1,_),
+  heapprop(H,L,Fstr,'#undefined',H1,_),
   is(Next,N1+1),
   fp(H1,L,Attr,Rest,Next,N2,HP).
 
@@ -2066,7 +2068,7 @@ vd(H,L,Attr,Vars,HP) :-
   % Allow typed variables to carry that type from initialization.
   % This is safe (if confusing) since Closure tells us that all uses
   % of this variable have this type.
-  Val='&undefined',
+  Val='#undefined',
   heapprop(H,L,Id,Val,H1,_),
   vd(H1,L,Attr,Rest,HP).
 
@@ -2116,7 +2118,7 @@ chasprop(O,'"constructor"','#Error') :- new_native_error(_,_,O).
 % the rule for new_activation
 chasprop(O,'@Class','"Object"') :- new_activation(_,_,_,O).
 chasprop(O,'@Scope',L) :- new_activation(_,_,L,O).
-chasprop(O,'@Prototype','&null') :- new_activation(_,_,_,O).
+chasprop(O,'@Prototype','#null') :- new_activation(_,_,_,O).
 chasprop(O,'@IsActivation','true') :- new_activation(_,_,_,O).
 chasprop(O,'"arguments"',L) :- new_activation(L,_,_,O).
 
@@ -2193,7 +2195,7 @@ agetvalue(H,L,E,HP,L,EP) :-
 % @Get
 % This uses some extra logic based on the is_symbolic_mode
 % flag so that symbolic values can be returned when evaluating
-% statements in isolation, and the concrete &undefined value
+% statements in isolation, and the concrete #undefined value
 % can be returned when evaluating the whole program.
 
 getfromanalysis(H,L,M,VA,HP) :-
@@ -2210,7 +2212,7 @@ getfromanalysis(H,L,M,VA,HP) :-
 % This meta-predicate triages various cases that
 % need special handling.
 aget(H,L,M,VA,HP) :-
-  L\='&undefined',
+  L\='#undefined',
   (getfromanalysis(H,L,M,VA,HP)->true;
   (numprop(M), %%% Check for positive int.
   maps(H,L,Arr),
@@ -2219,7 +2221,7 @@ aget(H,L,M,VA,HP) :-
   aget_normal(H,L,M,VA,HP))).
 
 aget(H,L,M,ErrAddr,HP) :-
-  L='&undefined',
+  L='#undefined',
   always(M),
   new_native_error('"Cannot read property of undefined"','#TypeError#prototype',Err),
   alloc(H,Err,HP,ErrAddr).
@@ -2233,7 +2235,7 @@ aget_normal(H,L,M,VA,HP) :-
   % If the property can be retrieved (which is possible even
   % if the object is symbolic), then return the value.
   % Otherwise, we return a symbolic value in symbolic_mode,
-  % or else a concrete &undefined value.
+  % or else a concrete #undefined value.
   (getprop(O,M,Val)->VA=Val,HP=H1;aget_undefined(H1,L1,M,VA,HP)).
 
 % [I-Get-null]
@@ -2252,7 +2254,7 @@ aget_array(H,L,M,VA,HP) :-
   is_concrete(Len)->
   evalbin('<',N,Len,InBounds),
   (InBounds='true'->
-  symbolic(VA,_);VA='&undefined');
+  symbolic(VA,_);VA='#undefined');
   %%% Could get more precise here.
   symbolic(VA,_))),
   HP=H.
@@ -2264,7 +2266,7 @@ aget_undefined(H,L,M,VA,HP) :-
   (is_symbolic(M)->true;
   is_wild(M))))->
   symbolic(VA,_),heapprop(H,L,M,VA,HP,_);
-  VA='&undefined',HP=H.
+  VA='#undefined',HP=H.
 
 % Prototype lookup
 % Given an object and a member name, follow the
@@ -2276,7 +2278,7 @@ aget_undefined(H,L,M,VA,HP) :-
 % The object pointer is (definitely) null.
 prototype(H,L,_,H,LP) :-
   isnull(L),
-  LP='&null'.
+  LP='#null'.
 
 % [Prototype-ref]
 % H(L) has property M.
@@ -2340,10 +2342,10 @@ scope(H,L,M,LP) :-
   % still allow #Global to be returned in concrete mode. For symbolic
   % mode, we need to return a symbolic scope.
   not varlookup(M,'#Global'),
-  scope(H,'&null',M,LP)).
+  scope(H,'#null',M,LP)).
 
 % Scope-null
-scope(_,'&null',_,'&null').
+scope(_,'#null',_,'#null').
 
 % @PutValue
 % the case where the base of v is null
@@ -2617,7 +2619,7 @@ undefpolprops(H,ObjAddr,HP) :-
 undefprops(H,ObjAddr,Props,HP) :-
   Props=[]->HP=H;
   Props=[Prop|OtherProps],
-  heapprop(H,ObjAddr,Prop,'&undefined',H1,_),
+  heapprop(H,ObjAddr,Prop,'#undefined',H1,_),
   undefprops(H1,ObjAddr,OtherProps,HP).
 
 %
@@ -2691,13 +2693,13 @@ toboolean(V,B) :-
   is_concrete(V),
   type(V,T),
   T='Number',
-  (V\='0',V\='-0',V\='&NaN'->B='true';B='false').
+  (V\='0',V\='-0',V\='#NaN'->B='true';B='false').
 
 toboolean(V,B) :-
   is_symbolic(V),
   type(V,T),
   T='Number',
-  %%% Need to handle -0 and &NaN cases.
+  %%% Need to handle -0 and #NaN cases.
   (notequals(V,'0'),not equals(V,'0')->B='true';true),
   (equals(V,'0'),not notequals(V,'0')->B='false';true),
   (var(B)->symbolic(B,'Boolean');true).
@@ -2811,7 +2813,7 @@ tonumber(H,_,V,H,N) :-
 tonumber(H,_,V,H,'0') :- type(V,T),T='Null'.
 
 % [TC-ToNumber-undef]
-tonumber(H,_,V,H,'&NaN') :- type(V,T),T='Undefined'.
+tonumber(H,_,V,H,'#NaN') :- type(V,T),T='Undefined'.
 
 % Symbolic value to Number
 tonumber(H,_,V,H,EP) :-

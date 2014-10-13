@@ -24,6 +24,8 @@ import edu.wisc.cs.jam.Clause;
 import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.PredicateValue;
 import edu.wisc.cs.jam.ExpSymbol;
+import edu.wisc.cs.jam.DataState;
+import edu.wisc.cs.jam.DataTransition;
 import edu.wisc.cs.jam.FunctionEntrySymbol;
 import edu.wisc.cs.jam.BranchSymbol;
 import edu.wisc.cs.jam.CallbackEntrySymbol;
@@ -36,13 +38,13 @@ import edu.wisc.cs.jam.xsb.XSBMultiInterface;
 
 public class JSSemantics implements Semantics {
 
-
   // A uniqueness counter for generating sentinels.
   private static int pv = 2121;
 
   private XSBInterface xsb;
   private SourceManager sm;
   private FunctionFacts functionFacts;
+  private JSSyntaxAnalysis sa;
 
   // Properties that are incorporated into policy predicates. Extra
   // processing is done by the semantics when these are present.
@@ -55,6 +57,7 @@ public class JSSemantics implements Semantics {
 
   public JSSemantics(SourceManager src) {
     sm = src;
+    sa = new JSSyntaxAnalysis(sm);
   }
 
   @Override
@@ -338,6 +341,15 @@ public class JSSemantics implements Semantics {
       hasNamesOfInterest = true;
     }
   }
+  
+  // Return a Boolean object with the answer if it can easily be
+  // determined (with "easily" being defined by the implementation)
+  // or null if a more heavyweight analysis is needed.
+  @Override
+  public Boolean maybePossibleTransition(DataTransition trans) {
+    // Delegate this task to a syntax analyzer.
+    return sa.maybePossibleTransition(trans);
+  }
 
   // Generate a exp clause that the semantics can handle.
   @Override
@@ -461,19 +473,19 @@ public class JSSemantics implements Semantics {
     Exp s = sym.getExp();
     Node n = ((JSExp)s).getNode();
 
-    Node lhs = NodeUtil.getAssignLHS(n);
+    Node lhs = ExpUtil.getAssignLHS(n);
     // %%% extend this to assignments to object properties
-    if (!NodeUtil.isName(lhs)) return null;
-    String varname = NodeUtil.codeFromNode(lhs, s.getSourceManager());
+    if (!ExpUtil.isName(lhs)) return null;
+    String varname = sm.codeFromNode(lhs);
 
-    Node rhs = NodeUtil.getAssignRHS(n);
-    if (!NodeUtil.isObjectLiteral(rhs)) return null;
+    Node rhs = ExpUtil.getAssignRHS(n);
+    if (!ExpUtil.isObjectLiteral(rhs)) return null;
 
     List<String> props = new ArrayList<String>();
     for (int i=0; i<rhs.getChildCount(); i++) {
       Node memb = rhs.getChildAtIndex(i);
-      if (NodeUtil.isString(memb)) {
-        String prop = NodeUtil.unquote(sm.codeFromNode(memb));
+      if (ExpUtil.isString(memb)) {
+        String prop = memb.getString();
         props.add(prop);
       }
     }
@@ -499,39 +511,39 @@ public class JSSemantics implements Semantics {
 
     // The internals of control blocks will be processed elsewhere.
     // Just pull out the condition here.
-    if (NodeUtil.isControl(n)) {
-      n = NodeUtil.getCondition(n);
+    if (ExpUtil.isControl(n)) {
+      n = ExpUtil.getCondition(n);
       if (n == null) return null;
     }
 
     // There doesn't seemt to be any reason to learn the value of
     // an identifier on the lhs of an assignment.
-    if (NodeUtil.isAssign(n) && NodeUtil.isName(n.getFirstChild())) {
-      n = NodeUtil.getAssignRHS(n);
+    if (ExpUtil.isAssign(n) && ExpUtil.isName(n.getFirstChild())) {
+      n = ExpUtil.getAssignRHS(n);
     }
     
     // Function nodes have a lot of useless facts that won't help.
-    if (NodeUtil.isFunction(n)) {
+    if (ExpUtil.isFunction(n)) {
       return null;
     }
 
     // Variable declarations are also worthless.
-    if (NodeUtil.isVarDeclaration(n)) {
+    if (ExpUtil.isVarDeclaration(n)) {
       return null;
     }
 
-    if (NodeUtil.isAccessor(n)) {
+    if (ExpUtil.isAccessor(n)) {
       Node objNode = n.getFirstChild(); 
-      if (!NodeUtil.isName(objNode)) {
+      if (!ExpUtil.isName(objNode)) {
         return null;
       }
       String obj = sm.codeFromNode(objNode);
 
       Node propNode = n.getChildAtIndex(1);
-      if (!NodeUtil.isString(propNode)) {
+      if (!ExpUtil.isString(propNode)) {
         return null;
       }
-      String prop = NodeUtil.unquote(sm.codeFromNode(propNode));
+      String prop = propNode.getString();
 
       String c = "propvaluesent(%H,%L,'\"" + obj + "\"',['\""
         + XSBInterface.escapeString(prop) + "\"'],'%T')";
@@ -539,7 +551,7 @@ public class JSSemantics implements Semantics {
       return new Clause(c);
     }
 
-    if (NodeUtil.isName(n)) {
+    if (ExpUtil.isName(n)) {
       String varname = sm.codeFromNode(n);
       String c = "valuesent(%H,%L,'\"" + varname + "\"','%T')";
       return new Clause(c);
@@ -571,39 +583,39 @@ public class JSSemantics implements Semantics {
   protected Clause getPostValueSentinel(ExpSymbol sym) {
     Exp s = sym.getExp();
     Node n = ((JSExp)s).getNode();
-    if (NodeUtil.isExprResult(n)) {
+    if (ExpUtil.isExprResult(n)) {
       n = n.getFirstChild();
     }
 
-    Node lhs = NodeUtil.getAssignLHS(n);
+    Node lhs = ExpUtil.getAssignLHS(n);
     if (lhs == null) return null;
 
     // Avoid NONE sentinel values.
-    Node rhs = NodeUtil.getAssignRHS(n);
-    if (NodeUtil.isCall(rhs) && !sym.isPostCall()) {
+    Node rhs = ExpUtil.getAssignRHS(n);
+    if (ExpUtil.isCall(rhs) && !sym.isPostCall()) {
       return null;
     }
 
     Clause clause = null;
-    if (NodeUtil.isName(lhs)) {
+    if (ExpUtil.isName(lhs)) {
 
-      String varname = NodeUtil.codeFromNode(lhs, s.getSourceManager());
+      String varname = sm.codeFromNode(lhs);
       if (varname.equals("policy")) return null;
 
       String c = "valuesent(%H,%L,'\"" + varname + "\"','%T')";
       clause = new Clause(c);
 
-    } else if (NodeUtil.isAccessor(lhs)) {
+    } else if (ExpUtil.isAccessor(lhs)) {
       Node objNode = lhs.getFirstChild(); 
-      if (!NodeUtil.isName(objNode)) {
+      if (!ExpUtil.isName(objNode)) {
         return null;
       }
       String obj = sm.codeFromNode(objNode);
       Node propNode = lhs.getChildAtIndex(1);
-      if (!NodeUtil.isString(propNode)) {
+      if (!ExpUtil.isString(propNode)) {
         return null;
       }
-      String prop = NodeUtil.unquote(sm.codeFromNode(propNode));
+      String prop = propNode.getString();
 
       String c = "propvaluesent(%H,%L,'\"" + obj + "\"',['\""
         + XSBInterface.escapeString(prop) + "\"'],'%T')";
@@ -621,11 +633,11 @@ public class JSSemantics implements Semantics {
     Node n = ((JSExp)s).getNode();
 
     // We only care about a return value if it's assigned to something.
-    Node rhs = NodeUtil.getAssignRHS(n);
+    Node rhs = ExpUtil.getAssignRHS(n);
     if (rhs == null) return null;
 
     // This should just be a sanity check.
-    if (!NodeUtil.isCall(rhs)) return null;
+    if (!ExpUtil.isCall(rhs)) return null;
 
     String G = "%V" + (++pv);
     String R = "%V" + (++pv);
@@ -647,36 +659,36 @@ public class JSSemantics implements Semantics {
 
     // Avoid data that bubbles up from within big blocks of code 
     // (such info will be processed if reached recursively).
-    if (NodeUtil.isFunction(n)) return null;
-    if (NodeUtil.isControl(n)) return null;
+    if (ExpUtil.isFunction(n)) return null;
+    if (ExpUtil.isControl(n)) return null;
 
     // Unwrap an EXPR_RESULT node.
-    if (NodeUtil.isExprResult(n)) n = n.getFirstChild();
+    if (ExpUtil.isExprResult(n)) n = n.getFirstChild();
 
     String objname = null;
 
     // See if an object property is being assigned to.
     if (objname == null) {
-      Node lhs = NodeUtil.getAssignLHS(n);
+      Node lhs = ExpUtil.getAssignLHS(n);
 
       // If we have a .-accessor, then we get the constructor of the base
       // and print it.
-      if (NodeUtil.isAccessor(lhs)) {
+      if (ExpUtil.isAccessor(lhs)) {
         Node obj = lhs.getFirstChild();
-        if (NodeUtil.isName(obj)) {
+        if (ExpUtil.isName(obj)) {
           // Get the base variable name.
-          objname = NodeUtil.codeFromNode(obj);
+          objname = sm.codeFromNode(obj);
         }
       }
     }
 
     // See if the statement is a member invocation.
-    if (objname == null && NodeUtil.isCall(n)) {
+    if (objname == null && ExpUtil.isCall(n)) {
       Node memberexp = n.getFirstChild();
-      if (NodeUtil.isAccessor(memberexp)) {
+      if (ExpUtil.isAccessor(memberexp)) {
         Node obj = memberexp.getFirstChild();
-        if (NodeUtil.isName(obj)) {
-          objname = NodeUtil.codeFromNode(obj);
+        if (ExpUtil.isName(obj)) {
+          objname = sm.codeFromNode(obj);
         }
       }
     }

@@ -17,6 +17,7 @@ import edu.wisc.cs.jam.ExpSymbol;
 import edu.wisc.cs.jam.JAM;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.FileUtil;
+import edu.wisc.cs.jam.StringUtil;
 
 public class JSPredicateLearner implements PredicateLearner {
 
@@ -91,30 +92,9 @@ public class JSPredicateLearner implements PredicateLearner {
   }
 
   // %%% Move these to some Util module.
-  protected String nameQuote(String name) {
-    return "'\"" + name + "\"'";
-  }
-  protected String valueQuote(String num) {
-    return "'" + num + "'";
-  }
-  protected String unquote(String quoted) {
-    assert isString(quoted);
-    return quoted.substring(1, quoted.length() - 1);  
-  }
-
   protected boolean isSymbolic(String val) {
     if (val.startsWith("s")) return true;
     return false;
-  }
-
-  protected boolean isString(String val) {
-    return val.startsWith("\"") && val.endsWith("\"");
-  }
-
-  protected boolean isNativeAddress(String val) {
-    if (isDynamicAddress(val)) return false;
-    if (!val.startsWith("#")) return false;
-    return true;
   }
 
   protected boolean isDynamicAddress(String val) {
@@ -131,22 +111,13 @@ public class JSPredicateLearner implements PredicateLearner {
     return true;
   }
 
-  protected String valueTranslate(String val) {
-    if (val.equals("&undefined")) {
-      val = "undefined";
-    } else if (val.equals("&null")) {
-      val = "null";
-    }
-    return val;
-  }
-
   protected Predicate makePropValuePredicate(String obj, String prop, String oval, String pval) {
     assert !isSymbolic(pval) : "Property value is symbolic: " + pval;
     assert !isDynamicAddress(pval) : "Property value is dynamic address: " + pval;
 
     String lhs = null;
-    if (isString(prop)) {
-      lhs = obj + "." + unquote(prop);
+    if (StringUtil.isQuoted(prop)) {
+      lhs = obj + "." + StringUtil.unquote(prop);
     } else {
       lhs = obj + "[" + prop + "]";
     }
@@ -168,7 +139,7 @@ public class JSPredicateLearner implements PredicateLearner {
   protected Predicate makeFunctionEntryPredicate(ExpSymbol sym) {
     Exp s = sym.getExp();
     Node n = ((JSExp)s).getNode();
-    String func = NodeUtil.funcHash(n, sym.getSourceManager());
+    String func = ExpUtil.funcHash(n, sym.getSourceManager());
 
     return makeFunctionEntryPredicate(func);
   }
@@ -190,7 +161,7 @@ public class JSPredicateLearner implements PredicateLearner {
   
   protected Predicate makeConditionPredicate(ExpSymbol sym) {
     Exp s = sym.getExp();
-    Node cond = NodeUtil.getCondition(((JSExp)s).getNode());
+    Node cond = ExpUtil.getCondition(((JSExp)s).getNode());
     if (cond == null) return null;
 
     // Remove the parent NOT (!) node, for simplification.
@@ -199,9 +170,9 @@ public class JSPredicateLearner implements PredicateLearner {
     }
 
     // %%% Only learn simple names currently.
-    if (!NodeUtil.isName(cond)) {
+    if (!cond.isName()) {
       Dbg.out("WARNING: Learning condition predicate not supported: "
-        + NodeUtil.codeFromNode(cond, sym.getSourceManager()), 2);
+        + sym.getSourceManager().codeFromNode(cond), 2);
       return null;
     }
 
@@ -248,8 +219,6 @@ public class JSPredicateLearner implements PredicateLearner {
       // Don't learn symbolic values or memory locations.
       if (!isLearnable(val)) return null;
 
-      val = valueTranslate(val);
-
       ret.add(makeValuePredicate(var, val));
 
     } else if (sentType.equals("return")) {
@@ -259,8 +228,6 @@ public class JSPredicateLearner implements PredicateLearner {
 
       // Don't learn symbolic return values.
       if (isSymbolic(val)) return null;
-
-      val = valueTranslate(val);
 
       ret.add(makeReturnValuePredicate(val));
     } else if (sentType.equals("propvalue")) {
@@ -273,9 +240,6 @@ public class JSPredicateLearner implements PredicateLearner {
 
       // Don't learn symbolic return values.
       if (!isLearnable(oval) && !isLearnable(pval)) return null;
-      
-      oval = valueTranslate(oval);
-      pval = valueTranslate(pval);
 
       // Dispatch based on concreteness of learnable facts.
       if (isLearnable(pval)) {

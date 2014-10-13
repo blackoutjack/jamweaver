@@ -13,6 +13,8 @@ import javax.xml.bind.DatatypeConverter;
 import java.util.List;
 import java.util.ArrayList;
 
+import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPredicateType;
+
 public class Policy extends Automaton<State,PredicateSymbol> {
   
   private SourceManager sm;
@@ -86,6 +88,7 @@ public class Policy extends Automaton<State,PredicateSymbol> {
     if (files == null || files.size() == 0) {
       // Create a dummy policy that blocks nothing.
       filenames = new ArrayList<String>();
+      // Hardcoded, so don't catch the IllegalArgumentException.
       Edge nonedge = parseEdge("0,-1: false");
       addEdge(nonedge);
     } else {
@@ -217,6 +220,10 @@ public class Policy extends Automaton<State,PredicateSymbol> {
     if (edge == null) {
       // Mark the predicate as being part of a policy (rather than
       // learned or seeded).
+      PredicateType pt = getLanguage().getPredicateType(pred);
+      if (pt == JSPredicateType.WRITE || pt == JSPredicateType.READ || pt == JSPredicateType.CALL || pt == JSPredicateType.DELETE) {
+        pred.setEventPredicate();
+      }
       pred.setPolicyPredicate();
 
       PredicateSymbol psym = new PredicateSymbol(pred);
@@ -244,7 +251,7 @@ public class Policy extends Automaton<State,PredicateSymbol> {
       // %%% Currently this may occur because if the type inference
       // %%% types a variable found in the policy, then that type is
       // %%% asserted for the entire program for that variable name.
-      if (initVal == null || initVal.isPositivePolicyValue()) {
+      if (initVal == null) {
         Dbg.out("WARNING: Policy predicate may be true in the initial environment: " + pred, 2);
       }
     }
@@ -261,8 +268,12 @@ public class Policy extends Automaton<State,PredicateSymbol> {
     // predicate is a psuedo-JavaScript condition.
     // See doc/POLICIES for details.
     for (String line : lines) {
-      Edge edge = parseEdge(line);
-      addEdge(edge);
+      try {
+        Edge edge = parseEdge(line);
+        addEdge(edge);
+      } catch (IllegalArgumentException ex) {
+        Dbg.err("Problem with policy line: " + line + " : " + ex.getMessage());
+      }
     }
   }
 

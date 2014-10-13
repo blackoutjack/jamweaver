@@ -14,6 +14,7 @@ import com.google.javascript.jscomp.Scope;
 import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.Transform;
+import edu.wisc.cs.jam.Exp;
 
 // This class contains utility functions related to JavaScript source
 // manipulation. It can be instantiated directly (perhaps to create
@@ -71,7 +72,7 @@ public class JSTransform implements Transform {
 
     @Override
     public void visit(NodeTraversal t, Node n, Node parent) {
-      if (NodeUtil.isAnonymousFunction(n)) {
+      if (ExpUtil.isAnonymousFunction(n)) {
         deanonymize(t, n, parent);
         sm.reportCodeChange();
       }
@@ -119,17 +120,17 @@ public class JSTransform implements Transform {
      * value of free variables within the function after flattening.
      */
     protected void elevateFunction(NodeTraversal t, Node n, Node parent) {
-      assert !NodeUtil.isAnonymousFunction(n) : "Encountered unconverted anonymous function";
+      assert !ExpUtil.isAnonymousFunction(n) : "Encountered unconverted anonymous function";
 
-      if (!NodeUtil.isBlock(parent)) {
-        Node stmt = NodeUtil.getEnclosingStatement(parent);
+      if (!ExpUtil.isBlock(parent)) {
+        Node stmt = ExpUtil.getEnclosingStatement(parent);
         Node topBlock = stmt.getParent();
-        assert NodeUtil.isBlock(topBlock);
+        assert ExpUtil.isBlock(topBlock);
         
         Node nextUp = topBlock.getParent();
         while (!topBlock.isScript() && !nextUp.isFunction()) {
           //Dbg.dbg("ELEVATE: " + n.getFirstChild() + " / " + n + " / " + parent + " / " + stmt + " / " + topBlock + " / " + blockParent);
-          if (NodeUtil.isBlock(nextUp)) {
+          if (ExpUtil.isBlock(nextUp)) {
             topBlock = nextUp;
           }
           nextUp = nextUp.getParent();
@@ -175,8 +176,9 @@ public class JSTransform implements Transform {
     protected void addReturn(NodeTraversal t, Node n, Node parent) {
       assert parent.isFunction();
       assert n.isBlock();
-      Node ret = new Node(Token.RETURN);
-      n.addChildToBack(ret);
+      Exp blockexp = JSExp.load(sm, n);
+      Exp ret = JSExp.create(sm, new Node(Token.RETURN));
+      blockexp.addChildToBack(ret);
     }
     
     @Override
@@ -249,7 +251,7 @@ public class JSTransform implements Transform {
         Node concatAcc = new Node(Token.GETPROP, tmpUse0, Node.newString("concat"));
         Node concatCall = new Node(Token.CALL, concatAcc, tmpUse1);
         
-        Node stmt = NodeUtil.getEnclosingStatement(n);
+        Node stmt = ExpUtil.getEnclosingStatement(n);
 
         // Replace the original statement with the concatenation.
         parent.replaceChild(n, concatCall);
@@ -315,7 +317,7 @@ public class JSTransform implements Transform {
         // And set it as the initialization value.
         tmpInit.getFirstChild().addChildToBack(concat);
 
-        Node stmt = NodeUtil.getEnclosingStatement(n);
+        Node stmt = ExpUtil.getEnclosingStatement(n);
         stmt.getParent().addChildBefore(tmpInit, stmt);
 
         // Insert the temporary reference into the original statement.
@@ -365,7 +367,7 @@ public class JSTransform implements Transform {
       assn.replaceChild(rhs, tmpRef);
       tmpName.addChildToBack(rhs);
       Node tmpInit = new Node(Token.VAR, tmpName);
-      Node stmt = NodeUtil.getEnclosingStatement(assn);
+      Node stmt = ExpUtil.getEnclosingStatement(assn);
       Node stmtParent = stmt.getParent();
       stmtParent.addChildBefore(tmpInit, stmt);
     }
@@ -373,9 +375,9 @@ public class JSTransform implements Transform {
     @Override
     public void visit(NodeTraversal t, Node n, Node parent) {
       if (n.isAssign()) {
-        Node lhs = NodeUtil.getAssignLHS(n);
-        Node rhs = NodeUtil.getAssignRHS(n);
-        if (NodeUtil.isAccessor(lhs) && (rhs.isCall() || rhs.isNew())) {
+        Node lhs = ExpUtil.getAssignLHS(n);
+        Node rhs = ExpUtil.getAssignRHS(n);
+        if (ExpUtil.isAccessor(lhs) && (rhs.isCall() || rhs.isNew())) {
           splitSetCall(t, lhs, rhs, n);
         }
       }

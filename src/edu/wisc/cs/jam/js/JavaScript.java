@@ -2,6 +2,8 @@ package edu.wisc.cs.jam.js;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.List;
 
 import java.io.IOException;
@@ -68,6 +70,8 @@ public class JavaScript implements Language {
   @Override
   public SourceManager newSourceManager(List<String> srcPaths) {
     SourceManager jsman = new JSSourceManager();
+    // Cull duplicate source files since Closure can't handle them.
+    Set<String> sfs = new HashSet<String>();
     for (String srcpath : srcPaths) {
       if (JAM.Opts.sourceIsList) {
         List<String> lines = null;
@@ -90,18 +94,31 @@ public class JavaScript implements Language {
           // The path is assumed to be relative to the list file itself.
           File listfile = new File(srcpath);
           String srctop = listfile.getParent();
-          File abspath = new File(srctop, relpath);
+          File absfile = new File(srctop, relpath);
+          String abspath = absfile.getAbsolutePath();
+          if (sfs.contains(abspath)) {
+            Dbg.warn("Omitting duplicate source file: " + abspath);
+            continue;
+          }
+          sfs.add(abspath);
 
           // These must be wrapped in a function to prevent "invalid
           // return" errors.
           boolean wrap = srctype.startsWith("script.event.") || srctype.equals("script.href");
-          JSSource newsrc = new JSSource(abspath.getAbsolutePath(), wrap);
+          JSSource newsrc = new JSSource(abspath, wrap);
           
           newsrc.setRelativePath(relpath);
           jsman.addSource(newsrc);
         }
       } else {
-        jsman.addSource(new JSSource(srcpath, false));
+        File sf = new File(srcpath);
+        String abspath = sf.getAbsolutePath();
+        if (sfs.contains(abspath)) {
+          Dbg.warn("Omitting duplicate source file: " + abspath);
+          continue;
+        }
+        sfs.add(abspath);
+        jsman.addSource(new JSSource(abspath, false));
       }
     }
     if (JAM.Opts.htmlFile != null) {

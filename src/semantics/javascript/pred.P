@@ -37,11 +37,11 @@ predexp(H,L,E,HP,LP,EP) :-
   predexp(H,L,E1,HP,LP,EP).
 
 % null
-predexp(H,L,'null',H,L,'&null').
-predexp(H,L,E,H,L,'&null') :- is_null(E).
+predexp(H,L,'null',H,L,'#null').
+predexp(H,L,E,H,L,'#null') :- is_null(E).
 
 % undefined
-predexp(H,L,'undefined',H,L,'&undefined').
+predexp(H,L,'undefined',H,L,'#undefined').
 
 % this
 predexp(H,L,E,HP,L,EP) :-
@@ -395,10 +395,10 @@ andaux(LeftVal,RightVal,FinalVal) :-
 	evalbin('&&',LeftVal,RightVal,FinalVal).
 
 % [E-Typeof-null]
-%exp(H,L,E,H1,L1,'&undefined') :- is_typeof(E,E1),exp(H,L,E1,H1,L1,R),isref(R),ref(R,LR,_),LR = '&null'.
+%exp(H,L,E,H1,L1,'#undefined') :- is_typeof(E,E1),exp(H,L,E1,H1,L1,R),isref(R),ref(R,LR,_),LR = '#null'.
 
 % [E-Typeof-reference]
-%exp(H,L,E,H2,L2,M) :- is_typeof(E,E1),exp(H,L,E1,H1,L1,R),isref(R),ref(R,LR,_),LR\='&null',atypeof(H1,L1,R,H2,L2,M).
+%exp(H,L,E,H2,L2,M) :- is_typeof(E,E1),exp(H,L,E1,H1,L1,R),isref(R),ref(R,LR,_),LR\='#null',atypeof(H1,L1,R,H2,L2,M).
 
 % [E-Typeof]
 %exp(H,L,E,H2,L2,M) :- is_typeof(E,E1),exp(H,L,E1,H1,L1,VA),ispureval(VA),atypeof(H1,L1,VA,H2,L2,M).
@@ -414,7 +414,7 @@ andaux(LeftVal,RightVal,FinalVal) :-
 %  instof(H4,L4,V1,V2,HP,LP,EP).
 
 % [E-Instof-Exc-obj]
-%instof(H,L,VA,PV,H,L,'&undefined') :- ispureval(VA),isprimval(PV),type(PV,TPV),TPV\='Object'.
+%instof(H,L,VA,PV,H,L,'#undefined') :- ispureval(VA),isprimval(PV),type(PV,TPV),TPV\='Object'.
 
 % [E-Instof-Exc-inst]
 % This rule seems to be unnecessary since @HasInstance is not really implemented as a property here, but as the ahasinstance predicate.

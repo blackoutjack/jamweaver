@@ -38,6 +38,7 @@ WEBSITE_FILE = os.path.join(WEBSITE_DIR, 'sites.txt')
 INTERPRETER_TEST_DIR = os.path.join(TESTDIR, 'interpreter')
 UNPACK_SCRIPT = os.path.join(UTILDIR, 'unpack.py')
 REPACK_SCRIPT = os.path.join(UTILDIR, 'repack.py')
+DEFAULT_POLICY = os.path.join(MICROBENCHMARK_DIR, 'simple.policy')
 
 JAMSCRIPT_DOCDIR = os.path.join(JAMSCRIPT_DIR, 'doc')
 JSTESTDIR = os.path.join(JAMSCRIPT_DIR, 'tests', 'browser')

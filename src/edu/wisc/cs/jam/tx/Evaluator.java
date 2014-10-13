@@ -9,8 +9,8 @@ import java.util.LinkedHashMap;
 import edu.wisc.cs.jam.PolicyLanguage;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Predicate;
-import edu.wisc.cs.jam.PolicyType;
-import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPolicyType;
+import edu.wisc.cs.jam.PredicateType;
+import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPredicateType;
 
 // This represents a single JavaScript function that evaluates the
 // truth value of a single JAM policy predicate.
@@ -41,21 +41,21 @@ public class Evaluator {
     return new LinkedHashMap<String,String>(natives);
   }
 
-  public JSPolicyType getType() {
+  public JSPredicateType getType() {
     EvaluatorNode e0 = nodes.get(0);
-    PolicyType typ = e0.getType();
-    if (typ == JSPolicyType.WRITE || typ == JSPolicyType.SHEQ
-        || typ == JSPolicyType.SHNE || typ == JSPolicyType.EQ
-        || typ == JSPolicyType.NE) {
-      return JSPolicyType.WRITE;
-    } else if (typ == JSPolicyType.READ) {
-      return JSPolicyType.READ;
-    } else if (typ == JSPolicyType.DELETE) {
-      return JSPolicyType.DELETE;
-    } else if (typ == JSPolicyType.CALL) {
-      return JSPolicyType.CALL;
-    } else if (typ == JSPolicyType.DUMMY) {
-      return JSPolicyType.DUMMY;
+    PredicateType typ = e0.getType();
+    if (typ == JSPredicateType.WRITE || typ == JSPredicateType.SHEQ
+        || typ == JSPredicateType.SHNE || typ == JSPredicateType.EQ
+        || typ == JSPredicateType.NE) {
+      return JSPredicateType.WRITE;
+    } else if (typ == JSPredicateType.READ) {
+      return JSPredicateType.READ;
+    } else if (typ == JSPredicateType.DELETE) {
+      return JSPredicateType.DELETE;
+    } else if (typ == JSPredicateType.CALL) {
+      return JSPredicateType.CALL;
+    } else if (typ == JSPredicateType.DUMMY) {
+      return JSPredicateType.DUMMY;
     } else {
       throw new UnsupportedOperationException("Unknown evaluator type: " + this);
     }

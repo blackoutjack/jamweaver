@@ -57,7 +57,10 @@ public class RelationAutomaton extends ControlAutomaton {
   // program model. These are provided to loadRelations.
   protected List<Predicate> learnedPredicates;
 
+  // Maintain a separate Edge-to-Relation mapping for each policy
+  // predicate.
   protected Map<Predicate,Map<Edge,Relation>> relations;
+
   // There is no WeakHashSet for some reason, so use a dummy-valued map.
   //protected WeakHashMap<Relation,Boolean> uniqueRelations;
 
@@ -110,8 +113,18 @@ public class RelationAutomaton extends ControlAutomaton {
     if (policyPath != null) {
       synchronized (getClass()) {
         for (Predicate p : policyPath.getPredicates()) {
-          if (!transitioningSymbols.containsKey(p.getNegative())) {
-            transitioningSymbols.put(p.getNegative(), new LinkedHashSet<ExpSymbol>());
+          PredicateValue pvpre = p.getNegative();
+          if (!transitioningSymbols.containsKey(pvpre)) {
+            transitioningSymbols.put(pvpre, new LinkedHashSet<ExpSymbol>());
+          }
+          // %%% This causes inconsistencies in the BDDRelationDomain,etc.
+          // Events can't be undone, so don't track symbols causing such
+          // a transition.
+          if (!p.isEventPredicate()) {
+            PredicateValue pvpost = p.getPositive();
+            if (!transitioningSymbols.containsKey(pvpost)) {
+              transitioningSymbols.put(pvpost, new LinkedHashSet<ExpSymbol>());
+            }
           }
         }
       }
@@ -328,6 +341,41 @@ public class RelationAutomaton extends ControlAutomaton {
     return ret;
   }
 
+  protected void prepareQuery(DataTransition trans, QueryMap queryMap) {
+    ExpSymbol sym = trans.getSymbol();
+    DataState d0 = trans.getSource();
+    DataState d1 = trans.getDestination();
+
+    Boolean quickAnswer = semantics.maybePossibleTransition(trans);
+    if (quickAnswer != null) {
+      // Currently we only act on a negative value.
+      if (!quickAnswer.booleanValue()) { 
+        addToCleverCache(sym, d0, d1);
+      }
+      // %%% Could use information that the transition is definitely
+      // %%% possible.
+    } else {
+      Clause c = getQuery(sym, d0, d1);
+      if (c != null) {
+        if (JAM.Opts.syntaxOnly) {
+          // We note that this symbol can change this predicate value.
+          PredicateValue pre = d0.getValues().get(0);
+          transitioningSymbols.get(pre).add(sym);
+        } else {
+          List<DataTransition> transitions = queryMap.get(c);
+          if (transitions == null) {
+            transitions = new ArrayList<DataTransition>();
+            queryMap.put(c, transitions);
+          }
+          transitions.add(trans);
+
+          Clause prereq = getPrerequisite(sym, d0, d1);
+          queryMap.putPrereq(c, prereq);
+        }
+      }
+    }
+  }
+
   // Iterate through each combination of the automaton's symbols S and
   // predicates pairs <P0,P1>. If P0 -S-> P1 is invalid, then we store 
   // this fact and use it later to quickly rule out transitions.
@@ -373,33 +421,13 @@ public class RelationAutomaton extends ControlAutomaton {
           // of the program statement represented by the ExpSymbol.
           if (sym.isNoOp()) continue;
 
-          Clause c = getQuery(sym, d0, d1);
-          if (c != null) {
-            DataTransition trans = new DataTransition(null, d0, sym, d1);
-            List<DataTransition> transitions = queryMap.get(c);
-            if (transitions == null) {
-              transitions = new ArrayList<DataTransition>();
-              queryMap.put(c, transitions);
-            }
-            transitions.add(trans);
+          DataTransition trans = new DataTransition(null, d0, sym, d1);
+          prepareQuery(trans, queryMap);
 
-            Clause prereq = getPrerequisite(sym, d0, d1);
-            queryMap.putPrereq(c, prereq);
-          }
-
-          // Test the other direction for learned predicates, but not
-          // policy predicates.
-          if (p.isPolicyPredicate()) continue;
-
-          c = getQuery(sym, d1, d0);
-          if (c != null) {
-            DataTransition trans = new DataTransition(null, d1, sym, d0);
-            List<DataTransition> transitions = queryMap.get(c);
-            if (transitions == null) {
-              transitions = new ArrayList<DataTransition>();
-              queryMap.put(c, transitions);
-            }
-            transitions.add(trans);
+          // Test the other direction for non-policy predicates.
+          if (!p.isPolicyPredicate()) {
+            DataTransition backtrans = new DataTransition(null, d1, sym, d0);
+            prepareQuery(backtrans, queryMap);
           }
         }
 
@@ -565,7 +593,7 @@ public class RelationAutomaton extends ControlAutomaton {
   // The idea is that if a statement has not been shown to change the
   // data state, then the data state doesn't change.
   protected boolean setIdentityRelationForNoOpSymbol(Predicate p, ExpSymbol sym) {
-    assert p == null || p.isPolicyPredicate() : "Non-policy predicate passed to setIdentityRelationForNoOpSymbol: " + p;
+    // Predicate |p| is assumed to be a policy transition symbol.
 
     boolean noOp = true;
 
@@ -617,25 +645,13 @@ public class RelationAutomaton extends ControlAutomaton {
     if (sym instanceof FunctionEntrySymbol) return !checkFunctionEntry;
 
     boolean noOp = true;
-
-    // Get the first negative policy predicate contained in this
-    // data state.
-    PredicateValue negPolVal = null;
-    for (Predicate p : policyPath.getPredicates()) {
-      PredicateValue pv = p.getNegative();
-      if (pre.getValues().contains(pv)) {
-        negPolVal = pv;
-        break;
-      }
-    }
       
     for (PredicateValue pv : pre.getValues()) {
-      boolean isPol = pv.isPolicyValue();
+      boolean isevent = pv.isEventValue();
 
-      // This predicate value has no bearing on any transitions if
-      // it's policy predicate value not equal to the negative value
-      // identified above.
-      if (isPol && !pv.equals(negPolVal)) continue;
+      // An event predicate value has no bearing on any transitions if
+      // it's value is positive in the prestate.
+      if (isevent && pv.isPositive()) continue;
 
       if (getTransitioningSymbols(pv).contains(sym)) {
         noOp = false;
@@ -739,7 +755,7 @@ public class RelationAutomaton extends ControlAutomaton {
     if (s0 != null) {
       List<PredicateValue> pvsBefore = s0.getValues();
       for (PredicateValue pv : new ArrayList<PredicateValue>(pvsBefore)) {
-        if (pv.isPolicyValue()) {
+        if (pv.isEventValue()) {
           if (polpred == null || !pv.equals(polpred.getNegative())) {
             // Remove any policy predicate values that don't apply in
             // the pre-state.
@@ -781,7 +797,7 @@ public class RelationAutomaton extends ControlAutomaton {
     if (s1 != null) {
       List<PredicateValue> pvsAfter = s1.getValues();
       for (PredicateValue pv : new ArrayList<PredicateValue>(pvsAfter)) {
-        if (pv.isPolicyValue()) {
+        if (pv.isEventValue()) {
           if (polpred == null || !pv.equals(polpred.getPositive())) {
             // Remove any policy predicate values that don't equal the
             // positive value of the specified predicate.
@@ -815,20 +831,21 @@ public class RelationAutomaton extends ControlAutomaton {
     return c;
   }
 
+  // %%% Why not take a DataTransition?
   protected void addToCleverCache(ExpSymbol sym, DataState s0, DataState s1) {
     Predicate pp = getPolicyTransitionPredicate(s0, s1);
     List<PredicateValue> preState = new ArrayList<PredicateValue>();
     List<PredicateValue> postState = new ArrayList<PredicateValue>();
 
     for (PredicateValue pv : s0.getValues()) {
-      if (pv.isPolicyValue()) {
+      if (pv.isEventValue()) {
         if (pp == null || !pv.equals(pp.getNegative()))
           continue;
       }
       preState.add(pv);
     }
     for (PredicateValue pv : s1.getValues()) {
-      if (pv.isPolicyValue()) {
+      if (pv.isEventValue()) {
         if (pp == null || !pv.equals(pp.getPositive()))
           continue;
       }
@@ -942,7 +959,8 @@ public class RelationAutomaton extends ControlAutomaton {
   protected void initRelationDomain() {
     // Regardless of the abstraction, we need the relation domain to
     // cover all predicates.
-    relationDomain = new BDDRelationDomain(getLearnedPredicates());
+    List<Predicate> preds = getLearnedPredicates();
+    relationDomain = new BDDRelationDomain(preds);
   }
 
   protected void loadInitializerRelation() {
@@ -1085,7 +1103,8 @@ public class RelationAutomaton extends ControlAutomaton {
   }
 
   // Generate blocking predicates for policy transitions that are
-  // unreachable in this program for this policy path.
+  // unreachable in this program for this policy path, based on
+  // the current state of the source code.
   public void noteUnreachableTransitions() {
     for (PolicyPath.Edge e : policyPath.getAdvancingEdges()) {
       Policy.Edge pe = policyPath.getPolicyEdge(e);

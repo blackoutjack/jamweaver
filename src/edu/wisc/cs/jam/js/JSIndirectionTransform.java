@@ -26,13 +26,13 @@ import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.SourceManager;
-import edu.wisc.cs.jam.PolicyType;
+import edu.wisc.cs.jam.PredicateType;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.JAM;
 
 import edu.wisc.cs.jam.tx.TxUtil;
 
-import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPolicyType;
+import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPredicateType;
 
 // Reuse ExpressionFlattener to maintain sequential variable naming.
 public class JSIndirectionTransform extends JSTransform {
@@ -242,7 +242,11 @@ public class JSIndirectionTransform extends JSTransform {
       Node tgtNode = callNode.getFirstChild();
       // Higher-order scripts need at least 1 argument to do anything.
       if (callNode.getChildCount() > 1) {
-        conservativeCalls.add(sm.codeFromNode(tgtNode));
+        String nodecode = sm.codeFromNode(tgtNode);
+        if (nodecode.indexOf("getTime") > -1) {
+          Dbg.dbg("CONSERVATIVE: " + nodecode);
+        }
+        conservativeCalls.add(nodecode);
       }
     }
 
@@ -254,7 +258,11 @@ public class JSIndirectionTransform extends JSTransform {
           Node callNode = cs.getAstNode();
           Node tgtNode = callNode.getFirstChild();
           if (callNode.getChildCount() > 1) {
-            dynamicCalls.add(sm.codeFromNode(tgtNode));
+            String nodecode = sm.codeFromNode(tgtNode);
+            if (nodecode.indexOf("getTime") > -1) {
+              Dbg.dbg("DYNAMIC: " + nodecode);
+            }
+            dynamicCalls.add(nodecode);
           }
         }
       }
@@ -332,7 +340,7 @@ public class JSIndirectionTransform extends JSTransform {
       // Also add the receiver for CALL nodes (but not NEW nodes).
       // This might use some special logic to recognize JAM.get targets.
       Node actualTarget = getCallTarget(n);
-      if (NodeUtil.isAccessor(actualTarget)) {
+      if (ExpUtil.isAccessor(actualTarget)) {
         Node recParam = getCallReceiver(n).cloneTree();
         libCall.addChildToBack(recParam);
       } else {
@@ -375,14 +383,14 @@ public class JSIndirectionTransform extends JSTransform {
   // }
   protected void indirectDirectEvalCall(NodeTraversal t, Node n, Node parent, Node ispect) {
     int childCount = n.getChildCount();
-    assert NodeUtil.isCall(n) && childCount > 1;
+    assert n.isCall() && childCount > 1;
 
-    Node stmt = NodeUtil.getEnclosingStatement(n);
+    Node stmt = ExpUtil.getEnclosingStatement(n);
     Node stmtParent = stmt.getParent();
 
     Node stmtCopy = stmt.cloneTree();
     // Dig into the copy and find the node corresponding to |n|.
-    Node nCopy = NodeUtil.findEquivalentSubtree(stmtCopy, n);
+    Node nCopy = ExpUtil.findEquivalentSubtree(stmtCopy, n);
 
     // Create |var r = JAM.call(eval, null, [arg0, ..])|.
     indirectCallsite(t, n, parent, ispect);
@@ -424,7 +432,7 @@ public class JSIndirectionTransform extends JSTransform {
   }
 
   protected void indirectPropertyRead(NodeTraversal t, Node n, Node parent, Node ispect) {
-    assert n.isName() || NodeUtil.isAccessor(n);
+    assert n.isName() || ExpUtil.isAccessor(n);
 
     Node obj = null;
     Node prop = null;
@@ -461,7 +469,7 @@ public class JSIndirectionTransform extends JSTransform {
     assert n.isAssign();
 
     Node lhs = n.getFirstChild();
-    assert NodeUtil.isAccessor(lhs) || lhs.isName();
+    assert ExpUtil.isAccessor(lhs) || lhs.isName();
     Node rhs = n.getChildAtIndex(1);
 
     Node obj = null;
@@ -509,7 +517,7 @@ public class JSIndirectionTransform extends JSTransform {
           tgt = new Node(Token.GETELEM, rec, prop);
         }
       }
-    } else if (NodeUtil.isAccessor(tgt)) {
+    } else if (ExpUtil.isAccessor(tgt)) {
       // This case is expected. 
     } else if (tgt.isName()) {
       // This case is expected. 
@@ -534,7 +542,7 @@ public class JSIndirectionTransform extends JSTransform {
         // Return the first argument.
         rec = tgt.getChildAtIndex(1);
       }
-    } else if (NodeUtil.isAccessor(tgt)) {
+    } else if (ExpUtil.isAccessor(tgt)) {
       rec = tgt.getFirstChild();
     } else if (tgt.isName()) {
       rec = null;
@@ -567,7 +575,7 @@ public class JSIndirectionTransform extends JSTransform {
   protected boolean shouldIndirectAssign(Node n) {
     assert n.isAssign();
     Node lhs = n.getFirstChild();
-    if (!NodeUtil.isAccessor(lhs)) return false;
+    if (!ExpUtil.isAccessor(lhs)) return false;
 
     Node obj = lhs.getFirstChild();
     Node prop = lhs.getChildAtIndex(1);
@@ -605,15 +613,15 @@ public class JSIndirectionTransform extends JSTransform {
     protected Node tx;
     protected Node ispect;
     protected Node txBlock;
-    protected Set<PolicyType> ptypes;
+    protected Set<PredicateType> ptypes;
     protected Set<Node> callsWithTransformedTargets;
 
     public TxIndirector(Node t) {
-      assert NodeUtil.isTransaction(t);
+      assert ExpUtil.isTransaction(t);
       tx = t;
       ispect = TxUtil.getTxIntrospector(tx);
       txBlock = TxUtil.getTxBlock(tx);
-      ptypes = TxUtil.getTxPolicyTypes(cm, tx);
+      ptypes = TxUtil.getTxPredicateTypes(cm, tx);
       callsWithTransformedTargets = new HashSet<Node>();
     }
 
@@ -628,30 +636,30 @@ public class JSIndirectionTransform extends JSTransform {
     
     @Override
     public void visit(NodeTraversal t, Node n, Node parent) {
-      if (NodeUtil.isAccessor(n)) {
-        if (NodeUtil.isAssign(parent) && NodeUtil.getAssignLHS(parent) == n) {
+      if (ExpUtil.isAccessor(n)) {
+        if (ExpUtil.isAssign(parent) && ExpUtil.getAssignLHS(parent) == n) {
           // This case is handled when visiting the parent.
           return;
         }
-        if (ptypes != null && ptypes.contains(JSPolicyType.READ)) {
+        if (ptypes != null && ptypes.contains(JSPredicateType.READ)) {
           indirectPropertyRead(t, n, parent, ispect);
         }
         // Unfortunately we have to transform calls to the read function.
         // If the following condition is not true, the callsite will be
         // visited and transformed anyway.
-        if (ptypes == null || !ptypes.contains(JSPolicyType.CALL)) {
+        if (ptypes == null || !ptypes.contains(JSPredicateType.CALL)) {
           // Presumably a NEW expression will work fine without
           // transformation since it doesn't use the receiver.
           if (parent.isCall()) {
             callsWithTransformedTargets.add(parent);
           }
         }
-      } else if (NodeUtil.isAssign(n)) {
+      } else if (ExpUtil.isAssign(n)) {
         assert n.isAssign() : "Non-standard assign statement within a transaction: " + sm.codeFromNode(n);
         // %%% Currently we don't handle assignments to global/with props.
-        Node lhs = NodeUtil.getAssignLHS(n);
-        if (NodeUtil.isAccessor(lhs)) {
-          if (ptypes != null && ptypes.contains(JSPolicyType.WRITE)) {
+        Node lhs = ExpUtil.getAssignLHS(n);
+        if (ExpUtil.isAccessor(lhs)) {
+          if (ptypes != null && ptypes.contains(JSPredicateType.WRITE)) {
             indirectPropertyWrite(t, n, parent, ispect);
             sm.reportCodeChange();
             propertyWriteTransformCnt++;
@@ -666,7 +674,7 @@ public class JSIndirectionTransform extends JSTransform {
           indirectDirectEvalCall(t, n, parent, null);
           sm.reportCodeChange();
           callTransformCnt++;
-        } else if (ptypes != null && ptypes.contains(JSPolicyType.CALL)) {
+        } else if (ptypes != null && ptypes.contains(JSPredicateType.CALL)) {
           indirectCallsite(t, n, parent, ispect);
           sm.reportCodeChange();
           callTransformCnt++;
@@ -711,9 +719,9 @@ public class JSIndirectionTransform extends JSTransform {
 
     @Override
     public void visit(NodeTraversal t, Node n, Node parent) {
-      if (NodeUtil.isCall(n) || NodeUtil.isNew(n)) {
+      if (n.isCall() || n.isNew()) {
         // Get any surrounding transaction.
-        Node tx = NodeUtil.isWithinTransaction(n);
+        Node tx = ExpUtil.isWithinTransaction(n);
         // Wait for the TxIndirector to handle transactions.
         if (tx != null) {
           txNodesToIndirect.add(tx);
@@ -732,7 +740,7 @@ public class JSIndirectionTransform extends JSTransform {
       } else if (n.isAssign()) {
         boolean doTransform = shouldIndirectAssign(n);
         if (doTransform) {
-          Node tx = NodeUtil.isWithinTransaction(n);
+          Node tx = ExpUtil.isWithinTransaction(n);
           if (tx != null) {
             txNodesToIndirect.add(tx);
             return;
@@ -741,7 +749,7 @@ public class JSIndirectionTransform extends JSTransform {
           sm.reportCodeChange();
           propertyWriteTransformCnt++;
         }
-      } else if (NodeUtil.isTransaction(n)) {
+      } else if (ExpUtil.isTransaction(n)) {
         if (txNodesToIndirect.contains(n)) {
           TxIndirector txi = new TxIndirector(n);
           Compiler comp = sm.getCompiler();

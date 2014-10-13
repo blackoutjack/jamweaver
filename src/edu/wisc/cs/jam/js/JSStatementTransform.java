@@ -135,8 +135,8 @@ public class JSStatementTransform extends JSTransform {
       }
 
       Node rhs = n.getChildAtIndex(1);
-      if (NodeUtil.isAssign(rhs)) return false;
-      if (NodeUtil.isUnOp(rhs)) return false;
+      if (ExpUtil.isAssign(rhs)) return false;
+      if (ExpUtil.isUnOp(rhs)) return false;
       return isSimpleExpression(t, rhs, n);
     }
 
@@ -194,7 +194,7 @@ public class JSStatementTransform extends JSTransform {
         case Token.DELPROP:
           Node acc = n.getFirstChild();
           if (isVerySimple(acc)) return true;
-          assert NodeUtil.isAccessor(acc);
+          assert ExpUtil.isAccessor(acc);
           if (!isVerySimple(acc.getFirstChild())) return false;
           if (!isVerySimple(acc.getChildAtIndex(1))) return false;
           return true;
@@ -326,7 +326,7 @@ public class JSStatementTransform extends JSTransform {
         parent.replaceChild(n, tmpRef);
         tmpName.addChildToBack(n);
         Node tmpInit = new Node(Token.VAR, tmpName);
-        Node stmt = NodeUtil.getEnclosingStatement(parent);
+        Node stmt = ExpUtil.getEnclosingStatement(parent);
         Node stmtParent = stmt.getParent();
         stmtParent.addChildBefore(tmpInit, stmt);
 
@@ -334,11 +334,11 @@ public class JSStatementTransform extends JSTransform {
         /*
         if (n.isName()) {
           sm.propagateType(n.getString(), id);
-        } else if (NodeUtil.returnsBoolean(n)) {
+        } else if (ExpUtil.returnsBoolean(n)) {
           sm.setType(id, "Boolean");
-        } else if (NodeUtil.returnsString(sm, n)) {
+        } else if (ExpUtil.returnsString(sm, n)) {
           sm.setType(id, "String");
-        } else if (NodeUtil.returnsNumber(sm, n)) {
+        } else if (ExpUtil.returnsNumber(sm, n)) {
           sm.setType(id, "Number");
         }
         */
@@ -355,7 +355,7 @@ public class JSStatementTransform extends JSTransform {
       Node fnName = n.getFirstChild().cloneTree();
       assert fnName.isName();
       parent.replaceChild(n, fnName);
-      Node stmt = NodeUtil.getEnclosingStatement(parent);
+      Node stmt = ExpUtil.getEnclosingStatement(parent);
       Node stmtParent = stmt.getParent();
       stmtParent.addChildBefore(n, stmt);
       return true;
@@ -376,11 +376,11 @@ public class JSStatementTransform extends JSTransform {
       assert n.isName();
 
       // Conservatively assume that any call may alter the reference.
-      if (NodeUtil.containsCall(exp)) {
+      if (ExpUtil.containsCall(exp)) {
         return true;
       }
       // Or any mention of the LHS on the RHS.
-      if (NodeUtil.mayDirectlyModifyName(exp, n.getString())) {
+      if (ExpUtil.mayDirectlyModifyName(exp, n.getString())) {
         return true;
       }
       // %%% Both cases are overly conservative, but difficult to make
@@ -390,16 +390,16 @@ public class JSStatementTransform extends JSTransform {
     }
 
     protected boolean isModifiableWithinAssign(NodeTraversal t, Node n, Node assign) {
-      assert NodeUtil.isAssign(assign);
-      Node rhs = NodeUtil.getAssignRHS(assign);
+      assert ExpUtil.isAssign(assign);
+      Node rhs = ExpUtil.getAssignRHS(assign);
       assert rhs != null : "Null RHS of assign: " + assign;
       return isModifiableWithinExpression(t, n, rhs);
     }
 
     protected boolean transformAssignLHS(NodeTraversal t, Node lhs, Node n) {
-      assert NodeUtil.isAssign(n);
+      assert ExpUtil.isAssign(n);
       boolean chng = false;
-      if (NodeUtil.isAccessor(lhs)) {
+      if (ExpUtil.isAccessor(lhs)) {
         Node obj = lhs.getFirstChild();
         if (isVerySimple(obj)) {
           if (obj.isName() && !tmpUses.contains(obj)
@@ -444,7 +444,7 @@ public class JSStatementTransform extends JSTransform {
     protected boolean transformCall(NodeTraversal t, Node n, Node parent) {
       boolean chng = false;
       Node tgt = n.getFirstChild();
-      if (NodeUtil.isAccessor(tgt)) {
+      if (ExpUtil.isAccessor(tgt)) {
         if (transformBinary(t, tgt, n)) chng = true;
       } else if (!isVerySimple(tgt)) {
         if (transformGeneric(t, tgt, n)) chng = true;
@@ -504,7 +504,7 @@ public class JSStatementTransform extends JSTransform {
 
       // Note the statement in front of which we'll put the new function
       // declaration.
-      Node stmt = NodeUtil.getEnclosingStatement(parent);
+      Node stmt = ExpUtil.getEnclosingStatement(parent);
 
       // This is the property declaration object.
       Node defObj = new Node(Token.OBJECTLIT);
@@ -534,7 +534,7 @@ public class JSStatementTransform extends JSTransform {
 
     protected boolean transformEtters(NodeTraversal t, Node n, Node parent, Map<String,Node> getters, Map<String,Node> setters) {
       boolean chng = false;
-      Node stmt = NodeUtil.getEnclosingStatement(n);
+      Node stmt = ExpUtil.getEnclosingStatement(n);
       for (Map.Entry<String,Node> entry : getters.entrySet()) {
         String propName = entry.getKey();
         Node getter = entry.getValue();
@@ -545,16 +545,16 @@ public class JSStatementTransform extends JSTransform {
         }
         // Can only process this if the object literal is assigned to
         // a name.
-        Node lhs = NodeUtil.getAssignLHS(stmt);
+        Node lhs = ExpUtil.getAssignLHS(stmt);
         if (lhs != null) {
-          Node rhs = NodeUtil.getAssignRHS(stmt);
+          Node rhs = ExpUtil.getAssignRHS(stmt);
           if (rhs == n) {
             extractEtters(t, propName, getter, setter, n, lhs);
             chng = true;
           } else {
             Dbg.warn("Object literal embedded in compound expression: " + n);
           }
-        } else if (NodeUtil.isExprResult(parent)) {
+        } else if (parent.isExprResult()) {
           // This would be strange, but this is in case there's an
           // object literal as a floating expression. Print a warning
           // and don't flag more.
@@ -568,16 +568,16 @@ public class JSStatementTransform extends JSTransform {
 
         // Can only process this if the object literal is assigned to
         // a name.
-        Node lhs = NodeUtil.getAssignLHS(stmt);
+        Node lhs = ExpUtil.getAssignLHS(stmt);
         if (lhs != null) {
-          Node rhs = NodeUtil.getAssignRHS(stmt);
+          Node rhs = ExpUtil.getAssignRHS(stmt);
           if (rhs == n) {
             extractEtters(t, propName, null, setter, n, lhs);
             chng = true;
           } else {
             Dbg.warn("Object literal embedded in compound expression: " + n);
           }
-        } else if (NodeUtil.isExprResult(n.getParent())) {
+        } else if (n.getParent().isExprResult()) {
           // This would be strange, but this is in case there's an
           // object literal as a floating expression. Print a warning
           // and don't flag more.
@@ -626,7 +626,7 @@ public class JSStatementTransform extends JSTransform {
       op0Assign.getFirstChild().addChildToBack(op0);
 
       // And insert it into the program prior to the enclosing statement.
-      Node enclosing = NodeUtil.getEnclosingStatement(n);
+      Node enclosing = ExpUtil.getEnclosingStatement(n);
       enclosing.getParent().addChildBefore(op0Assign, enclosing);
 
       return tmp;
@@ -641,7 +641,7 @@ public class JSStatementTransform extends JSTransform {
       stmt.replaceChild(stmt.getChildAtIndex(1), thenBlock);
 
       // Insert the new if/then/else statement.
-      Node enclosing = NodeUtil.getEnclosingStatement(n);
+      Node enclosing = ExpUtil.getEnclosingStatement(n);
       enclosing.getParent().addChildBefore(stmt, enclosing);
     }
 
@@ -693,7 +693,7 @@ public class JSStatementTransform extends JSTransform {
     //   g();
     // }
     protected void expandAndSimple(NodeTraversal t, Node n, Node parent) {
-      Node enclosing = NodeUtil.getEnclosingStatement(n);
+      Node enclosing = ExpUtil.getEnclosingStatement(n);
 
       // Extract the two operands.
       Node op1 = n.getChildAtIndex(1).detachFromParent();
@@ -793,7 +793,7 @@ public class JSStatementTransform extends JSTransform {
     //   g();
     // }
     protected void expandOrSimple(NodeTraversal t, Node n, Node parent) {
-      Node enclosing = NodeUtil.getEnclosingStatement(n);
+      Node enclosing = ExpUtil.getEnclosingStatement(n);
 
       // Extract the two operands.
       Node op1 = n.getChildAtIndex(1).detachFromParent();
@@ -846,7 +846,7 @@ public class JSStatementTransform extends JSTransform {
 
     protected boolean transformAnd(NodeTraversal t, Node n, Node parent) {
       if (parent.isExprResult()) {
-        if (NodeUtil.isName(n.getFirstChild())) {
+        if (n.getFirstChild().isName()) {
           expandAndSimple(t, n, parent);
         } else {
           expandAnd(t, n, parent);
@@ -859,7 +859,7 @@ public class JSStatementTransform extends JSTransform {
 
     protected boolean transformOr(NodeTraversal t, Node n, Node parent) {
       if (parent.isExprResult()) {
-        if (NodeUtil.isName(n.getFirstChild())) {
+        if (n.getFirstChild().isName()) {
           expandOrSimple(t, n, parent);
         } else {
           expandOr(t, n, parent);
@@ -874,14 +874,14 @@ public class JSStatementTransform extends JSTransform {
       Node c1 = n.getChildAtIndex(1).detachFromParent();
       Node c0 = n.getChildAtIndex(0).detachFromParent();
       Node wrapper = new Node(Token.EXPR_RESULT, c0);
-      Node stmt = NodeUtil.getEnclosingStatement(n);
+      Node stmt = ExpUtil.getEnclosingStatement(n);
       stmt.getParent().addChildBefore(wrapper, stmt);
       parent.replaceChild(n, c1);
       return true;
     }
 
     protected boolean transformIncDec(NodeTraversal t, Node n, Node parent) {
-      if (NodeUtil.isPostfixUnOp(n) && (parent.isReturn()
+      if (ExpUtil.isPostfixUnOp(n) && (parent.isReturn()
           || parent.isThrow())) {
         // This case (obscure as it might be) cannot be transformed.
         return false;
@@ -904,11 +904,11 @@ public class JSStatementTransform extends JSTransform {
       Node newRhs = new Node(newOp, refCopy, Node.newNumber(1));
       Node assign = new Node(Token.ASSIGN, ref, newRhs);
 
-      if (NodeUtil.isPostfixUnOp(n) && !parent.isExprResult()) {
+      if (ExpUtil.isPostfixUnOp(n) && !parent.isExprResult()) {
         Node refSub = ref.cloneTree();
         parent.replaceChild(n, refSub);
         Node exRes = new Node(Token.EXPR_RESULT, assign);
-        Node stmt = NodeUtil.getEnclosingStatement(parent);
+        Node stmt = ExpUtil.getEnclosingStatement(parent);
         Node stmtParent = stmt.getParent();
         stmtParent.addChildAfter(exRes, stmt);
       } else {
@@ -919,12 +919,12 @@ public class JSStatementTransform extends JSTransform {
 
     protected boolean transformCompoundAssign(NodeTraversal t, Node n, Node parent) {
       boolean chng = false;
-      Node lhs = NodeUtil.getAssignLHS(n);
+      Node lhs = ExpUtil.getAssignLHS(n);
       if (transformAssignLHS(t, lhs, n)) chng = true;
 
       if (!chng) {
         Node lhsCopy = lhs.cloneTree();
-        Node rhs = NodeUtil.getAssignRHS(n);
+        Node rhs = ExpUtil.getAssignRHS(n);
         lhs.detachFromParent();
         rhs.detachFromParent();
         int newOp = -1;
@@ -983,7 +983,7 @@ public class JSStatementTransform extends JSTransform {
       Node tmpDecl = new Node(Token.VAR, tmpDef);
       tmpDefs.add(tmpDef);
       // And insert it into the program prior to the enclosing statement.
-      Node enclosing = NodeUtil.getEnclosingStatement(n);
+      Node enclosing = ExpUtil.getEnclosingStatement(n);
       enclosing.getParent().addChildBefore(tmpDecl, enclosing);
 
       // Generate a new if/then/else framework node.
@@ -1102,7 +1102,7 @@ public class JSStatementTransform extends JSTransform {
           // Fall through.
         case Token.GETPROP:
         case Token.GETELEM:
-          assert NodeUtil.isAccessor(n);
+          assert ExpUtil.isAccessor(n);
           return transformBinary(t, n, parent);
         case Token.ARRAYLIT:
           return transformCompound(t, n, parent);
@@ -1141,7 +1141,7 @@ public class JSStatementTransform extends JSTransform {
 
       // Insert the condition prior to the loop and at the end of the
       // loop's block.
-      Node cond = NodeUtil.getCondition(n);
+      Node cond = ExpUtil.getCondition(n);
       // If the condition is a simple reference or literal, just leave it.
       if (isVerySimple(cond)) return false;
 
@@ -1263,7 +1263,7 @@ public class JSStatementTransform extends JSTransform {
     }
 
     protected List<Node> getControlBlocks(Node ctrl) {
-      assert NodeUtil.isControl(ctrl);
+      assert ExpUtil.isControl(ctrl);
       List<Node> ret = new ArrayList<Node>();
       if (ctrl.isIf()) {
         int childCnt = ctrl.getChildCount();
@@ -1323,9 +1323,9 @@ public class JSStatementTransform extends JSTransform {
             ret.add(finallyBlock);
           }
         }
-      } else if (NodeUtil.isStandardFor(ctrl)) {
+      } else if (ExpUtil.isStandardFor(ctrl)) {
         ret.add(ctrl.getLastChild());
-      } else if (NodeUtil.isForIn(ctrl)) {
+      } else if (ExpUtil.isForIn(ctrl)) {
         ret.add(ctrl.getLastChild());
       } else if (ctrl.isWith()) {
         ret.add(ctrl.getLastChild());
@@ -1337,7 +1337,7 @@ public class JSStatementTransform extends JSTransform {
 
     protected boolean prepareContinueStatements(NodeTraversal t, Node incr, Node cond, Node ctrl, String label, boolean nested) {
       boolean ret = false;
-      assert NodeUtil.isControl(ctrl);
+      assert ExpUtil.isControl(ctrl);
       List<Node> blocks = getControlBlocks(ctrl);
 
       // Loop backwards since we may insert children.
@@ -1345,7 +1345,7 @@ public class JSStatementTransform extends JSTransform {
         int childCnt = block.getChildCount();
         for (int i=childCnt-1; i>=0; i--) {
           Node n = block.getChildAtIndex(i);
-          if (NodeUtil.isContinue(n)) {
+          if (ExpUtil.isContinue(n)) {
             boolean doInsert = true;
             if (nested) {
               doInsert = false;
@@ -1368,9 +1368,9 @@ public class JSStatementTransform extends JSTransform {
               }
               ret = true;
             }
-          } else if (NodeUtil.isControl(n)) {
+          } else if (ExpUtil.isControl(n)) {
             // Recurse on nested blocks.
-            if (NodeUtil.isLoop(n)) {
+            if (ExpUtil.isLoop(n)) {
               // If label exists, find corresponding |continue|'s.
               if (label != null) {
                 prepareContinueStatements(t, incr, cond, n, label, true);
@@ -1385,7 +1385,7 @@ public class JSStatementTransform extends JSTransform {
     }
 
     protected boolean transformStandardFor(NodeTraversal t, Node n, Node parent) {
-      assert NodeUtil.isStandardFor(n);
+      assert ExpUtil.isStandardFor(n);
 
       // Extract the loop iterator and insert it at the end of block.
       Node incr = n.getChildAtIndex(2);
@@ -1396,7 +1396,7 @@ public class JSStatementTransform extends JSTransform {
       // loop's block. This should place it after the incrementor,
       // which maintains semantics.
       // If the condition is a simple reference, just leave it.
-      Node cond = NodeUtil.getCondition(n);
+      Node cond = ExpUtil.getCondition(n);
       boolean complexCond = !isVerySimple(cond);
       //complexCond = false; // %%% Disabling this
 
@@ -1477,7 +1477,7 @@ public class JSStatementTransform extends JSTransform {
 
     protected boolean transformIf(NodeTraversal t, Node n, Node parent) {
       assert n.isIf();
-      Node cond = NodeUtil.getCondition(n);
+      Node cond = ExpUtil.getCondition(n);
       if (isVerySimple(cond)) return false;
       return transformGeneric(t, cond, n);
     }
@@ -1493,10 +1493,10 @@ public class JSStatementTransform extends JSTransform {
       int typ = n.getType();
       switch (typ) {
         case Token.FOR:
-          if (NodeUtil.isStandardFor(n)) {
+          if (ExpUtil.isStandardFor(n)) {
             return transformStandardFor(t, n, parent);
           } else {
-            assert NodeUtil.isForIn(n) : "Unknown type of FOR block: " + n;
+            assert ExpUtil.isForIn(n) : "Unknown type of FOR block: " + n;
             return transformForIn(t, n, parent);
           }
         case Token.IF:
@@ -1532,7 +1532,7 @@ public class JSStatementTransform extends JSTransform {
             flagChange(true);
           }
         }
-      } else if (NodeUtil.isControl(n)) {
+      } else if (ExpUtil.isControl(n)) {
         if (transformControl(t, n, parent)) {
           flagChange(true);
         }

@@ -36,6 +36,6 @@ public interface CheckManager {
   public abstract Exp getBasePolicyCode();
 
   // %%% Hacky
-  public abstract Set<PolicyType> getPolicyTypes(String check);
+  public abstract Set<PredicateType> getPredicateTypes(String check);
 }
 

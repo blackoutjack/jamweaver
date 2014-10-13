@@ -22,7 +22,7 @@ import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Semantics;
 import edu.wisc.cs.jam.Policy;
-import edu.wisc.cs.jam.PolicyType;
+import edu.wisc.cs.jam.PredicateType;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.RuntimeCheck;
 import edu.wisc.cs.jam.ExpSymbol;
@@ -31,8 +31,8 @@ import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.Transform;
 import edu.wisc.cs.jam.Dbg;
+import edu.wisc.cs.jam.StringUtil;
 
-import edu.wisc.cs.jam.js.NodeUtil;
 import edu.wisc.cs.jam.js.JSExp;
 
 // This class coordinates the creation and composition of all the
@@ -322,7 +322,7 @@ public class TxManager implements CheckManager, Callback {
       if (objstr.equals(hdlrbank)) {
         Exp prop = ispect.getChild(1);
         if (prop.isString()) {
-          String propstr = NodeUtil.unquote(prop.toCode());
+          String propstr = prop.getString();
           if (propstr.equals(JAMConfig.COMPREHENSIVE_INTROSPECTOR)) {
             introspect = introspectorMap.getComprehensive();
           } else if (propstr.startsWith(JAMConfig.INTROSPECTOR_PREFIX)) {
@@ -522,7 +522,7 @@ public class TxManager implements CheckManager, Callback {
     return JSExp.create(sm, node);
   }
 
-  public Set<PolicyType> getPolicyTypes(String ispectId) {
+  public Set<PredicateType> getPredicateTypes(String ispectId) {
     Introspector i = null;
     if (introspectorNameMap.containsKey(ispectId)) {
       i = introspectorNameMap.get(ispectId);
@@ -532,7 +532,7 @@ public class TxManager implements CheckManager, Callback {
         i = introspectorMap.getComprehensive();
       } else {
         List<Policy.Edge> edges = policy.getEdgesByHash(hash);
-        if (edges == null) {
+        if (edges == null || edges.size() == 0) {
           Dbg.warn("No edges for hash: " + hash);
           return null;
         }
@@ -543,7 +543,7 @@ public class TxManager implements CheckManager, Callback {
       Dbg.warn("No introspector found for id: " + ispectId);
       return null;
     }
-    return i.getPolicyTypes();
+    return i.getPredicateTypes();
   }
 
   // This class effectively maps a set of policy edges to the

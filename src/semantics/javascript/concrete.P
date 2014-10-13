@@ -15,7 +15,7 @@ env_init(HP,LP) :-
   enter_concrete_mode,
 
 	H0='H',
-  InitStack=['#Global','&null'],
+  InitStack=['#Global','#null'],
 
   %%% Replace @ReturnVal eventually
 	heapprop(H0,'#Global','@ReturnVal','NONE',H1,_),
@@ -24,7 +24,7 @@ env_init(HP,LP) :-
 	new_arguments('0',[],'#Global',ArgsObj),
 	alloc(H1,ArgsObj,H2,ArgsAddr),
 	% Create the new activation record.
-	new_activation(ArgsAddr,'#Global','&null',Act),
+	new_activation(ArgsAddr,'#Global','#null',Act),
 	alloc(H2,Act,H3,_),
 	% Initialize all scope-local variables.
 	hasprop('@Global','@Vars',Vars),

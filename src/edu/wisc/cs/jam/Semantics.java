@@ -19,4 +19,5 @@ public interface Semantics {
 	public void setPropertiesOfInterest(List<PolicyPath> paths);
   public void addToNamesOfInterest(Predicate p);
   public void load();
+  public Boolean maybePossibleTransition(DataTransition trans);
 }

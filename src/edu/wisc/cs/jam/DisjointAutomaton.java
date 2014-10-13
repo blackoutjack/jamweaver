@@ -67,9 +67,6 @@ public class DisjointAutomaton extends RelationAutomaton {
 
   protected void loadQueryBatch(QueryMap queryMap, List<ExpSymbol> syms, PredicateValue pv) {
 
-    assert !pv.isPositivePolicyValue() :
-      "Positive policy value submitted to loadQueryBatch";
-
     DataState preState = new DataState();
     preState.addValue(pv);
 
@@ -81,7 +78,7 @@ public class DisjointAutomaton extends RelationAutomaton {
 
       // Get the relation that we'll be altering.
       Relation rel = null;
-      if (pv.isPolicyValue()) {
+      if (pv.isEventValue()) {
         rel = getRelation(pv.getPredicate(), sym);
       } else {
         rel = getRelation(null, sym);
@@ -101,7 +98,7 @@ public class DisjointAutomaton extends RelationAutomaton {
         c = removeEdgeOrReturnClause(rel, sym, preState, postState);
       }
 
-      if (c != null) {
+      if (!JAM.Opts.syntaxOnly && c != null) {
         // We can't tell offhand whether the transition is valid,
         // so add it to the batch to send to the semantics.
         DataTransition tran = new DataTransition(rel, preState, sym, postState);
@@ -110,7 +107,6 @@ public class DisjointAutomaton extends RelationAutomaton {
 
       // Match the pre-state with both itself or its negation in the
       // post-state, for learned predicates.
-      //postState.replaceValue(post.getNegation());
       postState = new DataState();
       postState.addValue(pv.getNegation());
 
@@ -127,7 +123,7 @@ public class DisjointAutomaton extends RelationAutomaton {
         c = removeEdgeOrReturnClause(rel, sym, preState, postState);
       }
 
-      if (c != null) {
+      if (!JAM.Opts.syntaxOnly && c != null) {
         // We can't tell offhand whether the transition is valid,
         // so add it to the batch to send to the semantics.
         DataTransition tran = new DataTransition(rel, preState, sym, postState);
@@ -221,7 +217,8 @@ public class DisjointAutomaton extends RelationAutomaton {
           // predicate is ruled out, or if we need to make a query.
           Clause c0 = removeEdgeOrReturnClause(rel, sym, preStateCorrelate0, postState);
 
-          if (c0 != null) {
+          // With the |syntaxOnly| option, skip further edge removal.
+          if (!JAM.Opts.syntaxOnly && c0 != null) {
             // Associate the clause and it's meaning.
             DataTransition tran0 = new DataTransition(rel, preStateCorrelate0, sym, postState);
             mapClauseToTransition(queryMap, c0, tran0);
@@ -237,7 +234,8 @@ public class DisjointAutomaton extends RelationAutomaton {
           // ExpSymbol.
           Clause c1 = removeEdgeOrReturnClause(rel, sym, preStateCorrelate1, postState);
 
-          if (c1 != null) {
+          // With the |syntaxOnly| option, skip further edge removal.
+          if (!JAM.Opts.syntaxOnly && c1 != null) {
             // Associate the clause and it's meaning.
             DataTransition tran1 = new DataTransition(rel, preStateCorrelate1, sym, postState);
             mapClauseToTransition(queryMap, c1, tran1);
@@ -374,7 +372,7 @@ public class DisjointAutomaton extends RelationAutomaton {
 
             if (remove) {
               rel.removeEdges(preState, postState);
-            } else if (post.isPolicyValue()) {
+            } else if (post.isEventValue()) {
               // For each learned predicate, test whether the policy 
               // transition is precluded when the negative policy
               // predicate is conjoined with a value for the learned

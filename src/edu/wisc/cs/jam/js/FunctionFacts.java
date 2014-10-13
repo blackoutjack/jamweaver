@@ -68,8 +68,6 @@ public class FunctionFacts {
 
       Node root = sm.getRootNode();
       Compiler comp = sm.getCompiler();
-      //NodeUtil.dumpAST(root);
-      //NodeUtil.dumpCallGraph(cg);
 
       NodeTraversal.traverse(comp, root, new CallTargetVisitor());
       NodeTraversal.traverse(comp, root, new ScopeGatherer());
@@ -122,9 +120,9 @@ public class FunctionFacts {
     @Override 
     public void visit(NodeTraversal t, Node n, Node parent) {
 
-      if (NodeUtil.isAssign(n) || NodeUtil.isVarInitializer(n)) {
-        String lhs = getCode(NodeUtil.getAssignLHS(n));
-        String rhs = getCode(NodeUtil.getAssignRHS(n));
+      if (ExpUtil.isAssign(n) || ExpUtil.isVarInitializer(n)) {
+        String lhs = getCode(ExpUtil.getAssignLHS(n));
+        String rhs = getCode(ExpUtil.getAssignRHS(n));
 
         List<Function> targets = new ArrayList<Function>(getPossibleTargetsOfName(rhs));
         if(targets.size() > 0) {
@@ -194,10 +192,10 @@ public class FunctionFacts {
       }
 
       if (s == null) {
-        ret += "'&null'";        
+        ret += "'#null'";        
       } else {
         Node n = s.getRootNode();
-        if (NodeUtil.isFunction(n)) {
+        if (ExpUtil.isFunction(n)) {
           Function f = cg.getFunctionForAstNode(n);
           assert f != null;
           ret += "'##" + f.getName() + "'";
@@ -214,7 +212,7 @@ public class FunctionFacts {
   protected String getParentScope(Function func) {
     Scope parent = scopeChainMap.get(func).get(0);
     Node n = parent.getRootNode();
-    if (NodeUtil.isFunction(n)) {
+    if (ExpUtil.isFunction(n)) {
       Function f = cg.getFunctionForAstNode(n);
       assert f != null;
       return f.getName();
@@ -231,7 +229,7 @@ public class FunctionFacts {
     // Add the function definition for the global function.
     ret.append("fundef('@Global',[],");
     ret.append(varstr);
-    ret.append(",'&null','#Global',[],[],'@Global').\n");
+    ret.append(",'#null','#Global',[],[],'@Global').\n");
 
     for (String varname : varlist) {
       ret.append("varlookup('\"");
@@ -513,7 +511,7 @@ public class FunctionFacts {
         chain.add(null);
         scopeChainMap.put(cg.getMainFunction(), chain);
         scopeMap.put(cg.getMainFunction(), t.getScope());
-      } else if (NodeUtil.isFunction(n)) {
+      } else if (ExpUtil.isFunction(n)) {
         List<Scope> chain = new ArrayList<Scope>();
 
         // The null scope will be added to the top of the chain.

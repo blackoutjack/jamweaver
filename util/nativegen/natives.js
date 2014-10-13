@@ -175,6 +175,8 @@ var LOCATION_MAP = [
   "CharacterData",
   "ProcessingInstruction",
   "ImageData",
+  "ActiveXObject",
+  "SWFObject",
  
   // Non-existent in Firefox 17.0.3.esr.
   //"DOMImplementationList",
@@ -343,15 +345,15 @@ var PropertyInfo = function(info, name) {
     var output = "";
     var val = this.value;
     if (val === undefined) {
-      val = "&undefined";  
+      val = "#undefined";  
     } else if (val === null) {
-      val = "&null";
-    } else if (val === NaN) {
-      val = "&NaN";
+      val = "#null";
+    } else if (Number.isNaN(val)) {
+      val = "#NaN";
     } else if (val === Infinity) {
-      val = "&Infinity";
+      val = "#Infinity";
     } else if (val === -Infinity) {
-      val = "-&Infinity";
+      val = "#-Infinity";
     } else if (typeof val == "string") {
       // %%% Good enough escaping?
       val = '"' + val.replace(/\n/g, "\\n").replace(/"/g, "\\\"") + '"';

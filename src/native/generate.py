@@ -59,6 +59,8 @@ SYMB_PROP_LIST_PATH = os.path.join(NATIVE_PATH, 'symprops.list')
 VARLEN_LIST_PATH = os.path.join(NATIVE_PATH, 'varargs.list')
 TYPE_LIST_PATH = os.path.join(NATIVE_PATH, 'types.list')
 
+PRIMITIVES = ['#undefined', '#null', '#Infinity', '#-Infinity', '#NaN']
+
 # A list of native functions.
 # addr => { name, length, extra }
 functions = {}
@@ -365,15 +367,17 @@ def load_props_from_file(propfile, outfl):
 
       # Any objects should be mapped.
       if vals['value'][0] == '#':
-        # %%% Kludgy
-        # Copy the vals array and set the addr and obj to that of the
-        # value, so it can be passed to |map_native|.
-        valscpy = dict(vals)
-        valscpy['addr'] = vals['value']
-        valscpy['obj'] = valscpy['addr'].replace('#', '@')
-        map_native(outfl, valscpy['addr'], valscpy['obj'])
-        if valscpy['addr'] in functions:
-          print_function_props(outfl, valscpy)
+        # %%% Use config
+        if vals['value'] not in PRIMITIVES:
+          # %%% Kludgy
+          # Copy the vals array and set the addr and obj to that of the
+          # value, so it can be passed to |map_native|.
+          valscpy = dict(vals)
+          valscpy['addr'] = vals['value']
+          valscpy['obj'] = valscpy['addr'].replace('#', '@')
+          map_native(outfl, valscpy['addr'], valscpy['obj'])
+          if valscpy['addr'] in functions:
+            print_function_props(outfl, valscpy)
 
   # end load_props_from_file
 
@@ -404,8 +408,11 @@ def print_dat():
   for typ in types:
     print >> outfl, typ, "Type"
 
-  print >> outfl, "&undefined", "Undefined"
-  print >> outfl, "&null", "Null"
+  print >> outfl, "#undefined", "Undefined"
+  print >> outfl, "#null", "Null"
+  print >> outfl, "#Infinity", "Number"
+  print >> outfl, "#-Infinity", "Number"
+  print >> outfl, "#NaN", "Number"
 
   outfl.close()
   # end load_dat
@@ -426,11 +433,11 @@ def print_yices():
       print >> outfl, "(assert (IsNativeFun %s))" % loc
   for typ in types:
     print >> outfl, "(define %s::int)" % typ
+  for prim in PRIMITIVES:
+    print >> outfl, "(define %s::int)" % prim
 
   # Special Symbolic type
   print >> outfl, "(define Symbolic::int)"
-  print >> outfl, "(define &undefined::int)"
-  print >> outfl, "(define &null::int)"
 
   print >> outfl, '''
 ;; Assure that all defined locations are distinct.
@@ -450,13 +457,25 @@ def print_yices():
   print >> outfl, "(= (uniq Symbolic) %d)" % num
   num += 1
 
-  print >> outfl, "(= (uniq &undefined) %d)" % num
+  print >> outfl, "(= (uniq #undefined) %d)" % num
   num += 1
-  print >> outfl, "(= (HasType &undefined) Undefined)"
+  print >> outfl, "(= (HasType #undefined) Undefined)"
 
-  print >> outfl, "(= (uniq &null) %d)" % num
+  print >> outfl, "(= (uniq #null) %d)" % num
   num += 1
-  print >> outfl, "(= (HasType &null) Null)"
+  print >> outfl, "(= (HasType #null) Null)"
+
+  print >> outfl, "(= (uniq #Infinity) %d)" % num
+  num += 1
+  print >> outfl, "(= (HasType #Infinity) Number)"
+
+  print >> outfl, "(= (uniq #-Infinity) %d)" % num
+  num += 1
+  print >> outfl, "(= (HasType #-Infinity) Number)"
+
+  print >> outfl, "(= (uniq #NaN) %d)" % num
+  num += 1
+  print >> outfl, "(= (HasType #NaN) Number)"
 
   print >> outfl, "(= (uniq True) %d)" % num
   num += 1

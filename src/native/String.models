@@ -29,7 +29,7 @@ aexe(H,_,'#String#prototype#toString',This,_,H,Ret) :-
 	hasprop(O,'@Value',Ret).
 
 %%% TODO throw
-aexe(H,_,'#String#prototype#valueOf',This,_,H,'&undefined') :- 
+aexe(H,_,'#String#prototype#valueOf',This,_,H,'#undefined') :- 
 	type(This,T),
 	T\='String',
 	maps(H,This,O),
@@ -180,8 +180,8 @@ aexe(H,_,'#String#prototype#substring',This,Args,HP,Ret) :-
 	% Via testing in d8, return value has type string, not object.
 	symbolic(Ret,'String'),HP=H.
 
-substring_end(H,_,'&undefined',Len,H,Len).
-substring_end(H,L,V,_,HP,Ret) :- V\='&undefined',tonumber(H,L,V,HP,Ret).
+substring_end(H,_,'#undefined',Len,H,Len).
+substring_end(H,L,V,_,HP,Ret) :- V\='#undefined',tonumber(H,L,V,HP,Ret).
 
 clamp(N,Min,Max,Ret) :- max(N,Min,T),min(T,Max,Ret).
 

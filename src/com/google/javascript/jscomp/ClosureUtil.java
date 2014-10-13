@@ -1,6 +1,7 @@
 package com.google.javascript.jscomp;
 
 import com.google.javascript.jscomp.Compiler;
+import com.google.javascript.jscomp.NodeUtil;
 import com.google.javascript.rhino.Node;
 
 public class ClosureUtil {
@@ -16,5 +17,9 @@ public class ClosureUtil {
   // Returns a canonical representation of the node AST.
   public static String codeFromNode(Node n) {
     return compiler.toSource(n);
+  }
+
+  public static Double getNumberValue(Node n) {
+    return NodeUtil.getNumberValue(n);
   }
 }

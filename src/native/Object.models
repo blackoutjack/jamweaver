@@ -26,7 +26,7 @@ aexe(H,_,'#Object',This,Args,H,This) :-
 
 % Object.getPrototypeOf
 % TODO throw
-aexe(H,_,'#Object#getPrototypeOf',_,Args,H,'&undefined') :- 
+aexe(H,_,'#Object#getPrototypeOf',_,Args,H,'#undefined') :- 
 	Args=[X|_],
 	not type(X,'Object').
 
@@ -70,7 +70,7 @@ aexe(H,L,'#Object#prototype#isPrototypeOf',This,Args,HP,P) :-
 	hasprop(OV,'@Prototype',OVP),
 	isprotof_aux(HP,L1,OVP,P).
 
-isprotof_aux(_,_,'&null','false').
+isprotof_aux(_,_,'#null','false').
 isprotof_aux(_,L1,L1,'true').
 isprotof_aux(H,L1,V,P) :- 
 	maps(H,V,O),

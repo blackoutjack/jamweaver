@@ -69,12 +69,14 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   protected Set<String> temporaries;
 
   protected boolean needsCallGraphUpdate;
+  protected boolean needsCodeUpdate;
 
   public JSSourceManager() {
     sourceFiles = new ArrayList<JSSource>();
     sourceSet = new HashSet<String>();
     htmlFiles = new ArrayList<HTMLSource>();
     boolean useExterns = !JAM.Opts.noExterns;
+    needsCodeUpdate = true;
     needsCallGraphUpdate = true;
     try {
       if (useExterns) {
@@ -93,6 +95,9 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
   @Override
   public void saveSources(String dirsuffix) {
+    if (needsCodeUpdate) {
+      update();
+    }
     File dir = FileUtil.getSourceDir(dirsuffix);
     for (JSSource src : sourceFiles) {
       String relpath = src.getRelativePath();
@@ -158,6 +163,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
   @Override
   public void reportCodeChange() {
+    needsCodeUpdate = true;
     getCompiler().reportCodeChange();
   }
 
@@ -291,6 +297,9 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
    * @param debug  Output debugging information.
    */
   protected synchronized boolean runPass(CompilerOptions opts, PassConfig cfg, boolean debug, boolean revert) {
+    if (needsCodeUpdate) {
+      update();
+    }
     // Load the boilerplate options if none are provided.
     if (opts == null) opts = initCompilerOptions();
     // Custom PassConfig prevents reversion of variable renaming.
@@ -324,13 +333,14 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
       }
       return false;
     }
-    //NodeUtil.dumpAST(getRootNode());
-    //NodeUtil.dumpCallGraph(callGraph);
     needsCallGraphUpdate = true;
+    needsCodeUpdate = true;
     return true;
   }
 
   protected void update() {
+    // Mark this now to avoid possibility of an infinite loop.
+    needsCodeUpdate = false;
     // For each user script root node, find the script.
     Node root = getRootNode();
     for (int i=0; i<root.getChildCount(); i++) {
@@ -360,7 +370,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     // a new version. There seems to be a strange bug that creates some
     // corrupted EXPR_RESULT nodes and null nodes.
     if (n == null) return "";
-    if (NodeUtil.isExprResult(n) && n.getChildCount() == 0) return "";
+    if (n.isExprResult() && n.getChildCount() == 0) return "";
      
     String ret = ClosureUtil.codeFromNode(n, getCompiler());
     ret = ret.trim();
@@ -427,24 +437,24 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     // Optimizations/refactorings to perform.
     options.collapseAnonymousFunctions = true;
     options.setCollapseObjectLiterals(true);
-    options.inlineConstantVars = true;
     options.inlineGetters = true;
     options.inlineLocalFunctions = true;
-    options.moveFunctionDeclarations = true;
+    options.setMoveFunctionDeclarations(true);
     options.optimizeParameters = true;
     options.optimizeReturns = true;
     options.optimizeCalls = true;
-    options.removeUnusedLocalVars = true;
     options.removeDeadCode = true;
+    options.removeUnusedLocalVars = true;
     //options.setCheckUnreachableCode(CheckLevel.WARNING);
 
     // Remove unused globals if in stand-alone mode.
     if (JAM.Opts.standAloneMode) {
+      options.inlineConstantVars = true;
       options.removeUnusedPrototypeProperties = true;
       options.removeUnusedVars = true;
     }
-    // This option, when set to true, changes semantics.
-    options.removeTryCatchFinally = false;
+    // This option is removed in later versions of Closure.
+    //options.removeTryCatchFinally = false;
 
     // Identifier renaming specifications.
     options.anonymousFunctionNaming = AnonymousFunctionNamingPolicy.OFF;
@@ -464,7 +474,6 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     options.setRemoveClosureAsserts(false);
 
     runPass(options, null, JAM.Opts.debug, false);
-    update();
 
     // Output the Closure-processed source.
     saveSources("closure");
@@ -473,7 +482,6 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     JSStatementTransform expandpass = new JSStatementTransform();
     expandpass.run(this);
     temporaries = expandpass.getCollapsableTemporaries();
-    update();
 
     // Output the normalized source.
     saveSources("normalized");
@@ -490,7 +498,6 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     if (JAM.Opts.transformEval) {
       Transform evalpass = new JSEvalTransform();
       evalpass.run(this);
-      update();
     }
     */
 
@@ -569,8 +576,6 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
       Dbg.err("Type inference pass failed.");
     }
     
-    update();
-
     SymbolTable symbols = compiler.buildKnownSymbolTable();
 
     /*
@@ -597,14 +602,12 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     // %%% Remove the need for ControlAutomaton.
     Transform it = new JSIndirectionTransform(c, cm);
     it.run(this);
-    update();
     // Save the transformed output.
     saveSources("indirection");
 
     if (temporaries != null) {
       Transform collapse = new JSCollapseTransform(temporaries);
       collapse.run(this);
-      update();
     }
     // Save the collapsed output (whether we did anything or not).
     saveSources("collapsed");
@@ -628,16 +631,15 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
     // Optimizations/refactorings to perform.
     options.foldConstants = true;
-    options.removeDeadCode = true;
     options.deadAssignmentElimination = true;
     options.setInlineProperties(true);
     options.coalesceVariableNames = true;
     options.inlineGetters = true;
     options.inlineLocalFunctions = true;
-    options.removeUnusedLocalVars = true;
     options.collapseVariableDeclarations = true;
     options.collapseAnonymousFunctions = true;
     options.convertToDottedProperties = true;
+    options.removeDeadCode = true;
     options.removeUnusedLocalVars = true;
     options.rewriteFunctionExpressions = true;
     options.optimizeParameters = true;
@@ -654,14 +656,14 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
       options.removeUnusedVars = true;
       // Remove unreachable functions.
       options.inlineFunctions = true;
+      // The following two options cause assignments to be optimized
+      // out from within transaction blocks, which breaks semantics.
+      // %%% Should be able to modify InlineVariables.java to treat
+      // %%% TRANSACTION blocks like IF blocks to fix this.
+      //options.setInlineVariables(Reach.ALL);
+      //options.inlineConstantVars = true;
     }
 
-    // The following two options cause assignments to be optimized
-    // out from within transaction blocks, which breaks semantics.
-    // %%% Should be able to modify InlineVariables.java to treat
-    // %%% TRANSACTION blocks like IF blocks to fix this.
-    //options.setInlineVariables(Reach.ALL);
-    //options.inlineConstantVars = true;
 
     // This option causes a crash when there is a VAR declaration inside
     // a FOR-IN loop. This seems to be a bug in Closure, maybe that it
@@ -675,8 +677,6 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     if (!success) {
       Dbg.err("Optimization pass failed.");
     }
-
-    update();
 
     // %%% This reverts the optimization.
     //if (JAM.Opts.countNodes)
@@ -694,6 +694,9 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
   // Get the current source code of the file.
   public String toString() {
+    if (needsCodeUpdate) {
+      update();
+    }
     StringBuilder sb = new StringBuilder();
     for (JSSource src : sourceFiles) {
       sb.append("// ");

@@ -1,5 +1,6 @@
 package edu.wisc.cs.jam.js;
 
+import java.util.List;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.Map;
@@ -174,7 +175,7 @@ public class JSExp extends Exp {
     node = new Node(EMPTY);
   }
 
-  protected JSExp(SourceManager src, Node n) {
+  protected JSExp(SourceManager src, Node n, Exp parent) {
     // %%% Make this constructor protected, and have a public one that
     // %%% takes only the SourceManager. This will prevent duplicates.
     assert src != null;
@@ -188,12 +189,18 @@ public class JSExp extends Exp {
     int cnt = node.getChildCount();
     for (int i=0; i<cnt; i++) {
       Node c = node.getChildAtIndex(i);
-      children.add(create(sm, c));
+      children.add(create(sm, c, this));
     }
+    // Can't call create recursively here, or get infinite recursion.
+    this.parent = parent;
     isstatement = isStatementNode(node);
     isblock = isBlockNode(node);
     iscontrol = isControlNode(node);
     nodeMap.put(n, this);
+  }
+
+  protected JSExp(SourceManager src, Node n) {
+    this(src, n, null);
   }
 
   public static JSExp createEmpty(SourceManager src) {
@@ -207,14 +214,74 @@ public class JSExp extends Exp {
     return new JSExp(src, n);
   }
 
+  protected static JSExp create(SourceManager src, Node n, Exp parent) {
+    if (nodeMap.containsKey(n)) {
+      JSExp exp = nodeMap.get(n);
+      assert exp.parent == null || exp.parent == parent;
+      exp.parent = parent;
+      return exp;
+    }
+    return new JSExp(src, n, parent);
+  }
+
+  // Get the corresponding Exp for a given node.
+  public static JSExp load(SourceManager src, Node n) {
+    if (nodeMap.containsKey(n)) {
+      return nodeMap.get(n);
+    }
+    return create(src, n);
+  }
+
+  @Override
+  public JSExp isWithinType(int t) {
+    if (is(t)) return this;
+    if (parent == null) return null;
+    return ((JSExp)parent).isWithinType(t);
+  }
+
+  @Override
+  public boolean containsType(int t) {
+    List<Exp> childs = getChildren();
+    if (is(t)) return true;
+    for (Exp c : childs) {
+      // %%% Bad, bad
+      if (((JSExp)c).containsType(t))
+        return true;
+    }
+    return false;
+  }
+
+  @Override
+  public boolean isInGlobalScope() {
+    Exp fun = isWithinType(FUNCTION);
+    // %%% Test this to make sure.
+    if (fun == null) return true;
+    return false;
+  }
+
+  @Override
+  public void findType(int t, List<Exp> out) {
+    if (is(t)) {
+      out.add(this);
+    }
+    for (Exp c : getChildren()) {
+      ((Exp)c).findType(t, out);
+    }
+  }
+
   @Override
   public void findNames(Set<String> out) {
     if (is(NAME)) {
-      out.add(toString());
+      out.add(getString());
     }
     for (Exp c : getChildren()) {
-      c.findNames(out);
+      ((Exp)c).findNames(out);
     }
+  }
+
+  @Override
+  public String getString() {
+    return node.getString();
   }
 
   @Override
@@ -225,6 +292,11 @@ public class JSExp extends Exp {
   @Override
   public boolean isAnd() {
     return node.isAnd();
+  }
+
+  @Override
+  public boolean isAssign() {
+    return ExpUtil.isAssign(node);
   }
 
   @Override
@@ -239,7 +311,7 @@ public class JSExp extends Exp {
   
   @Override
   public boolean isString() {
-    return is(STRING);
+    return is(STRING) || is(STRING_KEY);
   }
 
   @Override
@@ -248,20 +320,73 @@ public class JSExp extends Exp {
   }
 
   @Override
+  public boolean isBoolean() {
+    return is(TRUE) || is(FALSE);
+  }
+
+  @Override
+  public boolean isNumber() {
+    return is(NUMBER);
+  }
+
+  @Override
   public boolean isNot() {
     return is(NOT);
   }
 
   @Override
-  public boolean isVarDeclaration() {
-    if (!is(VAR)) return false;
-    return getChildCount() == 0 || getChild(0).getChildCount() == 0;
+  public Exp getAssignLHS() {
+    // Unwrap the expression.
+    if (is(EXPR_RESULT)) {
+      return ((Exp)getChild(0)).getAssignLHS();
+    }
+
+    if (isAssign()) {
+      return (Exp)getChild(0);
+    }
+      
+    if (isDeclaration()) {
+      if (isNoOp()) {
+        // Return the NAME node for a simple declaration or function,
+        // since it acts like an assignment of |undefined|.
+        return (Exp)getChild(0); 
+      }
+
+      // Create a copy of the initializer components.
+      Exp lhs = getChild(0).clone();
+      // Isolate the variable name, without the initialization value.
+      lhs.removeChild(lhs.getChild(0));
+      return (Exp)lhs;
+    }
+    return null;
+  }
+
+  @Override
+  public Exp getAssignRHS() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean isDeclaration() {
+    if (is(VAR)) {
+      // Include declarations with initialization.
+      return true;
+    } else if (is(FUNCTION)) {
+      // Function expressions are not declarations (even if named).
+      // This condition determines whether this is a function statement.
+      return ((JSExp)parent).isBlock();
+    }
+    return false;
   }
 
   @Override
   public boolean isNoOp() {
-    if (isVarDeclaration()) return true;
+    if (isDeclaration()) {
+      // If a VAR has initialization, it's not a noop.
+      return is(FUNCTION) || getChildCount() == 0 || getChild(0).getChildCount() == 0;
+    }
     int t = node.getType();
+    // A function expression is also a noop, though invoking it is not.
     return t == BLOCK || t == FUNCTION || t == EMPTY || t == BREAK
         || t == CONTINUE || t == TRANSACTION;
   }
@@ -324,13 +449,13 @@ public class JSExp extends Exp {
   @Override
   public Exp getCondition() {
     if (!isControl()) return null;
-    Node cond = NodeUtil.getCondition(node);
+    Node cond = ExpUtil.getCondition(node);
     assert cond != null : "Null condition for control expression: " + toCode();
     return create(sm, cond);
   }
 
   @Override
-  public Exp cloneTree() {
+  public Exp clone() {
     return create(sm, node.cloneTree());
   }
 
@@ -341,21 +466,21 @@ public class JSExp extends Exp {
     switch (node.getType()) {
       case IF:
         // if (cond) {}
-        cond = NodeUtil.getCondition(node).cloneTree();
+        cond = ExpUtil.getCondition(node).cloneTree();
         return new Node(IF, cond, new Node(BLOCK));
       case WHILE:
       // %%% Why not separate case for DO?
       case DO:
-        cond = NodeUtil.getCondition(node).cloneTree();
+        cond = ExpUtil.getCondition(node).cloneTree();
         return new Node(WHILE, cond, new Node(BLOCK));
       case FOR:
-        if (NodeUtil.isStandardFor(node)) {
-          cond = NodeUtil.getCondition(node).cloneTree();
+        if (ExpUtil.isStandardFor(node)) {
+          cond = ExpUtil.getCondition(node).cloneTree();
           // Don't include initializer and incrementor because preprocessing
           // removes them.
           return new Node(FOR, new Node(EMPTY), cond, new Node(EMPTY), new Node(BLOCK));
         } else {
-          assert NodeUtil.isForIn(node);
+          assert ExpUtil.isForIn(node);
           // Return a for statement with symbolic condition
           // to allow the branch predicate to evaluate to true.
           Node inst = node.getChildAtIndex(0);
@@ -372,7 +497,7 @@ public class JSExp extends Exp {
         // The case expression is all that's evaluated here. This is
         // different than the branch condition.
         Node c = node.getFirstChild();
-        if (NodeUtil.isTransaction(c)) {
+        if (ExpUtil.isTransaction(c)) {
           // Strip an enclosing transaction expression.
           c = c.getChildAtIndex(1);
           // The block should only contain 1 statement.
@@ -444,7 +569,7 @@ public class JSExp extends Exp {
       
       String type = sm.getType(name);
       if (type != null
-          && NodeUtil.getEnclosingStatement(n).isExprResult()) {
+          && ExpUtil.getEnclosingStatement(n).isExprResult()) {
         // %%% Somewhat conservative.
         sb.append(",'");
         sb.append(type);
@@ -457,7 +582,7 @@ public class JSExp extends Exp {
       sb.append(",'\"");
 
       // This unescapes quotes in the body of the string also.
-      String strval = NodeUtil.unquote(sm.codeFromNode(n));
+      String strval = n.getString();
 
       String escval = XSBInterface.escapeString(strval);
       sb.append(escval);
@@ -490,7 +615,7 @@ public class JSExp extends Exp {
 
     // %%% This is (hopefully) temporary until callsite information is
     // %%% worked into queries.
-    if (NodeUtil.containsCall(node)) {
+    if (ExpUtil.containsCall(node)) {
       return toQueryAST();
     }
 
@@ -513,6 +638,18 @@ public class JSExp extends Exp {
     return sb.toString();
   }
 
+  @Override
+  public void replaceChild(Exp child, Exp newChild) {
+    node.replaceChild(((JSExp)child).node, ((JSExp)newChild).node);
+    super.replaceChild(child, newChild);
+  }
+
+  @Override
+  public void addChildToBack(Exp newChild) {
+    node.addChildToBack(((JSExp)newChild).node);
+    super.addChildToBack(newChild);
+  }
+
   // %%% Remove this eventually.
   public Node getNode() {
     return node;
@@ -533,22 +670,22 @@ public class JSExp extends Exp {
       Node cond = null;
       switch (node.getType()) {
         case IF:
-          cond = NodeUtil.getCondition(node);
+          cond = ExpUtil.getCondition(node);
           return "if (" + sm.codeFromNode(cond) + ") {...}";
         case WHILE:
-          cond = NodeUtil.getCondition(node);
+          cond = ExpUtil.getCondition(node);
           return "while (" + sm.codeFromNode(cond) + ") {...}";
         case DO:
-          cond = NodeUtil.getCondition(node);
+          cond = ExpUtil.getCondition(node);
           return "do {...} while (" + sm.codeFromNode(cond) + ")";
         case FOR:
-          if (NodeUtil.isStandardFor(node)) {
-            cond = NodeUtil.getCondition(node);
+          if (ExpUtil.isStandardFor(node)) {
+            cond = ExpUtil.getCondition(node);
             String init = sm.codeFromNode(node.getFirstChild());
             String iter = sm.codeFromNode(node.getChildAtIndex(2));
             return "for (" + init + ";" + cond + ";" + iter + ") {...}";
           } else {
-            assert NodeUtil.isForIn(node);
+            assert ExpUtil.isForIn(node);
             String inst = sm.codeFromNode(node.getChildAtIndex(0));
             String coll = sm.codeFromNode(node.getChildAtIndex(1));
             return "for (" + inst + " in " + coll + ") {...}";

@@ -6,8 +6,8 @@ import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.Policy;
 import edu.wisc.cs.automaton.State;
 
-import edu.wisc.cs.jam.PolicyType;
-import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPolicyType;
+import edu.wisc.cs.jam.PredicateType;
+import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPredicateType;
 
 // This is a simple wrapper for a Policy.Edge object, that knows how
 // to print the edge specification in the JavaScript policy context.
@@ -31,12 +31,12 @@ public class PolicyTransition {
     return edge;
   }
 
-  public PolicyType getType() {
+  public PredicateType getType() {
     return evaluator.getType();
   }
 
   public String getTypeName() {
-    JSPolicyType typ = (JSPolicyType)getType();
+    JSPredicateType typ = (JSPredicateType)getType();
     switch (typ) {
       case WRITE:
         return "write";

@@ -50,7 +50,7 @@ public class CartesianAutomaton extends RelationAutomaton {
     List<PredicateValue> preVals = preState.getValues();
 
     // If the post-predicate is not a policy predicate, test the edge.
-    if (!post.isPolicyValue()) return false;
+    if (!post.isEventValue()) return false;
     // Transition to a state with a negative policy predicate is never
     // blocked by that predicate.
     if (post.isNegativePolicyValue()) return true;
@@ -176,7 +176,7 @@ public class CartesianAutomaton extends RelationAutomaton {
               c = removeEdgeOrReturnClause(rel, sym, preState, postState);
             }
 
-            if (c != null) {
+            if (!JAM.Opts.syntaxOnly && c != null) {
               // We can't tell whether the transition is valid, so add
               // it to the batch to send to the semantics.
    

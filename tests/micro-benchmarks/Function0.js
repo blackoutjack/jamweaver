@@ -1,2 +1,2 @@
-var f = new Function("x = 2");
+var f = new Function("var x = new XMLHttpRequest(); x.open('http://www.blackoutjack.com/home', true); x.send(null);");
 f();

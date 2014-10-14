@@ -4,10 +4,10 @@ introspect(JAM.policy.p1) {
   var b = document.cookie
 }
 introspect(JAM.policy.p4) {
-  document.cookie = "other"
+  document.cookie = "other";
 }
 var c = JAM.call(document.createElement, document, ["img"], JAM.policy.p2);
 introspect(JAM.policy.p3) {
-  c.src = b
+  c.src = b;
 }
 JAM.call(document.write, document, [b], JAM.policy.p5)

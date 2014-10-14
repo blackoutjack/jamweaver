@@ -1,6 +1,6 @@
 // commaCall0.js
 function g() {
-  return 2
+  return 2;
 }
 f = g;
 0;

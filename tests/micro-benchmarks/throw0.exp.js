@@ -1,2 +1,2 @@
 // throw0.js
-throw"exception!"
+throw "exception!"

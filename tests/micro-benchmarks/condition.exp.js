@@ -1,5 +1,5 @@
 // condition.js
 var P = false;
-if(P) {
-  x = 2
+if (P) {
+  x = 2;
 }

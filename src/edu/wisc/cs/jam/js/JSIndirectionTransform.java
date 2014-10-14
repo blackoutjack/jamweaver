@@ -243,9 +243,6 @@ public class JSIndirectionTransform extends JSTransform {
       // Higher-order scripts need at least 1 argument to do anything.
       if (callNode.getChildCount() > 1) {
         String nodecode = sm.codeFromNode(tgtNode);
-        if (nodecode.indexOf("getTime") > -1) {
-          Dbg.dbg("CONSERVATIVE: " + nodecode);
-        }
         conservativeCalls.add(nodecode);
       }
     }
@@ -259,9 +256,6 @@ public class JSIndirectionTransform extends JSTransform {
           Node tgtNode = callNode.getFirstChild();
           if (callNode.getChildCount() > 1) {
             String nodecode = sm.codeFromNode(tgtNode);
-            if (nodecode.indexOf("getTime") > -1) {
-              Dbg.dbg("DYNAMIC: " + nodecode);
-            }
             dynamicCalls.add(nodecode);
           }
         }
@@ -277,11 +271,9 @@ public class JSIndirectionTransform extends JSTransform {
     Dbg.out("Property writes transformed: " + propertyWriteTransformCnt, 1);
     Dbg.out("Property reads transformed: " + propertyReadTransformCnt, 1);
   
-    if (JAM.Opts.countNodes) {
-      FileUtil.writeToMain("callsites-indirected:" + callTransformCnt + "\n", JAMConfig.INFO_FILENAME, true);
-      FileUtil.writeToMain("property-write-indirection:" + propertyWriteTransformCnt + "\n", JAMConfig.INFO_FILENAME, true);
-      FileUtil.writeToMain("property-read-indirection:" + propertyReadTransformCnt + "\n", JAMConfig.INFO_FILENAME, true);
-    }
+    FileUtil.writeToMain("callsites-indirected:" + callTransformCnt + "\n", JAMConfig.INFO_FILENAME, true);
+    FileUtil.writeToMain("property-write-indirection:" + propertyWriteTransformCnt + "\n", JAMConfig.INFO_FILENAME, true);
+    FileUtil.writeToMain("property-read-indirection:" + propertyReadTransformCnt + "\n", JAMConfig.INFO_FILENAME, true);
   }
 
   // Create an array literal holding the call receiver, followed by
@@ -630,6 +622,13 @@ public class JSIndirectionTransform extends JSTransform {
       // Don't descend into the introspector.
       if (n == ispect) {
         return false;
+      }
+      // Or nested introspectors.
+      // %%% What if these were part of the original program?
+      if (ExpUtil.isTransaction(parent)) {
+        if (n == parent.getFirstChild()) {
+          return false;
+        }
       }
       return true;
     }

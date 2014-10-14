@@ -98,8 +98,7 @@ public class JSControlStructure extends ControlStructure {
   protected void load() {
     loadCallGraph();
 
-    if (JAM.Opts.countNodes)
-      FileUtil.writeToMain("allFunctions:" + allFunctions.size() + "\nallCallsites:" + allCallsites.size() + "\n", JAMConfig.INFO_FILENAME, true);
+    FileUtil.writeToMain("allFunctions:" + allFunctions.size() + "\nallCallsites:" + allCallsites.size() + "\n", JAMConfig.INFO_FILENAME, true);
 
     Node root = sm.getRootNode();
     Node externs = sm.getExterns();

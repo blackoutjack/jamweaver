@@ -1,64 +1,55 @@
 // octane-zlib.js
 function v20(runner$$2) {
   function RunNextSetup() {
-    if(index$$40 < length$$12) {
+    if (index$$40 < length$$12) {
       try {
-        var v144 = suite$$1.benchmarks;
-        introspect(JAM.policy.p1) {
-          var v21 = v144[index$$40]
-        }
-        v21.Setup()
-      }catch(e$$4) {
-        JAM.call(suite$$1.NotifyError, suite$$1, [e$$4]);
-        return null
+        var v21 = suite$$1.benchmarks[index$$40];
+        JAM.call(v21.Setup, v21, [], JAM.policy.p1);
+      } catch (e$$4) {
+        JAM.call(suite$$1.NotifyError, suite$$1, [e$$4], JAM.policy.p1);
+        return null;
       }
-      return RunNextBenchmark
+      return RunNextBenchmark;
     }
-    suite$$1.NotifyResult();
-    return null
+    JAM.call(suite$$1.NotifyResult, suite$$1, [], JAM.policy.p1);
+    return null;
   }
   function RunNextBenchmark() {
     try {
-      var v145 = suite$$1.benchmarks;
-      introspect(JAM.policy.p1) {
-        var v23 = v145[index$$40]
-      }
-      data$$20 = JAM.call(suite$$1.RunSingleBenchmark, suite$$1, [v23, data$$20])
-    }catch(e$$5) {
-      JAM.call(suite$$1.NotifyError, suite$$1, [e$$5]);
-      return null
+      data$$20 = JAM.call(suite$$1.RunSingleBenchmark, suite$$1, [suite$$1.benchmarks[index$$40], data$$20], JAM.policy.p1);
+    } catch (e$$5) {
+      JAM.call(suite$$1.NotifyError, suite$$1, [e$$5], JAM.policy.p1);
+      return null;
     }
     var v24;
-    if(data$$20 == null) {
-      v24 = RunNextTearDown
-    }else {
-      v24 = RunNextBenchmark()
+    if (data$$20 == null) {
+      v24 = RunNextTearDown;
+    } else {
+      v24 = RunNextBenchmark();
     }
-    return v24
+    return v24;
   }
   function RunNextTearDown() {
     try {
       var v147 = suite$$1.benchmarks;
       var v148 = index$$40;
       index$$40 = index$$40 + 1;
-      introspect(JAM.policy.p1) {
-        var v25 = v147[v148]
-      }
-      v25.TearDown()
-    }catch(e$$6) {
-      JAM.call(suite$$1.NotifyError, suite$$1, [e$$6]);
-      return null
+      var v25 = v147[v148];
+      JAM.call(v25.TearDown, v25, [], JAM.policy.p1);
+    } catch (e$$6) {
+      JAM.call(suite$$1.NotifyError, suite$$1, [e$$6], JAM.policy.p1);
+      return null;
     }
-    return RunNextSetup
+    return RunNextSetup;
   }
-  BenchmarkSuite.ResetRNG();
+  JAM.call(BenchmarkSuite.ResetRNG, BenchmarkSuite, [], JAM.policy.p1);
   this.results = [];
   this.runner = runner$$2;
   var length$$12 = this.benchmarks.length;
   var index$$40 = 0;
   var suite$$1 = this;
   var data$$20;
-  return RunNextSetup()
+  return RunNextSetup();
 }
 function v19(benchmark$$1, data$$18) {
   function Measure(data$$19) {
@@ -66,257 +57,241 @@ function v19(benchmark$$1, data$$18) {
     var start$$4 = new Date;
     var i$$5 = 0;
     var v149;
-    if(doDeterministic$$1) {
-      v149 = i$$5 < benchmark$$1.deterministicIterations
-    }else {
-      v149 = elapsed < 1E3
+    if (doDeterministic$$1) {
+      v149 = i$$5 < benchmark$$1.deterministicIterations;
+    } else {
+      v149 = elapsed < 1E3;
     }
     var v28 = v149;
-    for(;v28;) {
-      benchmark$$1.run();
+    for (;v28;) {
+      JAM.call(benchmark$$1.run, benchmark$$1, [], JAM.policy.p1);
       elapsed = new Date - start$$4;
       i$$5 = i$$5 + 1;
       var v150;
-      if(doDeterministic$$1) {
-        v150 = i$$5 < benchmark$$1.deterministicIterations
-      }else {
-        v150 = elapsed < 1E3
+      if (doDeterministic$$1) {
+        v150 = i$$5 < benchmark$$1.deterministicIterations;
+      } else {
+        v150 = elapsed < 1E3;
       }
-      v28 = v150
+      v28 = v150;
     }
-    if(data$$19 != null) {
+    if (data$$19 != null) {
       data$$19.runs = data$$19.runs + i$$5;
-      data$$19.elapsed = data$$19.elapsed + elapsed
+      data$$19.elapsed = data$$19.elapsed + elapsed;
     }
-    return
+    return;
   }
   var config = BenchmarkSuite.config;
   var v30;
-  if(config.doWarmup !== undefined) {
-    v30 = config.doWarmup
-  }else {
-    v30 = benchmark$$1.doWarmup
+  if (config.doWarmup !== undefined) {
+    v30 = config.doWarmup;
+  } else {
+    v30 = benchmark$$1.doWarmup;
   }
   var doWarmup$$1 = v30;
   var v31;
-  if(config.doDeterministic !== undefined) {
-    v31 = config.doDeterministic
-  }else {
-    v31 = benchmark$$1.doDeterministic
+  if (config.doDeterministic !== undefined) {
+    v31 = config.doDeterministic;
+  } else {
+    v31 = benchmark$$1.doDeterministic;
   }
   var doDeterministic$$1 = v31;
   var v155 = !doWarmup$$1;
-  if(v155) {
-    v155 = data$$18 == null
+  if (v155) {
+    v155 = data$$18 == null;
   }
-  if(v155) {
-    data$$18 = {runs:0, elapsed:0}
+  if (v155) {
+    data$$18 = {runs:0, elapsed:0};
   }
-  if(data$$18 == null) {
+  if (data$$18 == null) {
     Measure(null);
-    return{runs:0, elapsed:0}
-  }else {
+    return{runs:0, elapsed:0};
+  } else {
     Measure(data$$18);
-    if(data$$18.runs < benchmark$$1.minIterations) {
-      return data$$18
+    if (data$$18.runs < benchmark$$1.minIterations) {
+      return data$$18;
     }
     var usec = data$$18.elapsed * 1E3 / data$$18.runs;
     var v36;
-    if(benchmark$$1.rmsResult != null) {
-      v36 = benchmark$$1.rmsResult()
-    }else {
-      v36 = 0
+    if (benchmark$$1.rmsResult != null) {
+      v36 = JAM.call(benchmark$$1.rmsResult, benchmark$$1, [], JAM.policy.p1);
+    } else {
+      v36 = 0;
     }
     var rms = v36;
-    JAM.call(this.NotifyStep, this, [new BenchmarkResult(benchmark$$1, usec, rms)]);
-    return null
+    JAM.call(this.NotifyStep, this, [new BenchmarkResult(benchmark$$1, usec, rms)], JAM.policy.p1);
+    return null;
   }
-  return
+  return;
 }
-function v18(error$$2) {
-  if(this.runner.NotifyError) {
+function v18(error$$1) {
+  if (this.runner.NotifyError) {
     var v39 = this.runner;
-    JAM.call(v39.NotifyError, v39, [this.name, error$$2])
+    JAM.call(v39.NotifyError, v39, [this.name, error$$1], JAM.policy.p1);
   }
-  if(this.runner.NotifyStep) {
+  if (this.runner.NotifyStep) {
     var v42 = this.runner;
-    JAM.call(v42.NotifyStep, v42, [this.name])
+    JAM.call(v42.NotifyStep, v42, [this.name], JAM.policy.p1);
   }
-  return
+  return;
 }
 function v17(runner$$1) {
-  BenchmarkSuite.scores.push(1);
-  if(runner$$1.NotifyResult) {
-    JAM.call(runner$$1.NotifyResult, runner$$1, [this.name, "Skipped"])
+  var v45 = BenchmarkSuite.scores;
+  JAM.call(v45.push, v45, [1], JAM.policy.p1);
+  if (runner$$1.NotifyResult) {
+    JAM.call(runner$$1.NotifyResult, runner$$1, [this.name, "Skipped"], JAM.policy.p1);
   }
-  return
+  return;
 }
 function v16() {
-  var mean = JAM.call(BenchmarkSuite.GeometricMeanTime, BenchmarkSuite, [this.results]);
+  var mean = JAM.call(BenchmarkSuite.GeometricMeanTime, BenchmarkSuite, [this.results], JAM.policy.p1);
   var score$$1 = this.reference[0] / mean;
-  BenchmarkSuite.scores.push(score$$1);
-  if(this.runner.NotifyResult) {
-    var formatted$$1 = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * score$$1]);
+  var v50 = BenchmarkSuite.scores;
+  JAM.call(v50.push, v50, [score$$1], JAM.policy.p1);
+  if (this.runner.NotifyResult) {
+    var formatted$$1 = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * score$$1], JAM.policy.p1);
     var v52 = this.runner;
-    JAM.call(v52.NotifyResult, v52, [this.name, formatted$$1])
+    JAM.call(v52.NotifyResult, v52, [this.name, formatted$$1], JAM.policy.p1);
   }
-  if(this.reference.length == 2) {
-    var meanLatency = JAM.call(BenchmarkSuite.GeometricMeanLatency, BenchmarkSuite, [this.results]);
-    if(meanLatency != 0) {
+  if (this.reference.length == 2) {
+    var meanLatency = JAM.call(BenchmarkSuite.GeometricMeanLatency, BenchmarkSuite, [this.results], JAM.policy.p1);
+    if (meanLatency != 0) {
       var scoreLatency = this.reference[1] / meanLatency;
-      BenchmarkSuite.scores.push(scoreLatency);
-      if(this.runner.NotifyResult) {
-        var formattedLatency = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * scoreLatency]);
+      var v57 = BenchmarkSuite.scores;
+      JAM.call(v57.push, v57, [scoreLatency], JAM.policy.p1);
+      if (this.runner.NotifyResult) {
+        var formattedLatency = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * scoreLatency], JAM.policy.p1);
         var v59 = this.runner;
-        JAM.call(v59.NotifyResult, v59, [this.name + "Latency", formattedLatency])
+        JAM.call(v59.NotifyResult, v59, [this.name + "Latency", formattedLatency], JAM.policy.p1);
       }
     }
   }
-  return
+  return;
 }
 function v15(result$$1) {
-  this.results.push(result$$1);
-  if(this.runner.NotifyStep) {
+  var v64 = this.results;
+  JAM.call(v64.push, v64, [result$$1], JAM.policy.p1);
+  if (this.runner.NotifyStep) {
     var v65 = this.runner;
-    JAM.call(v65.NotifyStep, v65, [result$$1.benchmark.name])
+    JAM.call(v65.NotifyStep, v65, [result$$1.benchmark.name], JAM.policy.p1);
   }
-  return
+  return;
 }
 function v14(value$$29) {
-  if(value$$29 > 100) {
-    return value$$29.toFixed(0)
-  }else {
-    return value$$29.toPrecision(3)
+  if (value$$29 > 100) {
+    return JAM.call(value$$29.toFixed, value$$29, [0], JAM.policy.p1);
+  } else {
+    return JAM.call(value$$29.toPrecision, value$$29, [3], JAM.policy.p1);
   }
-  return
+  return;
 }
 function v13(measurements$$1) {
   var log$$2 = 0;
   var hasLatencyResult = false;
   var i$$4 = 0;
   var v70 = i$$4 < measurements$$1.length;
-  for(;v70;) {
-    introspect(JAM.policy.p1) {
-      var v234 = measurements$$1[i$$4]
-    }
-    if(v234.latency != 0) {
-      var v172 = log$$2;
-      introspect(JAM.policy.p1) {
-        var v252 = measurements$$1[i$$4]
-      }
-      log$$2 = v172 + Math.log(v252.latency);
-      hasLatencyResult = true
+  for (;v70;) {
+    if (measurements$$1[i$$4].latency != 0) {
+      log$$2 = log$$2 + JAM.call(Math.log, Math, [measurements$$1[i$$4].latency], JAM.policy.p1);
+      hasLatencyResult = true;
     }
     i$$4 = i$$4 + 1;
-    v70 = i$$4 < measurements$$1.length
+    v70 = i$$4 < measurements$$1.length;
   }
-  if(hasLatencyResult) {
-    return Math.pow(Math.E, log$$2 / measurements$$1.length)
-  }else {
-    return 0
+  if (hasLatencyResult) {
+    return JAM.call(Math.pow, Math, [Math.E, log$$2 / measurements$$1.length], JAM.policy.p1);
+  } else {
+    return 0;
   }
-  return
+  return;
 }
 function v12(measurements) {
   var log$$1 = 0;
   var i$$3 = 0;
   var v73 = i$$3 < measurements.length;
-  for(;v73;) {
-    var v177 = log$$1;
-    introspect(JAM.policy.p1) {
-      var v253 = measurements[i$$3]
-    }
-    log$$1 = v177 + Math.log(v253.time);
+  for (;v73;) {
+    log$$1 = log$$1 + JAM.call(Math.log, Math, [measurements[i$$3].time], JAM.policy.p1);
     i$$3 = i$$3 + 1;
-    v73 = i$$3 < measurements.length
+    v73 = i$$3 < measurements.length;
   }
-  return Math.pow(Math.E, log$$1 / measurements.length)
+  return JAM.call(Math.pow, Math, [Math.E, log$$1 / measurements.length], JAM.policy.p1);
 }
 function v11(numbers) {
   var log = 0;
   var i$$2 = 0;
   var v76 = i$$2 < numbers.length;
-  for(;v76;) {
-    var v182 = log;
-    introspect(JAM.policy.p1) {
-      var v237 = numbers[i$$2]
-    }
-    log = v182 + Math.log(v237);
+  for (;v76;) {
+    log = log + JAM.call(Math.log, Math, [numbers[i$$2]], JAM.policy.p1);
     i$$2 = i$$2 + 1;
-    v76 = i$$2 < numbers.length
+    v76 = i$$2 < numbers.length;
   }
-  return Math.pow(Math.E, log / numbers.length)
+  return JAM.call(Math.pow, Math, [Math.E, log / numbers.length], JAM.policy.p1);
 }
 function v10() {
   var result = 0;
   var suites$$1 = BenchmarkSuite.suites;
   var i$$1 = 0;
   var v79 = i$$1 < suites$$1.length;
-  for(;v79;) {
-    introspect(JAM.policy.p1) {
-      var v254 = suites$$1[i$$1]
-    }
-    result = result + v254.benchmarks.length;
+  for (;v79;) {
+    result = result + suites$$1[i$$1].benchmarks.length;
     i$$1 = i$$1 + 1;
-    v79 = i$$1 < suites$$1.length
+    v79 = i$$1 < suites$$1.length;
   }
-  return result
+  return result;
 }
 function v9(runner, skipBenchmarks$$1) {
   function RunStep() {
     var v189 = continuation;
-    if(!v189) {
-      v189 = index$$39 < length$$11
+    if (!v189) {
+      v189 = index$$39 < length$$11;
     }
     var v85 = v189;
-    for(;v85;) {
-      if(continuation) {
-        continuation = continuation()
-      }else {
+    for (;v85;) {
+      if (continuation) {
+        continuation = JAM.call(continuation, null, [], JAM.policy.p1);
+      } else {
         var v80 = index$$39;
         index$$39 = index$$39 + 1;
-        introspect(JAM.policy.p1) {
-          var suite = suites[v80]
+        var suite = suites[v80];
+        if (runner.NotifyStart) {
+          JAM.call(runner.NotifyStart, runner, [suite.name], JAM.policy.p1);
         }
-        if(runner.NotifyStart) {
-          JAM.call(runner.NotifyStart, runner, [suite.name])
-        }
-        if(skipBenchmarks$$1.indexOf(suite.name) > -1) {
-          JAM.call(suite.NotifySkipped, suite, [runner])
-        }else {
-          continuation = JAM.call(suite.RunStep, suite, [runner])
+        if (JAM.call(skipBenchmarks$$1.indexOf, skipBenchmarks$$1, [suite.name], JAM.policy.p1) > -1) {
+          JAM.call(suite.NotifySkipped, suite, [runner], JAM.policy.p1);
+        } else {
+          continuation = JAM.call(suite.RunStep, suite, [runner], JAM.policy.p1);
         }
       }
-      var v191 = continuation;
-      if(v191) {
-        var v241 = typeof window != "undefined";
-        if(v241) {
-          v241 = window.setTimeout
-        }
-        v191 = v241
+      var v241 = continuation;
+      if (v241) {
+        v241 = typeof window != "undefined";
       }
-      if(v191) {
-        window.setTimeout(RunStep, 25);
-        return
+      var v191 = v241;
+      if (v191) {
+        v191 = window.setTimeout;
+      }
+      if (v191) {
+        JAM.call(window.setTimeout, window, [RunStep, 25], JAM.policy.p1);
+        return;
       }
       var v192 = continuation;
-      if(!v192) {
-        v192 = index$$39 < length$$11
+      if (!v192) {
+        v192 = index$$39 < length$$11;
       }
-      v85 = v192
+      v85 = v192;
     }
-    if(runner.NotifyScore) {
-      var score = JAM.call(BenchmarkSuite.GeometricMean, BenchmarkSuite, [BenchmarkSuite.scores]);
-      var formatted = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * score]);
-      JAM.call(runner.NotifyScore, runner, [formatted])
+    if (runner.NotifyScore) {
+      var score = JAM.call(BenchmarkSuite.GeometricMean, BenchmarkSuite, [BenchmarkSuite.scores], JAM.policy.p1);
+      var formatted = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * score], JAM.policy.p1);
+      JAM.call(runner.NotifyScore, runner, [formatted], JAM.policy.p1);
     }
-    return
+    return;
   }
   var v89;
-  if(typeof skipBenchmarks$$1 === "undefined") {
-    v89 = []
-  }else {
-    v89 = skipBenchmarks$$1
+  if (typeof skipBenchmarks$$1 === "undefined") {
+    v89 = [];
+  } else {
+    v89 = skipBenchmarks$$1;
   }
   skipBenchmarks$$1 = v89;
   var continuation = null;
@@ -325,7 +300,7 @@ function v9(runner, skipBenchmarks$$1) {
   BenchmarkSuite.scores = [];
   var index$$39 = 0;
   RunStep();
-  return
+  return;
 }
 function v8() {
   function v7() {
@@ -336,106 +311,107 @@ function v8() {
       seed = (seed + 3550635116 ^ seed << 9) & 4294967295;
       seed = seed + 4251993797 + (seed << 3) & 4294967295;
       seed = (seed ^ 3042594569 ^ seed >>> 16) & 4294967295;
-      return(seed & 268435455) / 268435456
+      return(seed & 268435455) / 268435456;
     }
     var seed = 49734321;
-    return v6
+    return v6;
   }
   var v97 = Math;
   var v267 = v7();
   v97.random = v267;
-  return
+  return;
 }
 function v5(s$$2) {
-  throw"Alert called with argument: " + s$$2;
+  throw "Alert called with argument: " + s$$2;
 }
 function v4() {
-  return this.time
+  return this.time;
 }
 function v3() {
-  var v98 = performance.now;
-  if(!v98) {
-    var v206 = performance.mozNow;
-    if(!v206) {
-      var v244 = performance.msNow;
-      if(!v244) {
-        var v256 = performance.oNow;
-        if(!v256) {
-          var v262 = performance.webkitNow;
-          if(!v262) {
-            v262 = Date.now
-          }
-          v256 = v262
-        }
-        v244 = v256
-      }
-      v206 = v244
-    }
-    v98 = v206
+  var v263 = performance.now;
+  if (!v263) {
+    v263 = performance.mozNow;
   }
-  return v98
+  var v257 = v263;
+  if (!v257) {
+    v257 = performance.msNow;
+  }
+  var v244 = v257;
+  if (!v244) {
+    v244 = performance.oNow;
+  }
+  var v206 = v244;
+  if (!v206) {
+    v206 = performance.webkitNow;
+  }
+  var v98 = v206;
+  if (!v98) {
+    v98 = Date.now;
+  }
+  return v98;
 }
-function Benchmark(name$$31, doWarmup, doDeterministic, deterministicIterations, run, setup, tearDown, rmsResult, minIterations) {
+function Benchmark(name$$30, doWarmup, doDeterministic, deterministicIterations, run, setup, tearDown, rmsResult, minIterations) {
   function v1() {
-    return
+    return;
   }
   function v0() {
-    return
+    return;
   }
-  this.name = name$$31;
+  this.name = name$$30;
   this.doWarmup = doWarmup;
   this.doDeterministic = doDeterministic;
   this.deterministicIterations = deterministicIterations;
   this.run = run;
   var v99;
-  if(setup) {
-    v99 = setup
-  }else {
-    v99 = v0
+  if (setup) {
+    v99 = setup;
+  } else {
+    v99 = v0;
   }
   this.Setup = v99;
   var v100;
-  if(tearDown) {
-    v100 = tearDown
-  }else {
-    v100 = v1
+  if (tearDown) {
+    v100 = tearDown;
+  } else {
+    v100 = v1;
   }
   this.TearDown = v100;
   var v101;
-  if(rmsResult) {
-    v101 = rmsResult
-  }else {
-    v101 = null
+  if (rmsResult) {
+    v101 = rmsResult;
+  } else {
+    v101 = null;
   }
   this.rmsResult = v101;
   var v102;
-  if(minIterations) {
-    v102 = minIterations
-  }else {
-    v102 = 32
+  if (minIterations) {
+    v102 = minIterations;
+  } else {
+    v102 = 32;
   }
   this.minIterations = v102;
-  return
+  return;
 }
 function BenchmarkResult(benchmark, time, latency) {
   this.benchmark = benchmark;
   this.time = time;
   this.latency = latency;
-  return
+  return;
 }
-function BenchmarkSuite(name$$32, reference, benchmarks$$1) {
-  this.name = name$$32;
+function BenchmarkSuite(name$$31, reference, benchmarks$$1) {
+  this.name = name$$31;
   this.reference = reference;
   this.benchmarks = benchmarks$$1;
-  BenchmarkSuite.suites.push(this);
-  return
+  var v103 = BenchmarkSuite.suites;
+  JAM.call(v103.push, v103, [this], JAM.policy.p1);
+  return;
 }
 function runZlib() {
-  if(typeof Ya != "function") {
-    InitializeZlibBenchmark()
+  if (typeof Ya != "function") {
+    InitializeZlibBenchmark();
   }
-  JAM.call(Ya, null, [["1"]]);
-  return
+  JAM.call(Ya, null, [["1"]], JAM.policy.p1);
+  return;
 }
 function tearDownZlib() {
   delete $;
@@ -571,7 +547,7 @@ function tearDownZlib() {
   delete z;
   delete za;
   delete zb;
-  return
+  return;
 }
 function InitializeZlibBenchmark() {
   var v305 = "function j(a){throw a;}var k=void 0,n=!0,r=null,t=!1;function u(){return function(){}}try{this.Module=Module,Module.test}catch(aa){this.Module=Module={" + '}}var ba="object"===typeof process&&"function"===typeof require,ca="object"===typeof window,v="function"===typeof importScripts,da=!ca&&!ba&&!v;"object"===typeof module&&(module.T=Module); if(ba){Module.print=function(a){process.stdout.write(a+"\\n")};Module.printErr=function(a){process.stderr.write(a+"\\n")};var ea=require("fs"),fa=require("path");Module.read=function(a,b){var a=fa.normalize(a),c=ea.readFileSync(a);!c&&a!=fa.resolve(a)&&(a=path.join(__dirname,"..","src",a),c=ea.readFileSync(a));c&&!b&&(c=c.toString());return c};Module.readBinary=function(a){return Module.read(a,n)};Module.load=function(a){ga(read(a))};Module.arguments||(Module.arguments=process.argv.slice(2))} da&&(Module.print=print,"undefined"!=typeof printErr&&(Module.printErr=printErr),Module.read=read,Module.readBinary=function(a){return read(a,"binary")},Module.arguments||("undefined"!=typeof scriptArgs?Module.arguments=scriptArgs:"undefined"!=typeof arguments&&(Module.arguments=arguments)));ca&&!v&&(Module.print||(Module.print=function(a){console.log(a)}),Module.printErr||(Module.printErr=function(a){console.log(a)})); if(ca||v)Module.read=function(a){var b=new XMLHttpRequest;b.open("GET",a,t);b.send(r);return b.responseText},Module.arguments||"undefined"!=typeof arguments&&(Module.arguments=arguments);v&&(Module.print||(Module.print=u()),Module.load=importScripts);!v&&(!ca&&!ba&&!da)&&j("Unknown runtime environment. Where are we?");function ga(a){eval.call(r,a)}"undefined"==!Module.load&&Module.read&&(Module.load=function(a){ga(Module.read(a))});Module.print||(Module.print=u()); Module.printErr||(Module.printErr=Module.print);Module.arguments||(Module.arguments=[]);Module.print=Module.print;Module.g=Module.printErr;Module.preRun||(Module.preRun=[]);Module.postRun||(Module.postRun=[]);function ha(){return w}function ia(a){w=a}function ja(a){if(1==x)return 1;var b={"%i1":1,"%i8":1,"%i16":2,"%i32":4,"%i64":8,"%float":4,"%double":8}["%"+a];b||("*"==a.charAt(a.length-1)?b=x:"i"==a[0]&&(a=parseInt(a.substr(1)),z(0==a%8),b=a/8));return b} function ka(a,b,c){c&&c.length?(c.splice||(c=Array.prototype.slice.call(c)),c.splice(0,0,b),Module["dynCall_"+a].apply(r,c)):Module["dynCall_"+a].call(r,b)}var la; function ma(){var a=[],b=0;this.B=function(c){c&=255;b&&(a.push(c),b--);if(0==a.length){if(128>c)return String.fromCharCode(c);a.push(c);b=191<c&&224>c?1:2;return""}if(0<b)return"";var c=a[0],d=a[1],e=a[2],c=191<c&&224>c?String.fromCharCode((c&31)<<6|d&63):String.fromCharCode((c&15)<<12|(d&63)<<6|e&63);a.length=0;return c};this.O=function(a){for(var a=unescape(encodeURIComponent(a)),b=[],e=0;e<a.length;e++)b.push(a.charCodeAt(e));return b}}function na(a){var b=w;w=w+a|0;w=w+7>>3<<3;return b} function oa(a){var b=C;C=C+a|0;C=C+7>>3<<3;return b}function pa(a){var b=D;D=D+a|0;D=D+7>>3<<3;D>=qa&&F("Cannot enlarge memory arrays in asm.js. Either (1) compile with -s TOTAL_MEMORY=X with X higher than the current value, or (2) set Module.TOTAL_MEMORY before the program runs.");return b}function ra(a,b){return Math.ceil(a/(b?b:8))*(b?b:8)}var x=4,sa={},G=t,ta;function F(a){Module.print(a+":\\n"+Error().stack);G=n;j("Assertion: "+a)}function z(a,b){a||F("Assertion failed: "+b)}var ua=this; Module.ccall=function(a,b,c,d){return va(wa(a),b,c,d)};function wa(a){try{var b=ua.Module["_"+a];b||(b=eval("_"+a))}catch(c){}z(b,"Cannot call unknown function "+a+" (perhaps LLVM optimizations or closure removed it?)");return b} function va(a,b,c,d){function e(a,b){if("string"==b){if(a===r||a===k||0===a)return 0;f||(f=ha());var c=na(a.length+1);xa(a,c);return c}return"array"==b?(f||(f=ha()),c=na(a.length),ya(a,c),c):a}var f=0,g=0,d=d?d.map(function(a){return e(a,c[g++])}):[];a=a.apply(r,d);"string"==b?b=I(a):(z("array"!=b),b=a);f&&ia(f);return b}Module.cwrap=function(a,b,c){var d=wa(a);return function(){return va(d,b,c,Array.prototype.slice.call(arguments))}}; function za(a,b,c){c=c||"i8";"*"===c.charAt(c.length-1)&&(c="i32");switch(c){case "i1":J[a]=b;break;case "i8":J[a]=b;break;case "i16":Aa[a>>1]=b;break;case "i32":L[a>>2]=b;break;case "i64":ta=[b>>>0,(Math.min(+Math.floor(b/4294967296),4294967295)|0)>>>0];L[a>>2]=ta[0];L[a+4>>2]=ta[1];break;case "float":Ba[a>>2]=b;break;case "double":N[a>>3]=b;break;default:F("invalid type for setValue: "+c)}}Module.setValue=za; Module.getValue=function(a,b){b=b||"i8";"*"===b.charAt(b.length-1)&&(b="i32");switch(b){case "i1":return J[a];case "i8":return J[a];case "i16":return Aa[a>>1];case "i32":return L[a>>2];case "i64":return L[a>>2];case "float":return Ba[a>>2];case "double":return N[a>>3];default:F("invalid type for setValue: "+b)}return r};var Ca=1,O=2,Da=4;Module.ALLOC_NORMAL=0;Module.ALLOC_STACK=Ca;Module.ALLOC_STATIC=O;Module.ALLOC_DYNAMIC=3;Module.ALLOC_NONE=Da; function P(a,b,c,d){var e,f;"number"===typeof a?(e=n,f=a):(e=t,f=a.length);var g="string"===typeof b?b:r,c=c==Da?d:[Ea,na,oa,pa][c===k?O:c](Math.max(f,g?1:b.length));if(e){d=c;z(0==(c&3));for(a=c+(f&-4);d<a;d+=4)L[d>>2]=0;for(a=c+f;d<a;)J[d++|0]=0;return c}if("i8"=';
@@ -611,93 +587,96 @@ function InitializeZlibBenchmark() {
   var v271 = v272 + "8|0;S=c[342]|0;K=o+47|0;R=S+K|0;Q=-S|0;S=R&Q;if(S>>>0<=o>>>0){n=0;return n|0}O=c[3412]|0;do{if((O|0)!=0){P=c[3410]|0;L=P+S|0;if(L>>>0<=P>>>0|L>>>0>O>>>0){n=0}else{break}return n|0}}while(0);L2139:do{if((c[3413]&4|0)==0){O=c[3308]|0;L2141:do{if((O|0)==0){T=1525}else{L=O;P=13656;while(1){U=P|0;M=c[U>>2]|0;if(M>>>0<=L>>>0){V=P+4|0;if((M+(c[V>>2]|0)|0)>>>0>L>>>0){break}}M=c[P+8>>2]|0;if((M|0)==0){T=1525;break L2141}else{P=M}}if((P|0)==0){T=1525;break}L=R-(c[3305]|0)&Q;if(L>>>0>=2147483647){W=0;break}m=aB(L|0)|0;e=(m|0)==((c[U>>2]|0)+(c[V>>2]|0)|0);X=e?m:-1;Y=e?L:0;Z=m;_=L;T=1534}}while(0);do{if((T|0)==1525){O=aB(0)|0;if((O|0)==-1){W=0;break}g=O;L=c[341]|0;m=L-1|0;if((m&g|0)==0){$=S}else{$=S-g+(m+g&-L)|0}L=c[3410]|0;g=L+$|0;if(!($>>>0>o>>>0&$>>>0<2147483647)){W=0;break}m=c[3412]|0;if((m|0)!=0){if(g>>>0<=L>>>0|g>>>0>m>>>0){W=0;break}}m=aB($|0)|0;g=(m|0)==(O|0);X=g?O:-1;Y=g?$:0;Z=m;_=$;T=1534}}while(0);L2161:do{if((T|0)==1534){m=-_|0;if((X|0)!=-1){aa=Y;ab=X;T=1545;break L2139}do{if((Z|0)!=-1&_>>>0<2147483647&_>>>0<J>>>0){g=c[342]|0;O=K-_+g&-g;if(O>>>0>=2147483647){ac=_;break}if((aB(O|0)|0)==-1){aB(m|0)|0;W=Y;break L2161}else{ac=O+_|0;break}}else{ac=_}}while(0);if((Z|0)==-1){W=Y}else{aa=ac;ab=Z;T=1545;break L2139}}}while(0);c[3413]=c[3413]|4;ad=W;T=1542}else{ad=0;T=1542}}while(0);do{if((T|0)==1542){if(S>>>0>=2147483647){break}W=aB(S|0)|0;Z=aB(0)|0;if(!((Z|0)!=-1&(W|0)!=-1&W>>>0<Z>>>0)){break}ac=Z-W|0;Z=ac>>>0>(o+40|0)>>>0;Y=Z?W:-1;if((Y|0)!=-1){aa=Z?ac:ad;ab=Y;T=1545}}}while(0);do{if((T|0)==1545){ad=(c[3410]|0)+aa|0;c[3410]=ad;if(ad>>>0>(c[3411]|0)>>>0){c[3411]=ad}ad=c[3308]|0;L2181:do{if((ad|0)==0){S=c[3306]|0;if((S|0)==0|ab>>>0<S>>>0){c[3306]=ab}c[3414]=ab;c[3415]=aa;c[3417]=0;c[3311]=c[340];c[3310]=-1;S=0;do{Y=S<<1;ac=13248+(Y<<2)|0;c[13248+(Y+3<<2)>>2]=ac;c[13248+(Y+2<<2)>>2]=ac;S=S+1|0;}while(S>>>0<32);S=ab+8|0;if((S&7|0)==0){ae=0}else{ae=-S&7}S=aa-40-ae|0;c[3308]=ab+ae;c[3305]=S;c[ab+(ae+4)>>2]=S|1;c[ab+(aa-36)>>2]=40;c[3309]=c[344]}else{S=13656;while(1){af=c[S>>2]|0;ag=S+4|0;ah=c[ag>>2]|0;if((ab|0)==(af+ah|0)){T=1557;break}ac=c[S+8>>2]|0;if((ac|0)==0){break}else{S=ac}}do{if((T|0)==1557){if((c[S+12>>2]&8|0)!=0){break}ac=ad;if(!(ac>>>0>=af>>>0&ac>>>0<ab>>>0)){break}c[ag>>2]=ah+aa;ac=c[3308]|0;Y=(c[3305]|0)+aa|0;Z=ac;W=ac+8|0;if((W&7|0)==0){ai=0}else{ai=-W&7}W=Y-ai|0;c[3308]=Z+ai;c[3305]=W;c[Z+(ai+4)>>2]=W|1;c[Z+(Y+4)>>2]=40;c[3309]=c[344];break L2181}}while(0);if(ab>>>0<(c[3306]|0)>>>0){c[3306]=ab}S=ab+aa|0;Y=13656;while(1){aj=Y|0;if((c[aj>>2]|0)==(S|0)){T=1567;break}Z=c[Y+8>>2]|0;if((Z|0)==0){break}else{Y=Z}}do{if((T|0)==1567){if((c[Y+12>>2]&8|0)!=0){break}c[aj>>2]=ab;S=Y+4|0;c[S>>2]=(c[S>>2]|0)+aa;S=ab+8|0;if((S&7|0)==0){ak=0}else{ak=-S&7}S=ab+(aa+8)|0;if((S&7|0)==0){an=0}else{an=-S&7}S=ab+(an+aa)|0;Z=S;W=ak+o|0;ac=ab+W|0;_=ac;K=S-(ab+ak)-o|0;c[ab+(ak+4)>>2]=o|3;do{if((Z|0)==(c[3308]|0)){J=(c[3305]|0)+K|0;c[3305]=J;c[3308]=_;c[ab+(W+4)>>2]=J|1}else{if((Z|0)==(c[3307]|0)){J=(c[3304]|0)+K|0;c[3304]=J;c[3307]=_;c[ab+(W+4)>>2]=J|1;c[ab+(J+W)>>2]=J;break}J=aa+4|0;X=c[ab+(J+an)>>2]|0;if((X&3|0)==1){$=X&-8;V=X>>>3;L2226:do{if(X>>>0<256){U=c[ab+((an|8)+aa)>>2]|0;Q=c[ab+(aa+12+an)>>2]|0;R=13248+(V<<1<<2)|0;do{if((U|0)!=(R|0)){if(U>>>0<(c[3306]|0)>>>0){am();return 0;return 0}if((c[U+12>>2]|0)==(Z|0)){break}am();return 0;return 0}}while(0);if((Q|0)==(U|0)){c[3302]=c[3302]&(1<<V^-1);break}do{if((Q|0)==(R|0)){ao=Q+8|0}else{if(Q>>>0<(c[3306]|0)>>>0){am();return 0;return 0}m=Q+8|0;if((c[m>>2]|0)==(Z|0)){ao=m;break}am();return 0;return 0}}while(0);c[U+12>>2]=Q;c[ao>>2]=U}else{R=S;m=c[ab+((an|24)+aa)>>2]|0;P=c[ab+(aa+12+an)>>2]|0;do{if((P|0)==(R|0)){O=an|16;g=ab+(J+O)|0;L=c[g>>2]|0;if((L|0)==0){e=ab+(O+aa)|0;O=c[e>>2]|0;if((O|0)==0){ap=0;break}else{aq=O;ar=e}}else{aq=L;ar=g}while(1){g=aq+20|0;L=c[g>>2]|0;if((L|0)!=0){aq=L;ar=g;continue}g=aq+16|0;L=c[g>>2]|0;if((L|0)==0){break}else{aq=L;ar=g}}if(ar>>>0<(c[3306]|0)>>>0){am();return 0;return 0}else{c[ar>>2]=0;ap=aq;break}}else{g=c[ab+((an|8)+aa)>>2]|0;if(g>>>0<(c[3306]|0)>>>0){am();return 0;return 0}L=g+12|0;if((c[L>>2]|0)!=(R|0)){am();return 0;return 0}e=P+8|0;if((c[e>>2]|0)==(R|0)){c[L>>2]=P;c[e>>2]=g;ap=P;break}else{am();return 0;return 0}}}while(0);if((m|0)==0){break}P=ab+(aa+28+an)|0;U=13512+(c[P>>2]<<2)|0;do{if((R|0)==(c[U>>2]|0)){c[U>>2]=ap;if((ap|0)!=0){break}c[3303]=c[3303]&(1<<c[P>>2]^-1);break L2226}else{if(m>>>0<(c[3306]|0)>>>0){am();return 0;return 0}Q=m+16|0;if((c[Q>>2]|0)==(R|0)){c[Q>>2]=ap}else{c[m+20>>2]=ap}if((ap|0)==0){break L2226}}}while(0);if(ap>>>0<(c[3306]|0)>>>0){am();return 0;return 0}c[ap+24>>2]=m;R=an|16;P=c[ab+(R+aa)>>2]|0;do{if((P|0)!=0){if(P>>>0<(c[3306]|0)>>>0){am();return 0;return 0}else{c[ap+16>>2]=P;c[P+24>>2]=ap;break}}}while(0);P=c[ab+(J+R)>>2]|0;if((P|0)==0){break}if(P>>>0<(c[3306]|0)>>>0){am();return 0;return 0}else{c[ap+20>>2]=P;c[P+24>>2]=ap;break}}}while(0);as=ab+(($|an)+aa)|0;at=$+K|0}else{as=Z;at=K}J=as+4|0;c[J>>2]=c[J>>2]&-2;c[ab+(W+4)>>2]=at|1;c[ab+(at+W)>>2]=at;J=at>>>3;if(at>>>0<256){V=J<<1;X=13248+(V<<2)|0;P=c[3302]|0;m=1<<J;do{if";
   var v270 = v271 + "((P&m|0)==0){c[3302]=P|m;au=X;av=13248+(V+2<<2)|0}else{J=13248+(V+2<<2)|0;U=c[J>>2]|0;if(U>>>0>=(c[3306]|0)>>>0){au=U;av=J;break}am();return 0;return 0}}while(0);c[av>>2]=_;c[au+12>>2]=_;c[ab+(W+8)>>2]=au;c[ab+(W+12)>>2]=X;break}V=ac;m=at>>>8;do{if((m|0)==0){aw=0}else{if(at>>>0>16777215){aw=31;break}P=(m+1048320|0)>>>16&8;$=m<<P;J=($+520192|0)>>>16&4;U=$<<J;$=(U+245760|0)>>>16&2;Q=14-(J|P|$)+(U<<$>>>15)|0;aw=at>>>((Q+7|0)>>>0)&1|Q<<1}}while(0);m=13512+(aw<<2)|0;c[ab+(W+28)>>2]=aw;c[ab+(W+20)>>2]=0;c[ab+(W+16)>>2]=0;X=c[3303]|0;Q=1<<aw;if((X&Q|0)==0){c[3303]=X|Q;c[m>>2]=V;c[ab+(W+24)>>2]=m;c[ab+(W+12)>>2]=V;c[ab+(W+8)>>2]=V;break}if((aw|0)==31){ax=0}else{ax=25-(aw>>>1)|0}Q=at<<ax;X=c[m>>2]|0;while(1){if((c[X+4>>2]&-8|0)==(at|0)){break}ay=X+16+(Q>>>31<<2)|0;m=c[ay>>2]|0;if((m|0)==0){T=1640;break}else{Q=Q<<1;X=m}}if((T|0)==1640){if(ay>>>0<(c[3306]|0)>>>0){am();return 0;return 0}else{c[ay>>2]=V;c[ab+(W+24)>>2]=X;c[ab+(W+12)>>2]=V;c[ab+(W+8)>>2]=V;break}}Q=X+8|0;m=c[Q>>2]|0;$=c[3306]|0;if(X>>>0<$>>>0){am();return 0;return 0}if(m>>>0<$>>>0){am();return 0;return 0}else{c[m+12>>2]=V;c[Q>>2]=V;c[ab+(W+8)>>2]=m;c[ab+(W+12)>>2]=X;c[ab+(W+24)>>2]=0;break}}}while(0);n=ab+(ak|8)|0;return n|0}}while(0);Y=ad;W=13656;while(1){az=c[W>>2]|0;if(az>>>0<=Y>>>0){aA=c[W+4>>2]|0;aD=az+aA|0;if(aD>>>0>Y>>>0){break}}W=c[W+8>>2]|0}W=az+(aA-39)|0;if((W&7|0)==0){aE=0}else{aE=-W&7}W=az+(aA-47+aE)|0;ac=W>>>0<(ad+16|0)>>>0?Y:W;W=ac+8|0;_=ab+8|0;if((_&7|0)==0){aG=0}else{aG=-_&7}_=aa-40-aG|0;c[3308]=ab+aG;c[3305]=_;c[ab+(aG+4)>>2]=_|1;c[ab+(aa-36)>>2]=40;c[3309]=c[344];c[ac+4>>2]=27;c[W>>2]=c[3414];c[W+4>>2]=c[13660>>2];c[W+8>>2]=c[13664>>2];c[W+12>>2]=c[13668>>2];c[3414]=ab;c[3415]=aa;c[3417]=0;c[3416]=W;W=ac+28|0;c[W>>2]=7;if((ac+32|0)>>>0<aD>>>0){_=W;while(1){W=_+4|0;c[W>>2]=7;if((_+8|0)>>>0<aD>>>0){_=W}else{break}}}if((ac|0)==(Y|0)){break}_=ac-ad|0;W=Y+(_+4)|0;c[W>>2]=c[W>>2]&-2;c[ad+4>>2]=_|1;c[Y+_>>2]=_;W=_>>>3;if(_>>>0<256){K=W<<1;Z=13248+(K<<2)|0;S=c[3302]|0;m=1<<W;do{if((S&m|0)==0){c[3302]=S|m;aH=Z;aI=13248+(K+2<<2)|0}else{W=13248+(K+2<<2)|0;Q=c[W>>2]|0;if(Q>>>0>=(c[3306]|0)>>>0){aH=Q;aI=W;break}am();return 0;return 0}}while(0);c[aI>>2]=ad;c[aH+12>>2]=ad;c[ad+8>>2]=aH;c[ad+12>>2]=Z;break}K=ad;m=_>>>8;do{if((m|0)==0){aJ=0}else{if(_>>>0>16777215){aJ=31;break}S=(m+1048320|0)>>>16&8;Y=m<<S;ac=(Y+520192|0)>>>16&4;W=Y<<ac;Y=(W+245760|0)>>>16&2;Q=14-(ac|S|Y)+(W<<Y>>>15)|0;aJ=_>>>((Q+7|0)>>>0)&1|Q<<1}}while(0);m=13512+(aJ<<2)|0;c[ad+28>>2]=aJ;c[ad+20>>2]=0;c[ad+16>>2]=0;Z=c[3303]|0;Q=1<<aJ;if((Z&Q|0)==0){c[3303]=Z|Q;c[m>>2]=K;c[ad+24>>2]=m;c[ad+12>>2]=ad;c[ad+8>>2]=ad;break}if((aJ|0)==31){aK=0}else{aK=25-(aJ>>>1)|0}Q=_<<aK;Z=c[m>>2]|0;while(1){if((c[Z+4>>2]&-8|0)==(_|0)){break}aL=Z+16+(Q>>>31<<2)|0;m=c[aL>>2]|0;if((m|0)==0){T=1675;break}else{Q=Q<<1;Z=m}}if((T|0)==1675){if(aL>>>0<(c[3306]|0)>>>0){am();return 0;return 0}else{c[aL>>2]=K;c[ad+24>>2]=Z;c[ad+12>>2]=ad;c[ad+8>>2]=ad;break}}Q=Z+8|0;_=c[Q>>2]|0;m=c[3306]|0;if(Z>>>0<m>>>0){am();return 0;return 0}if(_>>>0<m>>>0){am();return 0;return 0}else{c[_+12>>2]=K;c[Q>>2]=K;c[ad+8>>2]=_;c[ad+12>>2]=Z;c[ad+24>>2]=0;break}}}while(0);ad=c[3305]|0;if(ad>>>0<=o>>>0){break}_=ad-o|0;c[3305]=_;ad=c[3308]|0;Q=ad;c[3308]=Q+o;c[Q+(o+4)>>2]=_|1;c[ad+4>>2]=o|3;n=ad+8|0;return n|0}}while(0);c[(aC()|0)>>2]=12;n=0;return n|0}function bl(b){b=b|0;var c=0;c=b;while(a[c]|0){c=c+1|0}return c-b|0}function bm(b,d,e){b=b|0;d=d|0;e=e|0;var f=0,g=0,h=0;f=b+e|0;if((e|0)>=20){d=d&255;e=b&3;g=d|d<<8|d<<16|d<<24;h=f&~3;if(e){e=b+4-e|0;while((b|0)<(e|0)){a[b]=d;b=b+1|0}}while((b|0)<(h|0)){c[b>>2]=g;b=b+4|0}}while((b|0)<(f|0)){a[b]=d;b=b+1|0}}function bn(b,d,e){b=b|0;d=d|0;e=e|0;var f=0;f=b|0;if((b&3)==(d&3)){while(b&3){if((e|0)==0)return f|0;a[b]=a[d]|0;b=b+1|0;d=d+1|0;e=e-1|0}while((e|0)>=4){c[b>>2]=c[d>>2];b=b+4|0;d=d+4|0;e=e-4|0}}while((e|0)>0){a[b]=a[d]|0;b=b+1|0;d=d+1|0;e=e-1|0}return f|0}function bo(a,b){a=a|0;b=b|0;return aH[a&1](b|0)|0}function bp(a,b){a=a|0;b=b|0;aI[a&1](b|0)}function bq(a,b,c){a=a|0;b=b|0;c=c|0;aJ[a&3](b|0,c|0)}function br(a,b,c,d){a=a|0;b=b|0;c=c|0;d=d|0;return aK[a&3](b|0,c|0,d|0)|0}function bs(a){a=a|0;aL[a&1]()}function bt(a,b,c){a=a|0;b=b|0;c=c|0;return aM[a&7](b|0,c|0)|0}function bu(a){a=a|0;_(0);return 0}function bv(a){a=a|0;_(1)}function bw(a,b){a=a|0;b=b|0;_(2)}function bx(a,b,c){a=a|0;b=b|0;c=c|0;_(3);return 0}function by(){_(4)}function bz(a,b){a=a|0;b=b|0;_(5);return 0} var aH=[bu,bu];var aI=[bv,bv];var aJ=[bw,bw,bg,bw];var aK=[bx,bx,bf,bx];var aL=[by,by];var aM=[bz,bz,a5,bz,a8,bz,a4,bz];return{_malloc:bk,_strlen:bl,_memcpy:bn,_main:a2,_memset:bm,stackAlloc:aN,stackSave:aO,stackRestore:aP,setThrew:aQ,setTempRet0:aT,setTempRet1:aU,setTempRet2:aV,setTempRet3:aW,setTempRet4:aX,setTempRet5:aY,setTempRet6:aZ,setTempRet7:a_,setTempRet8:a$,setTempRet9:a0,dynCall_ii:bo,dynCall_vi:bp,dynCall_vii:bq,dynCall_iiii:br,dynCall_v:bs,dynCall_iii:bt} })({Math:Math,Int8Array:Int8Array,Int16Array:Int16Array,Int32Array:Int32Array,Uint8Array:Uint8Array,Uint16Array:Uint16Array,Uint32Array:Uint32Array,Float32Ar";
   var v269 = v270 + 'ray:Float32Array,Float64Array:Float64Array},{abort:F,assert:z,asmPrintInt:function(a,b){Module.print("int "+a+","+b)},asmPrintFloat:function(a,b){Module.print("float "+a+","+b)},min:Wb,invoke_ii:function(a,b){try{return Module.dynCall_ii(a,b)}catch(c){"number"!==typeof c&&"longjmp"!==c&&j(c),$.setThrew(1,0)}}, invoke_vi:function(a,b){try{Module.dynCall_vi(a,b)}catch(c){"number"!==typeof c&&"longjmp"!==c&&j(c),$.setThrew(1,0)}},invoke_vii:function(a,b,c){try{Module.dynCall_vii(a,b,c)}catch(d){"number"!==typeof d&&"longjmp"!==d&&j(d),$.setThrew(1,0)}},invoke_iiii:function(a,b,c,d){try{return Module.dynCall_iiii(a,b,c,d)}catch(e){"number"!==typeof e&&"longjmp"!==e&&j(e),$.setThrew(1,0)}},invoke_v:function(a){try{Module.dynCall_v(a)}catch(b){"number"!==typeof b&&"longjmp"!==b&&j(b),$.setThrew(1,0)}},invoke_iii:function(a, b,c){try{return Module.dynCall_iii(a,b,c)}catch(d){"number"!==typeof d&&"longjmp"!==d&&j(d),$.setThrew(1,0)}},_strncmp:Db,_llvm_lifetime_end:u(),_sysconf:function(a){switch(a){case 8:return 4096;case 54:case 56:case 21:case 61:case 63:case 22:case 67:case 23:case 24:case 25:case 26:case 27:case 69:case 28:case 101:case 70:case 71:case 29:case 30:case 199:case 75:case 76:case 32:case 43:case 44:case 80:case 46:case 47:case 45:case 48:case 49:case 42:case 82:case 33:case 7:case 108:case 109:case 107:case 112:case 119:case 121:return 200809; case 13:case 104:case 94:case 95:case 34:case 35:case 77:case 81:case 83:case 84:case 85:case 86:case 87:case 88:case 89:case 90:case 91:case 94:case 95:case 110:case 111:case 113:case 114:case 115:case 116:case 117:case 118:case 120:case 40:case 16:case 79:case 19:return-1;case 92:case 93:case 5:case 72:case 6:case 74:case 92:case 93:case 96:case 97:case 98:case 99:case 102:case 103:case 105:return 1;case 38:case 66:case 50:case 51:case 4:return 1024;case 15:case 64:case 41:return 32;case 55:case 37:case 17:return 2147483647; case 18:case 1:return 47839;case 59:case 57:return 99;case 68:case 58:return 2048;case 0:return 2097152;case 3:return 65536;case 14:return 32768;case 73:return 32767;case 39:return 16384;case 60:return 1E3;case 106:return 700;case 52:return 256;case 62:return 255;case 2:return 100;case 65:return 64;case 36:return 20;case 100:return 16;case 20:return 6;case 53:return 4;case 10:return 1}V(db);return-1},_abort:function(){G=n;j("abort() at "+Error().stack)},_fprintf:Cb,_printf:function(a,b){},__reallyNegative:Ab,_fputc:Hb,_puts:function(a){},___setErrNo:V,_fwrite:yb,_send:vb,_write:xb,_fputs:Gb,__formatString:Bb,_free:u(),___assert_func:function(a,b,c,d){j("Assertion failed: "+(d?I(d):"unknown condition")+", at: "+[a?I(a):"unknown filename",b,c?I(c):"unknown function"]+" at "+Error().stack)},_pwrite:wb,_sbrk:Z,___errno_location:function(){return eb},_llvm_lifetime_start:u(),_llvm_bswap_i32:function(a){return(a&255)<<24|(a>> 8&255)<<16|(a>>16&255)<<8|a>>>24},_time:function(a){var b=Math.floor(Date.now()/1E3);a&&(L[a>>2]=b);return b},_strcmp:function(a,b){return Db(a,b,qa)},STACKTOP:w,STACK_MAX:Ja,tempDoublePtr:Za,ABORT:G,NaN:NaN,Infinity:Infinity},R),Ea=Module._malloc=$._malloc,zb=Module._strlen=$._strlen,Fb=Module._memcpy=$._memcpy;Module._main=$._main;var Eb=Module._memset=$._memset;Module.dynCall_ii=$.dynCall_ii;Module.dynCall_vi=$.dynCall_vi;Module.dynCall_vii=$.dynCall_vii;Module.dynCall_iiii=$.dynCall_iiii; Module.dynCall_v=$.dynCall_v;Module.dynCall_iii=$.dynCall_iii;na=function(a){return $.stackAlloc(a)};ha=function(){return $.stackSave()};ia=function(a){$.stackRestore(a)}; Module.callMain=function(a){function b(){for(var a=0;3>a;a++)d.push(0)}z(0==T,"cannot call main when async dependencies remain! (listen on __ATMAIN__)");z(!Module.preRun||0==Module.preRun.length,"cannot call main when preRun functions remain to be called");a=a||[];Pa||(Pa=n,La(Ma));var c=a.length+1,d=[P(S("/bin/this.program"),"i8",0)];b();for(var e=0;e<c-1;e+=1)d.push(P(S(a[e]),"i8",0)),b();d.push(0);var d=P(d,"i32",0),f,a=w;try{f=Module._main(c,d,0)}catch(g){if("ExitStatus"==g.name)return g.status; "SimulateInfiniteLoop"==g?Module.noExitRuntime=n:j(g)}finally{w=a}return f}; function Ya(a){function b(){Pa||(Pa=n,La(Ma));La(Na);var b=0;Ta=n;Module._main&&Xa&&(b=Module.callMain(a),Module.noExitRuntime||La(Oa));if(Module.postRun)for("function"==typeof Module.postRun&&(Module.postRun=[Module.postRun]);0<Module.postRun.length;)Module.postRun.pop()();return b}a=a||Module.arguments;if(0<T)return Module.g("run() called, but dependencies remain, so not running"),0;if(Module.preRun){"function"==typeof Module.preRun&&(Module.preRun=[Module.preRun]);var c=Module.preRun;Module.preRun= [];for(var d=c.length-1;0<=d;d--)c[d]();if(0<T)return 0}return Module.setStatus?(Module.setStatus("Running..."),setTimeout(function(){setTimeout(function(){Module.setStatus("")},1);G||b()},1),0):b()}Module.run=Module.X=Ya;if(Module.preInit)for("function"==typeof Module.preInit&&(Module.preInit=[Module.preInit]);0<Module.preInit.length;)Module.preInit.pop()();var Xa=n;Module.noInitialRun&&(Xa=t); ';
-  JAM.call(zlibEval, null, [v269]);
-  return
+  JAM.call(zlibEval, null, [v269], JAM.policy.p1);
+  return;
 }
-function ShowBox(name$$33) {
+function ShowBox(name$$32) {
   function v2(entry) {
-    if(name$$33.valueOf() === entry.valueOf()) {
-      var box1 = document.getElementById("Box-" + name$$33 + "Latency");
-      box1.style.visibility = "visible"
+    if (JAM.call(name$$32.valueOf, name$$32, [], JAM.policy.p1) === JAM.call(entry.valueOf, entry, [], JAM.policy.p1)) {
+      var box1 = JAM.call(document.getElementById, document, ["Box-" + name$$32 + "Latency"], JAM.policy.p1);
+      box1.style.visibility = "visible";
     }
-    return
+    return;
   }
-  var box = document.getElementById("Box-" + name$$33);
+  var box = JAM.call(document.getElementById, document, ["Box-" + name$$32], JAM.policy.p1);
   box.style.visibility = "visible";
-  var bar = document.getElementById("progress-bar").style.width = "" + (completed = completed + 1) / benchmarks * 100 + "%";
-  latencyBenchmarks.forEach(v2);
-  return
+  var bar = JAM.call(document.getElementById, document, ["progress-bar"], JAM.policy.p1).style.width = "" + (completed = completed + 1) / benchmarks * 100 + "%";
+  JAM.call(latencyBenchmarks.forEach, latencyBenchmarks, [v2], JAM.policy.p1);
+  return;
 }
-function AddResult(name$$34, result$$2) {
-  console.log(name$$34 + ": " + result$$2);
-  var box$$1 = document.getElementById("Result-" + name$$34);
+function AddResult(name$$33, result$$2) {
+  JAM.call(console.log, console, [name$$33 + ": " + result$$2], JAM.policy.p1);
+  var box$$1 = JAM.call(document.getElementById, document, ["Result-" + name$$33], JAM.policy.p1);
   JAM.set(box$$1, "innerHTML", result$$2);
-  return
+  return;
 }
-function AddError(name$$35, error$$3) {
-  console.log(name$$35 + ": " + error$$3.message);
-  if(error$$3 == "TypedArrayUnsupported") {
-    AddResult(name$$35, "<b>Unsupported</b>")
-  }else {
-    if(error$$3 == "PerformanceNowUnsupported") {
-      AddResult(name$$35, "<b>Timer error</b>")
-    }else {
-      AddResult(name$$35, "<b>Error</b>")
+function AddError(name$$34, error$$2) {
+  JAM.call(console.log, console, [name$$34 + ": " + error$$2.message], JAM.policy.p1);
+  if (error$$2 == "TypedArrayUnsupported") {
+    AddResult(name$$34, "<b>Unsupported</b>");
+  } else {
+    if (error$$2 == "PerformanceNowUnsupported") {
+      AddResult(name$$34, "<b>Timer error</b>");
+    } else {
+      AddResult(name$$34, "<b>Error</b>");
     }
   }
   success = false;
-  return
+  return;
 }
 function AddScore(score$$2) {
-  var status = document.getElementById("main-banner");
-  if(success) {
-    JAM.set(status, "innerHTML", "Octane Score: " + score$$2)
-  }else {
-    JAM.set(status, "innerHTML", "Octane Score (incomplete): " + score$$2)
+  var status = JAM.call(document.getElementById, document, ["main-banner"], JAM.policy.p1);
+  if (success) {
+    JAM.set(status, "innerHTML", "Octane Score: " + score$$2);
+  } else {
+    JAM.set(status, "innerHTML", "Octane Score (incomplete): " + score$$2);
   }
-  document.getElementById("progress-bar-container").style.visibility = "hidden";
-  document.getElementById("bottom-text").style.visibility = "visible";
-  document.getElementById("inside-anchor").removeChild(document.getElementById("bar-appendix"));
-  document.getElementById("alertbox").style.visibility = "hidden";
-  return
+  JAM.call(document.getElementById, document, ["progress-bar-container"], JAM.policy.p1).style.visibility = "hidden";
+  JAM.call(document.getElementById, document, ["bottom-text"], JAM.policy.p1).style.visibility = "visible";
+  var v119 = JAM.call(document.getElementById, document, ["inside-anchor"], JAM.policy.p1);
+  JAM.call(v119.removeChild, v119, [JAM.call(document.getElementById, document, ["bar-appendix"], JAM.policy.p1)], JAM.policy.p1);
+  JAM.call(document.getElementById, document, ["alertbox"], JAM.policy.p1).style.visibility = "hidden";
+  return;
 }
 function Run() {
-  JAM.set(document.getElementById("main-banner"), "innerHTML", "Running Octane...");
-  JAM.set(document.getElementById("bar-appendix"), "innerHTML", '<br/><div class="progress progress-striped" id="progress-bar-container" style="visibility:hidden"><div class="bar"style="width: 0%;" id="progress-bar"></div></div>');
-  var anchor = document.getElementById("run-octane");
-  var parent = document.getElementById("main-container");
-  JAM.call(parent.appendChild, parent, [document.getElementById("inside-anchor")]);
-  parent.removeChild(anchor);
-  JAM.set(document.getElementById("startup-text"), "innerHTML", "");
-  document.getElementById("progress-bar-container").style.visibility = "visible";
-  JAM.call(BenchmarkSuite.RunSuites, BenchmarkSuite, [{NotifyStart:ShowBox, NotifyError:AddError, NotifyResult:AddResult, NotifyScore:AddScore}, skipBenchmarks]);
-  return
+  JAM.set(JAM.call(document.getElementById, document, ["main-banner"], JAM.policy.p1), "innerHTML", "Running Octane...");
+  JAM.set(JAM.call(document.getElementById, document, ["bar-appendix"], JAM.policy.p1), "innerHTML", '<br/><div class="progress progress-striped" id="progress-bar-container" style="visibility:hidden"><div class="bar"style="width: 0%;" id="progress-bar"></div></div>');
+  var anchor = JAM.call(document.getElementById, document, ["run-octane"], JAM.policy.p1);
+  var parent = JAM.call(document.getElementById, document, ["main-container"], JAM.policy.p1);
+  JAM.call(parent.appendChild, parent, [JAM.call(document.getElementById, document, ["inside-anchor"], JAM.policy.p1)], JAM.policy.p1);
+  JAM.call(parent.removeChild, parent, [anchor], JAM.policy.p1);
+  JAM.set(JAM.call(document.getElementById, document, ["startup-text"], JAM.policy.p1), "innerHTML", "");
+  JAM.call(document.getElementById, document, ["progress-bar-container"], JAM.policy.p1).style.visibility = "visible";
+  JAM.call(BenchmarkSuite.RunSuites, BenchmarkSuite, [{NotifyStart:ShowBox, NotifyError:AddError, NotifyResult:AddResult, NotifyScore:AddScore}, skipBenchmarks], JAM.policy.p1);
+  return;
 }
 function CheckCompatibility() {
-  var v128 = typeof Uint8Array != "undefined";
-  if(v128) {
-    var v222 = typeof Float64Array != "undefined";
-    if(v222) {
-      v222 = typeof(new Uint8Array(0)).subarray != "undefined"
-    }
-    v128 = v222
+  var v221 = typeof Uint8Array != "undefined";
+  if (v221) {
+    v221 = typeof Float64Array != "undefined";
+  }
+  var v128 = v221;
+  if (v128) {
+    v128 = typeof(new Uint8Array(0)).subarray != "undefined";
   }
   var hasTypedArrays = v128;
-  if(!hasTypedArrays) {
-    console.log("Typed Arrays not supported");
-    document.getElementById("alertbox").style.display = "block"
+  if (!hasTypedArrays) {
+    JAM.call(console.log, console, ["Typed Arrays not supported"], JAM.policy.p1);
+    JAM.call(document.getElementById, document, ["alertbox"], JAM.policy.p1).style.display = "block";
   }
-  if(window.document.URL.indexOf("skip_zlib=1") >= 0) {
-    skipBenchmarks.push("zlib")
+  var v250 = window.document.URL;
+  if (JAM.call(v250.indexOf, v250, ["skip_zlib=1"], JAM.policy.p1) >= 0) {
+    JAM.call(skipBenchmarks.push, skipBenchmarks, ["zlib"], JAM.policy.p1);
   }
-  if(window.document.URL.indexOf("auto=1") >= 0) {
-    Run()
+  var v251 = window.document.URL;
+  if (JAM.call(v251.indexOf, v251, ["auto=1"], JAM.policy.p1) >= 0) {
+    Run();
   }
-  return
+  return;
 }
 function Load() {
   JAM.call(setTimeout, null, [CheckCompatibility, 200]);
-  return
+  return;
 }
 var performance = performance || {};
 var v133 = performance;
@@ -724,13 +703,13 @@ BenchmarkSuite.prototype.RunStep = v20;
 new BenchmarkSuite("zlib", [152815148], [new Benchmark("zlib", false, true, 10, runZlib, undefined, tearDownZlib, null, 3)]);
 var zlibEval = eval;
 var completed = 0;
-var benchmarks = BenchmarkSuite.CountBenchmarks();
+var benchmarks = JAM.call(BenchmarkSuite.CountBenchmarks, BenchmarkSuite, [], JAM.policy.p1);
 var success = true;
 var latencyBenchmarks = ["Splay", "Mandreel"];
 var v143;
-if(typeof skipBenchmarks === "undefined") {
-  v143 = []
-}else {
-  v143 = skipBenchmarks
+if (typeof skipBenchmarks === "undefined") {
+  v143 = [];
+} else {
+  v143 = skipBenchmarks;
 }
 var skipBenchmarks = v143

@@ -1,64 +1,55 @@
 // octane-codeload.js
 function v29(runner$$2) {
   function RunNextSetup() {
-    if(index$$40 < length$$12) {
+    if (index$$40 < length$$12) {
       try {
-        var v163 = suite$$1.benchmarks;
-        introspect(JAM.policy.p1) {
-          var v30 = v163[index$$40]
-        }
-        v30.Setup()
-      }catch(e$$4) {
-        JAM.call(suite$$1.NotifyError, suite$$1, [e$$4]);
-        return null
+        var v30 = suite$$1.benchmarks[index$$40];
+        JAM.call(v30.Setup, v30, [], JAM.policy.p1);
+      } catch (e$$4) {
+        JAM.call(suite$$1.NotifyError, suite$$1, [e$$4], JAM.policy.p1);
+        return null;
       }
-      return RunNextBenchmark
+      return RunNextBenchmark;
     }
-    suite$$1.NotifyResult();
-    return null
+    JAM.call(suite$$1.NotifyResult, suite$$1, [], JAM.policy.p1);
+    return null;
   }
   function RunNextBenchmark() {
     try {
-      var v164 = suite$$1.benchmarks;
-      introspect(JAM.policy.p1) {
-        var v32 = v164[index$$40]
-      }
-      data$$20 = JAM.call(suite$$1.RunSingleBenchmark, suite$$1, [v32, data$$20])
-    }catch(e$$5) {
-      JAM.call(suite$$1.NotifyError, suite$$1, [e$$5]);
-      return null
+      data$$20 = JAM.call(suite$$1.RunSingleBenchmark, suite$$1, [suite$$1.benchmarks[index$$40], data$$20], JAM.policy.p1);
+    } catch (e$$5) {
+      JAM.call(suite$$1.NotifyError, suite$$1, [e$$5], JAM.policy.p1);
+      return null;
     }
     var v33;
-    if(data$$20 == null) {
-      v33 = RunNextTearDown
-    }else {
-      v33 = RunNextBenchmark()
+    if (data$$20 == null) {
+      v33 = RunNextTearDown;
+    } else {
+      v33 = RunNextBenchmark();
     }
-    return v33
+    return v33;
   }
   function RunNextTearDown() {
     try {
       var v166 = suite$$1.benchmarks;
       var v167 = index$$40;
       index$$40 = index$$40 + 1;
-      introspect(JAM.policy.p1) {
-        var v34 = v166[v167]
-      }
-      v34.TearDown()
-    }catch(e$$6) {
-      JAM.call(suite$$1.NotifyError, suite$$1, [e$$6]);
-      return null
+      var v34 = v166[v167];
+      JAM.call(v34.TearDown, v34, [], JAM.policy.p1);
+    } catch (e$$6) {
+      JAM.call(suite$$1.NotifyError, suite$$1, [e$$6], JAM.policy.p1);
+      return null;
     }
-    return RunNextSetup
+    return RunNextSetup;
   }
-  BenchmarkSuite.ResetRNG();
+  JAM.call(BenchmarkSuite.ResetRNG, BenchmarkSuite, [], JAM.policy.p1);
   this.results = [];
   this.runner = runner$$2;
   var length$$12 = this.benchmarks.length;
   var index$$40 = 0;
   var suite$$1 = this;
   var data$$20;
-  return RunNextSetup()
+  return RunNextSetup();
 }
 function v28(benchmark$$1, data$$18) {
   function Measure(data$$19) {
@@ -66,257 +57,241 @@ function v28(benchmark$$1, data$$18) {
     var start$$4 = new Date;
     var i$$5 = 0;
     var v168;
-    if(doDeterministic$$1) {
-      v168 = i$$5 < benchmark$$1.deterministicIterations
-    }else {
-      v168 = elapsed < 1E3
+    if (doDeterministic$$1) {
+      v168 = i$$5 < benchmark$$1.deterministicIterations;
+    } else {
+      v168 = elapsed < 1E3;
     }
     var v37 = v168;
-    for(;v37;) {
-      benchmark$$1.run();
+    for (;v37;) {
+      JAM.call(benchmark$$1.run, benchmark$$1, [], JAM.policy.p1);
       elapsed = new Date - start$$4;
       i$$5 = i$$5 + 1;
       var v169;
-      if(doDeterministic$$1) {
-        v169 = i$$5 < benchmark$$1.deterministicIterations
-      }else {
-        v169 = elapsed < 1E3
+      if (doDeterministic$$1) {
+        v169 = i$$5 < benchmark$$1.deterministicIterations;
+      } else {
+        v169 = elapsed < 1E3;
       }
-      v37 = v169
+      v37 = v169;
     }
-    if(data$$19 != null) {
+    if (data$$19 != null) {
       data$$19.runs = data$$19.runs + i$$5;
-      data$$19.elapsed = data$$19.elapsed + elapsed
+      data$$19.elapsed = data$$19.elapsed + elapsed;
     }
-    return
+    return;
   }
   var config = BenchmarkSuite.config;
   var v39;
-  if(config.doWarmup !== undefined) {
-    v39 = config.doWarmup
-  }else {
-    v39 = benchmark$$1.doWarmup
+  if (config.doWarmup !== undefined) {
+    v39 = config.doWarmup;
+  } else {
+    v39 = benchmark$$1.doWarmup;
   }
   var doWarmup$$1 = v39;
   var v40;
-  if(config.doDeterministic !== undefined) {
-    v40 = config.doDeterministic
-  }else {
-    v40 = benchmark$$1.doDeterministic
+  if (config.doDeterministic !== undefined) {
+    v40 = config.doDeterministic;
+  } else {
+    v40 = benchmark$$1.doDeterministic;
   }
   var doDeterministic$$1 = v40;
   var v174 = !doWarmup$$1;
-  if(v174) {
-    v174 = data$$18 == null
+  if (v174) {
+    v174 = data$$18 == null;
   }
-  if(v174) {
-    data$$18 = {runs:0, elapsed:0}
+  if (v174) {
+    data$$18 = {runs:0, elapsed:0};
   }
-  if(data$$18 == null) {
+  if (data$$18 == null) {
     Measure(null);
-    return{runs:0, elapsed:0}
-  }else {
+    return{runs:0, elapsed:0};
+  } else {
     Measure(data$$18);
-    if(data$$18.runs < benchmark$$1.minIterations) {
-      return data$$18
+    if (data$$18.runs < benchmark$$1.minIterations) {
+      return data$$18;
     }
     var usec = data$$18.elapsed * 1E3 / data$$18.runs;
     var v45;
-    if(benchmark$$1.rmsResult != null) {
-      v45 = benchmark$$1.rmsResult()
-    }else {
-      v45 = 0
+    if (benchmark$$1.rmsResult != null) {
+      v45 = JAM.call(benchmark$$1.rmsResult, benchmark$$1, [], JAM.policy.p1);
+    } else {
+      v45 = 0;
     }
     var rms = v45;
-    JAM.call(this.NotifyStep, this, [new BenchmarkResult(benchmark$$1, usec, rms)]);
-    return null
+    JAM.call(this.NotifyStep, this, [new BenchmarkResult(benchmark$$1, usec, rms)], JAM.policy.p1);
+    return null;
   }
-  return
+  return;
 }
-function v27(error$$2) {
-  if(this.runner.NotifyError) {
+function v27(error$$1) {
+  if (this.runner.NotifyError) {
     var v48 = this.runner;
-    JAM.call(v48.NotifyError, v48, [this.name, error$$2])
+    JAM.call(v48.NotifyError, v48, [this.name, error$$1], JAM.policy.p1);
   }
-  if(this.runner.NotifyStep) {
+  if (this.runner.NotifyStep) {
     var v51 = this.runner;
-    JAM.call(v51.NotifyStep, v51, [this.name])
+    JAM.call(v51.NotifyStep, v51, [this.name], JAM.policy.p1);
   }
-  return
+  return;
 }
 function v26(runner$$1) {
-  BenchmarkSuite.scores.push(1);
-  if(runner$$1.NotifyResult) {
-    JAM.call(runner$$1.NotifyResult, runner$$1, [this.name, "Skipped"])
+  var v54 = BenchmarkSuite.scores;
+  JAM.call(v54.push, v54, [1], JAM.policy.p1);
+  if (runner$$1.NotifyResult) {
+    JAM.call(runner$$1.NotifyResult, runner$$1, [this.name, "Skipped"], JAM.policy.p1);
   }
-  return
+  return;
 }
 function v25() {
-  var mean = JAM.call(BenchmarkSuite.GeometricMeanTime, BenchmarkSuite, [this.results]);
+  var mean = JAM.call(BenchmarkSuite.GeometricMeanTime, BenchmarkSuite, [this.results], JAM.policy.p1);
   var score$$1 = this.reference[0] / mean;
-  BenchmarkSuite.scores.push(score$$1);
-  if(this.runner.NotifyResult) {
-    var formatted$$1 = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * score$$1]);
+  var v59 = BenchmarkSuite.scores;
+  JAM.call(v59.push, v59, [score$$1], JAM.policy.p1);
+  if (this.runner.NotifyResult) {
+    var formatted$$1 = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * score$$1], JAM.policy.p1);
     var v61 = this.runner;
-    JAM.call(v61.NotifyResult, v61, [this.name, formatted$$1])
+    JAM.call(v61.NotifyResult, v61, [this.name, formatted$$1], JAM.policy.p1);
   }
-  if(this.reference.length == 2) {
-    var meanLatency = JAM.call(BenchmarkSuite.GeometricMeanLatency, BenchmarkSuite, [this.results]);
-    if(meanLatency != 0) {
+  if (this.reference.length == 2) {
+    var meanLatency = JAM.call(BenchmarkSuite.GeometricMeanLatency, BenchmarkSuite, [this.results], JAM.policy.p1);
+    if (meanLatency != 0) {
       var scoreLatency = this.reference[1] / meanLatency;
-      BenchmarkSuite.scores.push(scoreLatency);
-      if(this.runner.NotifyResult) {
-        var formattedLatency = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * scoreLatency]);
+      var v66 = BenchmarkSuite.scores;
+      JAM.call(v66.push, v66, [scoreLatency], JAM.policy.p1);
+      if (this.runner.NotifyResult) {
+        var formattedLatency = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * scoreLatency], JAM.policy.p1);
         var v68 = this.runner;
-        JAM.call(v68.NotifyResult, v68, [this.name + "Latency", formattedLatency])
+        JAM.call(v68.NotifyResult, v68, [this.name + "Latency", formattedLatency], JAM.policy.p1);
       }
     }
   }
-  return
+  return;
 }
 function v24(result$$1) {
-  this.results.push(result$$1);
-  if(this.runner.NotifyStep) {
+  var v73 = this.results;
+  JAM.call(v73.push, v73, [result$$1], JAM.policy.p1);
+  if (this.runner.NotifyStep) {
     var v74 = this.runner;
-    JAM.call(v74.NotifyStep, v74, [result$$1.benchmark.name])
+    JAM.call(v74.NotifyStep, v74, [result$$1.benchmark.name], JAM.policy.p1);
   }
-  return
+  return;
 }
 function v23(value$$29) {
-  if(value$$29 > 100) {
-    return value$$29.toFixed(0)
-  }else {
-    return value$$29.toPrecision(3)
+  if (value$$29 > 100) {
+    return JAM.call(value$$29.toFixed, value$$29, [0], JAM.policy.p1);
+  } else {
+    return JAM.call(value$$29.toPrecision, value$$29, [3], JAM.policy.p1);
   }
-  return
+  return;
 }
 function v22(measurements$$1) {
   var log$$2 = 0;
   var hasLatencyResult = false;
   var i$$4 = 0;
   var v79 = i$$4 < measurements$$1.length;
-  for(;v79;) {
-    introspect(JAM.policy.p1) {
-      var v263 = measurements$$1[i$$4]
-    }
-    if(v263.latency != 0) {
-      var v191 = log$$2;
-      introspect(JAM.policy.p1) {
-        var v283 = measurements$$1[i$$4]
-      }
-      log$$2 = v191 + Math.log(v283.latency);
-      hasLatencyResult = true
+  for (;v79;) {
+    if (measurements$$1[i$$4].latency != 0) {
+      log$$2 = log$$2 + JAM.call(Math.log, Math, [measurements$$1[i$$4].latency], JAM.policy.p1);
+      hasLatencyResult = true;
     }
     i$$4 = i$$4 + 1;
-    v79 = i$$4 < measurements$$1.length
+    v79 = i$$4 < measurements$$1.length;
   }
-  if(hasLatencyResult) {
-    return Math.pow(Math.E, log$$2 / measurements$$1.length)
-  }else {
-    return 0
+  if (hasLatencyResult) {
+    return JAM.call(Math.pow, Math, [Math.E, log$$2 / measurements$$1.length], JAM.policy.p1);
+  } else {
+    return 0;
   }
-  return
+  return;
 }
 function v21(measurements) {
   var log$$1 = 0;
   var i$$3 = 0;
   var v82 = i$$3 < measurements.length;
-  for(;v82;) {
-    var v196 = log$$1;
-    introspect(JAM.policy.p1) {
-      var v284 = measurements[i$$3]
-    }
-    log$$1 = v196 + Math.log(v284.time);
+  for (;v82;) {
+    log$$1 = log$$1 + JAM.call(Math.log, Math, [measurements[i$$3].time], JAM.policy.p1);
     i$$3 = i$$3 + 1;
-    v82 = i$$3 < measurements.length
+    v82 = i$$3 < measurements.length;
   }
-  return Math.pow(Math.E, log$$1 / measurements.length)
+  return JAM.call(Math.pow, Math, [Math.E, log$$1 / measurements.length], JAM.policy.p1);
 }
 function v20(numbers) {
   var log = 0;
   var i$$2 = 0;
   var v85 = i$$2 < numbers.length;
-  for(;v85;) {
-    var v201 = log;
-    introspect(JAM.policy.p1) {
-      var v266 = numbers[i$$2]
-    }
-    log = v201 + Math.log(v266);
+  for (;v85;) {
+    log = log + JAM.call(Math.log, Math, [numbers[i$$2]], JAM.policy.p1);
     i$$2 = i$$2 + 1;
-    v85 = i$$2 < numbers.length
+    v85 = i$$2 < numbers.length;
   }
-  return Math.pow(Math.E, log / numbers.length)
+  return JAM.call(Math.pow, Math, [Math.E, log / numbers.length], JAM.policy.p1);
 }
 function v19() {
   var result = 0;
   var suites$$1 = BenchmarkSuite.suites;
   var i$$1 = 0;
   var v88 = i$$1 < suites$$1.length;
-  for(;v88;) {
-    introspect(JAM.policy.p1) {
-      var v285 = suites$$1[i$$1]
-    }
-    result = result + v285.benchmarks.length;
+  for (;v88;) {
+    result = result + suites$$1[i$$1].benchmarks.length;
     i$$1 = i$$1 + 1;
-    v88 = i$$1 < suites$$1.length
+    v88 = i$$1 < suites$$1.length;
   }
-  return result
+  return result;
 }
 function v18(runner, skipBenchmarks$$1) {
   function RunStep() {
     var v208 = continuation;
-    if(!v208) {
-      v208 = index$$39 < length$$11
+    if (!v208) {
+      v208 = index$$39 < length$$11;
     }
     var v94 = v208;
-    for(;v94;) {
-      if(continuation) {
-        continuation = continuation()
-      }else {
+    for (;v94;) {
+      if (continuation) {
+        continuation = JAM.call(continuation, null, [], JAM.policy.p1);
+      } else {
         var v89 = index$$39;
         index$$39 = index$$39 + 1;
-        introspect(JAM.policy.p1) {
-          var suite = suites[v89]
+        var suite = suites[v89];
+        if (runner.NotifyStart) {
+          JAM.call(runner.NotifyStart, runner, [suite.name], JAM.policy.p1);
         }
-        if(runner.NotifyStart) {
-          JAM.call(runner.NotifyStart, runner, [suite.name])
-        }
-        if(skipBenchmarks$$1.indexOf(suite.name) > -1) {
-          JAM.call(suite.NotifySkipped, suite, [runner])
-        }else {
-          continuation = JAM.call(suite.RunStep, suite, [runner])
+        if (JAM.call(skipBenchmarks$$1.indexOf, skipBenchmarks$$1, [suite.name], JAM.policy.p1) > -1) {
+          JAM.call(suite.NotifySkipped, suite, [runner], JAM.policy.p1);
+        } else {
+          continuation = JAM.call(suite.RunStep, suite, [runner], JAM.policy.p1);
         }
       }
-      var v210 = continuation;
-      if(v210) {
-        var v270 = typeof window != "undefined";
-        if(v270) {
-          v270 = window.setTimeout
-        }
-        v210 = v270
+      var v270 = continuation;
+      if (v270) {
+        v270 = typeof window != "undefined";
       }
-      if(v210) {
-        window.setTimeout(RunStep, 25);
-        return
+      var v210 = v270;
+      if (v210) {
+        v210 = window.setTimeout;
+      }
+      if (v210) {
+        JAM.call(window.setTimeout, window, [RunStep, 25], JAM.policy.p1);
+        return;
       }
       var v211 = continuation;
-      if(!v211) {
-        v211 = index$$39 < length$$11
+      if (!v211) {
+        v211 = index$$39 < length$$11;
       }
-      v94 = v211
+      v94 = v211;
     }
-    if(runner.NotifyScore) {
-      var score = JAM.call(BenchmarkSuite.GeometricMean, BenchmarkSuite, [BenchmarkSuite.scores]);
-      var formatted = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * score]);
-      JAM.call(runner.NotifyScore, runner, [formatted])
+    if (runner.NotifyScore) {
+      var score = JAM.call(BenchmarkSuite.GeometricMean, BenchmarkSuite, [BenchmarkSuite.scores], JAM.policy.p1);
+      var formatted = JAM.call(BenchmarkSuite.FormatScore, BenchmarkSuite, [100 * score], JAM.policy.p1);
+      JAM.call(runner.NotifyScore, runner, [formatted], JAM.policy.p1);
     }
-    return
+    return;
   }
   var v98;
-  if(typeof skipBenchmarks$$1 === "undefined") {
-    v98 = []
-  }else {
-    v98 = skipBenchmarks$$1
+  if (typeof skipBenchmarks$$1 === "undefined") {
+    v98 = [];
+  } else {
+    v98 = skipBenchmarks$$1;
   }
   skipBenchmarks$$1 = v98;
   var continuation = null;
@@ -325,7 +300,7 @@ function v18(runner, skipBenchmarks$$1) {
   BenchmarkSuite.scores = [];
   var index$$39 = 0;
   RunStep();
-  return
+  return;
 }
 function v17() {
   function v16() {
@@ -336,181 +311,181 @@ function v17() {
       seed = (seed + 3550635116 ^ seed << 9) & 4294967295;
       seed = seed + 4251993797 + (seed << 3) & 4294967295;
       seed = (seed ^ 3042594569 ^ seed >>> 16) & 4294967295;
-      return(seed & 268435455) / 268435456
+      return(seed & 268435455) / 268435456;
     }
     var seed = 49734321;
-    return v15
+    return v15;
   }
   var v106 = Math;
   var v299 = v16();
   v106.random = v299;
-  return
+  return;
 }
 function v14(s$$2) {
-  throw"Alert called with argument: " + s$$2;
+  throw "Alert called with argument: " + s$$2;
 }
 function v13() {
-  return this.time
+  return this.time;
 }
 function v12() {
-  var v107 = performance.now;
-  if(!v107) {
-    var v225 = performance.mozNow;
-    if(!v225) {
-      var v273 = performance.msNow;
-      if(!v273) {
-        var v287 = performance.oNow;
-        if(!v287) {
-          var v294 = performance.webkitNow;
-          if(!v294) {
-            v294 = Date.now
-          }
-          v287 = v294
-        }
-        v273 = v287
-      }
-      v225 = v273
-    }
-    v107 = v225
+  var v295 = performance.now;
+  if (!v295) {
+    v295 = performance.mozNow;
   }
-  return v107
+  var v288 = v295;
+  if (!v288) {
+    v288 = performance.msNow;
+  }
+  var v273 = v288;
+  if (!v273) {
+    v273 = performance.oNow;
+  }
+  var v225 = v273;
+  if (!v225) {
+    v225 = performance.webkitNow;
+  }
+  var v107 = v225;
+  if (!v107) {
+    v107 = Date.now;
+  }
+  return v107;
 }
-function Benchmark(name$$31, doWarmup, doDeterministic, deterministicIterations, run, setup, tearDown, rmsResult, minIterations) {
+function Benchmark(name$$30, doWarmup, doDeterministic, deterministicIterations, run, setup, tearDown, rmsResult, minIterations) {
   function v1() {
-    return
+    return;
   }
   function v0() {
-    return
+    return;
   }
-  this.name = name$$31;
+  this.name = name$$30;
   this.doWarmup = doWarmup;
   this.doDeterministic = doDeterministic;
   this.deterministicIterations = deterministicIterations;
   this.run = run;
   var v108;
-  if(setup) {
-    v108 = setup
-  }else {
-    v108 = v0
+  if (setup) {
+    v108 = setup;
+  } else {
+    v108 = v0;
   }
   this.Setup = v108;
   var v109;
-  if(tearDown) {
-    v109 = tearDown
-  }else {
-    v109 = v1
+  if (tearDown) {
+    v109 = tearDown;
+  } else {
+    v109 = v1;
   }
   this.TearDown = v109;
   var v110;
-  if(rmsResult) {
-    v110 = rmsResult
-  }else {
-    v110 = null
+  if (rmsResult) {
+    v110 = rmsResult;
+  } else {
+    v110 = null;
   }
   this.rmsResult = v110;
   var v111;
-  if(minIterations) {
-    v111 = minIterations
-  }else {
-    v111 = 32
+  if (minIterations) {
+    v111 = minIterations;
+  } else {
+    v111 = 32;
   }
   this.minIterations = v111;
-  return
+  return;
 }
 function BenchmarkResult(benchmark, time, latency) {
   this.benchmark = benchmark;
   this.time = time;
   this.latency = latency;
-  return
+  return;
 }
-function BenchmarkSuite(name$$32, reference, benchmarks$$1) {
-  this.name = name$$32;
+function BenchmarkSuite(name$$31, reference, benchmarks$$1) {
+  this.name = name$$31;
   this.reference = reference;
   this.benchmarks = benchmarks$$1;
-  BenchmarkSuite.suites.push(this);
-  return
+  var v112 = BenchmarkSuite.suites;
+  JAM.call(v112.push, v112, [this], JAM.policy.p1);
+  return;
 }
 function setupCodeLoad() {
   salt = 0;
   indirectEval = eval;
-  return
+  return;
 }
 function tearDownCodeLoad() {
   salt = null;
   indirectEval = null;
-  return
+  return;
 }
 function runCodeLoadClosure() {
   runClosure();
   salt = salt + 1;
-  return
+  return;
 }
 function runCodeLoadJQuery() {
   runJQuery();
   salt = salt + 1;
-  return
+  return;
 }
 function jenkinsHash(key$$14, len) {
   var hash = 0;
   var i$$6 = 0;
   var v113 = i$$6 < len;
-  for(;v113;) {
-    introspect(JAM.policy.p1) {
-      var v227 = key$$14[i$$6]
-    }
-    hash = hash + v227;
+  for (;v113;) {
+    hash = hash + key$$14[i$$6];
     hash = hash + (hash << 10);
     hash = hash ^ hash >> 6;
     i$$6 = i$$6 + 1;
-    v113 = i$$6 < len
+    v113 = i$$6 < len;
   }
   hash = hash + (hash << 3);
   hash = hash ^ hash >> 11;
   hash = hash + (hash << 15);
-  return hash
+  return hash;
 }
 function cacheBust(str$$6, old) {
-  var keys = salt.toString().split("").map(parseFloat);
-  var hash$$1 = Math.abs(jenkinsHash(keys, keys.length));
-  var replacement = old + hash$$1.toString(36);
-  return str$$6.replace(new RegExp(old, "g"), replacement)
+  var v233 = JAM.call(salt.toString, salt, [], JAM.policy.p1);
+  var v114 = JAM.call(v233.split, v233, [""], JAM.policy.p1);
+  var keys = JAM.call(v114.map, v114, [parseFloat], JAM.policy.p1);
+  var hash$$1 = JAM.call(Math.abs, Math, [jenkinsHash(keys, keys.length)], JAM.policy.p1);
+  var replacement = old + JAM.call(hash$$1.toString, hash$$1, [36], JAM.policy.p1);
+  return JAM.call(str$$6.replace, str$$6, [new RegExp(old, "g"), replacement], JAM.policy.p1);
 }
 function runClosure() {
   var src$$inline_0 = "var googsalt=" + salt + ";" + BASE_JS + "(function(){return goog.cloneObject(googsalt);})();";
   src$$inline_0 = cacheBust(src$$inline_0, "goog");
-  var result$$inline_1 = JAM.call(indirectEval, null, [src$$inline_0]);
-  if(result$$inline_1 != salt) {
+  var result$$inline_1 = JAM.call(indirectEval, null, [src$$inline_0], JAM.policy.p1);
+  if (result$$inline_1 != salt) {
     throw new Error("Incorrect result: " + result$$inline_1);
   }
-  return
+  return;
 }
 function MockElement() {
   function v10(a$$7, b$$1) {
-    return
+    return;
   }
   function v9(a$$6) {
-    return
+    return;
   }
   function v8(a$$5, b) {
-    return
+    return;
   }
   function v7(a$$4) {
-    return[0]
+    return[0];
   }
   function v6(a$$3) {
-    return 0
+    return 0;
   }
   function v5(a$$2) {
-    return new MockElement
+    return new MockElement;
   }
   function v4() {
-    return new MockElement
+    return new MockElement;
   }
   function v3(a$$1) {
-    return
+    return;
   }
   function v2(a) {
-    return
+    return;
   }
   this.appendChild = v2;
   this.createComment = v3;
@@ -522,102 +497,104 @@ function MockElement() {
   this.insertBefore = v8;
   this.removeChild = v9;
   this.setAttribute = v10;
-  return
+  return;
 }
 function runJQuery() {
   var src$$inline_3 = "var windowmock = {'document':new MockElement(),                                 'location':{'href':''},                                 'navigator':{'userAgent':''}};" + "var jQuerySalt=" + salt + ";" + JQUERY_JS + "(function(){return windowmock.jQuery.grep([jQuerySalt],              function(a,b){return true;})[0];})();";
   src$$inline_3 = cacheBust(src$$inline_3, "jQuery");
-  var result$$inline_4 = JAM.call(indirectEval, null, [src$$inline_3]);
-  if(result$$inline_4 != salt) {
+  var result$$inline_4 = JAM.call(indirectEval, null, [src$$inline_3], JAM.policy.p1);
+  if (result$$inline_4 != salt) {
     throw new Error("Incorrect result: " + result$$inline_4);
   }
-  return
+  return;
 }
-function ShowBox(name$$33) {
+function ShowBox(name$$32) {
   function v11(entry) {
-    if(name$$33.valueOf() === entry.valueOf()) {
-      var box1 = JAM.call(document.getElementById, document, ["Box-" + name$$33 + "Latency"]);
-      box1.style.visibility = "visible"
+    if (JAM.call(name$$32.valueOf, name$$32, [], JAM.policy.p1) === JAM.call(entry.valueOf, entry, [], JAM.policy.p1)) {
+      var box1 = JAM.call(document.getElementById, document, ["Box-" + name$$32 + "Latency"], JAM.policy.p1);
+      box1.style.visibility = "visible";
     }
-    return
+    return;
   }
-  var box = JAM.call(document.getElementById, document, ["Box-" + name$$33]);
+  var box = JAM.call(document.getElementById, document, ["Box-" + name$$32], JAM.policy.p1);
   box.style.visibility = "visible";
-  var bar = JAM.call(document.getElementById, document, ["progress-bar"]).style.width = "" + (completed = completed + 1) / benchmarks * 100 + "%";
-  latencyBenchmarks.forEach(v11);
-  return
+  var bar = JAM.call(document.getElementById, document, ["progress-bar"], JAM.policy.p1).style.width = "" + (completed = completed + 1) / benchmarks * 100 + "%";
+  JAM.call(latencyBenchmarks.forEach, latencyBenchmarks, [v11], JAM.policy.p1);
+  return;
 }
-function AddResult(name$$34, result$$4) {
-  console.log(name$$34 + ": " + result$$4);
-  var box$$1 = JAM.call(document.getElementById, document, ["Result-" + name$$34]);
+function AddResult(name$$33, result$$4) {
+  JAM.call(console.log, console, [name$$33 + ": " + result$$4], JAM.policy.p1);
+  var box$$1 = JAM.call(document.getElementById, document, ["Result-" + name$$33], JAM.policy.p1);
   JAM.set(box$$1, "innerHTML", result$$4);
-  return
+  return;
 }
-function AddError(name$$35, error$$3) {
-  console.log(name$$35 + ": " + error$$3.message);
-  if(error$$3 == "TypedArrayUnsupported") {
-    AddResult(name$$35, "<b>Unsupported</b>")
-  }else {
-    if(error$$3 == "PerformanceNowUnsupported") {
-      AddResult(name$$35, "<b>Timer error</b>")
-    }else {
-      AddResult(name$$35, "<b>Error</b>")
+function AddError(name$$34, error$$2) {
+  JAM.call(console.log, console, [name$$34 + ": " + error$$2.message], JAM.policy.p1);
+  if (error$$2 == "TypedArrayUnsupported") {
+    AddResult(name$$34, "<b>Unsupported</b>");
+  } else {
+    if (error$$2 == "PerformanceNowUnsupported") {
+      AddResult(name$$34, "<b>Timer error</b>");
+    } else {
+      AddResult(name$$34, "<b>Error</b>");
     }
   }
   success = false;
-  return
+  return;
 }
 function AddScore(score$$2) {
-  var status = JAM.call(document.getElementById, document, ["main-banner"]);
-  if(success) {
-    JAM.set(status, "innerHTML", "Octane Score: " + score$$2)
-  }else {
-    JAM.set(status, "innerHTML", "Octane Score (incomplete): " + score$$2)
+  var status = JAM.call(document.getElementById, document, ["main-banner"], JAM.policy.p1);
+  if (success) {
+    JAM.set(status, "innerHTML", "Octane Score: " + score$$2);
+  } else {
+    JAM.set(status, "innerHTML", "Octane Score (incomplete): " + score$$2);
   }
-  JAM.call(document.getElementById, document, ["progress-bar-container"]).style.visibility = "hidden";
-  JAM.call(document.getElementById, document, ["bottom-text"]).style.visibility = "visible";
-  var v138 = JAM.call(document.getElementById, document, ["inside-anchor"]);
-  JAM.call(v138.removeChild, v138, [JAM.call(document.getElementById, document, ["bar-appendix"])]);
-  JAM.call(document.getElementById, document, ["alertbox"]).style.visibility = "hidden";
-  return
+  JAM.call(document.getElementById, document, ["progress-bar-container"], JAM.policy.p1).style.visibility = "hidden";
+  JAM.call(document.getElementById, document, ["bottom-text"], JAM.policy.p1).style.visibility = "visible";
+  var v138 = JAM.call(document.getElementById, document, ["inside-anchor"], JAM.policy.p1);
+  JAM.call(v138.removeChild, v138, [JAM.call(document.getElementById, document, ["bar-appendix"], JAM.policy.p1)], JAM.policy.p1);
+  JAM.call(document.getElementById, document, ["alertbox"], JAM.policy.p1).style.visibility = "hidden";
+  return;
 }
 function Run() {
-  JAM.set(JAM.call(document.getElementById, document, ["main-banner"]), "innerHTML", "Running Octane...");
-  JAM.set(JAM.call(document.getElementById, document, ["bar-appendix"]), "innerHTML", '<br/><div class="progress progress-striped" id="progress-bar-container" style="visibility:hidden"><div class="bar"style="width: 0%;" id="progress-bar"></div></div>');
-  var anchor = JAM.call(document.getElementById, document, ["run-octane"]);
-  var parent = JAM.call(document.getElementById, document, ["main-container"]);
-  JAM.call(parent.appendChild, parent, [JAM.call(document.getElementById, document, ["inside-anchor"])]);
-  JAM.call(parent.removeChild, parent, [anchor]);
-  JAM.set(JAM.call(document.getElementById, document, ["startup-text"]), "innerHTML", "");
-  JAM.call(document.getElementById, document, ["progress-bar-container"]).style.visibility = "visible";
-  JAM.call(BenchmarkSuite.RunSuites, BenchmarkSuite, [{NotifyStart:ShowBox, NotifyError:AddError, NotifyResult:AddResult, NotifyScore:AddScore}, skipBenchmarks]);
-  return
+  JAM.set(JAM.call(document.getElementById, document, ["main-banner"], JAM.policy.p1), "innerHTML", "Running Octane...");
+  JAM.set(JAM.call(document.getElementById, document, ["bar-appendix"], JAM.policy.p1), "innerHTML", '<br/><div class="progress progress-striped" id="progress-bar-container" style="visibility:hidden"><div class="bar"style="width: 0%;" id="progress-bar"></div></div>');
+  var anchor = JAM.call(document.getElementById, document, ["run-octane"], JAM.policy.p1);
+  var parent = JAM.call(document.getElementById, document, ["main-container"], JAM.policy.p1);
+  JAM.call(parent.appendChild, parent, [JAM.call(document.getElementById, document, ["inside-anchor"], JAM.policy.p1)], JAM.policy.p1);
+  JAM.call(parent.removeChild, parent, [anchor], JAM.policy.p1);
+  JAM.set(JAM.call(document.getElementById, document, ["startup-text"], JAM.policy.p1), "innerHTML", "");
+  JAM.call(document.getElementById, document, ["progress-bar-container"], JAM.policy.p1).style.visibility = "visible";
+  JAM.call(BenchmarkSuite.RunSuites, BenchmarkSuite, [{NotifyStart:ShowBox, NotifyError:AddError, NotifyResult:AddResult, NotifyScore:AddScore}, skipBenchmarks], JAM.policy.p1);
+  return;
 }
 function CheckCompatibility() {
-  var v147 = typeof Uint8Array != "undefined";
-  if(v147) {
-    var v250 = typeof Float64Array != "undefined";
-    if(v250) {
-      v250 = typeof(new Uint8Array(0)).subarray != "undefined"
-    }
-    v147 = v250
+  var v249 = typeof Uint8Array != "undefined";
+  if (v249) {
+    v249 = typeof Float64Array != "undefined";
+  }
+  var v147 = v249;
+  if (v147) {
+    v147 = typeof(new Uint8Array(0)).subarray != "undefined";
   }
   var hasTypedArrays = v147;
-  if(!hasTypedArrays) {
-    console.log("Typed Arrays not supported");
-    JAM.call(document.getElementById, document, ["alertbox"]).style.display = "block"
+  if (!hasTypedArrays) {
+    JAM.call(console.log, console, ["Typed Arrays not supported"], JAM.policy.p1);
+    JAM.call(document.getElementById, document, ["alertbox"], JAM.policy.p1).style.display = "block";
   }
-  if(window.document.URL.indexOf("skip_zlib=1") >= 0) {
-    skipBenchmarks.push("zlib")
+  var v281 = window.document.URL;
+  if (JAM.call(v281.indexOf, v281, ["skip_zlib=1"], JAM.policy.p1) >= 0) {
+    JAM.call(skipBenchmarks.push, skipBenchmarks, ["zlib"], JAM.policy.p1);
   }
-  if(window.document.URL.indexOf("auto=1") >= 0) {
-    Run()
+  var v282 = window.document.URL;
+  if (JAM.call(v282.indexOf, v282, ["auto=1"], JAM.policy.p1) >= 0) {
+    Run();
   }
-  return
+  return;
 }
 function Load() {
   JAM.call(setTimeout, null, [CheckCompatibility, 200]);
-  return
+  return;
 }
 var performance = performance || {};
 var v152 = performance;
@@ -668,13 +645,13 @@ var v303 = v304 + 'y(this,arguments):a==null||d?this.each(function(){var b=d?a:f
 var v302 = v303 + 'duration==Infinity?this.now=e:(c=e-this.startTime,this.state=c/i.duration,this.pos=f.easing[i.animatedProperties[this.prop]](this.state,c,0,1,i.duration),this.now=this.start+(this.end-this.start)*this.pos),this.update();return!0}},f.extend(f.fx,{tick:function(){var a,b=f.timers,c=0;for(;c<b.length;c++)a=b[c],!a()&&b[c]===a&&b.splice(c--,1);b.length||f.fx.stop()},interval:13,stop:function(){clearInterval(co),co=null},speeds:{slow:600,fast:200,_default:400},step:{opacity:function(a){f.style(a.elem,"opacity",a.now)},_default:function(a){a.elem.style&&a.elem.style[a.prop]!=null?a.elem.style[a.prop]=a.now+a.unit:a.elem[a.prop]=a.now}}}),f.each(cp.concat.apply([],cp),function(a,b){b.indexOf("margin")&&(f.fx.step[b]=function(a){f.style(a.elem,b,Math.max(0,a.now)+a.unit)})}),f.expr&&f.expr.filters&&(f.expr.filters.animated=function(a){return f.grep(f.timers,function(b){return a===b.elem}).length});var cv,cw=/^t(?:able|d|h)$/i,cx=/^(?:body|html)$/i;"getBoundingClientRect"in c.documentElement?cv=function(a,b,c,d){try{d=a.getBoundingClientRect()}catch(e){}if(!d||!f.contains(c,a))return d?{top:d.top,left:d.left}:{top:0,left:0};var g=b.body,h=cy(b),i=c.clientTop||g.clientTop||0,j=c.clientLeft||g.clientLeft||0,k=h.pageYOffset||f.support.boxModel&&c.scrollTop||g.scrollTop,l=h.pageXOffset||f.support.boxModel&&c.scrollLeft||g.scrollLeft,m=d.top+k-i,n=d.left+l-j;return{top:m,left:n}}:cv=function(a,b,c){var d,e=a.offsetParent,g=a,h=b.body,i=b.defaultView,j=i?i.getComputedStyle(a,null):a.currentStyle,k=a.offsetTop,l=a.offsetLeft;while((a=a.parentNode)&&a!==h&&a!==c){if(f.support.fixedPosition&&j.position==="fixed")break;d=i?i.getComputedStyle(a,null):a.currentStyle,k-=a.scrollTop,l-=a.scrollLeft,a===e&&(k+=a.offsetTop,l+=a.offsetLeft,f.support.doesNotAddBorder&&(!f.support.doesAddBorderForTableAndCells||!cw.test(a.nodeName))&&(k+=parseFloat(d.borderTopWidth)||0,l+=parseFloat(d.borderLeftWidth)||0),g=e,e=a.offsetParent),f.support.subtractsBorderForOverflowNotVisible&&d.overflow!=="visible"&&(k+=parseFloat(d.borderTopWidth)||0,l+=parseFloat(d.borderLeftWidth)||0),j=d}if(j.position==="relative"||j.position==="static")k+=h.offsetTop,l+=h.offsetLeft;f.support.fixedPosition&&j.position==="fixed"&&(k+=Math.max(c.scrollTop,h.scrollTop),l+=Math.max(c.scrollLeft,h.scrollLeft));return{top:k,left:l}},f.fn.offset=function(a){if(arguments.length)return a===b?this:this.each(function(b){f.offset.setOffset(this,a,b)});var c=this[0],d=c&&c.ownerDocument;if(!d)return null;if(c===d.body)return f.offset.bodyOffset(c);return cv(c,d,d.documentElement)},f.offset={bodyOffset:function(a){var b=a.offsetTop,c=a.offsetLeft;f.support.doesNotIncludeMarginInBodyOffset&&(b+=parseFloat(f.css(a,"marginTop"))||0,c+=parseFloat(f.css(a,"marginLeft"))||0);return{top:b,left:c}},setOffset:function(a,b,c){var d=f.css(a,"position");d==="static"&&(a.style.position="relative");var e=f(a),g=e.offset(),h=f.css(a,"top"),i=f.css(a,"left"),j=(d==="absolute"||d==="fixed")&&f.inArray("auto",[h,i])>-1,k={},l={},m,n;j?(l=e.position(),m=l.top,n=l.left):(m=parseFloat(h)||0,n=parseFloat(i)||0),f.isFunction(b)&&(b=b.call(a,c,g)),b.top!=null&&(k.top=b.top-g.top+m),b.left!=null&&(k.left=b.left-g.left+n),"using"in b?b.using.call(a,k):e.css(k)}},f.fn.extend({position:function(){if(!this[0])return null;var a=this[0],b=this.offsetParent(),c=this.offset(),d=cx.test(b[0].nodeName)?{top:0,left:0}:b.offset();c.top-=parseFloat(f.css(a,"marginTop"))||0,c.left-=parseFloat(f.css(a,"marginLeft"))||0,d.top+=parseFloat(f.css(b[0],"borderTopWidth"))||0,d.left+=parseFloat(f.css(b[0],"borderLeftWidth"))||0;return{top:c.top-d.top,left:c.left-d.left}},offsetParent:function(){return this.map(function(){var a=this.offsetParent||c.body;while(a&&!cx.test(a.nodeName)&&f.css(a,"position")==="static")a=a.offsetParent;return a})}}),f.each({scrollLeft:"pageXOffset",scrollTop:"pageYOffset"},function(a,c){var d=/Y/.test(c);f.fn[a]=function(e){return f.access(this,function(a,e,g){var h=cy(a);if(g===b)return h?c in h?h[c]:f.support.boxModel&&h.document.documentElement[e]||h.document.body[e]:a[e];h?h.scrollTo(d?f(h).scrollLeft():g,d?g:f(h).scrollTop()):a[e]=g},a,e,arguments.length,null)}}),f.each({Height:"height",Width:"width"},function(a,c){var d="client"+a,e="scroll"+a,g="offset"+a;f.fn["inner"+a]=function(){var a=this[0];return a?a.style?parseFloat(f.css(a,c,"padding")):this[c]():null},f.fn["outer"+a]=function(a){var b=this[0];return b?b.style?parseFloat(f.css(b,c,a?"margin":"border")):this[c]():null},f.fn[c]=function(a){return f.access(this,function(a,c,h){var i,j,k,l;if(f.isWindow(a)){i=a.document,j=i.documentElement[d];return f.support.boxModel&&j||i.body&&i.body[d]||j}if(a.nodeType===9){i=a.documentElement;if(i[d]>=i[e])return i[d];return Math.max(a.body[e],i[e],a.body[g],i[g])}if(h===b){k=f.css(a,c),l=parseFloat(k);return f.isNumeric(l)?l:k}f(a).css(c,h)},c,a,arguments.length,null)}}),a.jQuery=a.$=f,typeof define=="function"&&define.amd&&define.amd.jQuery&&define("jquery",[],function(){return f})})(windowmock);';
 var JQUERY_JS = v302;
 var completed = 0;
-var benchmarks = BenchmarkSuite.CountBenchmarks();
+var benchmarks = JAM.call(BenchmarkSuite.CountBenchmarks, BenchmarkSuite, [], JAM.policy.p1);
 var success = true;
 var latencyBenchmarks = ["Splay", "Mandreel"];
 var v162;
-if(typeof skipBenchmarks === "undefined") {
-  v162 = []
-}else {
-  v162 = skipBenchmarks
+if (typeof skipBenchmarks === "undefined") {
+  v162 = [];
+} else {
+  v162 = skipBenchmarks;
 }
 var skipBenchmarks = v162

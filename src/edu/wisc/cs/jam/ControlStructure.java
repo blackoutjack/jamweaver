@@ -384,11 +384,9 @@ public abstract class ControlStructure extends ControlAutomaton {
 
   // Dump the current size of the automaton.
   protected void logSize(String desc) {
-    if (JAM.Opts.countNodes) {
-      String text = desc + "-edges:" + getEdges().size() + "\n";
-      text += desc + "-states:" + getStates().size() + "\n";
-      FileUtil.writeToMain(text, JAMConfig.INFO_FILENAME, true);
-    }
+    String text = desc + "-edges:" + getEdges().size() + "\n";
+    text += desc + "-states:" + getStates().size() + "\n";
+    FileUtil.writeToMain(text, JAMConfig.INFO_FILENAME, true);
   }
 
 }

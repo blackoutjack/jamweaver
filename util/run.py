@@ -40,7 +40,9 @@ def load_testcases(from_dir, default_policy=None):
 
   return cases
 
-def run_microbenchmarks(debug=False, overwrite=False):
+def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False):
+  if refine is None:
+    refine = 3
   tot = 0
   tot_ok = 0
   start = time.time()
@@ -54,6 +56,11 @@ def run_microbenchmarks(debug=False, overwrite=False):
     # Run with each policy file separately.
     for poldesc, polfile in poldict.iteritems():
       opts = []
+
+      synsuf = ''
+      if synonly:
+        opts.append('-z')
+        synsuf = '.syntaxonly'
 
       # Differentiate the output if policy indexed by a non-numeric key.
       # For example, the policy file jsqrcode.call.policy will be
@@ -69,29 +76,24 @@ def run_microbenchmarks(debug=False, overwrite=False):
 
       tot += 1
 
-      refine = 3
-
-      if seeds is not None:
-        refine = 0
-      if base.startswith('exfil_test') and poldesc != '':
-        refine = 0
-      if base == 'timeout0':
-        # Don't waste too much time waiting.
-        opts.append('--querytimeout')
-        opts.append('5')
-        refine = 0
+      ref = refine
+      if not synonly:
+        if seeds is not None:
+          ref = 0
+        if base == 'timeout0':
+          # Don't waste too much time waiting.
+          opts.append('--querytimeout')
+          opts.append('5')
+          ref = 0
 
       # Print the name of the file being analyzed.
       jsname = os.path.basename(srcfl)
       out(jsname)
 
       # Use the union of all policy files for a particular test.
-      outp = run_jam(srcfl, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
+      outp = run_jam(srcfl, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
 
-      if refine:
-        expsuf = exppre + ".exp.js"
-      else:
-        expsuf = exppre + ".norefine.exp.js"
+      expsuf = '%s%s.refine%d.exp.js' % (exppre, synsuf, ref)
 
       exppath = get_exp_path(srcfl, expsuf)
       if process_result(outp, exppath, overwrite):
@@ -107,7 +109,9 @@ def run_microbenchmarks(debug=False, overwrite=False):
     out('%d of %d microbenchmarks successful; %.2fs\n' % vals)
 # /run_microbenchmarks
       
-def run_benchmarks(refine=0, debug=False, overwrite=False):
+def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
+  if refine is None:
+    refine = 0
   tot = 0
   tot_ok = 0
   start = time.time()
@@ -120,6 +124,10 @@ def run_benchmarks(refine=0, debug=False, overwrite=False):
     # Run with each policy file separately.
     for poldesc, polfile in poldict.iteritems():
       opts = []
+
+      if synonly:
+        opts.append('-z')
+        synsuf = '.syntaxonly'
 
       # Differentiate the output if policy indexed by a non-numeric key.
       # For example, the policy file jsqrcode.call.policy will be
@@ -145,10 +153,7 @@ def run_benchmarks(refine=0, debug=False, overwrite=False):
       tot += 1
       outp = run_jam(srcfl, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
 
-      if refine:
-        expsuf = exppre + ".exp.js"
-      else:
-        expsuf = exppre + ".norefine.exp.js"
+      expsuf = '%s%s.refine%d.exp.js' % (exppre, synsuf, refine)
 
       exppath = get_exp_path(srcfl, expsuf)
       if process_result(outp, exppath, overwrite):
@@ -183,7 +188,9 @@ class Result():
     self.html_ok = False
     self.js_ok = False
 
-def run_website(url, policies, debug=False, overwrite=False):
+def run_website(url, policies, debug=False, overwrite=False, refine=None, synonly=False):
+  if refine is None:
+    refine = 0
   results = []
 
   # Run the unpacker.
@@ -214,6 +221,11 @@ def run_website(url, policies, debug=False, overwrite=False):
 
     opts = ['-X', '-P', '-N', appname, '-h', htmlfile]
 
+    synsuf = ''
+    if synonly:
+      opts.append('-z')
+      synsuf = '.syntaxonly'
+
     if poldesc != '':
       opts.append('--appsuffix')
       opts.append(poldesc)
@@ -222,9 +234,9 @@ def run_website(url, policies, debug=False, overwrite=False):
       exppre = ''
 
     out("Analyzing %s" % appname)
-    outp = run_jam(srclist, [polfile], refine=0, debug=debug, seeds=None, moreopts=opts)
+    outp = run_jam(srclist, [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
 
-    expsuf = exppre + ".norefine.exp.js"
+    expsuf = '%s%s.refine%d.exp.js' % (exppre, synsuf, refine)
     exppath = os.path.join(WEBSITE_DIR, appname + expsuf)
     result.js_ok = process_result(outp, exppath, overwrite)
 
@@ -256,13 +268,13 @@ def run_website(url, policies, debug=False, overwrite=False):
     rpfl.close()
     out("Saved to %s" % rpfile)
 
-    rpexpsuf = exppre + '.norefine.exp.html'
+    rpexpsuf = '%s%s.refine%d.exp.html' % (exppre, synsuf, refine)
     rpexppath = os.path.join(WEBSITE_DIR, appname + rpexpsuf)
     result.html_ok = process_result(rpout, rpexppath, overwrite)
 
   return results
 
-def run_websites(debug=False, overwrite=False):
+def run_websites(debug=False, overwrite=False, refine=None, synonly=False):
   tot = 0
   js_ok = 0
   html_ok = 0
@@ -274,7 +286,7 @@ def run_websites(debug=False, overwrite=False):
     policies = load_policies(WEBSITE_DIR, site)
     
     url = 'http://' + site
-    results = run_website(url, policies, debug=debug, overwrite=overwrite)
+    results = run_website(url, policies, debug=debug, overwrite=overwrite, refine=refine, synonly=synonly)
 
     # Track successful results
     tot += len(results)
@@ -328,6 +340,8 @@ def main():
   parser.add_option('-g', '--debug', action='store_true', default=False, dest='debug', help='generate debug output')
   parser.add_option('-u', '--url', action='store', default=None, dest='url', help='analyze HTML/JS at given URL')
   parser.add_option('-Y', '--policy', action='store', default=None, dest='policy', help='policy file to apply to URL')
+  parser.add_option('-p', '--refine', action='store', default=None, dest='refine', help='maximum of number of predicates to learn')
+  parser.add_option('-z', '--syntax-only', action='store_true', default=False, dest='syntaxonly', help='use syntax-only (not semantic) analysis')
 
   opts, args = parser.parse_args()
     
@@ -343,17 +357,13 @@ def main():
   #  run_interpreter_tests(opts.debug)
   if opts.url is not None:
     pol = load_policy(opts.policy)
-    run_website(opts.url, pol, debug=opts.debug, overwrite=opts.overwrite)
+    run_website(opts.url, pol, debug=opts.debug, overwrite=opts.overwrite, refine=opts.refine, synonly=opts.syntaxonly)
   if allmods or opts.micro:
-    run_microbenchmarks(opts.debug, opts.overwrite)
+    run_microbenchmarks(opts.debug, opts.overwrite, refine=opts.refine, synonly=opts.syntaxonly)
   if allmods or opts.benchmarks:
-    # Run first without abstraction refinement.
-    run_benchmarks(0, opts.debug, opts.overwrite)
+    run_benchmarks(opts.debug, opts.overwrite, refine=opts.refine, synonly=opts.syntaxonly)
   if allmods or opts.websites:
-    run_websites(opts.debug, opts.overwrite)
-  #if allmods or opts.benchmarks:
-    # Run with limited refinement.
-    #run_benchmarks(4, opts.debug)
+    run_websites(opts.debug, opts.overwrite, refine=opts.refine, synonly=opts.syntaxonly)
 
 
 if __name__ == "__main__":

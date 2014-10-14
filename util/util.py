@@ -239,12 +239,12 @@ def sort_dirs(apps, dirs):
 
   return sorted_dirs
 
-def get_source_info(srcdir, bases):
-  # Assumes that directories within |srcdir| are of the form "app-iter",
+def get_results_info(resdir, bases):
+  # Assumes that directories within |resdir| are of the form "app-iter",
   # where "iter" is a label to separate the results of multiple analyses
   # for one application. Only the most recent result for each app is
   # transferred.
-  resultsdirs = os.listdir(srcdir)
+  resultsdirs = os.listdir(resdir)
 
   # Map the application name to a triple consisting of the output
   # version, source file and policy file. If a more recent analysis of
@@ -253,10 +253,12 @@ def get_source_info(srcdir, bases):
 
   resultsdirs = sort_dirs(bases, resultsdirs)
   for app, dirlist in resultsdirs.iteritems():
+    # Each element of |dirlist| is a triple of directory information
+    # consisting of application, results version, and directory name.
     appfiles[app] = { 'version': None }
     appinfo = appfiles[app]
     for dirinfo in dirlist:
-      dirpath = os.path.join(srcdir, dirinfo['dir'])
+      dirpath = os.path.join(resdir, dirinfo['dir'])
       if not os.path.isdir(dirpath):
         warn("Non-directory file encountered in source directory: %s" % dirfile)
         continue
@@ -264,22 +266,45 @@ def get_source_info(srcdir, bases):
       version = dirinfo['version']
       appinfo['version'] = version
 
+      appinfo['dir'] = dirpath
+
       polfile = os.path.join(dirpath, 'policy.js')
       if os.path.isfile(polfile):
         appinfo['policy'] = polfile
       modpolfile = os.path.join(dirpath, 'modular.policy.js')
       if os.path.isfile(modpolfile):
         appinfo['modular.policy'] = modpolfile
-      instrpolfile = os.path.join(dirpath, 'instrumented.policy.js')
-      if os.path.isfile(instrpolfile):
-        appinfo['instrumented.policy'] = instrpolfile
 
-      keys = ['original','closure','preprocessed','isolated','post','instrumented','indirection','collapsed','optimized']
+      fullfile = os.path.join(dirpath, '%s.js' % app)
+      if os.path.isfile(fullfile):
+        appinfo['full'] = fullfile
+      else:
+        warn('Unable to locate full script file: %s' % fullfile)
 
+      keys = ['original','closure','normalized','instrumented','indirection','collapsed','optimized']
       for key in keys:
-        keyfile = os.path.join(dirpath, app + '-' + key + '.js')
-        if os.path.isfile(keyfile):
-          appinfo[key] = keyfile
+        keydir = os.path.join(dirpath, 'source-%s' % key)
+        if os.path.isdir(keydir):
+          jslist = []
+          appinfo[key] = jslist
+          for jsfile in os.listdir(keydir):
+            if jsfile.endswith('.js'):
+              jspath = os.path.join(keydir, jsfile)
+              jslist.append(jspath)
+
+      # Parse the run's information file into a dictionary.
+      infofile = os.path.join(dirpath, 'info.txt')
+      appinfo['info'] = {}
+      if os.path.isfile(infofile):
+        infofl = open(infofile, 'r')
+        infolines = infofl.readlines()
+        infofl.close()
+        for infoline in infolines:
+          infoparts = infoline.split(':', 1)
+          if len(infoparts) == 2:
+            appinfo['info'][infoparts[0]] = infoparts[1]
+          else:
+            warn('Invalid info file line: %s' % infoline)
 
   return appfiles
 
@@ -321,8 +346,11 @@ def load_policy(polpath):
 # /load_policy
 
 # Return a default policy dict object.
-def load_default_policy():
-  polpath = DEFAULT_POLICY
+def load_default_policy(dirkey=None):
+  if dirkey is not None and dirkey in DEFAULT_POLICIES:
+    polpath = DEFAULT_POLICIES[dirkey]
+  else:
+    polpath = DEFAULT_POLICY
   return load_policy(polpath)
 # /load_default_policy
 
@@ -331,7 +359,7 @@ def load_default_policy():
 # '_') is removed from the basename and the files are scanned again.
 # This allows many similarly-named test cases use the same policy file.
 # Finally, if no policy is found, the DEFAULT_POLICY is used.
-def load_policies(fromdir, basename, polsuf='.policy'):
+def load_policies(fromdir, basename, polsuf='.policy', defwarn=True):
   polfiles = []
   for polname in os.listdir(fromdir):
     if polname.endswith(polsuf):
@@ -355,10 +383,11 @@ def load_policies(fromdir, basename, polsuf='.policy'):
       idx2 = curbase.rfind('-')
       maxidx = max(idx0, idx1, idx2)
       if maxidx <= 0:
+        if defwarn:
+          warn('Using the default policy for %s' % basename)
         # Return this directly so we don't get into an infinite loop
         # in case the default policy file can't be found.
-        warn('Using the default policy for %s' % basename)
-        return load_default_policy()
+        return load_default_policy(fromdir)
       else:
         curbase = curbase[:maxidx]
 
@@ -397,10 +426,6 @@ def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=
 
   cmd.extend(moreopts)
 
-  # Output node counts.
-  cmd.append('-C')
-
-  cmd.append('-z')
   #cmd.append('-P')
   cmd.append('-v')
   cmd.append('2')
@@ -463,7 +488,18 @@ def run_repacker(htmlfile, srclist, outdir, polpath=None, debug=False):
   outp, errp = repacker.communicate()
   code = repacker.returncode
   if code != 0:
+    out("OUTPUT: %s" % outp)
+    out(errp)
     err('Non-zero error code repacking %s: %s' % (htmlfile, code))
+
+  if debug:
+    # Output repacker warnings and errors.
+    lines = errp.split('\n')
+    for line in lines:
+        # Print warnings, errors, fatals and exception traces.
+        if not line.startswith('INFO: '):
+          # Just print, since the output type is already prepended.
+          print(line)
   return outp
 
 def run_unpacker(url, debug=False, saveall=False):
@@ -478,7 +514,7 @@ def run_unpacker(url, debug=False, saveall=False):
   outp = unpacker.communicate()[0]
   code = unpacker.returncode
   if code != 0:
-    out("OUTPUT: %s" % outp)
+    out(outp)
     err('Non-zero error code unpacking %s: %s' % (url, code))
     return None, None
   
@@ -574,7 +610,7 @@ def get_variant_bases(directory):
   bases = []
   for app in apps:
     base = get_base(app)
-    pols = load_policies(directory, base)
+    pols = load_policies(directory, base, defwarn=False)
     for poldesc, pol in pols.iteritems():
       if poldesc != '':
         bases.append(base + '.' + poldesc)

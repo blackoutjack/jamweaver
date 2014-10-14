@@ -240,15 +240,24 @@ public class JSExp extends Exp {
   }
 
   @Override
-  public boolean containsType(int t) {
+  public boolean containsType(int t, boolean blocks) {
     List<Exp> childs = getChildren();
     if (is(t)) return true;
     for (Exp c : childs) {
+      // For control nodes (like a for loop), we may not want to descend
+      // into body blocks.
+      if (!blocks && c.isBlock())
+        continue;
       // %%% Bad, bad
       if (((JSExp)c).containsType(t))
         return true;
     }
     return false;
+  }
+
+  @Override
+  public boolean containsType(int t) {
+    return containsType(t, true);
   }
 
   @Override
@@ -260,23 +269,37 @@ public class JSExp extends Exp {
   }
 
   @Override
-  public void findType(int t, List<Exp> out) {
+  public void findType(int t, List<Exp> out, boolean blocks) {
     if (is(t)) {
       out.add(this);
     }
     for (Exp c : getChildren()) {
+      if (!blocks && c.isBlock())
+        continue;
       ((Exp)c).findType(t, out);
     }
   }
 
   @Override
-  public void findNames(Set<String> out) {
+  public void findType(int t, List<Exp> out) {
+    findType(t, out, true);
+  }
+
+  @Override
+  public void findNames(Set<String> out, boolean blocks) {
     if (is(NAME)) {
       out.add(getString());
     }
     for (Exp c : getChildren()) {
+      if (!blocks && c.isBlock())
+        continue;
       ((Exp)c).findNames(out);
     }
+  }
+
+  @Override
+  public void findNames(Set<String> out) {
+    findNames(out, true);
   }
 
   @Override

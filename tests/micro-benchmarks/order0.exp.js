@@ -1,9 +1,9 @@
 // order0.js
 function f() {
-  return 2
+  return 2;
 }
 function g() {
-  return 1
+  return 1;
 }
 var v = 5;
 var v2 = v;

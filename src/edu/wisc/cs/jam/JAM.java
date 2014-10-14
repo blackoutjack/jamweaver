@@ -93,8 +93,7 @@ public class JAM {
     if (Opts.debug)
       FileUtil.writeToMain(policy, "policy.aut");
 
-    if (Opts.countNodes)
-      FileUtil.writeToMain("policy.aut:" + policy.getAstSize() + "\n", JAMConfig.INFO_FILENAME, true);
+    FileUtil.writeToMain("policy.aut:" + policy.getAstSize() + "\n", JAMConfig.INFO_FILENAME, true);
 
     Dbg.out("Policy initialized; " + policy.size() + " paths", 2);
   }
@@ -213,6 +212,10 @@ public class JAM {
     // all intermediate/debugging output in a single location.
     FileUtil.init(getApplicationName());
 
+    String infopath = FileUtil.writeToMain("predicate-limit:" + Opts.refinementLimit + "\n", JAMConfig.INFO_FILENAME, true);
+    FileUtil.writeToMain("syntax-only:" + Opts.syntaxOnly + "\n", JAMConfig.INFO_FILENAME, true);
+    Dbg.out("Analysis information: " + infopath, 1);
+
     sm = language.newSourceManager(sourceFiles);
     // %%% Check for errors in JSSourceManager constructor. 
 
@@ -253,15 +256,13 @@ public class JAM {
     Exp modpol = getCheckManager().getBasePolicyCode();
     if (modpol != null) {
       FileUtil.writeToMain(modpol.toCode(), "modular.policy.js");
-      if (Opts.countNodes)
-        FileUtil.writeToMain("modular.policy.js:" + modpol.getTreeSize() + "\n", JAMConfig.INFO_FILENAME, true);
+      FileUtil.writeToMain("modular.policy.js:" + modpol.getTreeSize() + "\n", JAMConfig.INFO_FILENAME, true);
     }
 
     Exp polsrc = getCheckManager().getSpecializedPolicyCode();
     if (polsrc != null) {
       FileUtil.writeToMain(polsrc.toCode(), "policy.js");
-      if (Opts.countNodes)
-        FileUtil.writeToMain("policy.js:" + polsrc.getTreeSize() + "\n", JAMConfig.INFO_FILENAME, true);
+      FileUtil.writeToMain("policy.js:" + polsrc.getTreeSize() + "\n", JAMConfig.INFO_FILENAME, true);
     }
   }
 
@@ -269,12 +270,10 @@ public class JAM {
 
     outputPolicyCode();
 
-    if (Opts.countNodes) {
-      if (cm instanceof TxManager) {
-        FileUtil.writeToMain("transactions:" + ((TxManager)cm).getTransactionCount() + "\n", JAMConfig.INFO_FILENAME, true);
-      }
-      FileUtil.writeToMain("checks:" + cm.getCheckCount() + "\n", JAMConfig.INFO_FILENAME, true);
+    if (cm instanceof TxManager) {
+      FileUtil.writeToMain("transactions:" + ((TxManager)cm).getTransactionCount() + "\n", JAMConfig.INFO_FILENAME, true);
     }
+    FileUtil.writeToMain("checks:" + cm.getCheckCount() + "\n", JAMConfig.INFO_FILENAME, true);
 
     sm.postprocess(getControlAutomaton(), getCheckManager());
 
@@ -438,9 +437,6 @@ public class JAM {
 
     @Option(name="--retids", usage="Embed return symbol ids in automata (can be expensive)")
     public static boolean embedReturnIds = false;
-
-    @Option(name="-C", usage="Output node count for various artifacts")
-    public static boolean countNodes = false;
 
     @Option(name="-F", usage="Forward analysis: add and analyze checks one-by-one")
     public static boolean forward = false;

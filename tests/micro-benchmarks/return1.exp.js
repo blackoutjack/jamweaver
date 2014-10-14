@@ -1,19 +1,19 @@
 // return1.js
 function g() {
   try {
-    if(x) {
-      return
-    }else {
-      x = 4
+    if (x) {
+      return;
+    } else {
+      x = 4;
     }
-  }finally {
+  } finally {
     introspect(JAM.policy.p1) {
-      x = 2
+      x = 2;
     }
   }
   x = 1;
-  return
+  return;
 }
 x = 3;
 g();
-JAM.call(print, null, [x])
+print(x)

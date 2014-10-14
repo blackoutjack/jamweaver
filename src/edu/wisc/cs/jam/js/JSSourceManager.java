@@ -421,14 +421,10 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   @Override
   public void preprocess() {
 
-    if (JAM.Opts.countNodes) {
-      int nodeCount = getNodeCount();
-      // This will cause a call to |runPass| to get a compiler.
-      FileUtil.writeToMain(FileUtil.getBaseName() + ".original.js:" + nodeCount + "\n", JAMConfig.INFO_FILENAME, true);
-      Dbg.out("Normalizing source: " + nodeCount + " nodes", 2);
-    } else {
-      Dbg.out("Normalizing source", 2);
-    }
+    int preNodeCount = getNodeCount();
+    // This will cause a call to |runPass| to get a compiler.
+    FileUtil.writeToMain(FileUtil.getBaseName() + ".original.js:" + preNodeCount + "\n", JAMConfig.INFO_FILENAME, true);
+    Dbg.out("Normalizing source: " + preNodeCount + " nodes", 2);
 
     // Include optimizations to make it easy on the flattener and
     // subsequent analysis.
@@ -486,13 +482,9 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     // Output the normalized source.
     saveSources("normalized");
 
-    if (JAM.Opts.countNodes) {
-      int nodeCount = getNodeCount();
-      FileUtil.writeToMain(FileUtil.getBaseName() + ".normalized.js:" + nodeCount + "\n", JAMConfig.INFO_FILENAME, true);
-      Dbg.out("Done normalizing: " + getNodeCount() + " nodes", 2);
-    } else {
-      Dbg.out("Done normalizing", 2);
-    }
+    int postNodeCount = getNodeCount();
+    FileUtil.writeToMain(FileUtil.getBaseName() + ".normalized.js:" + postNodeCount + "\n", JAMConfig.INFO_FILENAME, true);
+    Dbg.out("Done normalizing: " + getNodeCount() + " nodes", 2);
 
     /*
     if (JAM.Opts.transformEval) {
@@ -516,13 +508,13 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
   @Override
   public boolean propagateType(String srcName, String destName) {
-    Dbg.dbg("Propagating " + srcName + " -> " + destName);
+    Dbg.out("Propagating " + srcName + " -> " + destName, 4);
     return typeFacts.propagateType(srcName, destName);
   }
 
   @Override
   public void setType(String name, String typ) {
-    Dbg.dbg("Setting type " + name + " -> " + typ);
+    Dbg.out("Setting type " + name + " -> " + typ, 4);
     typeFacts.setType(name, typ);
   }
 
@@ -679,7 +671,6 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     }
 
     // %%% This reverts the optimization.
-    //if (JAM.Opts.countNodes)
     //  FileUtil.writeToMain(FileUtil.getBaseName() + ".optimized.js:" + getNodeCount() + "\n", JAMConfig.INFO_FILENAME, true);
 
     Dbg.out("Done optimizing", 2);

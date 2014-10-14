@@ -1,11 +1,11 @@
 // switch1.js
 function f() {
   alert("CNT: " + cnt);
-  return cnt++
+  return cnt++;
 }
 var cnt = 0;
 var i = 0;
-out:for(;true;) {
+out: for (;true;) {
   switch(i) {
     case f():
       alert("GOT 0");
@@ -21,7 +21,7 @@ out:for(;true;) {
       break;
     default:
       alert("GOT DEFAULT");
-      break out
+      break out;
   }
-  i = i * 2
+  i = i * 2;
 }

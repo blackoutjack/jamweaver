@@ -1,23 +1,23 @@
 // func-scope.js
 function v1() {
-  if(cnt < 6) {
+  if (cnt < 6) {
     cnt = cnt + 1;
-    g()
+    g();
   }
-  return
+  return;
 }
 function v0() {
-  if(cnt < 3) {
+  if (cnt < 3) {
     cnt = cnt + 1;
-    f()
+    f();
   }
-  return
+  return;
 }
 var x = true;
-if(x) {
-  var cnt = 0;
+if (x) {
   var f = v0;
+  var cnt = 0;
   var g = v1;
   f();
-  g()
+  g();
 }

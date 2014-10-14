@@ -5,6 +5,6 @@ function exfiltrate_key_history() {
   var event$$1 = new Event("dblclick");
   button.addEventListener("dblclick", JAM.call(Function, null, [exp]), false);
   button.dispatchEvent(event$$1);
-  return
+  return;
 }
 JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history)

@@ -2,7 +2,7 @@
 function transformed() {
   xxx = undefined;
   xxx = 5;
-  return
+  return;
 }
 transformed();
 alert(xxx)

@@ -67,8 +67,7 @@ public class JSCollapseTransform extends JSTransform {
     }
 
     Dbg.out("Temporary variables collapsed: " + collapseCnt, 1);
-    if (JAM.Opts.countNodes)
-      FileUtil.writeToMain("temporary-variables-collapsed:" + collapseCnt + "\n", JAMConfig.INFO_FILENAME, true);
+    FileUtil.writeToMain("temporary-variables-collapsed:" + collapseCnt + "\n", JAMConfig.INFO_FILENAME, true);
   }
 
   public class ScopeInfo {

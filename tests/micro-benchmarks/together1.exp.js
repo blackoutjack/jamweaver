@@ -1,20 +1,20 @@
 // together1.js
 function v0() {
   notanid();
-  return
+  return;
 }
 try {
-  alert("OK1");
   var f = v0;
-  f()
-}catch(ex) {
+  alert("OK1");
+  f();
+} catch (ex) {
   console.error(ex.name + ": " + ex.message);
   introspect(JAM.policy.p1) {
-    x = 2
+    x = 2;
   }
 }
 try {
-  alert("OK2")
-}catch(ex$$1) {
-  console.error(ex$$1.name + ": " + ex$$1.message)
+  alert("OK2");
+} catch (ex$$1) {
+  console.error(ex$$1.name + ": " + ex$$1.message);
 }

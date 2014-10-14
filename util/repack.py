@@ -85,8 +85,9 @@ def repack(htmlfile, jslist, jsdir=None, policy=None):
       out('Repacking %s, element: %s, id: %s' % (jstype, elt.name, jsid))
 
     if jstype == 'script.src':
-      elt.string = jstext
+      elt.string = '<![CDATA[\n' + jstext + '\n]]>'
     elif jstype == 'script.inline':
+      # %%% Do inline scripts still have CDATA tags?
       elt.string = jstext
     elif jstype == 'script.href':
       elt['href'] = 'javascript:' + re.sub('\n', ' ', jstext)

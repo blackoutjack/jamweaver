@@ -1,6 +1,6 @@
 // getter0.js
 function v0() {
-  return"ok"
+  return "ok";
 }
 var a = {};
 JAM.call(Object.defineProperty, Object, [a, "ok", {get:v0}]);

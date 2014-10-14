@@ -5,5 +5,5 @@ switch(x) {
     y = x;
     alert(x);
   default:
-    alert(x + 1)
+    alert(x + 1);
 }

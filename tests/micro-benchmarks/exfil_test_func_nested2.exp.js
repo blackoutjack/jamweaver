@@ -4,6 +4,6 @@ function exfiltrate_key_history() {
   var top$$2 = JAM.call(Function, null, [nest]);
   var sub = top$$2();
   sub();
-  return
+  return;
 }
 JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history)

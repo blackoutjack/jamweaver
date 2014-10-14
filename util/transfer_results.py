@@ -178,6 +178,10 @@ def copy_source(app, desc, src, tgtdir, wrap=False, mod=False):
 
   if not update_tgt and not update_prof: return
 
+  if not prepare_dir(tgtdir):
+    cfg.warn('Unable to prepare target directory: %s' % tgtdir)
+    return
+
   srcfl = open(src, 'r')
   if wrap:
     # Enclose the source within a call to |runTest|.
@@ -289,24 +293,6 @@ def prepare_dir(tgtdir):
     srcpath = os.path.join(cfg.SMS2DIR, 'sms2.head.html')
     linkname = tgtbase + '.head.html'
     cfg.symlink(srcpath, tgtdir, linkname=linkname, relative=True)
-    # %%% Specialness for policy upgrade
-    part = None
-    if tgtbase.endswith('-newcall'):
-      part = tgtbase[4:-7]
-      sms2base = part + 'call'
-    elif tgtbase.endswith('-newcall-big'):
-      part = tgtbase[4:-11]
-      sms2base = part + 'call-big'
-    elif tgtbase.endswith('-get'):
-      part = tgtbase[4:-3]
-      sms2base = part + 'call'
-    elif tgtbase.endswith('-get-big'):
-      part = tgtbase[4:-7]
-      sms2base = part + 'call-big'
-    if part is not None:
-      sms2src = cfg.SMS2DIR + sms2base
-      srcpath = os.path.join(sms2src, tgtbase + '.html')
-      cfg.symlink(srcpath, tgtdir, linkname='sms2' + sms2base + '.html', relative=True)
   return True
   
 def copy_files(appfiles, tgtdir, wrap=False, iso=False):
@@ -326,40 +312,39 @@ def copy_files(appfiles, tgtdir, wrap=False, iso=False):
     else:
       subtgtdir = tgtdir
 
-    if not prepare_dir(subtgtdir):
-      continue
     if sms2:
       bigsubtgtdir = subtgtdir + '-big'
-      if not prepare_dir(bigsubtgtdir):
-        continue
       bigapp = app + '-big'
 
     for desc, jssrc in info.iteritems():
-      if desc == "version": continue
-      if desc == "policy": continue
-      if desc == "modular.policy": continue
-      if desc == "instrumented.policy": continue
+      if desc == 'dir': continue
+      if desc == 'version': continue
+      if desc == 'policy': continue
+      if desc == 'modular.policy': continue
+      if desc == 'info': continue
 
-      assert os.path.isfile(jssrc)
-      copy_source(app, desc, jssrc, subtgtdir, w, False)
-      if sms2:
-        copy_source(bigapp, desc, jssrc, bigsubtgtdir, w, False)
+      if jssrc is str:
+        assert os.path.isfile(jssrc)
+        copy_source(app, desc, jssrc, subtgtdir, w, False)
+        if sms2:
+          copy_source(bigapp, desc, jssrc, bigsubtgtdir, w, False)
+      elif jssrc is list:
+        for jsfile in jssrc:
+          assert os.path.isfile(jsfile)
+          subsubtgtdir = os.path.join(subtgtdir, 'source-%s' % desc)
+          copy_source(app, desc, jsfile, subsubtgtdir, w, False)
+          if sms2:
+            bigsubsubtgtdir = os.path.join(bigsubtgtdir, 'source-%s' % desc)
+            copy_source(bigapp, desc, jsfile, bigsubsubtgtdir, w, False)
 
-      if desc == "original":
-        # Create a modular transaction version of the original.
-        copy_source(app, "original.modular", jssrc, subtgtdir, w, True)
-        if sms2:
-          copy_source(bigapp, "original.modular", jssrc, bigsubtgtdir, w, True)
-      if desc == "preprocessed":
-        # Create a modular transaction version of the preprocessed.
-        copy_source(app, "preprocessed.modular", jssrc, subtgtdir, w, True)
-        if sms2:
-          copy_source(bigapp, "preprocessed.modular", jssrc, bigsubtgtdir, w, True)
-      if desc == "closure":
-        # Create a modular transaction version of the preprocessed.
-        copy_source(app, "closure.modular", jssrc, subtgtdir, w, True)
-        if sms2:
-          copy_source(bigapp, "closure.modular", jssrc, bigsubtgtdir, w, True)
+          if desc in ['original', 'normalized', 'closure']:
+            # Create a modular transaction version of the original.
+            moddesc = '%s.modular' % desc
+            modsubsubtgtdir = os.path.join(subtgtdir, 'source-%s' % moddesc)
+            copy_source(app, moddesc, jsfile, modsubsubtgtdir, w, True)
+            if sms2:
+              bigmodsubsubtgtdir = os.path.join(bigsubtgtdir, 'source-%s' % moddesc)
+              copy_source(bigapp, moddesc, jsfile, bigmodsubsubtgtdir, w, True)
     
     # Collect various policy variations.
     for desc in ['policy', 'modular.policy']:
@@ -370,7 +355,7 @@ def copy_files(appfiles, tgtdir, wrap=False, iso=False):
   return True
 
 def transfer_results(srcdir, tgtdir, bases, wrap, iso):
-  appfiles = cfg.get_source_info(srcdir, bases)
+  appfiles = cfg.get_results_info(srcdir, bases)
   copy_files(appfiles, tgtdir, wrap, iso)
 
 def update_profile(tgtdir, app, wrap, iso):
@@ -463,7 +448,7 @@ def update_profiles(tgtdir, bases, wrap, iso):
       update_profile(tgtdir, app + '-big', wrap, iso)
 
 def update_expected(bases):
-  appfiles = cfg.get_source_info(cfg.SOURCEDIR, bases)
+  appfiles = cfg.get_results_info(cfg.RESULTSDIR, bases)
   dirs = [cfg.MICROBENCHMARK_DIR, cfg.BENCHMARK_DIR]
 
   for from_dir in dirs:
@@ -476,16 +461,7 @@ def update_expected(bases):
       # Some benchmarks have a modified version with a "-bad"
       # or "-ok" suffix. These can use the same policy as
       # the non-modified version.
-      policies = cfg.load_policies(from_dir, base) 
-      if len(policies) == 0:
-        subparts = base.split('-')
-        if subparts[-1] == 'bad' or subparts[-1] == 'ok':
-          xbase = '-'.join(subparts[:-1])
-          policies = cfg.load_policies(from_dir, xbase)
-      if len(policies) == 0:
-        policies = {'': ''}
-
-      seedfile = cfg.load_seeds(from_dir, base)
+      policies = cfg.load_policies(from_dir, base, defwarn=False) 
           
       # Run with each policy file separately.
       for poldesc in policies:
@@ -495,32 +471,40 @@ def update_expected(bases):
         # the analysis using jsqrcode.get.policy. Alter the .exp filename
         # accordingly.
         if poldesc != '':
-          outbase = base + '-' + poldesc
+          outbase = base + '.' + poldesc
           exppre = '.' + poldesc
         else:
           outbase = base
           exppre = ''
+        
+        appinfo = appfiles[outbase]
+        refine = 0
+        synonly = False
+        if 'info' in appinfo:
+          runinfo = appinfo['info']
+          if 'predicate-limit' in runinfo:
+            refine = runinfo['predicate-limit']
+          else:
+            cfg.warn('No predicate-limit info for run: %s' % appinfo['dir'])
 
-        # Mimic the logic in run.py:run_*
-        if from_dir == cfg.BENCHMARK_DIR:
-          refine = 0
+          if 'syntax-only' in runinfo:
+            if runinfo['syntax-only'] == 'true':
+              synonly = True
+          else:
+            cfg.warn('No syntax-only info for run: %s' % appinfo['dir'])
         else:
-          refine = 3
-          if seedfile is not None:
-            refine = 0
-          if base.startswith('exfil_test') and poldesc != '':
-            refine = 0
-          if base == 'timeout0':
-            refine = 0
+          cfg.warn('No run information: %s' % appinfo['dir'])
 
-        if refine:
-          expsuf = exppre + ".exp.js"
+        if synonly:
+          synsuf = '.syntaxonly'
         else:
-          expsuf = exppre + ".norefine.exp.js"
+          synsuf = ''
 
-        basefiles = appfiles[outbase]
-        if 'collapsed' in basefiles:
-          outfile = appfiles[outbase]['collapsed']
+        expsuf = '%s%s.refine%d.exp.js' % (exppre, synsuf, ref)
+
+        appinfo = appfiles[outbase]
+        if 'full' in appinfo:
+          outfile = appinfo['full']
           outfl = open(outfile, 'r')
           outp = outfl.read()
           outfl.close()

@@ -105,11 +105,14 @@ public abstract class Exp {
   public abstract Exp getAssignRHS();
   public abstract Exp isWithinType(int t);
   public abstract boolean containsType(int t);
+  public abstract boolean containsType(int t, boolean blocks);
   public abstract boolean isInGlobalScope();
   public abstract String getString();
   public abstract Exp getCondition();
   public abstract void findNames(Set<String> out);
   public abstract void findType(int t, List<Exp> out);
+  public abstract void findNames(Set<String> out, boolean blocks);
+  public abstract void findType(int t, List<Exp> out, boolean blocks);
 
   // Utility methods.
   public abstract SourceManager getSourceManager(); // %%% Might should just be a SourceFile

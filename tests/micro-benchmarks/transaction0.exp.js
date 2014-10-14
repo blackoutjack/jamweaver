@@ -1,11 +1,11 @@
 // transaction0.js
 function pol(tx) {
   tx.commit();
-  return
+  return;
 }
 x = undefined;
 introspect(pol) {
   introspect(JAM.policy.p1) {
-    x = 2
+    x = 2;
   }
 }

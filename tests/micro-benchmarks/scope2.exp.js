@@ -1,11 +1,11 @@
 // scope2.js
 function f(p) {
   alert(p);
-  return
+  return;
 }
 function c() {
   this.m = f;
-  return
+  return;
 }
 var o = new c;
 var a = JAM.call(o.m, o, ["ok"])

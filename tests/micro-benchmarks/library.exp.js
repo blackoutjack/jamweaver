@@ -2,20 +2,20 @@
 function f() {
   function v0() {
     introspect(JAM.policy.p2) {
-      x = 2
+      x = 2;
     }
-    return
+    return;
   }
   this.setter = v0;
-  return
+  return;
 }
 function g() {
   function v1() {
     introspect(JAM.policy.p2) {
-      x = 2
+      x = 2;
     }
-    return
+    return;
   }
   this.setter = v1;
-  return
+  return;
 }

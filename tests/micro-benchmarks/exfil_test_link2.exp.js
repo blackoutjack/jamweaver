@@ -11,6 +11,6 @@ function exfiltrate_key_history() {
   var linkref = document.getElementById("mylink");
   var event$$1 = new Event("click");
   linkref.dispatchEvent(event$$1);
-  return
+  return;
 }
 JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history)

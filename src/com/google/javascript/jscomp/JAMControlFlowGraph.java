@@ -154,7 +154,10 @@ public class JAMControlFlowGraph {
       // The node may be a BLOCK, if the function begins with a labeled
       // block. See flickr.js. It should not be a SCRIPT though.
       // %%% What happens to the LABEL node?
-      assert !destNode.isScript() : "Script node found at function entry: " + f.getName() + " / " + destNode + " / " + sm.codeFromNode(destNode);
+      String fname = f.getName();
+      assert !destNode.isScript() || fname.equals("{main}")
+        : "Script node found at function entry: " + f.getName()
+        + " / " + destNode + " / " + sm.codeFromNode(destNode);
 
       // The normal case where we have more statements to process
       State destState = loadDestinationState(f, destNode);

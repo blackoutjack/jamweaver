@@ -1,7 +1,7 @@
 // img1.js
 function v0() {
   alert("indexOf 2: " + String.prototype.indexOf);
-  return
+  return;
 }
 var html = "<img src='notapic.jpg' onerror='String.prototype.indexOf = false' />";
 var elts = document.getElementsByTagName("div");

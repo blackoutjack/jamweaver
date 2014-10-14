@@ -11,7 +11,7 @@ from util import err
 from util import out
 from util import warn
 from util import sort_dirs
-from util import get_source_info
+from util import get_results_info
 from util import get_exp_path
 from util import get_variant_bases
 from util import get_descriptors
@@ -25,7 +25,7 @@ fftgt = os.path.join(JSTESTDIR, 'micro')
 appsbases = get_variant_bases(BENCHMARK_DIR)
 appstgt = os.path.join(JSTESTDIR, 'bench')
 
-SOURCEDIR = OUTDIR
+RESULTSDIR = OUTDIR
 
 TARGETDIRS = {
   appstgt: {

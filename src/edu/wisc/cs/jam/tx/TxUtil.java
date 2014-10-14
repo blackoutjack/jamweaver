@@ -8,6 +8,7 @@ import com.google.javascript.rhino.Token;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.PredicateType;
+import edu.wisc.cs.jam.Dbg;
 
 import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPredicateType;
 import edu.wisc.cs.jam.js.ExpUtil;
@@ -46,7 +47,10 @@ public class TxUtil {
   }
 
   public static String getIntrospectorName(Node ispect) {
-    assert ispect.isGetProp() || ispect.isName();
+    if (!ispect.isGetProp() && !ispect.isName()) {
+      Dbg.warn("Unknown introspector format: " + ispect);
+      return null;
+    }
 
     if (ispect.isName()) return ispect.getString();
 
@@ -65,6 +69,7 @@ public class TxUtil {
   public static Set<PredicateType> getTxPredicateTypes(CheckManager cm, Node tx) {
     Node ispect = getTxIntrospector(tx);
     String ispectName = TxUtil.getIntrospectorName(ispect);
+    if (ispectName == null) return null;
     return cm.getPredicateTypes(ispectName);
   }
 }

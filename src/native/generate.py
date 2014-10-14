@@ -59,7 +59,13 @@ SYMB_PROP_LIST_PATH = os.path.join(NATIVE_PATH, 'symprops.list')
 VARLEN_LIST_PATH = os.path.join(NATIVE_PATH, 'varargs.list')
 TYPE_LIST_PATH = os.path.join(NATIVE_PATH, 'types.list')
 
-PRIMITIVES = ['#undefined', '#null', '#Infinity', '#-Infinity', '#NaN']
+PRIMITIVES = {
+  '#undefined': 'Undefined',
+  '#null': 'Null',
+  '#Infinity': 'Number',
+  '#-Infinity': 'Number',
+  '#NaN': 'Number',
+}
 
 # A list of native functions.
 # addr => { name, length, extra }
@@ -408,11 +414,8 @@ def print_dat():
   for typ in types:
     print >> outfl, typ, "Type"
 
-  print >> outfl, "#undefined", "Undefined"
-  print >> outfl, "#null", "Null"
-  print >> outfl, "#Infinity", "Number"
-  print >> outfl, "#-Infinity", "Number"
-  print >> outfl, "#NaN", "Number"
+  for prim, primtyp in PRIMITIVES.iteritems():
+    print >> outfl, prim, primtyp
 
   outfl.close()
   # end load_dat
@@ -457,25 +460,10 @@ def print_yices():
   print >> outfl, "(= (uniq Symbolic) %d)" % num
   num += 1
 
-  print >> outfl, "(= (uniq #undefined) %d)" % num
-  num += 1
-  print >> outfl, "(= (HasType #undefined) Undefined)"
-
-  print >> outfl, "(= (uniq #null) %d)" % num
-  num += 1
-  print >> outfl, "(= (HasType #null) Null)"
-
-  print >> outfl, "(= (uniq #Infinity) %d)" % num
-  num += 1
-  print >> outfl, "(= (HasType #Infinity) Number)"
-
-  print >> outfl, "(= (uniq #-Infinity) %d)" % num
-  num += 1
-  print >> outfl, "(= (HasType #-Infinity) Number)"
-
-  print >> outfl, "(= (uniq #NaN) %d)" % num
-  num += 1
-  print >> outfl, "(= (HasType #NaN) Number)"
+  for prim, primtyp in PRIMITIVES.iteritems():
+    print >> outfl, "(= (uniq %s) %d)" % (prim, num)
+    num += 1
+    print >> outfl, "(= (HasType %s) %s)" % (prim, primtyp)
 
   print >> outfl, "(= (uniq True) %d)" % num
   num += 1

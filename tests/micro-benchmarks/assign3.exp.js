@@ -1,7 +1,7 @@
 // assign3.js
 function f() {
   cnt = cnt + 1;
-  return 3
+  return 3;
 }
 var cnt = 10;
 var a = [4, 6, 8, 10, 12];

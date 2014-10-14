@@ -4,194 +4,194 @@ function getNSLayer(inNode, inName) {
   var i$$1;
   node$$2 = inNode[inName];
   i$$1 = 0;
-  var v278 = !node$$2;
-  if(v278) {
-    var v494 = inNode.layers;
-    if(v494) {
-      v494 = i$$1 < inNode.layers.length
-    }
-    v278 = v494
+  var v501 = !node$$2;
+  if (v501) {
+    v501 = inNode.layers;
+  }
+  var v278 = v501;
+  if (v278) {
+    v278 = i$$1 < inNode.layers.length;
   }
   var v1 = v278;
-  for(;v1;) {
+  for (;v1;) {
     node$$2 = getNSLayer(inNode.layers[i$$1].document, inName);
     i$$1 = i$$1 + 1;
-    var v280 = !node$$2;
-    if(v280) {
-      var v496 = inNode.layers;
-      if(v496) {
-        v496 = i$$1 < inNode.layers.length
-      }
-      v280 = v496
+    var v504 = !node$$2;
+    if (v504) {
+      v504 = inNode.layers;
     }
-    v1 = v280
+    var v280 = v504;
+    if (v280) {
+      v280 = i$$1 < inNode.layers.length;
+    }
+    v1 = v280;
   }
-  return node$$2
+  return node$$2;
 }
 function getLayer(inNode$$1, inName$$1) {
   var node$$3;
-  if(inNode$$1.getElementById) {
-    node$$3 = JAM.call(inNode$$1.getElementById, inNode$$1, [inName$$1], JAM.policy.p1)
-  }else {
-    if(inNode$$1.all) {
-      node$$3 = inNode$$1.all[inName$$1]
-    }else {
-      if(inNode$$1.layers) {
-        node$$3 = getNSLayer(inNode$$1, inName$$1)
+  if (inNode$$1.getElementById) {
+    node$$3 = JAM.call(inNode$$1.getElementById, inNode$$1, [inName$$1], JAM.policy.p1);
+  } else {
+    if (inNode$$1.all) {
+      node$$3 = inNode$$1.all[inName$$1];
+    } else {
+      if (inNode$$1.layers) {
+        node$$3 = getNSLayer(inNode$$1, inName$$1);
       }
     }
   }
-  if(!node$$3) {
-    alert("Could not find layer " + inName$$1 + ".")
+  if (!node$$3) {
+    alert("Could not find layer " + inName$$1 + ".");
   }
-  return node$$3
+  return node$$3;
 }
 function getStyle(inNode$$2) {
   var style;
   var v282 = is.w3c;
-  if(!v282) {
-    v282 = is.ie4
+  if (!v282) {
+    v282 = is.ie4;
   }
-  if(v282) {
-    style = inNode$$2.style
-  }else {
-    if(is.ns4) {
-      style = inNode$$2
-    }else {
-      style = 0
+  if (v282) {
+    style = inNode$$2.style;
+  } else {
+    if (is.ns4) {
+      style = inNode$$2;
+    } else {
+      style = 0;
     }
   }
-  return style
+  return style;
 }
 function setLayerPos(inNode$$3, left$$2, top$$2) {
   var v283 = is.ie4;
-  if(!v283) {
-    v283 = is.w3c
+  if (!v283) {
+    v283 = is.w3c;
   }
-  if(v283) {
+  if (v283) {
     inNode$$3.style.left = left$$2 + "px";
-    inNode$$3.style.top = top$$2 + "px"
-  }else {
-    if(is.ns4) {
+    inNode$$3.style.top = top$$2 + "px";
+  } else {
+    if (is.ns4) {
       inNode$$3.left = left$$2;
-      inNode$$3.top = top$$2
+      inNode$$3.top = top$$2;
     }
   }
-  return
+  return;
 }
 function showLayer(mNode) {
   var style$$1;
   style$$1 = getStyle(mNode);
-  if(style$$1) {
-    style$$1.visibility = "visible"
+  if (style$$1) {
+    style$$1.visibility = "visible";
   }
-  return
+  return;
 }
 function hideLayer(mNode$$1) {
   var style$$2;
   style$$2 = getStyle(mNode$$1);
-  if(style$$2) {
-    style$$2.visibility = "hidden"
+  if (style$$2) {
+    style$$2.visibility = "hidden";
   }
-  return
+  return;
 }
 function isPositioned(mNode$$2) {
   var v14 = mNode$$2.left;
-  if(!v14) {
-    v14 = mNode$$2.style.left
+  if (!v14) {
+    v14 = mNode$$2.style.left;
   }
-  return v14
+  return v14;
 }
 function layerWidth(mNode$$3) {
   var nWidth;
   var v286 = is.ie4;
-  if(!v286) {
-    v286 = is.w3c
+  if (!v286) {
+    v286 = is.w3c;
   }
-  if(v286) {
-    nWidth = parseInt(mNode$$3.style.width)
-  }else {
-    if(is.ns4) {
-      nWidth = parseInt(mNode$$3.width)
+  if (v286) {
+    nWidth = parseInt(mNode$$3.style.width);
+  } else {
+    if (is.ns4) {
+      nWidth = parseInt(mNode$$3.width);
     }
   }
-  return nWidth
+  return nWidth;
 }
 function expandLayer(mNode$$4) {
   var style$$3;
   style$$3 = getStyle(mNode$$4);
-  if(style$$3) {
-    style$$3.display = "block"
+  if (style$$3) {
+    style$$3.display = "block";
   }
-  return
+  return;
 }
 function contractLayer(mNode$$5) {
   var style$$4;
   style$$4 = getStyle(mNode$$5);
-  if(style$$4) {
-    style$$4.display = "none"
+  if (style$$4) {
+    style$$4.display = "none";
   }
-  return
+  return;
 }
 function insertLayer(mNode$$6) {
   var style$$5;
   style$$5 = getStyle(mNode$$6);
-  if(style$$5) {
-    style$$5.display = "inline"
+  if (style$$5) {
+    style$$5.display = "inline";
   }
-  return
+  return;
 }
 function setLayerColor(tag, bgColor, tColor) {
   var elLayer;
   elLayer = getLayer(document, tag);
   elStyle = getStyle(elLayer);
-  if(elStyle) {
-    if(is.ns4) {
-      elStyle.bgColor = bgColor
-    }else {
+  if (elStyle) {
+    if (is.ns4) {
+      elStyle.bgColor = bgColor;
+    } else {
       elStyle.backgroundColor = bgColor;
-      elStyle.color = tColor
+      elStyle.color = tColor;
     }
   }
-  return
+  return;
 }
 function setStyle(divType, fontSize, left$$3, top$$3, width$$9, height$$8, zIndex, bgColor$$1, visibility) {
   var dStyle;
-  if(divType == "layer") {
+  if (divType == "layer") {
     dStyle = 'left="' + left$$3;
     dStyle = dStyle + ('" top="' + top$$3);
     dStyle = dStyle + ('" width="' + width$$9);
     dStyle = dStyle + ('" height="' + height$$8);
-    if(zIndex) {
-      dStyle = dStyle + ('" z-index="' + zIndex)
+    if (zIndex) {
+      dStyle = dStyle + ('" z-index="' + zIndex);
     }
-    if(bgColor$$1) {
-      dStyle = dStyle + ('" bgColor="' + bgColor$$1)
-    }else {
-      dStyle = dStyle + '" bgColor="#000000'
+    if (bgColor$$1) {
+      dStyle = dStyle + ('" bgColor="' + bgColor$$1);
+    } else {
+      dStyle = dStyle + '" bgColor="#000000';
     }
-    if(visibility) {
-      dStyle = dStyle + ('" visibility="' + NSVisType[visibility])
+    if (visibility) {
+      dStyle = dStyle + ('" visibility="' + NSVisType[visibility]);
     }
-    dStyle = dStyle + '" '
-  }else {
+    dStyle = dStyle + '" ';
+  } else {
     dStyle = 'style="font-size : ' + fontSize + "pt; ";
     dStyle = dStyle + ("left : " + left$$3 + "px; ");
     dStyle = dStyle + ("top : " + top$$3 + "px; ");
     dStyle = dStyle + ("width : " + width$$9 + "px; ");
     dStyle = dStyle + ("height : " + height$$8 + "px; ");
-    if(zIndex) {
-      dStyle = dStyle + ("z-index : " + zIndex + "; ")
+    if (zIndex) {
+      dStyle = dStyle + ("z-index : " + zIndex + "; ");
     }
-    if(bgColor$$1) {
-      dStyle = dStyle + ("background-color : " + bgColor$$1 + "; ")
+    if (bgColor$$1) {
+      dStyle = dStyle + ("background-color : " + bgColor$$1 + "; ");
     }
-    if(visibility) {
-      dStyle = dStyle + ("visibility : " + visibility + "; ")
+    if (visibility) {
+      dStyle = dStyle + ("visibility : " + visibility + "; ");
     }
-    dStyle = dStyle + '" '
+    dStyle = dStyle + '" ';
   }
-  return dStyle
+  return dStyle;
 }
 function Is() {
   var appName = navigator.appName.toLowerCase();
@@ -206,161 +206,161 @@ function Is() {
   this.mza = agent.indexOf("mozilla") != -1;
   this.gla = agent.indexOf("galeon") != -1;
   var v29 = this.mza;
-  if(v29) {
-    v29 = !this.nsa
+  if (v29) {
+    v29 = !this.nsa;
   }
   this.mza = v29;
-  if(this.mza) {
+  if (this.mza) {
     version$$5 = agent.substring(agent.indexOf("rv:") + 3, agent.indexOf(")"));
     this.nsa = false;
-    if(agent.indexOf("rv:") != -1) {
+    if (agent.indexOf("rv:") != -1) {
       var v691 = parseInt(version$$5);
       this.major = v691;
       var v692 = parseFloat(version$$5);
       this.minor = v692;
       var v32 = this.mza;
-      if(v32) {
-        v32 = this.major == 1
+      if (v32) {
+        v32 = this.major == 1;
       }
-      this.mz1 = v32
-    }else {
+      this.mz1 = v32;
+    } else {
       this.mza = false;
-      version$$5 = this.minor
+      version$$5 = this.minor;
     }
   }
-  if(this.gla) {
+  if (this.gla) {
     version$$5 = agent.substring(agent.indexOf("galeon/") + 7, agent.indexOf("(") - 1);
     this.nsa = false;
-    if(agent.indexOf("galeon/") != -1) {
+    if (agent.indexOf("galeon/") != -1) {
       var v693 = parseInt(version$$5);
       this.major = v693;
       var v694 = parseFloat(version$$5);
       this.minor = v694;
       var v37 = this.gla;
-      if(v37) {
-        v37 = this.major == 1
+      if (v37) {
+        v37 = this.major == 1;
       }
-      this.gl1 = v37
-    }else {
+      this.gl1 = v37;
+    } else {
       this.gla = false;
-      version$$5 = this.version
+      version$$5 = this.version;
     }
   }
   this.version = version$$5;
   this.nsn = appName.indexOf("netscape") != -1;
   var v41 = this.nsn;
-  if(v41) {
-    v41 = this.major == 2
+  if (v41) {
+    v41 = this.major == 2;
   }
   this.ns2 = v41;
   var v42 = this.nsn;
-  if(v42) {
-    v42 = this.major == 3
+  if (v42) {
+    v42 = this.major == 3;
   }
   this.ns3 = v42;
   var v43 = this.nsn;
-  if(v43) {
-    v43 = this.major == 4
+  if (v43) {
+    v43 = this.major == 4;
   }
   this.ns4 = v43;
   var v44 = this.nsa;
-  if(v44) {
-    v44 = this.major >= 5
+  if (v44) {
+    v44 = this.major >= 5;
   }
   this.ns6 = v44;
-  if(this.ns6) {
+  if (this.ns6) {
     var v695 = JAM.call(agent.slice, agent, [agent.indexOf("netscape6/") + 10, agent.length], JAM.policy.p1);
-    this.version = v695
+    this.version = v695;
   }
   var v48 = appName.indexOf("internet explorer") != -1;
-  if(v48) {
-    v48 = agent.indexOf("opera") == -1
+  if (v48) {
+    v48 = agent.indexOf("opera") == -1;
   }
   this.ie = v48;
   var v49 = this.ie;
-  if(v49) {
-    v49 = this.major == 3
+  if (v49) {
+    v49 = this.major == 3;
   }
   this.ie3 = v49;
-  var v50 = this.ie;
-  if(v50) {
-    var v317 = this.major == 4;
-    if(v317) {
-      v317 = agent.indexOf("msie 4.") != -1
-    }
-    v50 = v317
+  var v317 = this.ie;
+  if (v317) {
+    v317 = this.major == 4;
+  }
+  var v50 = v317;
+  if (v50) {
+    v50 = agent.indexOf("msie 4.") != -1;
   }
   this.ie4 = v50;
-  var v51 = this.ie;
-  if(v51) {
-    var v318 = this.major == 4;
-    if(v318) {
-      v318 = agent.indexOf("msie 5.") != -1
-    }
-    v51 = v318
+  var v319 = this.ie;
+  if (v319) {
+    v319 = this.major == 4;
+  }
+  var v51 = v319;
+  if (v51) {
+    v51 = agent.indexOf("msie 5.") != -1;
   }
   this.ie5 = v51;
-  var v52 = this.ie;
-  if(v52) {
-    var v319 = this.major == 4;
-    if(v319) {
-      v319 = agent.indexOf("msie 6.") != -1
-    }
-    v52 = v319
+  var v321 = this.ie;
+  if (v321) {
+    v321 = this.major == 4;
+  }
+  var v52 = v321;
+  if (v52) {
+    v52 = agent.indexOf("msie 6.") != -1;
   }
   this.ie6 = v52;
-  var v320 = this.ie4;
-  if(!v320) {
-    var v514 = this.ie5;
-    if(!v514) {
-      v514 = this.ie6
-    }
-    v320 = v514
+  var v520 = this.ie4;
+  if (!v520) {
+    v520 = this.ie5;
   }
-  if(v320) {
+  var v323 = v520;
+  if (!v323) {
+    v323 = this.ie6;
+  }
+  if (v323) {
     var v696 = JAM.call(agent.slice, agent, [agent.indexOf("msie ") + 5, agent.length], JAM.policy.p1);
     this.version = v696;
     var v697 = this.version.slice(0, this.version.indexOf(";"));
-    this.version = v697
+    this.version = v697;
   }
-  var v58 = this.ie;
-  if(v58) {
-    var v323 = !this.ie3;
-    if(v323) {
-      v323 = !this.ie4
-    }
-    v58 = v323
+  var v326 = this.ie;
+  if (v326) {
+    v326 = !this.ie3;
+  }
+  var v58 = v326;
+  if (v58) {
+    v58 = !this.ie4;
   }
   this.ieX = v58;
   this.op = agent.indexOf("opera") != -1;
-  var v60 = this.op;
-  if(v60) {
-    var v324 = this.major == 4;
-    if(v324) {
-      v324 = agent.indexOf("opera 4.") != -1
-    }
-    v60 = v324
+  var v328 = this.op;
+  if (v328) {
+    v328 = this.major == 4;
+  }
+  var v60 = v328;
+  if (v60) {
+    v60 = agent.indexOf("opera 4.") != -1;
   }
   this.op4 = v60;
-  var v61 = this.op;
-  if(v61) {
-    var v325 = this.major == 4;
-    if(v325) {
-      v325 = agent.indexOf("opera 5.") != -1
-    }
-    v61 = v325
+  var v330 = this.op;
+  if (v330) {
+    v330 = this.major == 4;
+  }
+  var v61 = v330;
+  if (v61) {
+    v61 = agent.indexOf("opera 5.") != -1;
   }
   this.op5 = v61;
-  var v62 = this.op;
-  if(v62) {
-    var v326 = this.major == 4;
-    if(v326) {
-      v326 = agent.indexOf("opera 6.") != -1
-    }
-    v62 = v326
+  var v332 = this.op;
+  if (v332) {
+    v332 = this.major == 4;
+  }
+  var v62 = v332;
+  if (v62) {
+    v62 = agent.indexOf("opera 6.") != -1;
   }
   this.op6 = v62;
-  if(this.op) {
+  if (this.op) {
     this.ie = false;
     this.ie4 = false;
     this.ie5 = false;
@@ -368,10 +368,10 @@ function Is() {
     var v698 = JAM.call(agent.slice, agent, [agent.indexOf("opera") + 6, agent.length], JAM.policy.p1);
     this.version = v698;
     var v699 = parseFloat(this.version);
-    this.version = v699
+    this.version = v699;
   }
   this.kq = agent.indexOf("konqueror") != -1;
-  if(this.kq) {
+  if (this.kq) {
     var v700 = JAM.call(agent.substring, agent, [agent.indexOf("konqueror/") + 10, agent.length], JAM.policy.p1);
     this.version = v700;
     var v701 = this.version.substring(0, this.version.indexOf(";"));
@@ -380,125 +380,125 @@ function Is() {
     this.major = v702;
     var v703 = parseFloat(this.version);
     this.minor = v703;
-    this.mza = false
+    this.mza = false;
   }
   var v75 = this.kq;
-  if(v75) {
-    v75 = this.major == 2
+  if (v75) {
+    v75 = this.major == 2;
   }
   this.kq2 = v75;
   var v76 = this.kq;
-  if(v76) {
-    v76 = this.major == 3
+  if (v76) {
+    v76 = this.major == 3;
   }
   this.kq3 = v76;
   this.w3c = !!document.getElementById;
   this.win32 = platform.indexOf("win32") != -1;
   this.linux = platform.indexOf("linux") != -1;
   this.bsd = platform.indexOf("bsd") != -1;
-  return
+  return;
 }
 function setTagFontColor(tag$$1, color$$2) {
-  var v333 = is.ie4;
-  if(!v333) {
-    v333 = is.w3c
+  var v340 = is.ie4;
+  if (!v340) {
+    v340 = is.w3c;
   }
-  if(v333) {
-    tag$$1.style.color = color$$2
-  }else {
-    if(is.ns4) {
-      tag$$1.color = color$$2
-    }else {
+  if (v340) {
+    tag$$1.style.color = color$$2;
+  } else {
+    if (is.ns4) {
+      tag$$1.color = color$$2;
+    } else {
     }
   }
-  return
+  return;
 }
 function setTagFontStyle(tag$$2, style$$6) {
-  var v334 = is.ie4;
-  if(!v334) {
-    v334 = is.w3c
+  var v341 = is.ie4;
+  if (!v341) {
+    v341 = is.w3c;
   }
-  if(v334) {
-    tag$$2.style.fontStyle = style$$6
-  }else {
-    if(is.ns4) {
-      tag$$2.fontStyle = style$$6
-    }else {
+  if (v341) {
+    tag$$2.style.fontStyle = style$$6;
+  } else {
+    if (is.ns4) {
+      tag$$2.fontStyle = style$$6;
+    } else {
     }
   }
-  return
+  return;
 }
 function mousePosLeft(event$$1) {
   var leftPos;
-  var v335 = is.ie4;
-  if(!v335) {
-    var v526 = is.w3c;
-    if(v526) {
-      var v669 = is.ns6;
-      if(!v669) {
-        v669 = is.mza
+  var v342 = is.ie4;
+  if (!v342) {
+    var v528 = is.w3c;
+    if (v528) {
+      var v670 = is.ns6;
+      if (!v670) {
+        v670 = is.mza;
       }
-      v526 = !v669
+      v528 = !v670;
     }
-    v335 = v526
+    v342 = v528;
   }
-  if(v335) {
-    leftPos = event$$1.clientX
-  }else {
-    var v336 = is.ns4;
-    if(!v336) {
-      var v528 = is.ns6;
-      if(!v528) {
-        v528 = is.mza
-      }
-      v336 = v528
+  if (v342) {
+    leftPos = event$$1.clientX;
+  } else {
+    var v530 = is.ns4;
+    if (!v530) {
+      v530 = is.ns6;
     }
-    if(v336) {
-      leftPos = event$$1.pageX
+    var v343 = v530;
+    if (!v343) {
+      v343 = is.mza;
+    }
+    if (v343) {
+      leftPos = event$$1.pageX;
     }
   }
-  return leftPos
+  return leftPos;
 }
 function mousePosTop(event$$2) {
   var topPos;
-  var v337 = is.ie4;
-  if(!v337) {
-    var v530 = is.w3c;
-    if(v530) {
-      var v670 = is.ns6;
-      if(!v670) {
-        v670 = is.mza
+  var v344 = is.ie4;
+  if (!v344) {
+    var v532 = is.w3c;
+    if (v532) {
+      var v671 = is.ns6;
+      if (!v671) {
+        v671 = is.mza;
       }
-      v530 = !v670
+      v532 = !v671;
     }
-    v337 = v530
+    v344 = v532;
   }
-  if(v337) {
-    topPos = event$$2.clientY
-  }else {
-    var v338 = is.ns4;
-    if(!v338) {
-      var v532 = is.ns6;
-      if(!v532) {
-        v532 = is.mza
-      }
-      v338 = v532
+  if (v344) {
+    topPos = event$$2.clientY;
+  } else {
+    var v534 = is.ns4;
+    if (!v534) {
+      v534 = is.ns6;
     }
-    if(v338) {
-      topPos = event$$2.pageY
+    var v345 = v534;
+    if (!v345) {
+      v345 = is.mza;
+    }
+    if (v345) {
+      topPos = event$$2.pageY;
     }
   }
-  return topPos
+  return topPos;
 }
 function BrowserMenuInfo() {
-  if(is.ns4) {
-    if(is.win32) {
-      this.itemHeight = 16
-    }else {
-      if(is.linux) {
-        this.itemHeight = 15
-      }else {
-        this.itemHeight = 15
+  if (is.ns4) {
+    if (is.win32) {
+      this.itemHeight = 16;
+    } else {
+      if (is.linux) {
+        this.itemHeight = 15;
+      } else {
+        this.itemHeight = 15;
       }
     }
     this.cellOffset = 2;
@@ -515,22 +515,22 @@ function BrowserMenuInfo() {
     this.bwPadding = 4;
     this.bhPadding = 4;
     this.fontSize = 12;
-    if(is.win32) {
-      this.charWidth = 7
-    }else {
-      if(is.linux) {
-        this.charWidth = 6
-      }else {
-        this.charWidth = 6
+    if (is.win32) {
+      this.charWidth = 7;
+    } else {
+      if (is.linux) {
+        this.charWidth = 6;
+      } else {
+        this.charWidth = 6;
       }
     }
     this.divType = "layer";
     window.mtActive = "#FFFF00";
     window.mtPassive = "#FFFFFF";
     window.mbActive = "#FF0000";
-    window.mbPassive = "#081C92"
-  }else {
-    if(is.kq) {
+    window.mbPassive = "#081C92";
+  } else {
+    if (is.kq) {
       this.itemHeight = 18;
       this.cellOffset = 4;
       this.leftOffset = 0;
@@ -547,13 +547,13 @@ function BrowserMenuInfo() {
       this.bhPadding = 4;
       this.fontSize = 10;
       this.charWidth = 7;
-      this.divType = "div"
-    }else {
-      var v339 = is.op5;
-      if(!v339) {
-        v339 = is.op6
+      this.divType = "div";
+    } else {
+      var v346 = is.op5;
+      if (!v346) {
+        v346 = is.op6;
       }
-      if(v339) {
+      if (v346) {
         this.itemHeight = 17;
         this.cellOffset = 4;
         this.leftOffset = 2;
@@ -570,9 +570,9 @@ function BrowserMenuInfo() {
         this.bhPadding = 4;
         this.fontSize = 10;
         this.charWidth = 6;
-        this.divType = "div"
-      }else {
-        if(is.ie4) {
+        this.divType = "div";
+      } else {
+        if (is.ie4) {
           this.itemHeight = 18;
           this.cellOffset = 0;
           this.leftOffset = 0;
@@ -589,9 +589,9 @@ function BrowserMenuInfo() {
           this.bhPadding = 2;
           this.fontSize = 10;
           this.charWidth = 6;
-          this.divType = "div"
-        }else {
-          if(is.ie5) {
+          this.divType = "div";
+        } else {
+          if (is.ie5) {
             this.itemHeight = 20;
             this.cellOffset = 0;
             this.leftOffset = 0;
@@ -608,9 +608,9 @@ function BrowserMenuInfo() {
             this.bhPadding = 2;
             this.fontSize = 10;
             this.charWidth = 6;
-            this.divType = "div"
-          }else {
-            if(is.ie6) {
+            this.divType = "div";
+          } else {
+            if (is.ie6) {
               this.itemHeight = 18;
               this.cellOffset = 4;
               this.leftOffset = 0;
@@ -627,17 +627,17 @@ function BrowserMenuInfo() {
               this.bhPadding = 4;
               this.fontSize = 10;
               this.charWidth = 6;
-              this.divType = "div"
-            }else {
-              var v340 = is.mza;
-              if(!v340) {
-                var v535 = is.gla;
-                if(!v535) {
-                  v535 = is.ns6
-                }
-                v340 = v535
+              this.divType = "div";
+            } else {
+              var v537 = is.mza;
+              if (!v537) {
+                v537 = is.gla;
               }
-              if(v340) {
+              var v347 = v537;
+              if (!v347) {
+                v347 = is.ns6;
+              }
+              if (v347) {
                 this.itemHeight = 18;
                 this.cellOffset = 4;
                 this.leftOffset = 0;
@@ -654,9 +654,9 @@ function BrowserMenuInfo() {
                 this.bhPadding = 4;
                 this.fontSize = 10;
                 this.charWidth = 7;
-                this.divType = "div"
-              }else {
-                if(is.w3c) {
+                this.divType = "div";
+              } else {
+                if (is.w3c) {
                   this.itemHeight = 19;
                   this.cellOffset = 0;
                   this.leftOffset = 0;
@@ -673,10 +673,10 @@ function BrowserMenuInfo() {
                   this.bhPadding = 0;
                   this.fontSize = 10;
                   this.charWidth = 7;
-                  this.divType = "div"
-                }else {
+                  this.divType = "div";
+                } else {
                   alert("This should never happen.");
-                  return 0
+                  return 0;
                 }
               }
             }
@@ -685,7 +685,7 @@ function BrowserMenuInfo() {
       }
     }
   }
-  return
+  return;
 }
 function startSiteMap(mName, mTarget) {
   window.menuName = mName;
@@ -712,19 +712,19 @@ function startSiteMap(mName, mTarget) {
   v107.bodyCells = v708;
   window.mbActive = "#FF0000";
   window.mtActive = "#FFFF00";
-  return
+  return;
 }
 function menuItem(label$$2, action, width$$10, level$$7, popup) {
-  if(label$$2 == 0) {
-    this.label = label$$2
-  }else {
-    this.label = "&nbsp;" + label$$2
+  if (label$$2 == 0) {
+    this.label = label$$2;
+  } else {
+    this.label = "&nbsp;" + label$$2;
   }
   this.action = action;
   this.width = width$$10;
   this.level = level$$7;
   this.popup = popup;
-  return
+  return;
 }
 function bodyItem(cells, popup$$1, level$$8, left$$4, top$$4, width$$11, height$$9) {
   this.cells = cells;
@@ -734,7 +734,7 @@ function bodyItem(cells, popup$$1, level$$8, left$$4, top$$4, width$$11, height$
   this.top = top$$4;
   this.width = width$$11;
   this.height = height$$9;
-  return
+  return;
 }
 function stackMenuBody(queue, bPopup, bLevel, bLeft, bTop, bWidth, bHeight) {
   var mBody;
@@ -743,13 +743,13 @@ function stackMenuBody(queue, bPopup, bLevel, bLeft, bTop, bWidth, bHeight) {
   JAM.set(window.menuBody, window.menuBody.length, mBody);
   i$$2 = 0;
   var v114 = i$$2 < queue.length;
-  for(;v114;) {
+  for (;v114;) {
     JAM.set(window.bodyCells, window.bodyCells.length, queue[i$$2]);
     i$$2 = i$$2 + 1;
-    v114 = i$$2 < queue.length
+    v114 = i$$2 < queue.length;
   }
   JAM.set(window.bodyCells, window.bodyCells.length, 0);
-  return
+  return;
 }
 function addMenuDivider() {
   var mItem;
@@ -757,19 +757,19 @@ function addMenuDivider() {
   mLevel = window.menuLevel;
   mItem = new menuItem(0, 0, 0, mLevel, 0);
   JAM.set(window.menuCells, window.menuCells.length, mItem);
-  return
+  return;
 }
 function estLabelWidth(label$$3) {
   var lWidth = 0;
   var i$$3;
   i$$3 = 0;
   var v119 = i$$3 < label$$3.length;
-  for(;v119;) {
+  for (;v119;) {
     lWidth = lWidth + alphaWidth[JAM.call(label$$3.charAt, label$$3, [i$$3], JAM.policy.p1)];
     i$$3 = i$$3 + 1;
-    v119 = i$$3 < label$$3.length
+    v119 = i$$3 < label$$3.length;
   }
-  return lWidth
+  return lWidth;
 }
 function addMenuItem(label$$4, action$$1, popup$$2) {
   var mLabel$$1;
@@ -780,48 +780,48 @@ function addMenuItem(label$$4, action$$1, popup$$2) {
   var mLevel$$1;
   mLevel$$1 = window.menuLevel;
   mWidth = estLabelWidth(label$$4) + 4;
-  if(label$$4) {
-    mLabel$$1 = label$$4
-  }else {
+  if (label$$4) {
+    mLabel$$1 = label$$4;
+  } else {
     alert("No label given for action " + action$$1 + ".");
-    mLabel$$1 = "no label"
+    mLabel$$1 = "no label";
   }
-  if(action$$1) {
-    mAction = "location='" + action$$1 + "'"
-  }else {
-    mAction = "clearMenus(" + mLevel$$1 + ")"
+  if (action$$1) {
+    mAction = "location='" + action$$1 + "'";
+  } else {
+    mAction = "clearMenus(" + mLevel$$1 + ")";
   }
   mPopup$$1 = popup$$2;
-  var v353 = mPopup$$1;
-  if(v353) {
-    v353 = mLevel$$1 > 0
+  var v360 = mPopup$$1;
+  if (v360) {
+    v360 = mLevel$$1 > 0;
   }
-  if(v353) {
-    mWidth = mWidth + 15
+  if (v360) {
+    mWidth = mWidth + 15;
   }
-  if(mLevel$$1 == 0) {
-    window.menuHeads = window.menuHeads + 1
+  if (mLevel$$1 == 0) {
+    window.menuHeads = window.menuHeads + 1;
   }
   mItem$$1 = new menuItem(mLabel$$1, mAction, mWidth, mLevel$$1, mPopup$$1);
   JAM.set(window.menuCells, window.menuCells.length, mItem$$1);
-  return
+  return;
 }
 function startMenu(label$$5, action$$2) {
-  var v356 = window.menuPopups;
+  var v363 = window.menuPopups;
   window.menuPopups = window.menuPopups + 1;
-  addMenuItem(label$$5, action$$2, "popup" + v356);
+  addMenuItem(label$$5, action$$2, "popup" + v363);
   window.menuLevel = window.menuLevel + 1;
-  return
+  return;
 }
 function endMenu() {
   window.menuLevel = window.menuLevel - 1;
-  return
+  return;
 }
 function menuLayer(label$$6, action$$3) {
   this.name = name;
   this.label = label$$6;
   this.action = action$$3;
-  return
+  return;
 }
 function buildMenuCell(index$$39, left$$5, top$$5, width$$12, height$$10) {
   var mName$$1;
@@ -846,31 +846,31 @@ function buildMenuCell(index$$39, left$$5, top$$5, width$$12, height$$10) {
   JAM.call(document.write, document, [setStyle(blInfo.divType, blInfo.fontSize, mLeft, mTop, mWidth$$1, mHeight, 0, window.mbPassive, "inherit")], JAM.policy.p1);
   JAM.call(document.write, document, [' onclick="' + mAction$$1 + '" '], JAM.policy.p1);
   mPopup = window.menuCells[index$$39].popup;
-  if(mPopup) {
+  if (mPopup) {
     JAM.call(document.write, document, ['onmouseover="popMenu(' + mLevel$$2 + ",'" + mName$$1 + "','" + mPopup + "'" + ');" '], JAM.policy.p1);
-    JAM.call(document.write, document, ['onmouseout="setColorPassive(' + "'" + mName$$1 + "'" + ');">'], JAM.policy.p1)
-  }else {
+    JAM.call(document.write, document, ['onmouseout="setColorPassive(' + "'" + mName$$1 + "'" + ');">'], JAM.policy.p1);
+  } else {
     JAM.call(document.write, document, ['onmouseover="unPopMenus(' + mLevel$$2 + ",'" + mName$$1 + "'" + ');" '], JAM.policy.p1);
-    JAM.call(document.write, document, ['onmouseout="setColorPassive(' + "'" + mName$$1 + "'" + ');">'], JAM.policy.p1)
+    JAM.call(document.write, document, ['onmouseout="setColorPassive(' + "'" + mName$$1 + "'" + ');">'], JAM.policy.p1);
   }
   var v141 = window.menuLayers;
   var v142 = mName$$1;
   var v709 = new menuLayer(mLabel$$2, mAction$$1);
   JAM.set(v141, v142, v709);
-  if(blInfo.divType == "layer") {
-    JAM.call(document.write, document, [JAM.call(mLabel$$2.fontcolor, mLabel$$2, [mtPassive], JAM.policy.p1)], JAM.policy.p1)
-  }else {
-    JAM.call(document.write, document, [mLabel$$2], JAM.policy.p1)
+  if (blInfo.divType == "layer") {
+    JAM.call(document.write, document, [JAM.call(mLabel$$2.fontcolor, mLabel$$2, [mtPassive], JAM.policy.p1)], JAM.policy.p1);
+  } else {
+    JAM.call(document.write, document, [mLabel$$2], JAM.policy.p1);
   }
-  var v374 = mPopup;
-  if(v374) {
-    v374 = mLevel$$2 >= 1
+  var v381 = mPopup;
+  if (v381) {
+    v381 = mLevel$$2 >= 1;
   }
-  if(v374) {
-    JAM.call(document.write, document, ['&nbsp;<img src="' + window.menuPntr + '" border="0">'], JAM.policy.p1)
+  if (v381) {
+    JAM.call(document.write, document, ['&nbsp;<img src="' + window.menuPntr + '" border="0">'], JAM.policy.p1);
   }
   JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.p1);
-  return
+  return;
 }
 function buildMenuBody(cQueue, bName, bLevel$$1, bLeft$$1, bTop$$1, bWidth$$1, bHeight$$1) {
   var i$$4;
@@ -893,24 +893,24 @@ function buildMenuBody(cQueue, bName, bLevel$$1, bLeft$$1, bTop$$1, bWidth$$1, b
   mTop$$1 = blInfo.mTopOffset;
   i$$4 = 0;
   var v156 = i$$4 < cQueue.length;
-  for(;v156;) {
+  for (;v156;) {
     mLabel = window.menuCells[cQueue[i$$4]].label;
-    if(mLabel) {
+    if (mLabel) {
       buildMenuCell(cQueue[i$$4], mLeft$$1, mTop$$1, bWidth$$1, blInfo.itemHeight);
-      mTop$$1 = mTop$$1 + (blInfo.itemHeight + blInfo.cellOffset)
-    }else {
-      if(mLabel == 0) {
-        mTop$$1 = mTop$$1 + blInfo.dividerHeight
-      }else {
+      mTop$$1 = mTop$$1 + (blInfo.itemHeight + blInfo.cellOffset);
+    } else {
+      if (mLabel == 0) {
+        mTop$$1 = mTop$$1 + blInfo.dividerHeight;
+      } else {
         alert("Expecting label in buildMenuBody.");
-        return 0
+        return 0;
       }
     }
     i$$4 = i$$4 + 1;
-    v156 = i$$4 < cQueue.length
+    v156 = i$$4 < cQueue.length;
   }
   JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.p1);
-  return
+  return;
 }
 function buildMenuBodies() {
   var i$$5;
@@ -924,7 +924,7 @@ function buildMenuBodies() {
   var bCells;
   i$$5 = 0;
   var v167 = i$$5 < window.menuBody.length;
-  for(;v167;) {
+  for (;v167;) {
     bCells = window.menuBody[i$$5].cells;
     bName$$1 = window.menuBody[i$$5].popup;
     bLevel$$2 = window.menuBody[i$$5].level;
@@ -934,30 +934,30 @@ function buildMenuBodies() {
     bHeight$$2 = window.menuBody[i$$5].height;
     cQueue$$1 = new Array;
     cCount = 0;
-    var v396 = bCells < window.bodyCells.length;
-    if(v396) {
-      v396 = window.bodyCells[bCells] > 0
+    var v403 = bCells < window.bodyCells.length;
+    if (v403) {
+      v403 = window.bodyCells[bCells] > 0;
     }
-    var v166 = v396;
-    for(;v166;) {
+    var v166 = v403;
+    for (;v166;) {
       var v165 = cCount;
       cCount = cCount + 1;
-      var v397 = window.bodyCells;
-      var v398 = bCells;
+      var v404 = window.bodyCells;
+      var v405 = bCells;
       bCells = bCells + 1;
-      cQueue$$1[v165] = v397[v398];
-      var v399 = bCells < window.bodyCells.length;
-      if(v399) {
-        v399 = window.bodyCells[bCells] > 0
+      cQueue$$1[v165] = v404[v405];
+      var v406 = bCells < window.bodyCells.length;
+      if (v406) {
+        v406 = window.bodyCells[bCells] > 0;
       }
-      v166 = v399
+      v166 = v406;
     }
     buildMenuBody(cQueue$$1, bName$$1, bLevel$$2, bLeft$$2, bTop$$2, bWidth$$2, bHeight$$2);
     cQueue$$1 = null;
     i$$5 = i$$5 + 1;
-    v167 = i$$5 < window.menuBody.length
+    v167 = i$$5 < window.menuBody.length;
   }
-  return
+  return;
 }
 function queueMenuBuilds(mIndex, mLevel$$3, mPopup$$2, mLeft$$2, mTop$$2) {
   var queue$$1 = new Array;
@@ -971,62 +971,62 @@ function queueMenuBuilds(mIndex, mLevel$$3, mPopup$$2, mLeft$$2, mTop$$2) {
   sWidth = 0;
   sHeight = 0;
   i$$6 = mIndex;
-  var v401 = i$$6 < window.menuCells.length;
-  if(v401) {
-    v401 = window.menuCells[i$$6].level >= mLevel$$3
+  var v408 = i$$6 < window.menuCells.length;
+  if (v408) {
+    v408 = window.menuCells[i$$6].level >= mLevel$$3;
   }
-  var v170 = v401;
-  for(;v170;) {
-    if(window.menuCells[i$$6].level == mLevel$$3) {
-      sWidth = JAM.call(Math.max, Math, [sWidth, window.menuCells[i$$6].width], JAM.policy.p1)
+  var v170 = v408;
+  for (;v170;) {
+    if (window.menuCells[i$$6].level == mLevel$$3) {
+      sWidth = JAM.call(Math.max, Math, [sWidth, window.menuCells[i$$6].width], JAM.policy.p1);
     }
     i$$6 = i$$6 + 1;
-    var v404 = i$$6 < window.menuCells.length;
-    if(v404) {
-      v404 = window.menuCells[i$$6].level >= mLevel$$3
+    var v411 = i$$6 < window.menuCells.length;
+    if (v411) {
+      v411 = window.menuCells[i$$6].level >= mLevel$$3;
     }
-    v170 = v404
+    v170 = v411;
   }
   sLeft = mLeft$$2 + sWidth + 2;
   i$$6 = mIndex;
-  var v405 = i$$6 < window.menuCells.length;
-  if(v405) {
-    v405 = window.menuCells[i$$6].level >= mLevel$$3
+  var v412 = i$$6 < window.menuCells.length;
+  if (v412) {
+    v412 = window.menuCells[i$$6].level >= mLevel$$3;
   }
-  var v177 = v405;
-  for(;v177;) {
+  var v177 = v412;
+  for (;v177;) {
     queue$$1[queue$$1.length] = i$$6;
-    if(window.menuCells[i$$6].popup) {
+    if (window.menuCells[i$$6].popup) {
       sPopup = window.menuCells[i$$6].popup;
       i$$6 = i$$6 + 1;
       i$$6 = queueMenuBuilds(i$$6, mLevel$$3 + 1, sPopup, sLeft, sTop);
       sTop = sTop + (blInfo.itemHeight + blInfo.cellOffset);
-      sHeight = sHeight + (blInfo.itemHeight + blInfo.cellOffset)
-    }else {
-      if(window.menuCells[i$$6].label) {
+      sHeight = sHeight + (blInfo.itemHeight + blInfo.cellOffset);
+    } else {
+      if (window.menuCells[i$$6].label) {
         i$$6 = i$$6 + 1;
         sTop = sTop + (blInfo.itemHeight + blInfo.cellOffset);
-        sHeight = sHeight + (blInfo.itemHeight + blInfo.cellOffset)
-      }else {
+        sHeight = sHeight + (blInfo.itemHeight + blInfo.cellOffset);
+      } else {
         i$$6 = i$$6 + 1;
         sTop = sTop + blInfo.dividerHeight;
-        sHeight = sHeight + blInfo.dividerHeight
+        sHeight = sHeight + blInfo.dividerHeight;
       }
     }
-    var v415 = i$$6 < window.menuCells.length;
-    if(v415) {
-      v415 = window.menuCells[i$$6].level >= mLevel$$3
+    var v422 = i$$6 < window.menuCells.length;
+    if (v422) {
+      v422 = window.menuCells[i$$6].level >= mLevel$$3;
     }
-    v177 = v415
+    v177 = v422;
   }
-  if(queue$$1.length > 0) {
-    stackMenuBody(queue$$1, mPopup$$2, mLevel$$3, mLeft$$2, mTop$$2, sWidth, sHeight - blInfo.cellOffset)
+  if (queue$$1.length > 0) {
+    stackMenuBody(queue$$1, mPopup$$2, mLevel$$3, mLeft$$2, mTop$$2, sWidth, sHeight - blInfo.cellOffset);
   }
   queue$$1 = null;
-  return i$$6
+  return i$$6;
 }
 function endSiteMap() {
-  return
+  return;
 }
 function drawHMenuBar(left$$6, top$$6, width$$13, height$$11, padding, graphic) {
   var bLeft$$3;
@@ -1056,23 +1056,23 @@ function drawHMenuBar(left$$6, top$$6, width$$13, height$$11, padding, graphic) 
   bTop$$3 = bTop$$3 + blInfo.bBarOffset;
   i$$7 = 0;
   var v194 = i$$7 < window.menuCells.length;
-  for(;v194;) {
+  for (;v194;) {
     iWidth = window.menuCells[i$$7].width + iPadding;
     iWidth = JAM.call(Math.min, Math, [iWidth, bWidth$$3 - iLeft + blInfo.menuPadding], JAM.policy.p1);
     buildMenuCell(i$$7, iLeft, mTop$$3, iWidth, blInfo.itemHeight);
-    if(window.menuCells[i$$7].popup) {
+    if (window.menuCells[i$$7].popup) {
       mPopup = window.menuCells[i$$7].popup;
       i$$7 = i$$7 + 1;
-      i$$7 = queueMenuBuilds(i$$7, 1, mPopup, bLeft$$3, bTop$$3 + bHeight$$3)
+      i$$7 = queueMenuBuilds(i$$7, 1, mPopup, bLeft$$3, bTop$$3 + bHeight$$3);
     }
     bLeft$$3 = bLeft$$3 + (iWidth + blInfo.itemSpacing);
     iLeft = iLeft + (iWidth + blInfo.itemSpacing);
-    v194 = i$$7 < window.menuCells.length
+    v194 = i$$7 < window.menuCells.length;
   }
   JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.p1);
   buildMenuBodies();
   document.close();
-  return
+  return;
 }
 function drawVMenuBar(left$$7, top$$7, width$$14, height$$12, padding$$1, graphic$$1) {
   var bLeft$$4;
@@ -1096,12 +1096,12 @@ function drawVMenuBar(left$$7, top$$7, width$$14, height$$12, padding$$1, graphi
   nTopItems = 0;
   i$$8 = 0;
   var v198 = i$$8 < window.menuCells.length;
-  for(;v198;) {
-    if(window.menuCells[i$$8].level == 0) {
-      nTopItems = nTopItems + 1
+  for (;v198;) {
+    if (window.menuCells[i$$8].level == 0) {
+      nTopItems = nTopItems + 1;
     }
     i$$8 = i$$8 + 1;
-    v198 = i$$8 < window.menuCells.length
+    v198 = i$$8 < window.menuCells.length;
   }
   mHeight$$1 = nTopItems * (blInfo.itemHeight + blInfo.cellOffset);
   i$$8 = 0;
@@ -1115,32 +1115,32 @@ function drawVMenuBar(left$$7, top$$7, width$$14, height$$12, padding$$1, graphi
   mTop$$4 = height$$12 + blInfo.mBarOffset;
   bTop$$4 = bTop$$4 + blInfo.bBarOffset;
   var v212 = i$$8 < window.menuCells.length;
-  for(;v212;) {
+  for (;v212;) {
     iWidth$$1 = window.menuCells[i$$8].width + iPadding$$1;
     iWidth$$1 = JAM.call(Math.min, Math, [iWidth$$1, bWidth$$4 - iLeft$$1 + blInfo.menuPadding], JAM.policy.p1);
     buildMenuCell(i$$8, iLeft$$1, mTop$$4, iWidth$$1, blInfo.itemHeight);
-    if(window.menuCells[i$$8].popup) {
+    if (window.menuCells[i$$8].popup) {
       mPopup = window.menuCells[i$$8].popup;
       i$$8 = i$$8 + 1;
-      i$$8 = queueMenuBuilds(i$$8, 1, mPopup, bLeft$$4 + iWidth$$1, bTop$$4 + bHeight$$4)
+      i$$8 = queueMenuBuilds(i$$8, 1, mPopup, bLeft$$4 + iWidth$$1, bTop$$4 + bHeight$$4);
     }
     mTop$$4 = mTop$$4 + (blInfo.itemHeight + blInfo.cellOffset);
     bTop$$4 = bTop$$4 + (blInfo.itemHeight + blInfo.cellOffset);
-    v212 = i$$8 < window.menuCells.length
+    v212 = i$$8 < window.menuCells.length;
   }
   JAM.call(document.writeln, document, ["</" + blInfo.divType + ">"], JAM.policy.p1);
   buildMenuBodies();
   document.close();
-  return
+  return;
 }
 function loadMe() {
   var v214 = this.action;
-  if(JAM.isEval(eval)) {
-    eval("introspect(JAM.policy.pFull) { " + v214 + " }")
-  }else {
-    JAM.call(eval, null, [v214])
+  if (JAM.isEval(eval)) {
+    eval("introspect(JAM.policy.pFull) { " + v214 + " }");
+  } else {
+    JAM.call(eval, null, [v214]);
   }
-  return
+  return;
 }
 function activateMenus() {
   var mName$$2;
@@ -1148,67 +1148,67 @@ function activateMenus() {
   var mNode$$7;
   var tStyle;
   tStyle = getStyle(getLayer(document, "test.cell"));
-  if(!is.ns4) {
+  if (!is.ns4) {
     window.mtPassive = tStyle.color;
     window.mbPassive = tStyle.backgroundColor;
-    return
+    return;
   }
-  for(mName$$2 in window.menuLayers) {
+  for (mName$$2 in window.menuLayers) {
     mAction$$2 = window.menuLayers[mName$$2].action;
     mNode$$7 = getLayer(document, mName$$2);
     JAM.call(mNode$$7.captureEvents, mNode$$7, [Event.MOUSEDOWN], JAM.policy.p1);
     JAM.set(mNode$$7, "onmousedown", loadMe);
     mNode$$7.action = mAction$$2;
-    mNode$$7.fgColor = window.mtPassive
+    mNode$$7.fgColor = window.mtPassive;
   }
-  return
+  return;
 }
 function findNode(elMain, mName$$3) {
   var elNode;
   var elIndex;
   elNode = getLayer(elMain, mName$$3);
   elIndex = 0;
-  var v457 = !elNode;
-  if(v457) {
-    v457 = elIndex < stackDepth
+  var v464 = !elNode;
+  if (v464) {
+    v464 = elIndex < stackDepth;
   }
-  var v221 = v457;
-  for(;v221;) {
+  var v221 = v464;
+  for (;v221;) {
     elNode = getLayer(nodeStack[elIndex], mName$$3);
     elIndex = elIndex + 1;
-    var v458 = !elNode;
-    if(v458) {
-      v458 = elIndex < stackDepth
+    var v465 = !elNode;
+    if (v465) {
+      v465 = elIndex < stackDepth;
     }
-    v221 = v458
+    v221 = v465;
   }
-  return elNode
+  return elNode;
 }
 function clearMenus(mNum) {
   var v223 = stackDepth > mNum;
-  for(;v223;) {
+  for (;v223;) {
     stackDepth = stackDepth - 1;
     hideLayer(nodeStack[stackDepth]);
     JAM.set(nameStack, stackDepth, 0);
     JAM.set(nodeStack, stackDepth, 0);
-    v223 = stackDepth > mNum
+    v223 = stackDepth > mNum;
   }
-  return
+  return;
 }
 function unPopMenus(mNum$$1, tag$$3) {
   setLayerColor(tag$$3, window.mbActive, window.mtActive);
   clearMenus(mNum$$1);
-  if(is.ns4) {
-    JAM.call(document.releaseEvents, document, [Event.MOUSEDOWN], JAM.policy.p1)
+  if (is.ns4) {
+    JAM.call(document.releaseEvents, document, [Event.MOUSEDOWN], JAM.policy.p1);
   }
-  return
+  return;
 }
 function setColorPassive(tag$$4) {
   setLayerColor(tag$$4, window.mbPassive, window.mtPassive);
-  if(is.ns4) {
-    JAM.call(document.captureEvents, document, [Event.MOUSEDOWN], JAM.policy.p1)
+  if (is.ns4) {
+    JAM.call(document.captureEvents, document, [Event.MOUSEDOWN], JAM.policy.p1);
   }
-  return
+  return;
 }
 function popMenu(mNum$$2, tag$$5, mName$$4) {
   var style$$7;
@@ -1216,24 +1216,24 @@ function popMenu(mNum$$2, tag$$5, mName$$4) {
   clearMenus(mNum$$2);
   setLayerColor(tag$$5, window.mbActive, window.mtActive);
   elLayer$$1 = getLayer(document, mName$$4);
-  if(elLayer$$1) {
+  if (elLayer$$1) {
     showLayer(elLayer$$1);
     JAM.set(nameStack, stackDepth, mName$$4);
     JAM.set(nodeStack, stackDepth, elLayer$$1);
-    stackDepth = stackDepth + 1
+    stackDepth = stackDepth + 1;
   }
-  if(is.ns4) {
-    JAM.call(document.releaseEvents, document, [Event.MOUSEDOWN], JAM.policy.p1)
+  if (is.ns4) {
+    JAM.call(document.releaseEvents, document, [Event.MOUSEDOWN], JAM.policy.p1);
   }
-  return
+  return;
 }
 function clearAll(e$$4) {
   clearMenus(0);
-  return
+  return;
 }
 function initialize() {
   activateMenus();
-  return
+  return;
 }
 var NSVisType = new Array;
 NSVisType["visible"] = "show";
@@ -1256,14 +1256,14 @@ alphaWidth["f"] = blInfo.charWidth;
 alphaWidth["g"] = blInfo.charWidth;
 alphaWidth["h"] = blInfo.charWidth;
 var v239 = alphaWidth;
-var v710 = JAM.call(Math.floor, Math, [blInfo.charWidth * 0.4], JAM.policy.p1);
+var v710 = JAM.call(Math.floor, Math, [blInfo.charWidth * .4], JAM.policy.p1);
 v239["i"] = v710;
 var v240 = alphaWidth;
-var v711 = JAM.call(Math.floor, Math, [blInfo.charWidth * 0.7], JAM.policy.p1);
+var v711 = JAM.call(Math.floor, Math, [blInfo.charWidth * .7], JAM.policy.p1);
 v240["j"] = v711;
 alphaWidth["k"] = blInfo.charWidth;
 var v241 = alphaWidth;
-var v712 = JAM.call(Math.floor, Math, [blInfo.charWidth * 0.4], JAM.policy.p1);
+var v712 = JAM.call(Math.floor, Math, [blInfo.charWidth * .4], JAM.policy.p1);
 v241["l"] = v712;
 var v242 = alphaWidth;
 var v713 = JAM.call(Math.floor, Math, [blInfo.charWidth * 1.6], JAM.policy.p1);
@@ -1405,9 +1405,9 @@ alphaWidth[":"] = blInfo.charWidth;
 var nameStack = new Array;
 var nodeStack = new Array;
 var stackDepth = 0;
-if(is.ns4) {
+if (is.ns4) {
   JAM.call(document.captureEvents, document, [Event.MOUSEDOWN], JAM.policy.p1);
-  JAM.set(document, "onmousedown", clearAll)
+  JAM.set(document, "onmousedown", clearAll);
 }
 startSiteMap("Menu", "_top");
 startMenu("jsWidgets");
@@ -1456,36 +1456,36 @@ addMenuItem("Javascript Resources", "http://www.jsr.communitech.net/index3.htm")
 addMenuItem("W3Schools Examples", "http://www.w3schools.com/js/js_examples.asp");
 endMenu();
 endSiteMap();
-var v493 = is.w3c;
-if(!v493) {
-  var v632 = is.ie4;
-  if(!v632) {
-    var v665 = is.ns4;
-    if(v665) {
-      v665 = !is.hj
-    }
-    v632 = v665
-  }
-  v493 = v632
+var v634 = is.w3c;
+if (!v634) {
+  v634 = is.ie4;
 }
-if(v493) {
+var v500 = v634;
+if (!v500) {
+  var v635 = is.ns4;
+  if (v635) {
+    v635 = !is.hj;
+  }
+  v500 = v635;
+}
+if (v500) {
   var barTop = 20;
   var barLeft = 50;
   var barWidth = 370;
   var barHeight = 44;
   var itemPadding = 5;
   var barImage = "images/title.png";
-  drawHMenuBar(barLeft, barTop, barWidth, barHeight, itemPadding, barImage)
+  drawHMenuBar(barLeft, barTop, barWidth, barHeight, itemPadding, barImage);
 }
-if(is.w3c) {
+if (is.w3c) {
   JAM.call(document.writeln, document, ['<div style="position : relative; top : 15px; float : right; padding-right : 42px; text-align : right">']);
   JAM.call(document.writeln, document, ['<a href="http://sourceforge.net/projects/jswidgets"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=33495&type=15" width="150" height="40" border="0" alt="Get Browser-Independent Javascript Widgets at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>'], JAM.policy.p1);
-  JAM.call(document.writeln, document, ["</div>"])
-}else {
-  if(is.ns4) {
+  JAM.call(document.writeln, document, ["</div>"]);
+} else {
+  if (is.ns4) {
     JAM.call(document.writeln, document, ['<layer top="20" left="400">']);
     JAM.call(document.writeln, document, ['<a href="http://sourceforge.net/projects/jswidgets"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=33495&type=15" width="150" height="40" border="0" alt="Get Browser-Independent Javascript Widgets at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>'], JAM.policy.p1);
-    JAM.call(document.writeln, document, ["</layer>"])
+    JAM.call(document.writeln, document, ["</layer>"]);
   }
 }
 document.body.background = "images/researchbg.gif";

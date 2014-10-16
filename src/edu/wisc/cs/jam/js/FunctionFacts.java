@@ -120,7 +120,7 @@ public class FunctionFacts {
     @Override 
     public void visit(NodeTraversal t, Node n, Node parent) {
 
-      if (ExpUtil.isAssign(n) || ExpUtil.isVarInitializer(n)) {
+      if (ExpUtil.isAssignment(n) || ExpUtil.isVarInitializer(n)) {
         String lhs = getCode(ExpUtil.getAssignLHS(n));
         String rhs = getCode(ExpUtil.getAssignRHS(n));
 
@@ -195,7 +195,7 @@ public class FunctionFacts {
         ret += "'#null'";        
       } else {
         Node n = s.getRootNode();
-        if (ExpUtil.isFunction(n)) {
+        if (n.isFunction()) {
           Function f = cg.getFunctionForAstNode(n);
           assert f != null;
           ret += "'##" + f.getName() + "'";
@@ -212,7 +212,7 @@ public class FunctionFacts {
   protected String getParentScope(Function func) {
     Scope parent = scopeChainMap.get(func).get(0);
     Node n = parent.getRootNode();
-    if (ExpUtil.isFunction(n)) {
+    if (n.isFunction()) {
       Function f = cg.getFunctionForAstNode(n);
       assert f != null;
       return f.getName();
@@ -511,7 +511,7 @@ public class FunctionFacts {
         chain.add(null);
         scopeChainMap.put(cg.getMainFunction(), chain);
         scopeMap.put(cg.getMainFunction(), t.getScope());
-      } else if (ExpUtil.isFunction(n)) {
+      } else if (n.isFunction()) {
         List<Scope> chain = new ArrayList<Scope>();
 
         // The null scope will be added to the top of the chain.

@@ -125,7 +125,7 @@ public class JSCollapseTransform extends JSTransform {
       for (Node decl : toRemove) {
         Node varNode = decl.getParent();
         assert varNode.isVar();
-        assert ExpUtil.isBlock(varNode.getParent()) : "Declaration parent isn't a block: " + varNode.getParent();
+        assert ExpUtil.isStatementBlock(varNode.getParent()) : "Declaration parent isn't a block: " + varNode.getParent();
         varNode.getParent().removeChild(varNode);
       }
       toRemove.clear(); 

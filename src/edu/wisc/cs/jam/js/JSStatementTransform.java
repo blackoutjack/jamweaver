@@ -135,7 +135,7 @@ public class JSStatementTransform extends JSTransform {
       }
 
       Node rhs = n.getChildAtIndex(1);
-      if (ExpUtil.isAssign(rhs)) return false;
+      if (ExpUtil.isAssignment(rhs)) return false;
       if (ExpUtil.isUnOp(rhs)) return false;
       return isSimpleExpression(t, rhs, n);
     }
@@ -152,7 +152,7 @@ public class JSStatementTransform extends JSTransform {
           if (childCnt == 0) return true;
           Node child = n.getFirstChild();
           if (isVerySimple(child)) return true;
-          if (child.isAssign()) return false;
+          if (ExpUtil.isAssignment(child)) return false;
           return isSimpleExpression(t, child, n);
         case Token.ASSIGN:
           return isSimpleAssign(t, n, parent);
@@ -376,7 +376,9 @@ public class JSStatementTransform extends JSTransform {
       assert n.isName();
 
       // Conservatively assume that any call may alter the reference.
-      if (ExpUtil.containsCall(exp)) {
+      // %%% The |blocks| flag probably doesn't make a difference, but
+      // %%% for the sake of being conservative.
+      if (ExpUtil.containsInvoke(exp, true)) {
         return true;
       }
       // Or any mention of the LHS on the RHS.
@@ -389,31 +391,28 @@ public class JSStatementTransform extends JSTransform {
       return false;
     }
 
-    protected boolean isModifiableWithinAssign(NodeTraversal t, Node n, Node assign) {
-      assert ExpUtil.isAssign(assign);
-      Node rhs = ExpUtil.getAssignRHS(assign);
-      assert rhs != null : "Null RHS of assign: " + assign;
-      return isModifiableWithinExpression(t, n, rhs);
-    }
-
     protected boolean transformAssignLHS(NodeTraversal t, Node lhs, Node n) {
-      assert ExpUtil.isAssign(n);
+      assert ExpUtil.isAssignment(n);
       boolean chng = false;
       if (ExpUtil.isAccessor(lhs)) {
         Node obj = lhs.getFirstChild();
         if (isVerySimple(obj)) {
-          if (obj.isName() && !tmpUses.contains(obj)
-              && isModifiableWithinAssign(t, obj, n)) {
-            if (transformGeneric(t, obj, lhs)) chng = true;
+          if (obj.isName() && !tmpUses.contains(obj)) {
+            Node rhs = ExpUtil.getAssignRHS(n);
+            if (isModifiableWithinExpression(t, obj, rhs)) {
+              if (transformGeneric(t, obj, lhs)) chng = true;
+            }
           }
         } else {
           if (transformGeneric(t, obj, lhs)) chng = true;
         }
         Node prop = lhs.getChildAtIndex(1);
         if (isVerySimple(prop)) {
-          if (prop.isName() && !tmpUses.contains(prop)
-              && isModifiableWithinAssign(t, prop, n)) {
-            if (transformGeneric(t, prop, lhs)) chng = true;
+          if (prop.isName() && !tmpUses.contains(prop)) {
+            Node rhs = ExpUtil.getAssignRHS(n);
+            if (isModifiableWithinExpression(t, prop, rhs)) {
+              if (transformGeneric(t, prop, lhs)) chng = true;
+            }
           }
         } else {
           if (transformGeneric(t, prop, lhs)) chng = true;
@@ -424,6 +423,7 @@ public class JSStatementTransform extends JSTransform {
       return chng;
     }
 
+    // This is for regular ASSIGN nodes only.
     protected boolean transformAssign(NodeTraversal t, Node n, Node parent) {
       assert n.isAssign();
       boolean chng = false;
@@ -1345,7 +1345,7 @@ public class JSStatementTransform extends JSTransform {
         int childCnt = block.getChildCount();
         for (int i=childCnt-1; i>=0; i--) {
           Node n = block.getChildAtIndex(i);
-          if (ExpUtil.isContinue(n)) {
+          if (n.isContinue()) {
             boolean doInsert = true;
             if (nested) {
               doInsert = false;

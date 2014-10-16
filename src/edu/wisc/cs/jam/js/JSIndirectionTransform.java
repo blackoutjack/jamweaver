@@ -458,6 +458,7 @@ public class JSIndirectionTransform extends JSTransform {
   // JAM.set(obj, prop, val);
   //
   protected void indirectPropertyWrite(NodeTraversal t, Node n, Node parent, Node ispect) {
+    // %%% Should support compound assignment too!
     assert n.isAssign();
 
     Node lhs = n.getFirstChild();
@@ -565,6 +566,7 @@ public class JSIndirectionTransform extends JSTransform {
   }
 
   protected boolean shouldIndirectAssign(Node n) {
+    // %%% Should support compound assignment too!
     assert n.isAssign();
     Node lhs = n.getFirstChild();
     if (!ExpUtil.isAccessor(lhs)) return false;
@@ -636,7 +638,7 @@ public class JSIndirectionTransform extends JSTransform {
     @Override
     public void visit(NodeTraversal t, Node n, Node parent) {
       if (ExpUtil.isAccessor(n)) {
-        if (ExpUtil.isAssign(parent) && ExpUtil.getAssignLHS(parent) == n) {
+        if (ExpUtil.isAssignment(parent) && ExpUtil.getAssignLHS(parent) == n) {
           // This case is handled when visiting the parent.
           return;
         }
@@ -653,7 +655,9 @@ public class JSIndirectionTransform extends JSTransform {
             callsWithTransformedTargets.add(parent);
           }
         }
-      } else if (ExpUtil.isAssign(n)) {
+      } else if (ExpUtil.isAssignment(n)) {
+        // %%% This is an assumption based on the initial
+        // %%% pass with JSStatementTransform.
         assert n.isAssign() : "Non-standard assign statement within a transaction: " + sm.codeFromNode(n);
         // %%% Currently we don't handle assignments to global/with props.
         Node lhs = ExpUtil.getAssignLHS(n);

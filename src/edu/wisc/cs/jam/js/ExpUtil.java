@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.File;
 
 import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
 
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerInput;
@@ -33,148 +32,115 @@ import edu.wisc.cs.jam.env.NativeUtil;
 
 public class ExpUtil {
 
-  // %%% Not a good categorization.
+  // This is a rough categorization, but it pretty much covers all
+  // expression types that don't return a value. Statements can't
+  // be a proper constituent of a larger expression other than a block,
+  // or in some cases (such as CASE) other statements.
   public static final int[] STATEMENT_TYPES = {
-    Token.FOR,
-    Token.IF,
-    Token.SWITCH,
-    Token.WHILE,
-    Token.DO,
-    Token.EXPR_RESULT,
-    Token.VAR,
-    Token.CASE,
-    Token.DEFAULT_CASE,
-    Token.THROW,
-    Token.RETURN,
-    Token.SCRIPT,
-    Token.TRY,
-    Token.WITH,
-    Token.LABEL,
+    JSExp.EXPR_RESULT,
+    JSExp.IF,
+    JSExp.FOR,
+    JSExp.SWITCH,
+    JSExp.WHILE,
+    JSExp.DO,
+    JSExp.VAR,
+    JSExp.CASE,
+    JSExp.DEFAULT_CASE,
+    JSExp.THROW,
+    JSExp.RETURN,
+    JSExp.SCRIPT,
+    JSExp.TRY,
+    JSExp.WITH,
+    JSExp.LABEL,
   };
   public static final int[] LOOP_TYPES = {
-    Token.FOR,
-    Token.WHILE,
-    Token.DO
+    JSExp.FOR,
+    JSExp.WHILE,
+    JSExp.DO
   };
   public static final int[] CONTROL_TYPES = {
-    Token.FOR,
-    Token.IF,
-    Token.SWITCH,
-    Token.CASE,
-    Token.DEFAULT_CASE,
-    Token.WHILE,
-    Token.DO,
-    Token.TRY,
-    Token.CATCH,
-    Token.WITH,
+    JSExp.FOR,
+    JSExp.IF,
+    JSExp.SWITCH,
+    JSExp.CASE,
+    JSExp.DEFAULT_CASE,
+    JSExp.WHILE,
+    JSExp.DO,
+    JSExp.TRY,
+    JSExp.CATCH,
+    JSExp.WITH,
   };
   public static final int[] PRIMITIVE_TYPES = {
-    Token.FALSE,
-    Token.TRUE,
-    Token.STRING,
-    Token.NUMBER,
-    Token.NULL,
-    Token.REGEXP,
+    JSExp.FALSE,
+    JSExp.TRUE,
+    JSExp.STRING,
+    JSExp.NUMBER,
+    JSExp.NULL,
+    JSExp.REGEXP,
   };
   public static final int[] LITERAL_TYPES = {
-    Token.FALSE,
-    Token.TRUE,
-    Token.STRING,
-    Token.NUMBER,
-    Token.NULL,
-    Token.REGEXP,
-    Token.ARRAYLIT,
-    Token.OBJECTLIT,
+    JSExp.FALSE,
+    JSExp.TRUE,
+    JSExp.STRING,
+    JSExp.NUMBER,
+    JSExp.NULL,
+    JSExp.REGEXP,
+    JSExp.ARRAYLIT,
+    JSExp.OBJECTLIT,
   };
   public static final int[] UNOP_TYPES = {
-    Token.INC,
-    Token.DEC
-  };
-  public static final int[] BINOP_TYPES = {
-    Token.BITOR,
-    Token.BITXOR,
-    Token.BITAND,
-    Token.SHEQ,
-    Token.SHNE,
-    Token.EQ,
-    Token.NE,
-    Token.LT,
-    Token.LE,
-    Token.GT,
-    Token.GE,
-    Token.LSH,
-    Token.RSH,
-    Token.URSH,
-    Token.ADD,
-    Token.SUB,
-    Token.MUL,
-    Token.DIV,
-    Token.MOD,
-    Token.AND,
-    Token.OR,
+    JSExp.INC,
+    JSExp.DEC
   };
   public static final int[] NUMBER_OP_TYPES = {
-    Token.BITOR,
-    Token.BITXOR,
-    Token.BITAND,
-    Token.LSH,
-    Token.RSH,
-    Token.URSH,
-    Token.SUB,
-    Token.MUL,
-    Token.DIV,
-    Token.MOD,
-    Token.INC,
-    Token.DEC
+    JSExp.BITOR,
+    JSExp.BITXOR,
+    JSExp.BITAND,
+    JSExp.LSH,
+    JSExp.RSH,
+    JSExp.URSH,
+    JSExp.SUB,
+    JSExp.MUL,
+    JSExp.DIV,
+    JSExp.MOD,
+    JSExp.INC,
+    JSExp.DEC
   };
   public static final int[] BOOLEAN_OP_TYPES = {
-    Token.SHEQ,
-    Token.SHNE,
-    Token.EQ,
-    Token.NE,
-    Token.LT,
-    Token.LE,
-    Token.GT,
-    Token.GE,
-    Token.NOT,
+    JSExp.SHEQ,
+    JSExp.SHNE,
+    JSExp.EQ,
+    JSExp.NE,
+    JSExp.LT,
+    JSExp.LE,
+    JSExp.GT,
+    JSExp.GE,
+    JSExp.NOT,
   };
   public static final int[] ACCESSOR_TYPES = {
-    Token.GETPROP,
-    Token.GETELEM,
+    JSExp.GETPROP,
+    JSExp.GETELEM,
   };
   public static final int[] ASSIGN_TYPES = {
     // %%% Need to add INC/DEC to this?
-    Token.ASSIGN,
-    Token.ASSIGN_BITOR,
-    Token.ASSIGN_BITXOR,
-    Token.ASSIGN_BITAND,
-    Token.ASSIGN_LSH,
-    Token.ASSIGN_RSH,
-    Token.ASSIGN_URSH,
-    Token.ASSIGN_ADD,
-    Token.ASSIGN_SUB,
-    Token.ASSIGN_MUL,
-    Token.ASSIGN_DIV,
-    Token.ASSIGN_MOD
+    JSExp.ASSIGN,
+    JSExp.ASSIGN_BITOR,
+    JSExp.ASSIGN_BITXOR,
+    JSExp.ASSIGN_BITAND,
+    JSExp.ASSIGN_LSH,
+    JSExp.ASSIGN_RSH,
+    JSExp.ASSIGN_URSH,
+    JSExp.ASSIGN_ADD,
+    JSExp.ASSIGN_SUB,
+    JSExp.ASSIGN_MUL,
+    JSExp.ASSIGN_DIV,
+    JSExp.ASSIGN_MOD
   };
   
   public static final int[] BLOCK_TYPES = {
-    Token.BLOCK,
-    Token.SCRIPT
+    JSExp.BLOCK,
+    JSExp.SCRIPT
   };
-
-  public static boolean isInIntrospectorExpression(Node n) {
-    Node c = null;
-    while (n != null) {
-      // Check identity with the first child to avoid nodes in the
-      // transaction block rather than the introspector expression.
-      if (c != null && isTransaction(n) && c == n.getFirstChild())
-        return true;
-      c = n;
-      n = n.getParent();
-    }
-    return false;
-  }
 
   public static boolean isPostfixUnOp(Node n) {
     if (!isUnOp(n)) return false;
@@ -186,18 +152,15 @@ public class ExpUtil {
     return prepost == 1;
   }
 
-  public static boolean isScript(Node n) {
-    if (n == null) return false;
-    int ntype = n.getType();
-    if (ntype == Token.SCRIPT) return true;
-    return false;
-  }
-
-  public static boolean isTypeOf(Node n) {
-    if (n == null) return false;
-    int ntype = n.getType();
-    if (ntype == Token.TYPEOF) return true;
-    return false;
+  public static boolean isPostfixUnOp(Exp e) {
+    if (!isUnOp(e)) return false;
+    Node n = ((JSExp)e).getNode();
+    int prepost = n.getIntProp(Node.INCRDECR_PROP);
+    // %%% rhino.IRFactory doesn't set up the property correctly.
+    // It uses 1 to indicate postfix rather than POST_FLAG
+    // (Node.POST_FLAG == 0x2).
+    //return prepost == Node.POST_FLAG;
+    return prepost == 1;
   }
 
   public static boolean isUnOp(Node n) {
@@ -208,11 +171,10 @@ public class ExpUtil {
     return false;
   }
 
-  public static boolean isBinOp(Node n) {
-    if (n == null) return false;
-    int ntype = n.getType();
-    for (int t : BINOP_TYPES)
-      if (ntype == t) return true;
+  public static boolean isUnOp(Exp e) {
+    if (e == null) return false;
+    for (int t : UNOP_TYPES)
+      if (e.is(t)) return true;
     return false;
   }
 
@@ -224,24 +186,10 @@ public class ExpUtil {
     return false;
   }
 
-  public static boolean isInstanceOf(Node n) {
-    if (n == null) return false;
-    int ntype = n.getType();
-    if (ntype == Token.INSTANCEOF) return true;
-    return false;
-  }
-
-  public static boolean isObjectLiteral(Node n) {
-    if (n == null) return false;
-    int ntype = n.getType();
-    if (ntype == Token.OBJECTLIT) return true;
-    return false;
-  }
-
-  public static boolean isArrayLiteral(Node n) {
-    if (n == null) return false;
-    int ntype = n.getType();
-    if (ntype == Token.ARRAYLIT) return true;
+  public static boolean isControl(Exp e) {
+    if (e == null) return false;
+    for (int t : CONTROL_TYPES)
+      if (e.is(t)) return true;
     return false;
   }
 
@@ -254,24 +202,16 @@ public class ExpUtil {
     return false;
   }
 
-  public static boolean isExprResult(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.EXPR_RESULT) return true;
-    return false;
-  }
-
-  public static boolean isBoolean(Node n) {
-    if (n == null) return false;
-    int ntype = n.getType();
-    if (ntype == Token.FALSE) return true;
-    if (ntype == Token.TRUE) return true;
-    return false;
+  public static boolean isStatement(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return isStatement(n);
   }
 
   protected static boolean isPrimitive(Node n) {
     if (n == null) return false;
     int ntype = n.getType();
-    if (ntype == Token.NAME) {
+    if (ntype == JSExp.NAME) {
       String name = n.getString();
       for (String nn : NativeUtil.PRIMITIVE_NAMES)
         if (nn.equals(name)) return true;
@@ -296,34 +236,13 @@ public class ExpUtil {
     return false;
   }
 
-  public static boolean isName(Node n) {
-    if (n == null) return false;
-    // Assignments such as "x = 1" have NAME tokens
-    // as the top level. We don't want those.
-    if (n.isName() && n.getChildCount() == 0) return true;
-    return false;
+  public static boolean isLiteral(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return isLiteral(n);
   }
 
-  public static boolean isWild(Node n) {
-    if (!isName(n)) return false;
-    String c = codeFromNode(n);
-    if (c.startsWith("`")) return true;
-    return false;
-  }
-
-  public static boolean isNameAssign(Node n) {
-    Node lhs = getAssignLHS(n);
-    return isName(lhs);
-  }
-
-  public static boolean isSimpleAssign(Node n) {
-    if (n == null) return false;
-    int ntype = n.getType();
-    if (ntype == Token.ASSIGN) return true;
-    return false;
-  }
-
-  public static boolean isAssign(Node n) {
+  public static boolean isAssignment(Node n) {
     if (n == null) return false;
     int ntype = n.getType();
     for (int t : ASSIGN_TYPES)
@@ -331,16 +250,10 @@ public class ExpUtil {
     return false;
   }
 
-  public static boolean isNew(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.NEW) return true;
-    return false;
-  }
-
-  public static boolean isCall(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.CALL) return true;
-    return false;
+  public static boolean isAssignment(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return isAssignment(n);
   }
 
   public static boolean isAccessor(Node n) {
@@ -350,8 +263,15 @@ public class ExpUtil {
       if (ntype == t) return true;
     return false;
   }
+  
+  public static boolean isAccessor(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return isAccessor(n);
+  }
 
-  public static boolean isBlock(Node n) {
+  // Verbose name so as to not confuse it with Rhino |Node.isBlock|.
+  public static boolean isStatementBlock(Node n) {
     if (n == null) return false;
     int ntype = n.getType();
     for (int t : BLOCK_TYPES)
@@ -359,30 +279,36 @@ public class ExpUtil {
     return false;
   }
 
-  public static boolean isCommaExpression(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.COMMA)
-      return true;
-    return false;
-  }
-
-  public static boolean isTernaryOp(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.HOOK)
-      return true;
-    return false;
+  public static boolean isStatementBlock(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return isStatementBlock(n);
   }
 
   public static boolean isForIn(Node n) {
     if (n == null) return false;
-    if (isFor(n) && n.getChildCount() == 3)
+    if (n.isFor() && n.getChildCount() == 3)
+      return true;
+    return false;
+  }
+
+  public static boolean isForIn(Exp e) {
+    if (e == null) return false;
+    if (e.is(JSExp.FOR) && e.getChildCount() == 3)
       return true;
     return false;
   }
 
   public static boolean isStandardFor(Node n) {
     if (n == null) return false;
-    if (isFor(n) && n.getChildCount() == 4)
+    if (n.isFor() && n.getChildCount() == 4)
+      return true;
+    return false;
+  }
+
+  public static boolean isStandardFor(Exp e) {
+    if (e == null) return false;
+    if (e.is(JSExp.FOR) && e.getChildCount() == 4)
       return true;
     return false;
   }
@@ -394,133 +320,96 @@ public class ExpUtil {
       if (ntype == t) return true;
     return false;
   }
-
-  public static boolean isFunction(Node n) {
-    if (n == null) return false;
-    return n.getType() == Token.FUNCTION;
+  
+  public static boolean isLoop(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return isLoop(n);
   }
 
   public static boolean isAnonymousFunction(Node n) {
     if (n == null) return false;
-    if (!isFunction(n))
+    if (!n.isFunction())
       return false;
     Node parent = n.getParent();
     // Getters and setters are not anonymous.
     if (parent != null && (parent.isGetterDef() || parent.isSetterDef()))
       return false;
     Node name = n.getChildAtIndex(0);
-    if (isName(name) && name.getString().equals(""))
+    if (name.isName() && name.getString().equals(""))
       return true;
     return false;
   }
 
-  public static boolean isReturn(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.RETURN)
-      return true;
-    return false;
+  public static boolean isAnonymousFunction(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return isAnonymousFunction(n);
   }
 
-  public static boolean isWhile(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.WHILE)
-      return true;
-    return false;
-  }
-
-  public static boolean isBreak(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.BREAK)
-      return true;
-    return false;
-  }
-
-  public static boolean isCase(Node n) {
-    if (n == null) return false;
-    if (n.isCase() || n.isDefaultCase())
-      return true;
-    return false;
-  }
-
-  public static boolean isSwitch(Node n) {
-    if (n == null) return false;
-    if (n.isSwitch())
-      return true;
-    return false;
-  }
-
-  public static boolean isContinue(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.CONTINUE)
-      return true;
-    return false;
-  }
-
-  public static boolean isAnd(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.AND)
-      return true;
-    return false;
-  }
-
-  public static boolean isOr(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.OR)
-      return true;
-    return false;
-  }
-
-  public static boolean isIf(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.IF)
-      return true;
-    return false;
-  }
-
-  public static boolean isFor(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.FOR)
-      return true;
-    return false;
-  }
-
-  public static boolean isString(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.STRING)
-      return true;
-    return false;
-  }
-
-  public static boolean isVar(Node n) {
-    if (n == null) return false;
-    if (n.getType() == Token.VAR)
-      return true;
-    return false;
-  }
-
+  // Initializaters (e.g. |var x = 2, y = 3|) are structured as follows.
+  // [VAR, [NAME, [NUMBER]], [NAME, [NUMBER]]]. If any of the variables
+  // are initialized, we consider the statement to be an initializer.
   public static boolean isVarInitializer(Node n) {
     if (n == null) return false;
-    if (!isVar(n)) return false;
-    if (n.getChildCount() > 0 && n.getChildAtIndex(0).getChildCount() > 0)
-      return true;
+    if (!n.isVar()) return false;
+    int childcnt = n.getChildCount();
+    assert childcnt > 0 : "Unknown VAR node format: " + codeFromNode(n);
+
+    for (int i=0; i<childcnt; i++) {
+      Node name = n.getChildAtIndex(i);
+      assert name.isName() : "VAR node without NAME child: " + codeFromNode(n);
+      if (name.getChildCount() > 0)
+        return true;
+    }
     return false;
   }
 
+  public static boolean isVarInitializer(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return isVarInitializer(n);
+  }
+
+  // If any of the variables are left uninitialized, we consider the
+  // statement to be a declaration. So a statement can be (or contain,
+  // really) both a declaration and an initializer.
   public static boolean isVarDeclaration(Node n) {
     if (n == null) return false;
-    if (!isVar(n)) return false;
-    if (n.getChildCount() == 0 || n.getChildAtIndex(0).getChildCount() == 0)
-      return true;
+    if (!n.isVar()) return false;
+    int childcnt = n.getChildCount();
+    assert childcnt > 0 : "Unknown VAR node format: " + codeFromNode(n);
+
+    for (int i=0; i<childcnt; i++) {
+      Node name = n.getChildAtIndex(i);
+      assert name.isName() : "VAR node without NAME child: " + codeFromNode(n);
+      if (name.getChildCount() == 0)
+        return true;
+    }
     return false;
+  }
+
+  public static boolean isVarDeclaration(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return isVarDeclaration(n);
   }
 
   public static boolean isMemberDeclaration(Node n) {
     if (n == null) return false;
-    if (n.getParent() == null) return false;
-    if ((n.getType() == Token.STRING_KEY || n.isGetterDef()
-        || n.isSetterDef()) && isObjectLiteral(n.getParent()))
+    Node parent = n.getParent();
+    if (parent == null) return false;
+    // %%% STRING also?
+    if (parent.isObjectLit() && (n.isString()
+        || n.isGetterDef() || n.isSetterDef()))
       return true;
     return false;
+  }
+
+  public static boolean isMemberDeclaration(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return isMemberDeclaration(n);
   }
 
   // Return an enclosing transaction.
@@ -532,34 +421,9 @@ public class ExpUtil {
     return tx;
   }
 
-  // Return an enclosing HOOK, OR, or AND.
-  // %%% Untested
-  public static Node isWithinShortCircuit(Node n) {
-    Node stmt = n.getParent();
-    while (stmt != null && !stmt.isHook()
-        && !stmt.isAnd() && !stmt.isOr()) {
-      // Don't go past control statements.
-      if (isControl(stmt)) {
-        return null;
-      }
-      stmt = stmt.getParent();
-    }
-    return stmt;
-  }
-
-  // %%% Untested
-  public static Node getContainingBlock(Node n) {
-    Node block = n.getParent();
-    while (block != null && !block.isBlock()) {
-      block = block.getParent();
-    }
-    return block;
-    
-  }
-
   public static boolean isTransaction(Node n) {
     if (n == null) return false;
-    if (n.getType() == Token.TRANSACTION)
+    if (n.getType() == JSExp.TRANSACTION)
       return true;
     return false;
   }
@@ -597,6 +461,12 @@ public class ExpUtil {
     return false;
   }
 
+  public static boolean returnsBoolean(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return returnsBoolean(n);
+  }
+
   public static boolean returnsString(SourceManager src, Node n) {
     if (n == null) return false;
     if (n.isString()) return true;
@@ -615,6 +485,12 @@ public class ExpUtil {
     }
     // %%% Could have cases for AND, OR.
     return false;
+  }
+
+  public static boolean returnsString(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return returnsString(e.getSourceManager(), n);
   }
 
   public static boolean returnsNumber(SourceManager src, Node n) {
@@ -639,17 +515,27 @@ public class ExpUtil {
     return false;
   }
 
+  public static boolean returnsNumber(Exp e) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return returnsNumber(e.getSourceManager(), n);
+  }
+
   public static Node getAssignLHS(Node n) {
+    // %%% Transition to Exp.cloneAssignLHS.
+    if (n == null) return null;
     // Unwrap the expression.
-    if (isExprResult(n)) {
+    if (n.isExprResult()) {
       n = n.getFirstChild();
     }
 
-    if (isAssign(n)) {
+    if (isAssignment(n)) {
       return n.getFirstChild();
     }
       
     if (isVarInitializer(n)) {
+      // %%% Should potentially return a list of Exps, since a
+      // %%% declaration can contain several variables.
       // Collect copies of the initializer components.
       Node lhs = n.getFirstChild().cloneTree();
       // Isolate the variable name.
@@ -662,18 +548,29 @@ public class ExpUtil {
   }
 
   public static Node getAssignRHS(Node n) {
+    // %%% Transition to Exp.cloneAssignRHS
+    if (n == null) return null;
     // Unwrap the expression.
-    if (isExprResult(n)) {
+    if (n.isExprResult()) {
       n = n.getFirstChild();
     }
 
-    if (isAssign(n)) {
+    if (isAssignment(n)) {
+      // %%% Perhaps construct the effective RHS.
       return n.getChildAtIndex(1);
     }
       
     if (isVarInitializer(n)) {
-      Node rhs = n.getFirstChild().getFirstChild();
-      return rhs;
+      // %%% This will miss subsequent initializations in a
+      // %%% multi-variable initializater.
+      int childcnt = n.getChildCount();
+      for (int i=0; i<childcnt; i++) {
+        Node name = n.getFirstChild();
+        if (name.getChildCount() == 1) {
+          Node rhs = name.getFirstChild();
+          return rhs;
+        }
+      }
     }
 
     return null;
@@ -702,7 +599,7 @@ public class ExpUtil {
       return n.getChildAtIndex(1);
     } else if (isForIn(n)) {
       // %%% Not necessarily.
-      return new Node(Token.TRUE);
+      return new Node(JSExp.TRUE);
     } else if (n.isDo()) {
       return n.getLastChild();
     } else if (n.isCase()) {
@@ -713,7 +610,7 @@ public class ExpUtil {
       assert swtch.isSwitch() : "Case not within switch: " + n + " / " + swtch;
       Node switchVal = swtch.getFirstChild().cloneTree();
       // EQ seems to be correct, rather than SHEQ.
-      return new Node(Token.EQ, switchVal, caseVal);
+      return new Node(JSExp.EQ, switchVal, caseVal);
     } else if (n.isSwitch() || n.isDefaultCase()
         || n.isTry() || n.isCatch() || n.isWith()
         || n.isReturn()) {
@@ -724,12 +621,40 @@ public class ExpUtil {
     }
     return null;
   }
-  
-  public static Node getEnclosingBlock(Node n) {
-    if (isBlock(n))
-      return n;
-    Node parent = n.getParent();
-    return getEnclosingBlock(parent);
+
+  public static Exp getCondition(Exp e) {
+    if (!isControl(e)) return null;
+
+    if (e.is(JSExp.IF) || e.is(JSExp.WHILE)) {
+      return e.getChild(0);
+    } else if (isStandardFor(e)) {
+      return e.getChild(1);
+    } else if (isForIn(e)) {
+      // %%% Not necessarily.
+      return JSExp.create(e.getSourceManager(), new Node(JSExp.TRUE));
+    } else if (e.is(JSExp.DO)) {
+      return e.getLastChild();
+    } else if (e.is(JSExp.CASE)) {
+      // Make condition |switchVal == caseVal|.
+      Exp caseVal = e.getFirstChild();
+      caseVal = caseVal.clone();
+      Exp swtch = e.getParent();
+      assert swtch.is(JSExp.SWITCH) : "Case not within switch: " + e + " / " + swtch;
+      Exp switchVal = swtch.getChild(0).clone();
+
+      Node switchNode = ((JSExp)switchVal).getNode();
+      Node caseNode = ((JSExp)caseVal).getNode();
+      // EQ seems to be correct, rather than SHEQ.
+      return JSExp.create(e.getSourceManager(), new Node(JSExp.EQ, switchNode, caseNode));
+    } else if (e.is(JSExp.SWITCH) || e.is(JSExp.DEFAULT_CASE)
+        || e.is(JSExp.TRY) || e.is(JSExp.CATCH) || e.is(JSExp.WITH)
+        || e.is(JSExp.RETURN)) {
+      // These statements don't have branching control flow.
+      return null;
+    } else {
+      Dbg.err("Unknown control type encountered: " + e.toString());
+    }
+    return null;
   }
 
   public static String codeFromNode(Node n, SourceManager src) {
@@ -741,9 +666,22 @@ public class ExpUtil {
 
   public static String codeFromNode(Node n) {
     if (n == null) return "";
-    if (isExprResult(n) && n.getChildCount() == 0) return "";
+    if (n.isExprResult() && n.getChildCount() == 0) return "";
 
     return ClosureUtil.codeFromNode(n);
+  }
+
+  // Returns a unique string for the given function
+  // The string is based on the function's name and position in the source file
+  public static String funcHash(Node n, SourceManager src) {
+    String code;
+    // The {main} dummy function has type BLOCK.
+    if (n.getType() != JSExp.FUNCTION) {
+      code = "{main}";
+    } else {
+      code = codeFromNode(n.getChildAtIndex(0), src);
+    }
+    return code;
   }
 
   public static Node getEnclosingStatement(Node n) {
@@ -757,49 +695,15 @@ public class ExpUtil {
     return getEnclosingStatement(n.getParent());
   }
 
-  public static Node getEnclosingIf(Node n) {
-    Node enc = getEnclosingStatement(n);
-    if (enc == null || enc.getType() == Token.IF) {
-      return enc;
+  public static Exp getEnclosingStatement(Exp e) {
+    if (e == null) return null;
+    if (isStatement(e)) {
+      Exp par = e.getParent();
+      if (par != null && par.is(JSExp.LABEL))
+        return par;
+      return e;
     }
-    return getEnclosingIf(enc.getParent());
-  }
-
-  // Returns a unique string for the given function
-  // The string is based on the function's name and position in the source file
-  public static String funcHash(Node n, SourceManager src) {
-    String code;
-    // The {main} dummy function has type BLOCK.
-    if (n.getType() != Token.FUNCTION) {
-      code = "{main}";
-    } else {
-      code = codeFromNode(n.getChildAtIndex(0), src);
-    }
-    return code;
-  }
-
-  /*
-  static String getFunctionTransition(Node n, SourceManager src) {
-    return "{#" + funcHash(n, src) + "}";
-  }
-  */
-
-  public static void scanForNames(Set<Node> out, Node n) {
-    if (n == null) return;
-    if (n.isName()) {
-      out.add(n);
-    } else {
-      for (int i=0; i<n.getChildCount(); i++) {
-        scanForNames(out, n.getChildAtIndex(i));
-      }
-    }
-  }
-
-  // Return a set of all names 
-  public static Set<Node> scanForNames(Node n) {
-    Set<Node> ret = new LinkedHashSet<Node>();
-    scanForNames(ret, n);
-    return ret;
+    return getEnclosingStatement(e.getParent());
   }
 
   public static boolean mayDirectlyModifyName(Node exp, String name) {
@@ -809,7 +713,7 @@ public class ExpUtil {
       if (isUnOp(parent)) {
         return true;
       }
-      if (isAssign(parent) && exp == getAssignLHS(parent)) {
+      if (isAssignment(parent) && exp == getAssignLHS(parent)) {
         return true;
       }
     }
@@ -822,26 +726,52 @@ public class ExpUtil {
     return false;
   }
 
-  public static boolean containsName(Node exp, String name) {
-    if (exp == null) return false;
-    if (exp.isName() && exp.getString().equals(name)) return true;
+  public static boolean containsType(Exp e, int t, boolean blocks) {
+    if (e == null) return false;
+    List<Exp> childs = e.getChildren();
+    if (e.is(t)) return true;
+    for (Exp c : childs) {
+      // For control nodes (like a for loop), we may not want to descend
+      // into body blocks.
+      if (!blocks && isStatementBlock(c))
+        continue;
+      if (containsType(c, t, blocks))
+        return true;
+    }
+    return false;
+  }
 
-    int childCnt = exp.getChildCount();
+
+  public static boolean containsName(Node n, String name) {
+    if (n == null) return false;
+    if (n.isName() && n.getString().equals(name)) return true;
+
+    int childCnt = n.getChildCount();
     for (int i=0; i<childCnt; i++) {
-      Node c = exp.getChildAtIndex(i);
+      Node c = n.getChildAtIndex(i);
       if (containsName(c, name)) return true;
     }
     return false;
   }
 
-  public static boolean containsCall(Node exp) {
-    if (isCall(exp) || isNew(exp)) return true;
-    int childCnt = exp.getChildCount();
+  public static boolean containsInvoke(Node n, boolean blocks) {
+    if (n == null) return false;
+    if (n.isCall() || n.isNew()) return true;
+    int childCnt = n.getChildCount();
     for (int i=0; i<childCnt; i++) {
-      Node c = exp.getChildAtIndex(i);
-      if (containsCall(c)) return true;
+      Node c = n.getChildAtIndex(i);
+      // For control nodes (like a for loop), we may not want to descend
+      // into body blocks.
+      if (!blocks && isStatementBlock(c)) return false;
+      if (containsInvoke(c, blocks)) return true;
     }
     return false;
+  }
+
+  public static boolean containsInvoke(Exp e, boolean blocks) {
+    if (e == null) return false;
+    Node n = ((JSExp)e).getNode();
+    return containsInvoke(n, blocks);
   }
 
   public static int getAstSize(Node n) {

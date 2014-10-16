@@ -9,7 +9,7 @@ public interface Semantics {
 	public List<Boolean> batchQuery(List<Clause> clauses, List<Clause> prereqs, boolean onError);
 	public List<Boolean> batchQuery(List<Clause> clauses, boolean onError);
 	public List<String> sentinelQuery(Clause c);
-	public Predicate getPrerequisite(Predicate p);
+	public Predicate loadPrerequisite(Policy pol, Predicate pred);
 	public Predicate getConditionPredicate(String cond);
 	public Clause getParseClause(ExpSymbol sym);
 	public Clause getTraceClause(ExpSymbol sym);

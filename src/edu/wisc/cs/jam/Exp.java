@@ -82,9 +82,12 @@ public abstract class Exp {
   // Exp-type-specific functions.
   public abstract boolean is(int type);
   public abstract boolean isAnd();
-  public abstract boolean isAssign();
+  // A call, constructor invocation, etc.
+  public abstract boolean isInvoke();
+  // Typically, a function or method call, but not a constructor.
   public abstract boolean isCall();
   public abstract boolean isBoolean();
+  public abstract boolean isFunction();
   public abstract boolean isName();
   public abstract boolean isNumber();
   public abstract boolean isNot();
@@ -100,12 +103,18 @@ public abstract class Exp {
   // %%% Eliminate one of these or explain them.
   public abstract boolean isNoOp();
 
+  // Any type of assignment, including compound (+=, etc.) but *not*
+  // variable declarations and initializers.
+  public abstract boolean isAssignment();
+  // Specifically a normal assign node (x = y).
+  public abstract boolean isAssign();
+
   // AST queries
-  public abstract Exp getAssignLHS();
-  public abstract Exp getAssignRHS();
+  public abstract Exp cloneAssignLHS();
+  public abstract Exp cloneAssignRHS();
+  public abstract int getType();
   public abstract Exp isWithinType(int t);
   public abstract boolean containsType(int t);
-  public abstract boolean containsType(int t, boolean blocks);
   public abstract boolean isInGlobalScope();
   public abstract String getString();
   public abstract Exp getCondition();

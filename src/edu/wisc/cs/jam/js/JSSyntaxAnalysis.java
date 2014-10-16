@@ -31,12 +31,10 @@ public class JSSyntaxAnalysis {
   }
 
   protected boolean definitelyNoCall(Exp exp) {
-    if (exp.isBlock())
-      return false;
     // Don't descend into blocks for control statements.
-    if (exp.containsType(JSExp.CALL, false))
+    if (ExpUtil.isStatementBlock(exp))
       return false;
-    if (exp.containsType(JSExp.NEW, false))
+    if (ExpUtil.containsInvoke(exp, false))
       return false;
     // %%% Are there other node types of interest?
     return true;
@@ -279,7 +277,8 @@ public class JSSyntaxAnalysis {
   protected boolean definitelyNoWrite(Exp exp, String prop, boolean useScope) {
     boolean inFunctionScope = useScope || inSimpleFunctionScope(exp);
     if (!inFunctionScope) {
-      if (exp.containsType(JSExp.VAR, false) || exp.containsType(JSExp.FUNCTION, false)) {
+      if (ExpUtil.containsType(exp, JSExp.VAR, false)
+          || ExpUtil.containsType(exp, JSExp.FUNCTION, false)) {
         if (prop == null) {
           return false;
         } else {
@@ -296,7 +295,7 @@ public class JSSyntaxAnalysis {
           }
 
           for (Exp sub : subs) {
-            Exp lhs = sub.getAssignLHS();
+            Exp lhs = sub.cloneAssignLHS();
             assert lhs != null && lhs.isName();
             String varname = lhs.toCode();
             if (varname.equals(prop)) {
@@ -310,7 +309,7 @@ public class JSSyntaxAnalysis {
     // %%% These are technically Rhino Node types currently, but they
     // %%% should match up.
     for (int t : ExpUtil.ASSIGN_TYPES) {
-      if (exp.containsType(t, false)) {
+      if (ExpUtil.containsType(exp, t, false)) {
         if (prop == null) {
           // No property passed means we're interested in all writes.
           return false;
@@ -320,7 +319,7 @@ public class JSSyntaxAnalysis {
           List<Exp> subs = new ArrayList<Exp>();
           exp.findType(t, subs, false);
           for (Exp sub : subs) {
-            Exp lhs = sub.getAssignLHS();
+            Exp lhs = sub.cloneAssignLHS();
             if (lhs.isName()) {
               if (!inFunctionScope) {
                 // %%% Could rule out simple NAME assignment, but only

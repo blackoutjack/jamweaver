@@ -211,9 +211,9 @@ public class Policy extends Automaton<State,PredicateSymbol> {
       throw new IllegalArgumentException("Invalid destination state: " + deststr);
     }
 
+    // %%% Wouldn't this call make more sense if it was to a method
+    // %%% of the PolicyLanguage?
     Predicate pred = semantics.getConditionPredicate(predstr);
-    Predicate prereq = semantics.getPrerequisite(pred);
-    pred.setPrerequisite(prereq);
 
     // Retrieve or construct the edge now that it's fully specified.
     Edge edge = getEdge(pred, src, dest);
@@ -274,6 +274,13 @@ public class Policy extends Automaton<State,PredicateSymbol> {
       } catch (IllegalArgumentException ex) {
         Dbg.err("Problem with policy line: " + line + " : " + ex.getMessage());
       }
+    }
+
+    // Allow the Semantics to add a prerequisite query for each
+    // predicate based on its own internal logic.
+    for (PredicateSymbol ps : getSymbols()) {
+      Predicate pred = ps.getPredicate();  
+      Predicate prereq = semantics.loadPrerequisite(this, pred);
     }
   }
 

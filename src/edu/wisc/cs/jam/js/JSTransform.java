@@ -122,15 +122,15 @@ public class JSTransform implements Transform {
     protected void elevateFunction(NodeTraversal t, Node n, Node parent) {
       assert !ExpUtil.isAnonymousFunction(n) : "Encountered unconverted anonymous function";
 
-      if (!ExpUtil.isBlock(parent)) {
+      if (!ExpUtil.isStatementBlock(parent)) {
         Node stmt = ExpUtil.getEnclosingStatement(parent);
         Node topBlock = stmt.getParent();
-        assert ExpUtil.isBlock(topBlock);
+        assert ExpUtil.isStatementBlock(topBlock);
         
         Node nextUp = topBlock.getParent();
         while (!topBlock.isScript() && !nextUp.isFunction()) {
           //Dbg.dbg("ELEVATE: " + n.getFirstChild() + " / " + n + " / " + parent + " / " + stmt + " / " + topBlock + " / " + blockParent);
-          if (ExpUtil.isBlock(nextUp)) {
+          if (ExpUtil.isStatementBlock(nextUp)) {
             topBlock = nextUp;
           }
           nextUp = nextUp.getParent();

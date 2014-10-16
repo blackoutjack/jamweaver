@@ -18,11 +18,14 @@ import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.Dbg;
+import edu.wisc.cs.jam.Policy;
 import edu.wisc.cs.jam.PolicyPath;
 import edu.wisc.cs.jam.PolicyLanguage;
 import edu.wisc.cs.jam.Clause;
 import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.PredicateValue;
+import edu.wisc.cs.jam.PredicateType;
+import edu.wisc.cs.jam.PredicateSymbol;
 import edu.wisc.cs.jam.ExpSymbol;
 import edu.wisc.cs.jam.DataState;
 import edu.wisc.cs.jam.DataTransition;
@@ -35,6 +38,8 @@ import edu.wisc.cs.jam.JAM;
 import edu.wisc.cs.jam.xsb.XSBInterface;
 import edu.wisc.cs.jam.xsb.XSBSingleInterface;
 import edu.wisc.cs.jam.xsb.XSBMultiInterface;
+
+import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPredicateType;
 
 public class JSSemantics implements Semantics {
 
@@ -285,23 +290,41 @@ public class JSSemantics implements Semantics {
   }
 
   @Override
-  public Predicate getPrerequisite(Predicate p) {
-    List<Exp> conjs = p.getConjuncts();
-    // The first conjunct will be the policy language construct that we
-    // derive the prerequisite from.
-    // %%% This logic could potentially be extended to addl. conjuncts.
-    Exp conj0 = conjs.get(0);
-    Predicate prereq = null;
-    if (conj0.is(JSExp.CALL)) {
-      String callName = conj0.getFirstChild().toCode();
-      if (callName.equals("jam#get")) {
-        prereq = getConditionPredicate("jam#get(`x,`y)");
-      } else if (callName.equals("jam#set")) {
-        prereq = getConditionPredicate("jam#set(`x,`y)");
-      } else if (callName.equals("jam#called")) {
-        prereq = getConditionPredicate("jam#called(`x)");
+  // Heuristically, it's only helpful to use the prerequisite
+  // optimization if there are multiple policy transitions with the
+  // same basic type.
+  // Furthermore, prerequisites are not used ever if the |syntaxOnly|
+  // option is being used.
+  public Predicate loadPrerequisite(Policy pol, Predicate pred) {
+    // No prerequisites yet implemented for non-event predicates.
+    if (!pred.isEventPredicate()) return null;
+
+    PolicyLanguage pl = pol.getLanguage();
+    PredicateType pt = pl.getPredicateType(pred);
+
+    // Count the number of predicates with the same type. If this is
+    // the only one, it's not worth using a prerequisite.
+    int ptcnt = 0;
+    for (Policy.Edge pe : pol.getAdvancingEdges()) {
+      PredicateSymbol ps = pe.getSymbol();
+      Predicate pother = ps.getPredicate();
+      if (pl.getPredicateType(pother) == pt) {
+        ptcnt++;
       }
     }
+    // The count should alway include the predicate |pred| itself.
+    assert ptcnt >= 1;
+    if (ptcnt == 1) return null;
+
+    Predicate prereq = null;
+    if (pt == JSPredicateType.CALL) {
+      prereq = getConditionPredicate("jam#called(`x)");
+    } else if (pt == JSPredicateType.READ) {
+      prereq = getConditionPredicate("jam#get(`x,`y)");
+    } else if (pt == JSPredicateType.WRITE) {
+      prereq = getConditionPredicate("jam#set(`x,`y)");
+    }
+    pred.setPrerequisite(prereq);
     return prereq;
   }
 
@@ -474,17 +497,19 @@ public class JSSemantics implements Semantics {
     Node n = ((JSExp)s).getNode();
 
     Node lhs = ExpUtil.getAssignLHS(n);
+    if (lhs == null) return null;
+
     // %%% extend this to assignments to object properties
-    if (!ExpUtil.isName(lhs)) return null;
-    String varname = sm.codeFromNode(lhs);
+    if (!lhs.isName()) return null;
+    String varname = lhs.getString();
 
     Node rhs = ExpUtil.getAssignRHS(n);
-    if (!ExpUtil.isObjectLiteral(rhs)) return null;
+    if (rhs == null || !rhs.isObjectLit()) return null;
 
     List<String> props = new ArrayList<String>();
     for (int i=0; i<rhs.getChildCount(); i++) {
       Node memb = rhs.getChildAtIndex(i);
-      if (ExpUtil.isString(memb)) {
+      if (memb.isString()) {
         String prop = memb.getString();
         props.add(prop);
       }
@@ -505,6 +530,13 @@ public class JSSemantics implements Semantics {
     return clause;
   }
 
+  protected Clause makeNameValueSentinel(Node n) {
+    assert n.isName();
+    String varname = n.getString();
+    String c = "valuesent(%H,%L,'\"" + varname + "\"','%T')";
+    return new Clause(c);
+  }
+
   protected Clause getPreValueSentinel(Node n) {
 
     if (n == null) return null;
@@ -516,45 +548,45 @@ public class JSSemantics implements Semantics {
       if (n == null) return null;
     }
 
-    // There doesn't seemt to be any reason to learn the value of
-    // an identifier on the lhs of an assignment.
-    if (ExpUtil.isAssign(n) && ExpUtil.isName(n.getFirstChild())) {
+    // There doesn't seem to be any reason to learn the value of
+    // an identifier that's about be overwritten as an assignment lhs.
+    // For compound assignments, we are interested in the lhs.
+    if (n.isAssign() || ExpUtil.isVarInitializer(n)) {
+      // %%% Really want to get all the RHS values for an initializer.
       n = ExpUtil.getAssignRHS(n);
+      if (n == null) return null;
+    }
+    // Non-initializer variable declarations are worthless.
+    if (n.isVar()) {
+      return null;
     }
     
     // Function nodes have a lot of useless facts that won't help.
-    if (ExpUtil.isFunction(n)) {
-      return null;
-    }
-
-    // Variable declarations are also worthless.
-    if (ExpUtil.isVarDeclaration(n)) {
+    if (n.isFunction()) {
       return null;
     }
 
     if (ExpUtil.isAccessor(n)) {
       Node objNode = n.getFirstChild(); 
-      if (!ExpUtil.isName(objNode)) {
-        return null;
+      if (objNode.isName()) {
+        String obj = objNode.getString();
+
+        Node propNode = n.getChildAtIndex(1);
+        if (propNode.isString()) {
+          String prop = propNode.getString();
+
+          String c = "propvaluesent(%H,%L,'\"" + obj + "\"',['\""
+            + XSBInterface.escapeString(prop) + "\"'],'%T')";
+          return new Clause(c);
+        }
+        // In this case...
       }
-      String obj = sm.codeFromNode(objNode);
-
-      Node propNode = n.getChildAtIndex(1);
-      if (!ExpUtil.isString(propNode)) {
-        return null;
-      }
-      String prop = propNode.getString();
-
-      String c = "propvaluesent(%H,%L,'\"" + obj + "\"',['\""
-        + XSBInterface.escapeString(prop) + "\"'],'%T')";
-
-      return new Clause(c);
+      // ... or this one, the clauses may be generated recursively for
+      // the accessor's children.
     }
 
-    if (ExpUtil.isName(n)) {
-      String varname = sm.codeFromNode(n);
-      String c = "valuesent(%H,%L,'\"" + varname + "\"','%T')";
-      return new Clause(c);
+    if (n.isName()) {
+      return makeNameValueSentinel(n);
     }
 
     // Recursively descend into the node's children.
@@ -583,36 +615,35 @@ public class JSSemantics implements Semantics {
   protected Clause getPostValueSentinel(ExpSymbol sym) {
     Exp s = sym.getExp();
     Node n = ((JSExp)s).getNode();
-    if (ExpUtil.isExprResult(n)) {
+    if (n.isExprResult()) {
       n = n.getFirstChild();
     }
+
+    // For non-initializer VAR nodes, it should be clear with a sentinel
+    // that the post-value is |undefined|.
+    if (n.isVar() && !ExpUtil.isVarInitializer(n))
+      return null;
 
     Node lhs = ExpUtil.getAssignLHS(n);
     if (lhs == null) return null;
 
     // Avoid NONE sentinel values.
     Node rhs = ExpUtil.getAssignRHS(n);
-    if (ExpUtil.isCall(rhs) && !sym.isPostCall()) {
+    if (rhs != null && rhs.isCall() && !sym.isPostCall()) {
       return null;
     }
 
     Clause clause = null;
-    if (ExpUtil.isName(lhs)) {
-
-      String varname = sm.codeFromNode(lhs);
-      if (varname.equals("policy")) return null;
-
-      String c = "valuesent(%H,%L,'\"" + varname + "\"','%T')";
-      clause = new Clause(c);
-
+    if (lhs.isName()) {
+      clause = makeNameValueSentinel(lhs);
     } else if (ExpUtil.isAccessor(lhs)) {
       Node objNode = lhs.getFirstChild(); 
-      if (!ExpUtil.isName(objNode)) {
+      if (!objNode.isName()) {
         return null;
       }
-      String obj = sm.codeFromNode(objNode);
+      String obj = objNode.getString();
       Node propNode = lhs.getChildAtIndex(1);
-      if (!ExpUtil.isString(propNode)) {
+      if (!propNode.isString()) {
         return null;
       }
       String prop = propNode.getString();
@@ -637,7 +668,7 @@ public class JSSemantics implements Semantics {
     if (rhs == null) return null;
 
     // This should just be a sanity check.
-    if (!ExpUtil.isCall(rhs)) return null;
+    if (!rhs.isCall()) return null;
 
     String G = "%V" + (++pv);
     String R = "%V" + (++pv);
@@ -659,11 +690,11 @@ public class JSSemantics implements Semantics {
 
     // Avoid data that bubbles up from within big blocks of code 
     // (such info will be processed if reached recursively).
-    if (ExpUtil.isFunction(n)) return null;
+    if (n.isFunction()) return null;
     if (ExpUtil.isControl(n)) return null;
 
     // Unwrap an EXPR_RESULT node.
-    if (ExpUtil.isExprResult(n)) n = n.getFirstChild();
+    if (n != null && n.isExprResult()) n = n.getFirstChild();
 
     String objname = null;
 
@@ -675,7 +706,7 @@ public class JSSemantics implements Semantics {
       // and print it.
       if (ExpUtil.isAccessor(lhs)) {
         Node obj = lhs.getFirstChild();
-        if (ExpUtil.isName(obj)) {
+        if (obj.isName()) {
           // Get the base variable name.
           objname = sm.codeFromNode(obj);
         }
@@ -683,11 +714,11 @@ public class JSSemantics implements Semantics {
     }
 
     // See if the statement is a member invocation.
-    if (objname == null && ExpUtil.isCall(n)) {
+    if (objname == null && n.isCall()) {
       Node memberexp = n.getFirstChild();
       if (ExpUtil.isAccessor(memberexp)) {
         Node obj = memberexp.getFirstChild();
-        if (ExpUtil.isName(obj)) {
+        if (obj.isName()) {
           objname = sm.codeFromNode(obj);
         }
       }

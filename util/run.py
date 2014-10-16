@@ -125,6 +125,7 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
     for poldesc, polfile in poldict.iteritems():
       opts = []
 
+      synsuf = ''
       if synonly:
         opts.append('-z')
         synsuf = '.syntaxonly'

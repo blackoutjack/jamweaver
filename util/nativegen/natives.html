@@ -10,11 +10,7 @@ function printPropsFromField() {
   var obj;
   eval("obj = " + objstr);
 
-  var loc = objstr;
-  if (loc.substring(loc.length - 10) == ".prototype") {
-    loc = loc.substring(0, loc.length - 10) + "Prot";
-  }
-  loc = "#" + loc.replace(".","#");
+  loc = '#' + loc.replace('.', '#');
 
   printPropsFromObject(obj, loc, objstr);
 }

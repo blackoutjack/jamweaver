@@ -19,9 +19,6 @@ import edu.wisc.cs.jam.Dbg;
 public class JSExp extends Exp {
   protected SourceManager sm;
   protected Node node;
-  protected boolean isstatement;
-  protected boolean iscontrol;
-  protected boolean isblock;
 
   protected static Map<Node,JSExp> nodeMap;
   // %%% Make this a Map<Node,Type>.
@@ -149,18 +146,6 @@ public class JSExp extends Exp {
     nodeMap = new LinkedHashMap<Node,JSExp>();
   }
 
-  protected static boolean isControlNode(Node n) {
-    int t = n.getType();
-    return t == FOR || t == IF || t == SWITCH || t == CASE
-      || t == DEFAULT_CASE || t == WHILE || t == DO || t == TRY
-      || t == CATCH || t == WITH;
-  }
-
-  protected static boolean isBlockNode(Node n) {
-    int t = n.getType();
-    return t == BLOCK || t == SCRIPT;
-  }
-
   protected static boolean isStatementNode(Node n) {
     int t = n.getType();
     return t == EXPR_RESULT || t == VAR || t == THROW || t == RETURN;
@@ -169,9 +154,6 @@ public class JSExp extends Exp {
   protected JSExp(SourceManager src) {
     assert src != null;
     sm = src;
-    isstatement = false;
-    isblock = false;
-    iscontrol = false;
     node = new Node(EMPTY);
   }
 
@@ -193,9 +175,6 @@ public class JSExp extends Exp {
     }
     // Can't call create recursively here, or get infinite recursion.
     this.parent = parent;
-    isstatement = isStatementNode(node);
-    isblock = isBlockNode(node);
-    iscontrol = isControlNode(node);
     nodeMap.put(n, this);
   }
 
@@ -233,31 +212,26 @@ public class JSExp extends Exp {
   }
 
   @Override
-  public JSExp isWithinType(int t) {
+  public Exp isWithinType(int t) {
     if (is(t)) return this;
     if (parent == null) return null;
-    return ((JSExp)parent).isWithinType(t);
+    return parent.isWithinType(t);
   }
 
   @Override
-  public boolean containsType(int t, boolean blocks) {
-    List<Exp> childs = getChildren();
-    if (is(t)) return true;
-    for (Exp c : childs) {
-      // For control nodes (like a for loop), we may not want to descend
-      // into body blocks.
-      if (!blocks && c.isBlock())
-        continue;
-      // %%% Bad, bad
-      if (((JSExp)c).containsType(t))
-        return true;
-    }
-    return false;
+  public int getType() {
+    return node.getType();
   }
 
   @Override
   public boolean containsType(int t) {
-    return containsType(t, true);
+    if (is(t)) return true;
+    List<Exp> childs = getChildren();
+    for (Exp c : childs) {
+      if (c.containsType(t))
+        return true;
+    }
+    return false;
   }
 
   @Override
@@ -274,7 +248,7 @@ public class JSExp extends Exp {
       out.add(this);
     }
     for (Exp c : getChildren()) {
-      if (!blocks && c.isBlock())
+      if (!blocks && ExpUtil.isStatementBlock(c))
         continue;
       ((Exp)c).findType(t, out);
     }
@@ -291,7 +265,7 @@ public class JSExp extends Exp {
       out.add(getString());
     }
     for (Exp c : getChildren()) {
-      if (!blocks && c.isBlock())
+      if (!blocks && ExpUtil.isStatementBlock(c))
         continue;
       ((Exp)c).findNames(out);
     }
@@ -309,7 +283,7 @@ public class JSExp extends Exp {
 
   @Override
   public boolean is(int type) {
-    return node.getType() == type;
+    return getType() == type;
   }
 
   @Override
@@ -319,16 +293,33 @@ public class JSExp extends Exp {
 
   @Override
   public boolean isAssign() {
-    return ExpUtil.isAssign(node);
+    return node.isAssign();
+  }
+
+  @Override
+  public boolean isFunction() {
+    return node.isFunction();
+  }
+
+  @Override
+  public boolean isAssignment() {
+    return ExpUtil.isAssignment(this);
   }
 
   @Override
   public boolean isAccessor() {
-    return is(GETPROP) || is(GETELEM);
+    return ExpUtil.isAccessor(this);
   }
 
   @Override
   public boolean isCall() {
+    return is(CALL);
+  }
+
+  // Some function object is invoked as a constructor, function, or
+  // method.
+  @Override
+  public boolean isInvoke() {
     return is(CALL) || is(NEW);
   }
   
@@ -358,35 +349,69 @@ public class JSExp extends Exp {
   }
 
   @Override
-  public Exp getAssignLHS() {
+  public Exp cloneAssignLHS() {
     // Unwrap the expression.
     if (is(EXPR_RESULT)) {
-      return ((Exp)getChild(0)).getAssignLHS();
+      return getChild(0).cloneAssignLHS();
     }
 
-    if (isAssign()) {
-      return (Exp)getChild(0);
+    if (isAssignment()) {
+      return getChild(0).clone();
     }
-      
+
+    // %%% What about INC and DEC?
+
     if (isDeclaration()) {
+      // %%% Should potentially return a list of Exps, since a
+      // %%% declaration can contain several variables.
       if (isNoOp()) {
         // Return the NAME node for a simple declaration or function,
         // since it acts like an assignment of |undefined|.
-        return (Exp)getChild(0); 
+        return getChild(0).clone(); 
       }
 
       // Create a copy of the initializer components.
       Exp lhs = getChild(0).clone();
       // Isolate the variable name, without the initialization value.
       lhs.removeChild(lhs.getChild(0));
-      return (Exp)lhs;
+      return lhs;
     }
     return null;
   }
 
   @Override
-  public Exp getAssignRHS() {
-    throw new UnsupportedOperationException();
+  public Exp cloneAssignRHS() {
+    // Unwrap the expression.
+    if (is(EXPR_RESULT)) {
+      return getChild(1).cloneAssignRHS();
+    }
+
+    if (isAssignment()) {
+      // %%% Perhaps construct the effective RHS.
+      return getChild(1).clone();
+    }
+
+    // %%% What about INC and DEC?
+
+    if (isDeclaration()) {
+      if (isFunction()) {
+        // The function itself is the value that's being assigned.
+        return this.clone();
+      } else if (!ExpUtil.isVarInitializer(this)) {
+        // %%% Should potentially return a list of Exps, since a
+        // %%% declaration can contain several variables.
+        // Return undefined for a simple declaration or function,
+        // since it acts like an assignment of |undefined|.
+        return create(sm, Node.newString(JSExp.NAME, "#undefined"));
+      }
+
+      // Create a copy of the initializer components.
+      Exp lhs = getChild(0).clone();
+      // Isolate the initialization value, without the variable name.
+      Exp val = lhs.getChild(0);
+      return val.clone();
+    }
+    return null;
   }
 
   @Override
@@ -397,7 +422,7 @@ public class JSExp extends Exp {
     } else if (is(FUNCTION)) {
       // Function expressions are not declarations (even if named).
       // This condition determines whether this is a function statement.
-      return ((JSExp)parent).isBlock();
+      return ExpUtil.isStatementBlock(parent);
     }
     return false;
   }
@@ -408,7 +433,7 @@ public class JSExp extends Exp {
       // If a VAR has initialization, it's not a noop.
       return is(FUNCTION) || getChildCount() == 0 || getChild(0).getChildCount() == 0;
     }
-    int t = node.getType();
+    int t = getType();
     // A function expression is also a noop, though invoking it is not.
     return t == BLOCK || t == FUNCTION || t == EMPTY || t == BREAK
         || t == CONTINUE || t == TRANSACTION;
@@ -416,7 +441,7 @@ public class JSExp extends Exp {
 
   @Override
   public boolean isBooleanOp() {
-    int t = node.getType();
+    int t = getType();
     return t == SHEQ || t == SHNE || t == EQ || t == NE || t == LT
         || t == LE || t == GT || t ==GE || t == NOT;
   }
@@ -448,17 +473,17 @@ public class JSExp extends Exp {
 
   @Override
   public boolean isStatement() {
-    return isStatementNode(node);
+    return ExpUtil.isStatement(this);
   }
 
   @Override
   public boolean isBlock() {
-    return isBlockNode(node);
+    return is(BLOCK);
   }
 
   @Override
   public boolean isControl() {
-    return isControlNode(node);
+    return ExpUtil.isControl(this);
   }
 
   @Override
@@ -486,7 +511,7 @@ public class JSExp extends Exp {
   protected Node getControlQueryNode() {
     assert isControl();
     Node cond = null;
-    switch (node.getType()) {
+    switch (getType()) {
       case IF:
         // if (cond) {}
         cond = ExpUtil.getCondition(node).cloneTree();
@@ -636,9 +661,11 @@ public class JSExp extends Exp {
       return toQueryAST();
     }
 
+    // Skip the normalization if the statement's query might contain
+    // a CALL or NEW.
     // %%% This is (hopefully) temporary until callsite information is
     // %%% worked into queries.
-    if (ExpUtil.containsCall(node)) {
+    if (ExpUtil.containsInvoke(node, false)) {
       return toQueryAST();
     }
 
@@ -690,50 +717,48 @@ public class JSExp extends Exp {
 
   protected String toShortCode() {
     if (isControl()) {
-      Node cond = null;
+      Exp cond = ExpUtil.getCondition(this);
       switch (node.getType()) {
         case IF:
-          cond = ExpUtil.getCondition(node);
-          return "if (" + sm.codeFromNode(cond) + ") {...}";
+          return "if (" + cond.toCode() + ") {...}";
         case WHILE:
-          cond = ExpUtil.getCondition(node);
-          return "while (" + sm.codeFromNode(cond) + ") {...}";
+          return "while (" + cond.toCode() + ") {...}";
         case DO:
-          cond = ExpUtil.getCondition(node);
-          return "do {...} while (" + sm.codeFromNode(cond) + ")";
+          return "do {...} while (" + cond.toCode() + ")";
         case FOR:
-          if (ExpUtil.isStandardFor(node)) {
-            cond = ExpUtil.getCondition(node);
-            String init = sm.codeFromNode(node.getFirstChild());
-            String iter = sm.codeFromNode(node.getChildAtIndex(2));
-            return "for (" + init + ";" + cond + ";" + iter + ") {...}";
+          if (ExpUtil.isStandardFor(this)) {
+            String init = getChild(0).toCode();
+            String iter = getChild(2).toCode();
+            return "for (" + init + ";" + cond.toCode() + ";" + iter + ") {...}";
           } else {
-            assert ExpUtil.isForIn(node);
-            String inst = sm.codeFromNode(node.getChildAtIndex(0));
-            String coll = sm.codeFromNode(node.getChildAtIndex(1));
+            assert ExpUtil.isForIn(this);
+            String inst = getChild(0).toCode();
+            String coll = getChild(1).toCode();
             return "for (" + inst + " in " + coll + ") {...}";
           }
         case SWITCH:
-          String exp = sm.codeFromNode(node.getFirstChild());
+          String exp = getChild(0).toCode();
           return "switch (" + exp + ") {...}";
         case WITH:
-          String obj = sm.codeFromNode(node.getFirstChild());
+          String obj = getChild(0).toCode();
           return "with (" + obj + ") {...}";
         case CASE:
-          return "case " + sm.codeFromNode(node.getFirstChild()) + ": ...";
+          return "case " + getChild(0).toCode() + ": ...";
         case DEFAULT_CASE:
           return "default: ...";
         case TRY:
           // %%% Alter according to what blocks are present.
           return "try {...} catch (...) {...} finally {...}";
         case CATCH:
-          return "catch (" + sm.codeFromNode(node.getFirstChild()) + ") {...}";
+          return "catch (" + getChild(0).toCode() + ") {...}";
         default:
-          Dbg.err("Unhandled control type: " + node);
+          Dbg.err("Unhandled control type: " + toCode());
           return "???";
       }
     } else if (is(BLOCK)) {
       return "{...}";
+    } else if (is(SCRIPT)) {
+      return "/* " + node.getSourceFileName() + " */ ...";
     } else {
       return toCode();
     }

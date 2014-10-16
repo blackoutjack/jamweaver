@@ -439,7 +439,7 @@ def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=
   #cmd.append('-i')
   #cmd.append('-r')
   cmd.append('-t')
-  cmd.append('6')
+  cmd.append('3')
   #cmd.append('--noindirect')
   #cmd.append('-T')
   #cmd.append('3')

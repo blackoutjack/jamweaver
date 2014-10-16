@@ -60,12 +60,13 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
 
     // Find all the call target assignments that might occur in the
     // program and populate callTargetMap with the results. Only 
-    // consider normal assignment, not +=, -=, etc.
+    // consider normal assignment, not +=, -=, etc., since those can't
+    // result in a function value.
     if (n.getType() == Token.ASSIGN || ExpUtil.isVarInitializer(n)) {
       Node lhs = ExpUtil.getAssignLHS(n);
       Node rhs = ExpUtil.getAssignRHS(n);
 
-      if (ExpUtil.isName(rhs)) {
+      if (rhs.isName()) {
         String l = getCode(lhs);
         String r = getCode(rhs);
 
@@ -83,7 +84,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
           Node prop = rhs.getChildAtIndex(i);
           Node val = prop.getChildAtIndex(0);
 
-          if (!ExpUtil.isName(val)) continue;
+          if (!val.isName()) continue;
 
           String l = getCode(prop);
           // Strip the quotes off of the property name.

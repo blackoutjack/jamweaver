@@ -85,23 +85,27 @@ public abstract class XSBInterface {
     int dircnt = 0;
 
     List<String> inputs = new ArrayList<String>();
-    inputs.add("set_global_compiler_options([quit_on_error,optimize]).\n\n\n\n");
+    inputs.add("set_global_compiler_options([quit_on_error,optimize]).");
 
     for (; dircnt<loadDirectories.size(); dircnt++) {
       String dir = loadDirectories.get(dircnt);
-      inputs.add("assert(library_directory('" + dir + "')).\n\n\n\n");
+      inputs.add("assert(library_directory('" + dir + "')).");
     }
-    inputs.add("[" + (mode == Mode.SYMBOLIC ? JAMConfig.SEMANTICS_SYMBOLIC_MODULE : JAMConfig.SEMANTICS_CONCRETE_MODULE) + "].\n\n\n\n");
+    inputs.add("[" + (mode == Mode.SYMBOLIC ? JAMConfig.SEMANTICS_SYMBOLIC_MODULE : JAMConfig.SEMANTICS_CONCRETE_MODULE) + "].");
+
+    inputs.add("redir.");
+
     File userFunctionFile = new File(loadDirectories.get(0), "user_functions.dat");
     String uffile = userFunctionFile.getAbsolutePath();
     if (userFunctionFile.exists())
-      inputs.add("init('" + uffile + "').\n\n\n\n");
+      inputs.add("init('" + uffile + "').");
 
     int inputCnt = inputs.size();
     try {
       for (int i=0; i<inputCnt; i++) {
         String input = inputs.get(i);
         xsb.write(input);
+        xsb.write("\n\n\n\n");
       }
       xsb.flush();
     } catch (IOException ex) {

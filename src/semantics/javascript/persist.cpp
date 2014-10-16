@@ -1242,9 +1242,11 @@ bool init_yices() {
     base_code += "))\n";
   }
 
+  /*
   FILE* outfl = fopen("/tmp/satbase", "a");
   fprintf(outfl, "#####\n%s\n", base_code.c_str());
   fclose(outfl);
+  */
 
   yices_ctxt = yices_mk_context();
   int ok = yices_parse_command(yices_ctxt, base_code.c_str());
@@ -1361,9 +1363,12 @@ bool query_yices(string fmla) {
 
   // Add the query in question.
   yicesin += "(assert " + fmla + ")\n";
+
+  /*
   FILE* outfl = fopen("/tmp/satin", "a");
   fprintf(outfl, "#####\n%s\n", yicesin.c_str());
   fclose(outfl);
+  */
 
   // Mark the baseline query to be able to revert.
   yices_push(yices_ctxt);
@@ -3104,7 +3109,7 @@ extern "C" int add_call(CTXTdecl) {
   if (native_mode) return TRUE;
 
   // Clear the asserted call targets and arguments if they are subsumed
-  // by an evaluated call.
+  // by an evaluated call.);
   if (clear_next_call) {
     calls.clear();
     // %%% Assumes that add_call is invoked prior to updateargs during
@@ -3349,14 +3354,18 @@ extern "C" int add_policy_prop(CTXTdecl) {
   return TRUE;
 }
 
-extern "C" int init(CTXTdecl) {
-  REQ_STRING(1);
-
+// Redirect stdout into the garbage, because Yices outputs warnings
+// and other junk directly without any other way of preventing it.
+extern "C" int redir(CTXTdecl) {
   // Kill stdout because yices vomits errors to it.
   FILE *redir = freopen("/dev/null", "w", stdout);
   if (redir == NULL) {
     fprintf(stderr, "Unable to redirect stdout\n");
   }
+}
+
+extern "C" int init(CTXTdecl) {
+  REQ_STRING(1);
 
   string line;
 

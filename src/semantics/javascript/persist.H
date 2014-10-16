@@ -2,6 +2,7 @@
 :- compile_command ':'.
 
 :- export init/1.
+:- export redir/0.
 :- export is_branch/2.
 :- export always/1.
 :- export newref/3.

@@ -7,8 +7,7 @@
 function printPropsFromField() {
   var field = document.getElementById("objfield");
   var objstr = field.value;
-  var obj;
-  eval("obj = " + objstr);
+  var obj = eval(objstr);
 
   var loc = objstr;
   loc = '#' + loc.replace('.', '#');

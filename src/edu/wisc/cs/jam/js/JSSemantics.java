@@ -296,6 +296,7 @@ public class JSSemantics implements Semantics {
   // Furthermore, prerequisites are not used ever if the |syntaxOnly|
   // option is being used.
   public Predicate loadPrerequisite(Policy pol, Predicate pred) {
+    if (JAM.Opts.syntaxOnly) return null;
     // No prerequisites yet implemented for non-event predicates.
     if (!pred.isEventPredicate()) return null;
 

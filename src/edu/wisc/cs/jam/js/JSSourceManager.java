@@ -218,7 +218,8 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
     "deprecated.js",
     "fileapi.js",
-    "flash.js",
+    // These were models for Flash objects, not currently supported.
+    //"flash.js",
     "gecko_xml.js",
     "html5.js",
     "webstorage.js",

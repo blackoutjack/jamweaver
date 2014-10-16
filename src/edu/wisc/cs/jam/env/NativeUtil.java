@@ -20,7 +20,7 @@ public class NativeUtil {
 
   public static Map<String,String> nativeLocationToExpression;
   public static Map<String,String> nativeExpressionToLocation;
-  public static Map<String,String> closureExpression;
+  public static Map<String,String> closureTranslation;
 
   public static final String[] PRIMITIVE_NAMES = {
     "#undefined",
@@ -34,132 +34,130 @@ public class NativeUtil {
     // Map the Closure's extern.zip path to a particular native object
     // to the generated representation. These can be eliminated
     // one-by-one by modifying the extern file that is used.
-    closureExpression = new HashMap<String,String>();
-    closureExpression.put("alert","Window.prototype.alert");
-    closureExpression.put("confirm","Window.prototype.confirm");
-    closureExpression.put("print","Window.prototype.print");
-    closureExpression.put("eval","window.eval");
-    closureExpression.put("isNaN","window.isNaN");
-    closureExpression.put("dump","Window.prototype.dump");
-    closureExpression.put("escape","window.escape");
-    closureExpression.put("unescape","window.unescape");
-    closureExpression.put("decodeURIComponent","window.decodeURIComponent");
-    closureExpression.put("encodeURIComponent","window.encodeURIComponent");
-    closureExpression.put("decodeURI","window.decodeURI");
-    closureExpression.put("encodeURI","window.encodeURI");
-    closureExpression.put("parseInt","window.parseInt");
-    closureExpression.put("parseFloat","window.parseFloat");
-    closureExpression.put("setTimeout","Window.prototype.setTimeout");
-    closureExpression.put("clearTimeout","Window.prototype.clearTimeout");
-    closureExpression.put("setInterval","Window.prototype.setInterval");
-    closureExpression.put("clearInterval","Window.prototype.clearInterval");
-    closureExpression.put("isFinite","window.isFinite");
+    closureTranslation = new HashMap<String,String>();
+    closureTranslation.put("alert","Window.prototype.alert");
+    closureTranslation.put("confirm","Window.prototype.confirm");
+    closureTranslation.put("print","Window.prototype.print");
+    closureTranslation.put("eval","window.eval");
+    closureTranslation.put("uneval","window.uneval");
+    closureTranslation.put("isNaN","window.isNaN");
+    closureTranslation.put("dump","Window.prototype.dump");
+    closureTranslation.put("escape","window.escape");
+    closureTranslation.put("unescape","window.unescape");
+    closureTranslation.put("decodeURIComponent","window.decodeURIComponent");
+    closureTranslation.put("encodeURIComponent","window.encodeURIComponent");
+    closureTranslation.put("decodeURI","window.decodeURI");
+    closureTranslation.put("encodeURI","window.encodeURI");
+    closureTranslation.put("parseInt","window.parseInt");
+    closureTranslation.put("parseFloat","window.parseFloat");
+    closureTranslation.put("setTimeout","Window.prototype.setTimeout");
+    closureTranslation.put("clearTimeout","Window.prototype.clearTimeout");
+    closureTranslation.put("setInterval","Window.prototype.setInterval");
+    closureTranslation.put("clearInterval","Window.prototype.clearInterval");
+    closureTranslation.put("isFinite","window.isFinite");
 
-    closureExpression.put("Function.prototype.apply", "Object.__proto__.apply");
-    closureExpression.put("Function.prototype.bind", "Object.__proto__.bind");
-    closureExpression.put("Function.prototype.call", "Object.__proto__.call");
-    closureExpression.put("Function.prototype.isGenerator", "Object.__proto__.isGenerator");
-    closureExpression.put("Function.prototype.toSource", "Object.__proto__.toSource");
-    closureExpression.put("Function.prototype.toString", "Object.__proto__.toString");
+    closureTranslation.put("Function.prototype.apply", "Object.__proto__.apply");
+    closureTranslation.put("Function.prototype.bind", "Object.__proto__.bind");
+    closureTranslation.put("Function.prototype.call", "Object.__proto__.call");
+    closureTranslation.put("Function.prototype.isGenerator", "Object.__proto__.isGenerator");
+    closureTranslation.put("Function.prototype.toSource", "Object.__proto__.toSource");
+    closureTranslation.put("Function.prototype.toString", "Object.__proto__.toString");
 
-    closureExpression.put("Document.prototype.getElementById","HTMLDocument.prototype.getElementById");
-    closureExpression.put("Document.prototype.getElementsByTagName","HTMLDocument.prototype.getElementsByTagName");
-    closureExpression.put("Document.prototype.focus","HTMLElement.prototype.focus");
-    closureExpression.put("Document.prototype.write","HTMLDocument.prototype.write");
-    closureExpression.put("Document.prototype.writeln","HTMLDocument.prototype.writeln");
-    closureExpression.put("Document.prototype.createElement","HTMLDocument.prototype.createElement");
-    closureExpression.put("Document.prototype.createDocumentFragment","HTMLDocument.prototype.createDocumentFragment");
-    closureExpression.put("Document.prototype.createTextNode","HTMLDocument.prototype.createTextNode");
-    closureExpression.put("Document.prototype.getElementsByName","HTMLDocument.prototype.getElementsByName");
-    closureExpression.put("Document.prototype.createRange","HTMLDocument.prototype.createRange");
-    closureExpression.put("Document.prototype.createComment","HTMLDocument.prototype.createComment");
-    closureExpression.put("Document.prototype.querySelectorAll","HTMLDocument.prototype.querySelectorAll");
-    closureExpression.put("Document.prototype.getElementsByClassName","HTMLDocument.prototype.getElementsByClassName");
-    closureExpression.put("Document.prototype.open","HTMLDocument.prototype.open");
-    closureExpression.put("Document.prototype.close","HTMLDocument.prototype.close");
-    closureExpression.put("Document.prototype.queryCommandValue", "HTMLDocument.prototype.queryCommandValue");
-    closureExpression.put("Document.prototype.getElementsByTagNameNS","HTMLDocument.prototype.getElementsByTagNameNS");
-    closureExpression.put("Document.prototype.createEvent","HTMLDocument.prototype.createEvent");
-    closureExpression.put("Document.prototype.createAttribute","HTMLDocument.prototype.createAttribute");
-    closureExpression.put("Document.prototype.createElementNS","HTMLDocument.prototype.createElementNS");
-    closureExpression.put("Document.prototype.querySelector","HTMLDocument.prototype.querySelector");
-    closureExpression.put("Document.prototype.clear","HTMLDocument.prototype.clear");
-    closureExpression.put("Document.prototype.elementFromPoint","HTMLDocument.prototype.elementFromPoint");
-    closureExpression.put("Document.prototype.execCommand","HTMLDocument.prototype.execCommand");
+    closureTranslation.put("Document.prototype.getElementById","HTMLDocument.prototype.getElementById");
+    closureTranslation.put("Document.prototype.getElementsByTagName","HTMLDocument.prototype.getElementsByTagName");
+    closureTranslation.put("Document.prototype.focus","HTMLElement.prototype.focus");
+    closureTranslation.put("Document.prototype.write","HTMLDocument.prototype.write");
+    closureTranslation.put("Document.prototype.writeln","HTMLDocument.prototype.writeln");
+    closureTranslation.put("Document.prototype.createElement","HTMLDocument.prototype.createElement");
+    closureTranslation.put("Document.prototype.createDocumentFragment","HTMLDocument.prototype.createDocumentFragment");
+    closureTranslation.put("Document.prototype.createTextNode","HTMLDocument.prototype.createTextNode");
+    closureTranslation.put("Document.prototype.getElementsByName","HTMLDocument.prototype.getElementsByName");
+    closureTranslation.put("Document.prototype.createRange","HTMLDocument.prototype.createRange");
+    closureTranslation.put("Document.prototype.createComment","HTMLDocument.prototype.createComment");
+    closureTranslation.put("Document.prototype.querySelectorAll","HTMLDocument.prototype.querySelectorAll");
+    closureTranslation.put("Document.prototype.getElementsByClassName","HTMLDocument.prototype.getElementsByClassName");
+    closureTranslation.put("Document.prototype.open","HTMLDocument.prototype.open");
+    closureTranslation.put("Document.prototype.close","HTMLDocument.prototype.close");
+    closureTranslation.put("Document.prototype.queryCommandValue", "HTMLDocument.prototype.queryCommandValue");
+    closureTranslation.put("Document.prototype.getElementsByTagNameNS","HTMLDocument.prototype.getElementsByTagNameNS");
+    closureTranslation.put("Document.prototype.createEvent","HTMLDocument.prototype.createEvent");
+    closureTranslation.put("Document.prototype.createAttribute","HTMLDocument.prototype.createAttribute");
+    closureTranslation.put("Document.prototype.createElementNS","HTMLDocument.prototype.createElementNS");
+    closureTranslation.put("Document.prototype.querySelector","HTMLDocument.prototype.querySelector");
+    closureTranslation.put("Document.prototype.clear","HTMLDocument.prototype.clear");
+    closureTranslation.put("Document.prototype.elementFromPoint","HTMLDocument.prototype.elementFromPoint");
+    closureTranslation.put("Document.prototype.execCommand","HTMLDocument.prototype.execCommand");
 
-    closureExpression.put("Element.prototype.focus","HTMLElement.prototype.focus");
-    closureExpression.put("Element.prototype.blur","HTMLElement.prototype.blur");
-    closureExpression.put("Element.prototype.click","HTMLElement.prototype.click");
-    closureExpression.put("Element.prototype.scrollIntoView","HTMLElement.prototype.scrollIntoView");
+    closureTranslation.put("Element.prototype.focus","HTMLElement.prototype.focus");
+    closureTranslation.put("Element.prototype.blur","HTMLElement.prototype.blur");
+    closureTranslation.put("Element.prototype.click","HTMLElement.prototype.click");
+    closureTranslation.put("Element.prototype.scrollIntoView","HTMLElement.prototype.scrollIntoView");
 
-    closureExpression.put("Node.prototype.removeChild","Element.prototype.removeChild");
-    closureExpression.put("Node.prototype.appendChild","Element.prototype.appendChild");
-    closureExpression.put("Node.prototype.insertBefore","Element.prototype.insertBefore");
-    closureExpression.put("Node.prototype.addEventListener","Element.prototype.addEventListener");
-    closureExpression.put("Node.prototype.removeEventListener","Element.prototype.removeEventListener");
-    closureExpression.put("Node.prototype.compareDocumentPosition","Element.prototype.compareDocumentPosition");
-    closureExpression.put("Node.prototype.querySelectorAll","Element.prototype.querySelectorAll");
-    closureExpression.put("Node.prototype.hasChildNodes","Element.prototype.hasChildNodes");
-    closureExpression.put("Node.prototype.replaceChild","Element.prototype.replaceChild");
-    closureExpression.put("Node.prototype.dispatchEvent","Element.prototype.dispatchEvent");
-    closureExpression.put("Node.prototype.normalize","Element.prototype.normalize");
-    closureExpression.put("Node.prototype.querySelector","Element.prototype.querySelector");
+    closureTranslation.put("Node.prototype.removeChild","Element.prototype.removeChild");
+    closureTranslation.put("Node.prototype.appendChild","Element.prototype.appendChild");
+    closureTranslation.put("Node.prototype.insertBefore","Element.prototype.insertBefore");
+    closureTranslation.put("Node.prototype.addEventListener","Element.prototype.addEventListener");
+    closureTranslation.put("Node.prototype.removeEventListener","Element.prototype.removeEventListener");
+    closureTranslation.put("Node.prototype.compareDocumentPosition","Element.prototype.compareDocumentPosition");
+    closureTranslation.put("Node.prototype.querySelectorAll","Element.prototype.querySelectorAll");
+    closureTranslation.put("Node.prototype.hasChildNodes","Element.prototype.hasChildNodes");
+    closureTranslation.put("Node.prototype.replaceChild","Element.prototype.replaceChild");
+    closureTranslation.put("Node.prototype.dispatchEvent","Element.prototype.dispatchEvent");
+    closureTranslation.put("Node.prototype.normalize","Element.prototype.normalize");
+    closureTranslation.put("Node.prototype.querySelector","Element.prototype.querySelector");
 
-    closureExpression.put("Console.prototype.log","console.log");
-    closureExpression.put("Console.prototype.warn","console.warn");
-    closureExpression.put("Date.prototype.toGMTString","Date.prototype.toUTCString");
-    closureExpression.put("XMLHttpRequestEventTarget.prototype.removeEventListener","EventTarget.prototype.removeEventListener");
+    closureTranslation.put("Console.prototype.log","console.log");
+    closureTranslation.put("Console.prototype.warn","console.warn");
+    closureTranslation.put("Date.prototype.toGMTString","Date.prototype.toUTCString");
+    closureTranslation.put("XMLHttpRequestEventTarget.prototype.removeEventListener","EventTarget.prototype.removeEventListener");
 
     // These are properties, not functions.
-    closureExpression.put("HTMLInputElement.prototype.max","");
-    closureExpression.put("HTMLInputElement.prototype.min","");
-    closureExpression.put("IDBDatabase.prototype.version","");
-    closureExpression.put("HTMLHtmlElement.prototype.version","");
-    closureExpression.put("HTMLMediaElement.prototype.error","");
-    closureExpression.put("IDBRequest.prototype.transaction","");
-    closureExpression.put("IDBObjectStore.prototype.transaction","");
-    closureExpression.put("IDBIndex.prototype.objectStore","");
-    closureExpression.put("Worker.prototype.onmessage","");
-    closureExpression.put("WebSocket.prototype.onmessage","");
-    closureExpression.put("Attr.prototype.value","");
-    closureExpression.put("Window.prototype.innerHeight","");
-    closureExpression.put("Window.prototype.outerHeight","");
-    closureExpression.put("Window.prototype.innerWidth","");
-    closureExpression.put("Window.prototype.outerWidth","");
-    closureExpression.put("HTMLElement.prototype.draggable","");
-    closureExpression.put("HTMLSelectElement.prototype.value","");
-    closureExpression.put("HTMLOptionElement.prototype.value","");
-    closureExpression.put("HTMLInputElement.prototype.value","");
-    closureExpression.put("HTMLTextAreaElement.prototype.value","");
-    closureExpression.put("HTMLButtonElement.prototype.value","");
-    closureExpression.put("HTMLLIElement.prototype.value","");
-    closureExpression.put("HTMLParamElement.prototype.value","");
-    closureExpression.put("HTMLBRElement.prototype.clear","");
-    closureExpression.put("HTMLTitleElement.prototype.text","");
-    closureExpression.put("HTMLScriptElement.prototype.text","");
-    closureExpression.put("HTMLBodyElement.prototype.text","");
-    closureExpression.put("HTMLAnchorElement.prototype.text","");
-    closureExpression.put("HTMLOptionElement.prototype.text","");
-    closureExpression.put("HTMLObjectElement.prototype.data","");
-    closureExpression.put("ProcessingInstruction.prototype.data","");
-    closureExpression.put("MessageEvent.prototype.data","");
-    closureExpression.put("ImageData.prototype.data","");
-    closureExpression.put("Event.prototype.timeStamp","");
-    closureExpression.put("Element.prototype.onsubmit","");
-    closureExpression.put("Window.prototype.onsubmit","");
+    /* %%% No longer needed since latest changes to CallGraph.Callsite.
+    closureTranslation.put("HTMLInputElement.prototype.max","");
+    closureTranslation.put("HTMLInputElement.prototype.min","");
+    closureTranslation.put("IDBDatabase.prototype.version","");
+    closureTranslation.put("HTMLHtmlElement.prototype.version","");
+    closureTranslation.put("HTMLMediaElement.prototype.error","");
+    closureTranslation.put("IDBRequest.prototype.transaction","");
+    closureTranslation.put("IDBObjectStore.prototype.transaction","");
+    closureTranslation.put("IDBIndex.prototype.objectStore","");
+    closureTranslation.put("Worker.prototype.onmessage","");
+    closureTranslation.put("WebSocket.prototype.onmessage","");
+    closureTranslation.put("Attr.prototype.value","");
+    closureTranslation.put("Window.prototype.innerHeight","");
+    closureTranslation.put("Window.prototype.outerHeight","");
+    closureTranslation.put("Window.prototype.innerWidth","");
+    closureTranslation.put("Window.prototype.outerWidth","");
+    closureTranslation.put("HTMLElement.prototype.draggable","");
+    closureTranslation.put("HTMLSelectElement.prototype.value","");
+    closureTranslation.put("HTMLOptionElement.prototype.value","");
+    closureTranslation.put("HTMLInputElement.prototype.value","");
+    closureTranslation.put("HTMLTextAreaElement.prototype.value","");
+    closureTranslation.put("HTMLButtonElement.prototype.value","");
+    closureTranslation.put("HTMLLIElement.prototype.value","");
+    closureTranslation.put("HTMLParamElement.prototype.value","");
+    closureTranslation.put("HTMLBRElement.prototype.clear","");
+    closureTranslation.put("HTMLTitleElement.prototype.text","");
+    closureTranslation.put("HTMLScriptElement.prototype.text","");
+    closureTranslation.put("HTMLBodyElement.prototype.text","");
+    closureTranslation.put("HTMLAnchorElement.prototype.text","");
+    closureTranslation.put("HTMLOptionElement.prototype.text","");
+    closureTranslation.put("HTMLObjectElement.prototype.data","");
+    closureTranslation.put("ProcessingInstruction.prototype.data","");
+    closureTranslation.put("MessageEvent.prototype.data","");
+    closureTranslation.put("ImageData.prototype.data","");
+    closureTranslation.put("Event.prototype.timeStamp","");
+    closureTranslation.put("Element.prototype.onsubmit","");
+    closureTranslation.put("Window.prototype.onsubmit","");
 
     // Oddly, these can't be examined by the in-browser analysis.
-    closureExpression.put("Element.prototype.scrollLeft","");
-    closureExpression.put("Element.prototype.scrollTop","");
-    closureExpression.put("HTMLAnchorElement.prototype.search", "");
-    closureExpression.put("IDBRequest.prototype.error", "");
-    closureExpression.put("FileReader.prototype.error", "");
+    closureTranslation.put("Element.prototype.scrollLeft","");
+    closureTranslation.put("Element.prototype.scrollTop","");
+    closureTranslation.put("HTMLAnchorElement.prototype.search", "");
+    closureTranslation.put("IDBRequest.prototype.error", "");
+    closureTranslation.put("FileReader.prototype.error", "");
 
-    // These don't exist in Firefox 17.0.5esr, and don't need to be
-    // remapped to another location.
-    closureExpression.put("Document.prototype.postMessage", "");
-    closureExpression.put("Document.prototype.getBoxObjectFor", "");
-    closureExpression.put("HTMLObjectElement.prototype.GetVariable","");
+    */
 
     // %%% Something for |arguments| object (for lack of |Arguments|)?
     

@@ -135,6 +135,9 @@ var LOCATION_MAP = [
   // JSON
   "JSON",
 
+  // Audio
+  "Audio",
+
   // Miscellaneous
   "Blob",
   "ArrayBuffer",
@@ -175,8 +178,6 @@ var LOCATION_MAP = [
   "CharacterData",
   "ProcessingInstruction",
   "ImageData",
-  "ActiveXObject",
-  "SWFObject",
  
   // Non-existent in Firefox 17.0.3.esr.
   //"DOMImplementationList",
@@ -193,6 +194,9 @@ var LOCATION_MAP = [
   //"ObjectPropertyDescriptor",
   //"FileSaver",
   //"DocumentEvent",
+  //"ActiveXObject",
+  //"SWFObject",
+  //"AudioContext",
 
   // w3c_css.js
   //"CSSProperties",
@@ -244,6 +248,16 @@ var LOCATION_MAP = [
   // w3c_dom2.js
   //"HTMLIsIndexElement",
 ];
+
+// Write the message to the log (for debugging/notification).
+function msglog(message) {
+  var logElt;
+  if (document && document.getElementById && (logElt = document.getElementById("messages"))) {
+    logElt.textContent += '% ERROR: ' + message + '\n';
+  } else if (console && console.log) {
+    console.log(message);
+  }
+}
 
 var PropertyInfo = function(info, name) {
   // The ObjectInfo for which this is a property
@@ -524,10 +538,10 @@ var ObjectInfo = function(obj, locName) {
         if (funprop === null) {
           // %%% This is the norm in Firefox. Need to be browser
           // %%% specific.
-          //console.log("Function property " + name + " not found for " + this.locName + "." + prop.name);
+          //msglog("Function property " + name + " not found for " + this.locName + "." + prop.name);
           if (name === "name") {
             funprops[name] = prop.name;
-            //console.log(name + " >>> " + prop.name);
+            //msglog(name + " >>> " + prop.name);
           }
           if (name === "length") {
             // %%% Incorrect.
@@ -595,6 +609,7 @@ var CollectorConfig = function(maxDepth, doProto, exclude) {
     printPropsFromObject,
     collectNatives,
     printPropsFromField,
+    msglog,
   ];
   var DEFAULT_DO_PROTO = true;
   
@@ -622,7 +637,7 @@ var CollectorConfig = function(maxDepth, doProto, exclude) {
 //     an object, transitively scanning object-valued properties.
 var Collector = function(config) {
   if (!(config instanceof CollectorConfig)) {
-    console.log("WARNING: Invalid configuration object; must be a CollectorConfig object.");
+    msglog("WARNING: Invalid configuration object; must be a CollectorConfig object.");
     config = new CollectorConfig();
   }
   this.level = 0;
@@ -649,7 +664,7 @@ var Collector = function(config) {
 
     var ret = this.infos[idx];
     if (ret.obj !== obj) {
-      console.log("Error finding ObjectInfo record: objs and infos are out of sync.");
+      msglog("Error finding ObjectInfo record: objs and infos are out of sync.");
       return null;
     }
     return ret;
@@ -695,7 +710,7 @@ var Collector = function(config) {
         typ = "'Object'";
         break;
       default:
-        console.log("Unknown value type: " + typstr);
+        msglog("Unknown value type: " + typstr);
         break;
     }
     return typ;
@@ -706,7 +721,7 @@ var Collector = function(config) {
     if (obj == undefined) {
       return;
     }
-    console.log(obj);
+    msglog(obj);
     protoChain(obj.__proto__);
   }
 
@@ -743,7 +758,7 @@ var Collector = function(config) {
     var ua = navigator.userAgent;
     var date = new Date();
 
-    log.textContent += "% Generated: " + date + "\n";
+    log.textContent += "\n% Generated: " + date + "\n";
     log.textContent += "% User agent: " + ua + "\n";
   }
 
@@ -834,7 +849,7 @@ var Collector = function(config) {
         // Convert the entry to a tuple.
         LOCATION_MAP[i] = [expr, loc];
       } else {
-        console.log("Unknown format for LOCATION_MAP: " + entry);
+        msglog("Unknown format for LOCATION_MAP: " + entry);
         expr = "null";
       }
 
@@ -842,11 +857,11 @@ var Collector = function(config) {
       try {
         val = eval(expr);
         if (typeof val !== "object" && typeof val !== "function") {
-          console.log("Value in LOCATION_MAP is not an object: " + expr);
+          msglog("Value in LOCATION_MAP is not an object: " + expr);
           val = null;
         }
       } catch (ex) {
-        console.log("Value in LOCATION_MAP does not exist: " + expr);
+        msglog("Value in LOCATION_MAP does not exist: " + expr);
       }
 
       LOCATION_INDEX.push(val);
@@ -858,11 +873,11 @@ var Collector = function(config) {
 
 function printPropsFromObject(obj, loc, name) {
   if (typeof obj === "undefined") {
-    console.log("Cannot scan undefined location: " + name);
+    msglog("Cannot scan undefined location: " + name);
     return;
   }
   if (typeof obj !== "object" && typeof obj !== "function") {
-    console.log("Location is not an object: " + name + ", value: " + obj);
+    msglog("Location is not an object: " + name + ", value: " + obj);
     return;
   }
   var coll = new Collector(new CollectorConfig(1, true));

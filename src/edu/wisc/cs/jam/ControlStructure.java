@@ -170,7 +170,7 @@ public abstract class ControlStructure extends ControlAutomaton {
         for (Node ext : externTargets) {
           String expr = getCode(ext);
           // Translate Closure natives to form matching the semantics.
-          String maybeExpr = NativeUtil.closureExpression.get(expr);
+          String maybeExpr = NativeUtil.closureTranslation.get(expr);
           if (maybeExpr != null) {
             if (maybeExpr.equals("")) {
               // This indicates that the native is not a function but

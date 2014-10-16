@@ -10,6 +10,7 @@ function printPropsFromField() {
   var obj;
   eval("obj = " + objstr);
 
+  var loc = objstr;
   loc = '#' + loc.replace('.', '#');
 
   printPropsFromObject(obj, loc, objstr);
@@ -25,5 +26,13 @@ function printPropsFromField() {
 <script type="text/javascript" >
 document.getElementById("objfield").focus();
 </script>
+<p>
+<pre id="messages">
+</pre>
+</p>
+<p>
+<pre id="log">
+</pre>
+</p>
 </body>
 </html>

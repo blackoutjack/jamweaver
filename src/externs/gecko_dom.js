@@ -635,7 +635,8 @@ Document.prototype.onoffline;
  * @return {BoxObject}
  * @nosideeffects
  */
-Document.prototype.getBoxObjectFor = function(element) {};
+// Not in Firefox 17.0.3esr
+//Document.prototype.getBoxObjectFor = function(element) {};
 
 // From:
 // http://lxr.mozilla.org/mozilla1.8/source/dom/public/idl/range/nsIDOMNSRange.idl

@@ -47,7 +47,7 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
   tot_ok = 0
   start = time.time()
 
-  for inps in load_testcases(MICROBENCHMARK_DIR, 'simple.policy'):
+  for inps in load_testcases(MICROBENCHMARK_DIR, 'simple.policy', defwarn=false):
     srcfl = inps[0]
     poldict = inps[1]
     seeds = inps[2]

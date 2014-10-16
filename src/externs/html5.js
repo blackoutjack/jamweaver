@@ -703,7 +703,8 @@ Window.prototype.postMessage = function(message, targetOrigin, ports) {};
  * The postMessage method (as implemented in Opera).
  * @param {string} message
  */
-Document.prototype.postMessage = function(message) {};
+// Not in Firefox 17.0.3esr
+//Document.prototype.postMessage = function(message) {};
 
 /**
  * Document head accessor.

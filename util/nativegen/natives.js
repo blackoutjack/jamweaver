@@ -318,21 +318,23 @@ var PropertyInfo = function(info, name) {
   // Get comments that can be inserted to warn about lack of info.
   this.getDescriptorInfo = function() {
     var output = "";
+    // %%% Apply user-specified data from symprops.list.
     if (this.descriptor === null) {
       // Assume attributes for the non-standard __proto__ property.
-      // For other properties, no descriptor is a problem.
-      // %%% Generalize to allow user-specified data for all properties.
+      // For other properties, no descriptor means that there is a
+      // getter that fails when the prototype object is used as |this|.
+      // %%% Probably
       if (this.name !== "__proto__") {
-        output += "%%% Unable to get descriptor info for property " + this.name + ".\n";
+        output += "%%% Unable to get descriptor info for " + this.getChainOutput() + "\n";
       }
     } else {
       if (this.descriptor.get) {
         // Indicate a warning that a getter model is needed.
-        output += "%%% " + this.objInfo.objName + "." + this.name + " has getter to model.\n"; 
+        output += "%%% " + this.getChainOutput() + " has getter to model\n"; 
       }
       if (this.descriptor.set) {
         // Indicate a warning that a getter model is needed.
-        output += "%%% " + this.objInfo.objName + "." + this.name + " has setter to model.\n"; 
+        output += "%%% " + this.getChainOutput() + " has setter to model\n"; 
       }
     }
     return output;
@@ -377,10 +379,13 @@ var PropertyInfo = function(info, name) {
     return output;
   }
 
-  // 
+  // Get the value information for the property.
   this.getValueOutput = function() {
     var output = "";
-    if (this.isObject()) {
+    if (this.descriptor === null && this.name != '__proto__') {
+      // "?/?" indicates a purely symbolic value.
+      output += "?/?";
+    } else if (this.isObject()) {
       output += this.getObjectValueOutput();
     } else {
       output += this.getPrimitiveValueOutput();

@@ -211,6 +211,7 @@ def get_dir_parts(dirfile):
   return {'app': app, 'version': version, 'dir': dirfile}
 
 # Sort so that a particular app's results are in order.
+# %%% This needs simplifying!
 def sort_dirs(apps, dirs):
   sorted_dirs = {}
   for d in dirs:
@@ -238,75 +239,108 @@ def sort_dirs(apps, dirs):
       app_dirs.insert(idx, info)
 
   return sorted_dirs
+# /sort_dirs
 
-def get_results_info(resdir, bases):
+# %%% This needs simplifying!
+def get_result_info(resdir, app):
   # Assumes that directories within |resdir| are of the form "app-iter",
   # where "iter" is a label to separate the results of multiple analyses
   # for one application. Only the most recent result for each app is
   # transferred.
-  resultsdirs = os.listdir(resdir)
+  resultdirs = os.listdir(resdir)
+  resultdirs = sort_dirs([app], resultdirs)
 
+  if app not in resultdirs:
+    warn('No results found for %s' % app)
+    return {}
+
+  appinfo = {'version': None}
+  appresults = resultdirs[app]
+    
+  # Each element of |appresults| is a triple of directory information
+  # consisting of application, results version, and directory name.
+  # Just extract the last one.
+  dirinfo = appresults[-1]
+  dirpath = os.path.join(resdir, dirinfo['dir'])
+  if not os.path.isdir(dirpath):
+    warn("Non-directory file encountered in source directory: %s" % dirfile)
+    return appinfo
+
+  version = dirinfo['version']
+  appinfo['version'] = version
+
+  appinfo['dir'] = dirpath
+
+  polfile = os.path.join(dirpath, 'policy.js')
+  if os.path.isfile(polfile):
+    appinfo['policy'] = polfile
+  modpolfile = os.path.join(dirpath, 'modular.policy.js')
+  if os.path.isfile(modpolfile):
+    appinfo['modular.policy'] = modpolfile
+
+  fullfile = os.path.join(dirpath, '%s.js' % app)
+  if os.path.isfile(fullfile):
+    appinfo['full'] = fullfile
+  else:
+    warn('Unable to locate full script file: %s' % fullfile)
+
+  keys = ['original','closure','normalized','instrumented','indirection','collapsed','optimized']
+  for key in keys:
+    keydir = os.path.join(dirpath, 'source-%s' % key)
+    if os.path.isdir(keydir):
+      jslist = []
+      appinfo[key] = jslist
+      for jsfile in os.listdir(keydir):
+        if jsfile.endswith('.js'):
+          jspath = os.path.join(keydir, jsfile)
+          jslist.append(jspath)
+
+  # Parse the run's information file into a dictionary.
+  infofile = os.path.join(dirpath, 'info.txt')
+  if os.path.exists(infofile):
+    appinfo['info'] = infofile
+
+  return appinfo
+
+def get_results_info(resdir, bases):
   # Map the application name to a triple consisting of the output
   # version, source file and policy file. If a more recent analysis of
   # the app is encountered, it will replace the older one.
   appfiles = {}
 
-  resultsdirs = sort_dirs(bases, resultsdirs)
-  for app, dirlist in resultsdirs.iteritems():
-    # Each element of |dirlist| is a triple of directory information
-    # consisting of application, results version, and directory name.
-    appfiles[app] = { 'version': None }
-    appinfo = appfiles[app]
-    for dirinfo in dirlist:
-      dirpath = os.path.join(resdir, dirinfo['dir'])
-      if not os.path.isdir(dirpath):
-        warn("Non-directory file encountered in source directory: %s" % dirfile)
-        continue
-
-      version = dirinfo['version']
-      appinfo['version'] = version
-
-      appinfo['dir'] = dirpath
-
-      polfile = os.path.join(dirpath, 'policy.js')
-      if os.path.isfile(polfile):
-        appinfo['policy'] = polfile
-      modpolfile = os.path.join(dirpath, 'modular.policy.js')
-      if os.path.isfile(modpolfile):
-        appinfo['modular.policy'] = modpolfile
-
-      fullfile = os.path.join(dirpath, '%s.js' % app)
-      if os.path.isfile(fullfile):
-        appinfo['full'] = fullfile
-      else:
-        warn('Unable to locate full script file: %s' % fullfile)
-
-      keys = ['original','closure','normalized','instrumented','indirection','collapsed','optimized']
-      for key in keys:
-        keydir = os.path.join(dirpath, 'source-%s' % key)
-        if os.path.isdir(keydir):
-          jslist = []
-          appinfo[key] = jslist
-          for jsfile in os.listdir(keydir):
-            if jsfile.endswith('.js'):
-              jspath = os.path.join(keydir, jsfile)
-              jslist.append(jspath)
-
-      # Parse the run's information file into a dictionary.
-      infofile = os.path.join(dirpath, 'info.txt')
-      appinfo['info'] = {}
-      if os.path.isfile(infofile):
-        infofl = open(infofile, 'r')
-        infolines = infofl.readlines()
-        infofl.close()
-        for infoline in infolines:
-          infoparts = infoline.split(':', 1)
-          if len(infoparts) == 2:
-            appinfo['info'][infoparts[0]] = infoparts[1]
-          else:
-            warn('Invalid info file line: %s' % infoline)
+  bases.sort()
+  for app in bases:
+    appfiles[app] = get_result_info(resdir, app)
 
   return appfiles
+
+def compare_info(actinfo, expinfo):
+  keys = actinfo.keys()
+  keys.extend(expinfo.keys())
+  keys = set(keys)
+  disparities = {}
+  for key in keys:
+    if key not in actinfo:
+      disparities[key] = 'missing'
+    elif key not in expinfo:
+      disparities[key] = 'additional'
+    elif actinfo[key] != expinfo[key]:
+      disparities[key] = 'wrong'
+  return disparities 
+
+def parse_info_file(infofile):
+  info = {}
+  if os.path.isfile(infofile):
+    infofl = open(infofile, 'r')
+    infolines = infofl.readlines()
+    infofl.close()
+    for infoline in infolines:
+      infoparts = infoline.split(':', 1)
+      if len(infoparts) == 2:
+        info[infoparts[0]] = infoparts[1]
+      else:
+        warn('Invalid info file line: %s' % infoline)
+  return info
 
 def load_sources(from_dir, srcsuf='.js', excludesuf='.exp.js'):
   allfls = os.listdir(from_dir)
@@ -439,7 +473,7 @@ def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=
   #cmd.append('-i')
   #cmd.append('-r')
   cmd.append('-t')
-  cmd.append('3')
+  cmd.append('6')
   #cmd.append('--noindirect')
   #cmd.append('-T')
   #cmd.append('3')
@@ -630,13 +664,18 @@ def get_ast(filename):
   return astout.strip()
 
 def overwrite_expected(outp, expfile):
-  if validate_output(outp, expfile) == "ok":
-    return "unchanged"
+  valid = validate_output(outp, expfile)
+  if valid == 'match':
+    return 'match'
   
   expfl = open(expfile, 'w')
   expfl.write(outp)
   expfl.close()
-  return "overwritten"
+  if valid == 'missing':
+    valid = 'created'
+  elif valid == 'wrong':
+    valid = 'overwritten'
+  return valid
 
 def run_query(query):
   qbase = "assert(library_directory('%s')).\n" % LIBDIR
@@ -647,37 +686,37 @@ def run_query(query):
 
 def validate_value(outp, exppath):
   if not os.path.exists(exppath):
-    return "missing"
+    return 'missing'
 
   expfl = open(exppath, 'r')
   exp = expfl.read().strip()
 
   lines = outp.split("\n")
   for ln in lines:
-    if ln[:8] == "VALUE = ":
+    if ln[:8] == 'VALUE = ':
       act = ln[8:].strip()
       if act == exp:
-        return "ok"
+        return 'match'
       else:
-        return "wrong: " + act + " !== " + exp
+        return 'wrong: ' + act + ' !== ' + exp
 
-  return "fail"
+  return 'fail'
 
 # Compare the resulting source code of a run to the expected output.
 def validate_output(outp, exppath):
   if not os.path.exists(exppath):
-    return "missing"
+    return 'missing'
 
   expfl = open(exppath, 'r')
   exp = expfl.read().strip()
   outp = outp.strip()
 
   if outp == exp:
-    return "ok"
+    return 'match'
   else:
     #sys.stderr.write("OUTPUT: %s" % outp)
     #sys.stderr.write("EXPECT: %s" % exp)
-    return "wrong"
+    return 'wrong'
 
 def evaluate_file(filename, verbose=False):
   ast = get_ast(filename)

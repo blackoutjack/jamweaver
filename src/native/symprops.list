@@ -49,4 +49,12 @@
 #HTMLDocument#prototype lastModified String
 #HTMLDocument#prototype linkColor String
 
+#Element#prototype scrollHeight Number
+#Element#prototype scrollLeft Number
+#Element#prototype scrollLeftMax Number
+#Element#prototype scrollTop Number
+#Element#prototype scrollTopMax Number
+#Element#prototype scrollWidth Number
+#Element#prototype tagName String
+#Element#prototype textContent String
 

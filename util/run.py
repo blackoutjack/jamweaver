@@ -23,15 +23,18 @@ from util import get_base
 from util import get_exp_path
 from util import overwrite_expected
 from util import get_lines
+from util import get_result_info
+from util import parse_info_file
+from util import compare_info
 
-def load_testcases(from_dir, default_policy=None):
+def load_testcases(from_dir, defwarn=True):
   cases = []
   paths = load_sources(from_dir, '.js', '.exp.js')
   for flpath in paths:
     base = get_base(flpath)
 
     # Find any applicable policy files.
-    policies = load_policies(from_dir, base) 
+    policies = load_policies(from_dir, base, defwarn=defwarn) 
 
     seedfile = load_seeds(from_dir, base)
 
@@ -39,15 +42,17 @@ def load_testcases(from_dir, default_policy=None):
     cases.append(specs)
 
   return cases
+# /load_testcases
 
 def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False):
   if refine is None:
     refine = 3
   tot = 0
+  info_ok = 0
   tot_ok = 0
   start = time.time()
 
-  for inps in load_testcases(MICROBENCHMARK_DIR, 'simple.policy', defwarn=false):
+  for inps in load_testcases(MICROBENCHMARK_DIR, defwarn=False):
     srcfl = inps[0]
     poldict = inps[1]
     seeds = inps[2]
@@ -99,20 +104,27 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
       if process_result(outp, exppath, overwrite):
         tot_ok += 1
 
+      infoexpsuf = '%s%s.refine%d.info.exp.txt' % (exppre, synsuf, ref)
+      infoexppath = get_exp_path(srcfl, infoexpsuf)
+      if process_info('%s%s' % (base, exppre), infoexppath, overwrite):
+        info_ok += 1
+      sys.stderr.write('\n')
+
   end = time.time()
   tottime = end - start
 
-  vals = (tot_ok, tot, tottime)
+  vals = (tot_ok, info_ok, tot, tottime)
   if overwrite:
-    out('%d of %d microbenchmark results overwritten; %.2fs\n' % vals)
+    out('overwrote %d output, %d info for %d microbenchmarks; %.2fs\n' % vals)
   else:
-    out('%d of %d microbenchmarks successful; %.2fs\n' % vals)
+    out('verified %d output, %d info for %d microbenchmarks; %.2fs\n' % vals)
 # /run_microbenchmarks
       
 def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
   if refine is None:
     refine = 0
   tot = 0
+  info_ok = 0
   tot_ok = 0
   start = time.time()
 
@@ -160,34 +172,80 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
       if process_result(outp, exppath, overwrite):
         tot_ok += 1
 
+      infoexpsuf = '%s%s.refine%d.info.exp.txt' % (exppre, synsuf, refine)
+      infoexppath = get_exp_path(srcfl, infoexpsuf)
+      if process_info('%s%s' % (base, exppre), infoexppath, overwrite):
+        info_ok += 1
+      sys.stderr.write('\n')
+
   end = time.time()
   tottime = end - start
 
-  vals = (tot_ok, tot, tottime)
+  vals = (tot_ok, info_ok, tot, tottime)
   if overwrite:
-    out('%d of %d benchmark results overwritten; %.2fs\n' % vals)
+    out('overwrote %d output, %d info for %d benchmarks; %.2fs\n' % vals)
   else:
-    out('%d of %d benchmarks successful; %.2fs\n' % vals)
+    out('verified %d output, %d info for %d benchmarks; %.2fs\n' % vals)
 # /run_benchmarks
+
+def process_info(base, exppath, overwrite):
+  ok = False
+  stat = None
+  results = get_result_info(OUTDIR, base)
+  if 'info' in results:
+    infofile = results['info']
+    actinfo = parse_info_file(infofile)
+    expinfo = parse_info_file(exppath)
+    if len(expinfo) > 0:
+      diff = compare_info(actinfo, expinfo)
+      if len(diff) == 0:
+        ok = True
+        stat = 'match'
+      else:
+        for k, m in diff.iteritems():
+          out('info:%s %s' % (k, m))
+          stat = 'wrong'
+    else:
+      stat = 'missing'
+
+    if not ok and overwrite:
+      infofl = open(infofile, 'r')
+      infoout = infofl.read()
+      infofl.close()
+      stat = overwrite_expected(infoout, exppath)
+      if stat == 'overwritten' or stat == 'created':
+        ok = True
+  else:
+    warn('Unable to load info file for results: %s' % base)
+
+  expname = os.path.basename(exppath)
+  out('%s %s' % (expname, stat))
+
+  return ok
+# /process_info
 
 def process_result(outp, exppath, overwrite):
   ok = False
   if overwrite:
     stat = overwrite_expected(outp, exppath)
-    if stat == "overwritten":
+    if stat == 'overwritten' or stat == 'created':
       ok = True
   else:
     stat = validate_output(outp, exppath)
-    if stat == "ok":
+    if stat == 'match':
       ok = True
   expname = os.path.basename(exppath)
-  out('%s %s\n' % (expname, stat))
+  out('%s %s' % (expname, stat))
   return ok
+# /process_result
 
 class Result():
   def __init__(self):
     self.html_ok = False
     self.js_ok = False
+    self.info_ok = False
+  # /Result.__init__
+# /Result
 
 def run_website(url, policies, debug=False, overwrite=False, refine=None, synonly=False):
   if refine is None:
@@ -241,6 +299,10 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     exppath = os.path.join(WEBSITE_DIR, appname + expsuf)
     result.js_ok = process_result(outp, exppath, overwrite)
 
+    infoexpsuf = '%s%s.refine%d.info.exp.txt' % (exppre, synsuf, refine)
+    infoexppath = get_exp_path(srcfl, infoexpsuf)
+    result.info_ok = process_info('%s%s' % (base, exppre), infoexppath, overwrite)
+
     # Repack the HTML file.
 
     # Get the generated policy file.
@@ -274,17 +336,19 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     result.html_ok = process_result(rpout, rpexppath, overwrite)
 
   return results
+# /run_website
 
 def run_websites(debug=False, overwrite=False, refine=None, synonly=False):
   tot = 0
   js_ok = 0
+  info_ok = 0
   html_ok = 0
   start = time.time()
   
   sites = get_lines(WEBSITE_FILE, comment='#')
   for site in sites:
 
-    policies = load_policies(WEBSITE_DIR, site)
+    policies = load_policies(WEBSITE_DIR, site, defwarn=False)
     
     url = 'http://' + site
     results = run_website(url, policies, debug=debug, overwrite=overwrite, refine=refine, synonly=synonly)
@@ -294,15 +358,17 @@ def run_websites(debug=False, overwrite=False, refine=None, synonly=False):
     for result in results:
       if result.html_ok: html_ok += 1
       if result.js_ok: js_ok += 1
+      if result.info_ok: info_ok += 1
+    sys.stderr.write('\n')
 
   end = time.time()
   tottime = end - start
 
-  vals = (js_ok, html_ok, tot, tottime)
+  vals = (js_ok, info_ok, html_ok, tot, tottime)
   if overwrite:
-    out('%d/%d of %d website JavaScript/HTML results overwritten; %.2fs\n' % vals)
+    out('overwrote %d JS-output, %d info, %d HTML-output for %d websites; %.2fs\n' % vals)
   else:
-    out('%d/%d of %d website JavaScript/HTML tests successful; %.2fs\n' % vals)
+    out('verified %d JS-output, %d info, %d HTML-output for %d websites; %.2fs\n' % vals)
 # /run_websites
 
 def run_interpreter_tests(debug=False):
@@ -318,17 +384,19 @@ def run_interpreter_tests(debug=False):
 
     outp = evaluate_file(flpath, debug)
     exppath = get_exp_path(flpath, '.exp')
-    ok = validate_value(flpath, outp)
+    stat = validate_value(flpath, outp)
 
-    if ok == 'ok':
+    if stat == 'match':
       tot_ok += 1
-    out('%s %s\n' % (exppath, ok))
+    out('%s %s\n' % (exppath, stat))
 
   out('%d of %d interpreter tests successful\n' % (tot_ok, tot))
+# /run_interpreter_tests
 
 def run_semantics_tests():
   # Semantics tests not organized yet.
   pass
+# /run_semantics_tests
 
 def main():
   parser = OptionParser(usage="%prog")
@@ -365,6 +433,7 @@ def main():
     run_benchmarks(opts.debug, opts.overwrite, refine=opts.refine, synonly=opts.syntaxonly)
   if allmods or opts.websites:
     run_websites(opts.debug, opts.overwrite, refine=opts.refine, synonly=opts.syntaxonly)
+# /main
 
 
 if __name__ == "__main__":

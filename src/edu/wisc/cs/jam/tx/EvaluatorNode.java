@@ -169,6 +169,18 @@ public class EvaluatorNode {
     return ret;
   }
 
+  protected String parseArgLenClause(Exp e) {
+    if (!e.isCall()) return null;
+    String callName = e.getFirstChild().toCode();
+    if (!callName.equals("jam#arglen")) return null;
+
+    // 0 arguments
+    assert e.getChildCount() == 1 : "Malformed jam#arglen clause: " + e.toCode();
+
+    String ret = "node.argc";
+    return ret;
+  }
+
   protected String parseAccessorClause(Exp clause) {
     if (!clause.isAccessor()) return null;
 
@@ -255,6 +267,8 @@ public class EvaluatorNode {
       }
     } else if ((lop = parseArgClause(lhs, sb)) != null) {
       // |lop| gets the specified argument.
+    } else if ((lop = parseArgLenClause(lhs)) != null) {
+      // |lop| gets |node.argc|.
     } else if (lhs.isCall()) {
       String callName = lhs.getFirstChild().toCode();
       if (callName.equals("jam#getValue")) {
@@ -299,6 +313,14 @@ public class EvaluatorNode {
       isInfix = false;
     } else if (type == JSPredicateType.NE) {
       op = " != ";
+    } else if (type == JSPredicateType.GT) {
+      op = " > ";
+    } else if (type == JSPredicateType.GE) {
+      op = " >= ";
+    } else if (type == JSPredicateType.LT) {
+      op = " < ";
+    } else if (type == JSPredicateType.LE) {
+      op = " <= ";
     } else if (type == JSPredicateType.INSTANCEOF) {
       op = "JAM.instanceof";
       isInfix = false;
@@ -353,6 +375,9 @@ public class EvaluatorNode {
     String arg1 = null;
     if ((arg1 = parseArgClause(val, sb)) != null) {
       // |arg1| gets the specified argument.
+    } else if ((arg1 = parseArgLenClause(val)) != null) {
+      // |arg1| gets |node.argc|.
+      // %%% This case doesn't really make sense, but shouldn't hurt.
     } else if ((arg1 = parseAccessorClause(val)) != null) {
       // |arg1| gets the (new, if set) value of the referenced property.
     } else {
@@ -400,6 +425,9 @@ public class EvaluatorNode {
     if ((arg0 = parseArgClause(full, sb)) != null) {
       // Short-circuit if the argument is not a string.
       sb.append("typeof " + arg0 + " === \"string\" && ");
+    } else if ((arg0 = parseArgLenClause(full)) != null) {
+      // |arg0| gets |node.argc|.
+      // %%% This case doesn't really make sense.
     } else if ((arg0 = parseAccessorClause(full)) != null) {
       // |arg0| gets the (new, if set) value of the referenced property.
     } else {
@@ -454,6 +482,23 @@ public class EvaluatorNode {
       throw new UnsupportedOperationException("Unsupported string operation: " + opstr);
     }
 
+  }
+
+  protected void makeConstructConjunct(StringBuilder sb) {
+    // There should be 1 call name and 1 argument.
+    assert exp.getChildCount() == 2 : "Invalid child count for construct conjunct: " + exp.toCode();
+
+    // %%% The enforcement mechanism will catch calls to this function
+    // %%% in addition to constructor invocations.
+    Exp fn = exp.getChild(1);
+    String loc = null;
+    if ((loc = parseNativeLocation(fn)) != null) {
+      sb.append("JAM.identical(node.value,");
+      sb.append(loc);
+      sb.append(")");
+    } else {
+      throw new UnsupportedOperationException();  
+    }
   }
 
   protected void makeCallConjunct(StringBuilder sb) {
@@ -578,8 +623,11 @@ public class EvaluatorNode {
       case DELETE:
         makeAccessConjunct(sb);
         break;
-      case CALL:
+      case INVOKE:
         makeCallConjunct(sb);
+        break;
+      case CONSTRUCT:
+        makeConstructConjunct(sb);
         break;
       case TYPE:
         makeTypeConjunct(sb);
@@ -595,6 +643,10 @@ public class EvaluatorNode {
       case SHNE:
       case EQ:
       case NE:
+      case GT:
+      case GE:
+      case LT:
+      case LE:
       case INSTANCEOF:
         makeBinaryConjunct(sb);
         break;

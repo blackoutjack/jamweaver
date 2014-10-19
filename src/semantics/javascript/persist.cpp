@@ -255,10 +255,13 @@ vector< pair<string,string> > assigns;
 int assignidx = 0;
 vector< pair<string,string> > reads;
 int readidx = 0;
-vector< pair<string,string> > args;
+vector< vector<string> > args;
+vector< pair<string,string> > assertargs;
 int argidx = 0;
 vector<string> calls;
 int callidx = 0;
+vector<string> constrs;
+int constridx = 0;
 
 
 // Flags
@@ -1477,7 +1480,10 @@ bool meta_clear_impl() {
   assignidx = 0;
   calls.clear();
   callidx = 0;
+  constrs.clear();
+  constridx = 0;
   args.clear();
+  assertargs.clear();
   argidx = 0;
 }
 
@@ -3141,6 +3147,44 @@ extern "C" int get_call(CTXTdecl) {
   return TRUE;
 }
 
+extern "C" int add_constr(CTXTdecl) {
+  REQ_STRING(1);
+  
+  if (native_mode) return TRUE;
+
+  // Clear the asserted call targets and arguments if they are subsumed
+  // by an evaluated call.);
+  if (clear_next_call) {
+    constrs.clear();
+    // %%% Assumes that add_call is invoked prior to updateargs during
+    // %%% evaluation.
+    args.clear();
+    clear_next_call = false;
+  }
+
+  string callptr(extern_ptoc_string(1));
+  constrs.push_back(callptr);
+
+  return TRUE;
+}
+
+extern "C" int get_constr(CTXTdecl) {
+  REQ_INT(1);
+  REQ_VAR(2);
+
+  int idx = extern_ptoc_int(1);
+
+  if (idx >= constrs.size()) {
+    // There haven't been that many constructors called.
+    return FALSE;
+  }
+
+  string c = constrs.at(idx);
+  
+  extern_ctop_string(2, c.c_str());
+  return TRUE;
+}
+
 extern "C" int current_func(CTXTdecl) {
   REQ_VAR(1);
 
@@ -3156,6 +3200,26 @@ extern "C" int current_func(CTXTdecl) {
   return TRUE;
 }
 
+extern "C" int add_args(CTXTdecl) {
+  REQ_LIST(1);
+  
+  if (native_mode) return TRUE;
+  prolog_term inlist = reg_term(CTXTc 1);
+
+  vector<string> arglist;
+  while (is_list(inlist)) {
+    prolog_term car = p2p_car(inlist);
+    assert(is_string(car));
+    string carcstr(p2c_string(CTXTc car));
+    string carstr(carcstr);
+    arglist.push_back(carstr);
+    inlist = p2p_cdr(inlist);
+  }
+
+  args.push_back(arglist);
+  return TRUE;
+}
+
 extern "C" int add_arg(CTXTdecl) {
   REQ_STRING(1);
   REQ_STRING(2);
@@ -3166,22 +3230,91 @@ extern "C" int add_arg(CTXTdecl) {
   string val(extern_ptoc_string(2));
 
   pair<string,string> newarg(idx, val);
-  args.push_back(newarg);
+  assertargs.push_back(newarg);
 
   return TRUE;
 }
 
+extern "C" int get_arglen(CTXTdecl) {
+  REQ_VAR(1);
+
+  // Collect a list of actual argument lengths.
+  set<int> lens;
+  for(vector< vector<string> >::iterator it=args.begin(); it!=args.end(); it++) {
+    lens.insert(it->size());
+  }
+
+  // The return value will be a value, or potentially a disjunction of
+  // values in case multiple arguments at the given index were recorded.
+  string val;
+
+  if (lens.empty()) {
+    // If nothing was found, there was no call.
+    return FALSE;
+  } else if (lens.size() == 1) {
+    // If only one argument length was logged, just return it.
+    int len = *lens.begin();
+    stringstream ss;
+    ss << len;
+    val = ss.str();
+  } else {
+    // Otherwise, create a symbolic value and assert that it equals one
+    // of the logged argument values.
+    val = newval("s");
+    symbols.insert(val);
+    ints.insert(val);
+
+    // Generate a symbolic type for this value.
+    string typ = newval("s");
+    symbols.insert(typ);
+    ints.insert(typ);
+    map_symbol_type(val, string("Number"));
+
+    // Build up a constraint on the new symbolic value.
+    string fn;
+    int cnt = 0;
+    for (set<int>::iterator it=lens.begin(); it!=lens.end(); it++) {
+      int lenval = *it;
+      stringstream ss;
+      ss << lenval;
+      string lenstr = ss.str();
+      string fnpart = binary_fn_impl("=", lenstr, val);
+      if (cnt == 0) {
+        fn = fnpart;
+      } else {
+        fn = binary_fn_impl("or", fn, fnpart);
+      }
+      cnt++;
+    }
+
+    constraint_impl(fn);
+  }
+
+  extern_ctop_string(1, val.c_str());
+  return TRUE;
+}
+
 extern "C" int get_arg(CTXTdecl) {
-  REQ_STRING(1);
+  REQ_INT(1);
   REQ_VAR(2);
 
-  string idx(extern_ptoc_string(1));
+  int idx = extern_ptoc_int(1);
+  stringstream ss;
+  ss << idx;
+  string idxstr(ss.str());
 
   // Collect a list of values that have been seen as arguments at the
   // specified index.
   list<string> vals;
-  for(vector< pair<string,string> >::iterator it=args.begin(); it!=args.end(); it++) {
-    if (it->first == idx) {
+  for(vector< vector<string> >::iterator it=args.begin(); it!=args.end(); it++) {
+    if (it->size() > idx) {
+      string val(it->at(idx));
+      vals.push_back(val);
+    }
+  }
+  // %%% Remove this whole thing.
+  for(vector< pair<string,string> >::iterator it=assertargs.begin(); it!=assertargs.end(); it++) {
+    if (it->first == idxstr) {
       string val(it->second);
       vals.push_back(val);
     }
@@ -3462,6 +3595,7 @@ extern "C" int dump_heap(CTXTdecl) {
   printf("assigns: %lu\n", assigns.size());
   printf("reads: %lu\n", reads.size());
   printf("args: %lu\n", args.size());
+  printf("assertargs: %lu\n", assertargs.size());
   printf("calls: %lu\n", calls.size());
   printf("vargen: %lu\n", vargen.size());
 

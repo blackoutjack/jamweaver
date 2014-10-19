@@ -52,7 +52,8 @@ public class Dbg {
       StringBuilder sb = new StringBuilder();
       appendHeader(sb);
       sb.append(message);
-      System.err.println(sb);
+      sb.append("\n");
+      System.err.print(sb);
       System.err.flush();
 
       if (JAM.Opts.debug)
@@ -65,7 +66,8 @@ public class Dbg {
     appendHeader(sb);
     sb.append("ERROR: ");
     sb.append(message);
-    System.err.println(sb);
+    sb.append("\n");
+    System.err.print(sb);
     System.err.flush();
 
     if (JAM.Opts.debug)
@@ -77,7 +79,8 @@ public class Dbg {
     appendHeader(sb);
     sb.append("FATAL: ");
     sb.append(message);
-    System.err.println(sb);
+    sb.append("\n");
+    System.err.print(sb);
     System.err.flush();
 
     if (JAM.Opts.debug)
@@ -91,7 +94,8 @@ public class Dbg {
     appendHeader(sb);
     sb.append("WARNING: ");
     sb.append(message);
-    System.err.println(sb);
+    sb.append("\n");
+    System.err.print(sb);
     System.err.flush();
 
     if (JAM.Opts.debug)
@@ -104,7 +108,8 @@ public class Dbg {
     appendHeader(sb);
     sb.append("DEBUG: ");
     sb.append(message);
-    System.err.println(sb);
+    sb.append("\n");
+    System.err.print(sb);
     System.err.flush();
 
     FileUtil.writeToMain(sb, "dbg.txt", true);

@@ -221,7 +221,9 @@ public class Policy extends Automaton<State,PredicateSymbol> {
       // Mark the predicate as being part of a policy (rather than
       // learned or seeded).
       PredicateType pt = getLanguage().getPredicateType(pred);
-      if (pt == JSPredicateType.WRITE || pt == JSPredicateType.READ || pt == JSPredicateType.CALL || pt == JSPredicateType.DELETE) {
+      if (pt == JSPredicateType.WRITE || pt == JSPredicateType.READ
+          || pt == JSPredicateType.INVOKE || pt == JSPredicateType.DELETE
+          || pt == JSPredicateType.CONSTRUCT) {
         pred.setEventPredicate();
       }
       pred.setPolicyPredicate();

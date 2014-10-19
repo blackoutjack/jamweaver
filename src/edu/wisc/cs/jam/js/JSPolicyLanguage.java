@@ -15,7 +15,8 @@ public class JSPolicyLanguage extends PolicyLanguage {
   public enum JSPredicateType implements PredicateType {
     WRITE,
     READ,
-    CALL,
+    INVOKE,
+    CONSTRUCT,
     DELETE,
     TYPE,
     STRINGCONTAINS,
@@ -24,6 +25,10 @@ public class JSPolicyLanguage extends PolicyLanguage {
     SHNE,
     EQ,
     NE,
+    GT,
+    LT,
+    GE,
+    LE,
     INSTANCEOF,
     REGEXTEST,
     TRUE,
@@ -49,10 +54,14 @@ public class JSPolicyLanguage extends PolicyLanguage {
 
     if (e.isCall()) {
       String callName = e.getFirstChild().toCode();
-      if (callName.equals("jam#called")) {
-        type = JSPredicateType.CALL;
+      if (callName.equals("jam#invoke")) {
+        type = JSPredicateType.INVOKE;
         if (not)
-          throw new UnsupportedOperationException("Negated jam#called predicates not supported: " + e.toCode());
+          throw new UnsupportedOperationException("Negated jam#invoke predicates not supported: " + e.toCode());
+      } else if (callName.equals("jam#construct")) {
+        type = JSPredicateType.CONSTRUCT;
+        if (not)
+          throw new UnsupportedOperationException("Negative jam#construct predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#set")) {
         type = JSPredicateType.WRITE;
         if (not)
@@ -84,6 +93,14 @@ public class JSPolicyLanguage extends PolicyLanguage {
       type = JSPredicateType.EQ;
     } else if (e.is(JSExp.NE)) {
       type = JSPredicateType.NE;
+    } else if (e.is(JSExp.GT)) {
+      type = JSPredicateType.GT;
+    } else if (e.is(JSExp.GE)) {
+      type = JSPredicateType.GE;
+    } else if (e.is(JSExp.LT)) {
+      type = JSPredicateType.LT;
+    } else if (e.is(JSExp.LE)) {
+      type = JSPredicateType.LE;
     } else if (e.is(JSExp.INSTANCEOF)) {
       type = JSPredicateType.INSTANCEOF;
     } else if (e.is(JSExp.FALSE)) {

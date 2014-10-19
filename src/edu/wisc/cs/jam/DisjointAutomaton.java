@@ -68,17 +68,19 @@ public class DisjointAutomaton extends RelationAutomaton {
   protected void loadQueryBatch(QueryMap queryMap, List<ExpSymbol> syms, PredicateValue pv) {
 
     DataState preState = new DataState();
-    preState.addValue(pv);
+    // Add a negative event predicate to the test state but not the
+    // prestate.
+    // %%% All of this is ugly and confusing.
+    if (!pv.isEventValue())
+      preState.addValue(pv);
 
     // Examine all possible internal edges to generate all
     // semantically viable edges.
     for (ExpSymbol sym : syms) {
-      DataState postState = new DataState();
-      postState.addValue(pv);
 
       // Get the relation that we'll be altering.
       Relation rel = null;
-      if (pv.isEventValue()) {
+      if (pv.isPolicyValue()) {
         rel = getRelation(pv.getPredicate(), sym);
       } else {
         rel = getRelation(null, sym);
@@ -86,8 +88,12 @@ public class DisjointAutomaton extends RelationAutomaton {
 
       boolean noOp = isNoOpFromState(sym, preState);
 
+      DataState postState = new DataState();
+      if (!pv.isEventValue())
+        postState.addValue(pv);
+
       Clause c = null;
-      if (noOp) {
+      if (noOp || (pv.isEventValue())) {
         // This is a no-op symbol when starting in this state, and we
         // know that preState == postState at this point, so the edge
         // remains.
@@ -107,26 +113,28 @@ public class DisjointAutomaton extends RelationAutomaton {
 
       // Match the pre-state with both itself or its negation in the
       // post-state, for learned predicates.
-      postState = new DataState();
-      postState.addValue(pv.getNegation());
+      DataState postState1 = new DataState();
+      // Add the negation of the given predicate value (the positive
+      // value in the case of event predicates.
+      postState1.addValue(pv.getNegation());
 
       c = null;
       if (noOp) {
         // This is a no-op symbol when starting in the pre-state, and
         // the post-state now has a conflict with the pre-state, so we
         // remove the edge.
-        rel.removeEdges(preState, postState);
+        rel.removeEdges(preState, postState1);
       } else {
         // Test whether the transition is possible given the
         // semantics of the program statement represented by the 
         // ExpSymbol.
-        c = removeEdgeOrReturnClause(rel, sym, preState, postState);
+        c = removeEdgeOrReturnClause(rel, sym, preState, postState1);
       }
 
       if (!JAM.Opts.syntaxOnly && c != null) {
         // We can't tell offhand whether the transition is valid,
         // so add it to the batch to send to the semantics.
-        DataTransition tran = new DataTransition(rel, preState, sym, postState);
+        DataTransition tran = new DataTransition(rel, preState, sym, postState1);
         mapClauseToTransition(queryMap, c, tran);
       }
     }
@@ -160,7 +168,8 @@ public class DisjointAutomaton extends RelationAutomaton {
     // Load the queries for the policy self-edges.
     for (Predicate lp : getLearnedPredicates()) {
       loadQueryBatch(queryMap, syms, lp.getNegative());
-      loadQueryBatch(queryMap, syms, lp.getPositive());
+      if (!lp.isEventPredicate())
+        loadQueryBatch(queryMap, syms, lp.getPositive());
     }
 
     processBatch(queryMap);
@@ -197,7 +206,8 @@ public class DisjointAutomaton extends RelationAutomaton {
     // to see if the transition can be ruled out.
     for (Predicate p : policyPath.getPredicates()) {
       DataState preState = new DataState();
-      preState.addValue(p.getNegative());
+      if (!p.isEventPredicate())
+        preState.addValue(p.getNegative());
       DataState postState = new DataState();
       postState.addValue(p.getPositive());
 
@@ -227,7 +237,8 @@ public class DisjointAutomaton extends RelationAutomaton {
           // %%% Maybe could avoid this by processing a batch of negative
           // %%% values followed by a batch of positive ones.
           DataState preStateCorrelate1 = new DataState(preState);
-          preStateCorrelate1.addValue(lp.getNegative()); 
+          if (!lp.isEventPredicate())
+            preStateCorrelate1.addValue(lp.getNegative()); 
 
           // Test whether the transition is possible given the
           // semantics of the program statement represented by the 

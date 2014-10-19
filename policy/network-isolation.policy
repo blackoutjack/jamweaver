@@ -1,0 +1,40 @@
+0,-1: jam#set(`x,"src") && `x instanceof #HTMLAudioElement && jam#regextest(/^\s*(http|ftp)/i,`x.src)
+0,-1: jam#set(`x,"src") && `x instanceof #HTMLFrameElement && jam#regextest(/^\s*(http|ftp)/i,`x.src)
+0,-1: jam#set(`x,"src") && `x instanceof #HTMLIFrameElement && jam#regextest(/^\s*(http|ftp)/i,`x.src)
+0,-1: jam#set(`x,"src") && `x instanceof #HTMLImageElement && jam#regextest(/^\s*(http|ftp)/i,`x.src)
+0,-1: jam#set(`x,"src") && `x instanceof #HTMLInputElement && jam#regextest(/^\s*(http|ftp)/i,`x.src)
+0,-1: jam#set(`x,"src") && `x instanceof #HTMLScriptElement && jam#regextest(/^\s*(http|ftp)/i,`x.src)
+0,-1: jam#set(`x,"src") && `x instanceof #HTMLSourceElement && jam#regextest(/^\s*(http|ftp)/i,`x.src)
+0,-1: jam#set(`x,"src") && `x instanceof #HTMLVideoElement && jam#regextest(/^\s*(http|ftp)/i,`x.src)
+0,-1: jam#set(`x,"action") && `x instanceof #HTMLFormElement
+0,-1: jam#set(`x,"location") && `x instanceof #Window
+# These next 3 are questionably needed.
+0,-1: jam#set(`x,"cookie") && `x instanceof #HTMLDocument
+0,-1: jam#set(`x,"href") && `x instanceof #HTMLElement
+0,-1: jam#set(`x,"innerHTML") && `x instanceof #HTMLElement
+0,-1: jam#invoke(#HTMLDocument#prototype#write) && jam#type(jam#arg(0),"String")
+0,-1: jam#invoke(#HTMLDocument#prototype#writeln) && jam#type(jam#arg(0),"String")
+# This call fails with less than 2 arguments, but passing |undefined|
+# for either works, so we have to check the length of the actual
+# arguments, not the value of the arguments.
+0,-1: jam#invoke(#XMLHttpRequest#prototype#open) && jam#argslen() > 1
+# Without arguments, |window.open()| creates a window to about:blank,
+# which isn't a problem.
+0,-1: jam#invoke(#Window#prototype#open) && jam#arg(0) !== #undefined
+0,-1: jam#invoke(#Window#prototype#openDialog) && jam#arg(0) !== #undefined
+# It's hard to imagine what use the |postMessage| function could have
+# that doesn't leak information, so just forbid its use.
+0,-1: jam#get(`x,"postMessage") && `x instanceof #Window
+# Testing in Firefox 17.0.3esr indicates that an exception is thrown if
+# the first argument is unspecified or if it doesn't start with "ws://".
+0,-1: jam#construct(#WebSocket) && jam#regextest(/^ws:\/\//i,jam#arg(0))
+# Predicates to prevent setAttribute from subverting jam#set.
+0,-1: jam#invoke(#HTMLAudioElement#prototype#setAttribute) && jam#arg(0) === "src" && jam#regextest(/^\s*(http|ftp)/i,jam#arg(1))
+0,-1: jam#invoke(#HTMLFrameElement#prototype#setAttribute) && jam#arg(0) === "src" && jam#regextest(/^\s*(http|ftp)/i,jam#arg(1))
+0,-1: jam#invoke(#HTMLIFrameElement#prototype#setAttribute) && jam#arg(0) === "src" && jam#regextest(/^\s*(http|ftp)/i,jam#arg(1))
+0,-1: jam#invoke(#HTMLImageElement#prototype#setAttribute) && jam#arg(0) === "src" && jam#regextest(/^\s*(http|ftp)/i,jam#arg(1))
+0,-1: jam#invoke(#HTMLInputElement#prototype#setAttribute) && jam#arg(0) === "src" && jam#regextest(/^\s*(http|ftp)/i,jam#arg(1))
+0,-1: jam#invoke(#HTMLScriptElement#prototype#setAttribute) && jam#arg(0) === "src" && jam#regextest(/^\s*(http|ftp)/i,jam#arg(1))
+0,-1: jam#invoke(#HTMLSourceElement#prototype#setAttribute) && jam#arg(0) === "src" && jam#regextest(/^\s*(http|ftp)/i,jam#arg(1))
+0,-1: jam#invoke(#HTMLVideoElement#prototype#setAttribute) && jam#arg(0) === "src" && jam#regextest(/^\s*(http|ftp)/i,jam#arg(1))
+0,-1: jam#invoke(#HTMLFormElement#prototype#setAttribute) && jam#arg(0) === "action"

@@ -481,7 +481,8 @@ def update_expected(bases):
         refine = 0
         synonly = False
         if 'info' in appinfo:
-          runinfo = appinfo['info']
+          runinfofile = appinfo['info']
+          runinfo = parse_info_file(runinfofile)
           if 'predicate-limit' in runinfo:
             refine = runinfo['predicate-limit']
           else:

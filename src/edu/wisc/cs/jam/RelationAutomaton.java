@@ -326,11 +326,12 @@ public class RelationAutomaton extends ControlAutomaton {
     Predicate pp = getPolicyTransitionPredicate(s0, s1);
     if (pp == null) return null;
 
+    boolean isevent = pp.isEventPredicate();
     Predicate prereq = pp.getPrerequisite();
     if (prereq == null) return null;
 
     DataState p0 = new DataState();
-    p0.addValue(prereq.getNegative());
+    if (!isevent) p0.addValue(prereq.getNegative());
     DataState p1 = new DataState();
     p1.addValue(prereq.getPositive());
 
@@ -609,7 +610,7 @@ public class RelationAutomaton extends ControlAutomaton {
     } else if (!sym.isNoOp()) {
       // Use some special logic to determine what symbols we can assign
       // the id relation to, given the predicates in our model.
-      if (p != null && transitioningSymbols.get(p.getNegative()).contains(sym)) {
+      if (p != null && getTransitioningSymbols(p.getNegative()).contains(sym)) {
         // The policy predicate can be triggered by this symbol.
         noOp = false;
       } else {
@@ -635,6 +636,7 @@ public class RelationAutomaton extends ControlAutomaton {
     return noOp;
   }
 
+  // %%% This is an awful function and should be phased out.
   protected boolean isNoOpFromState(ExpSymbol sym, DataState pre) {
     // %%% Maybe use caching here.
     if (sym.isNoOp()) return true;
@@ -644,14 +646,13 @@ public class RelationAutomaton extends ControlAutomaton {
     if (sym instanceof BranchSymbol) return !checkBranch;
     if (sym instanceof FunctionEntrySymbol) return !checkFunctionEntry;
 
+    // |noOp| will remain |true| for empty prestates.
     boolean noOp = true;
-      
     for (PredicateValue pv : pre.getValues()) {
-      boolean isevent = pv.isEventValue();
 
       // An event predicate value has no bearing on any transitions if
       // it's value is positive in the prestate.
-      if (isevent && pv.isPositive()) continue;
+      if (pv.isEventValue() && pv.isPositive()) continue;
 
       if (getTransitioningSymbols(pv).contains(sym)) {
         noOp = false;
@@ -756,11 +757,9 @@ public class RelationAutomaton extends ControlAutomaton {
       List<PredicateValue> pvsBefore = s0.getValues();
       for (PredicateValue pv : new ArrayList<PredicateValue>(pvsBefore)) {
         if (pv.isEventValue()) {
-          if (polpred == null || !pv.equals(polpred.getNegative())) {
-            // Remove any policy predicate values that don't apply in
-            // the pre-state.
-            pvsBefore.remove(pv);
-          }
+          // Remove any event predicate values, since these don't apply
+          // in the pre-state.
+          pvsBefore.remove(pv);
         }
       }
 
@@ -1046,11 +1045,11 @@ public class RelationAutomaton extends ControlAutomaton {
           break;
         }
 
-        synchronized (getClass()) {
-          PredicateValue pv = p.getNegative();
-          if (transitioningSymbols.get(pv) == null) {
-            transitioningSymbols.put(pv, new LinkedHashSet<ExpSymbol>());
-          }
+        PredicateValue pv = p.getNegative();
+        if (transitioningSymbols.get(pv) == null) {
+          transitioningSymbols.put(pv, new LinkedHashSet<ExpSymbol>());
+        }
+        if (!p.isEventPredicate()) {
           pv = p.getPositive();
           if (transitioningSymbols.get(pv) == null) {
             transitioningSymbols.put(pv, new LinkedHashSet<ExpSymbol>());

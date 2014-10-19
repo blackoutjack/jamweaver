@@ -145,7 +145,7 @@ public class JSPredicateLearner implements PredicateLearner {
   }
 
   protected Predicate makeFunctionEntryPredicate(String func) {
-    String stmt = "jam#called(" + func + ")";
+    String stmt = "jam#invoke(" + func + ")";
     return semantics.getConditionPredicate(stmt);
   }
 

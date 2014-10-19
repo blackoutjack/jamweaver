@@ -16,7 +16,7 @@ public class Clause {
 	private static Pattern resultToken;
 	private static Pattern sentinelToken;
 
-	public static final String PREFIX = "env_init(H0,L0),set_policy_idx";
+	public static final String PREFIX = "env_init(H0,L0)";
 
 	private int varID;
 	private int symbolID;
@@ -219,7 +219,7 @@ public class Clause {
 		tmp = substituteResult(tmp);
 		tmp = substituteSentinel(tmp);
 
-		query = PREFIX + "(" + policyPathIndex + ")," + tmp;
+		query = PREFIX + "," + tmp;
 	}
 
 	// Return the prepared query text without loads.

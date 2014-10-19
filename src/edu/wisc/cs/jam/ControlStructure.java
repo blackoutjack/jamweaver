@@ -163,6 +163,7 @@ public abstract class ControlStructure extends ControlAutomaton {
     if (curSite.hasUnknownTarget()) {
       hasExternTarget = true;
     } else {
+      // %%% This is not really sound.
       Collection<Node> externTargets = curSite.getPossibleExternTargets();
       if (externTargets.size() > 0) {
         externCalls.add(curSite);
@@ -172,11 +173,6 @@ public abstract class ControlStructure extends ControlAutomaton {
           // Translate Closure natives to form matching the semantics.
           String maybeExpr = NativeUtil.closureTranslation.get(expr);
           if (maybeExpr != null) {
-            if (maybeExpr.equals("")) {
-              // This indicates that the native is not a function but
-              // some primitive/object value.
-              continue;
-            }
             expr = maybeExpr;
           }
 

@@ -291,6 +291,8 @@ def load_props_from_file(propfile, outfl):
       # Starting a new object
 
       objid = ln
+      # Initialize and use the |vals| dict until the next object.
+      # %%% A bit ugly
       vals = base_vals(objid)
 
       # Process the function header.
@@ -319,6 +321,8 @@ def load_props_from_file(propfile, outfl):
       vals["expr"] = specs[3]
 
       # Potentially replace the concrete value with a symbolic one.
+      # This can also increase precision by adding a type to an
+      # otherwise purely symbolic value.
       if vals['addr'] in symbolic_properties:
         symprops = symbolic_properties[vals['addr']]
         if vals['prop'] in symprops:

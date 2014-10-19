@@ -30,13 +30,22 @@ public class JSSyntaxAnalysis {
     pl = new JSPolicyLanguage();
   }
 
-  protected boolean definitelyNoCall(Exp exp) {
+  protected boolean definitelyNoInvoke(Exp exp) {
     // Don't descend into blocks for control statements.
     if (ExpUtil.isStatementBlock(exp))
       return false;
     if (ExpUtil.containsInvoke(exp, false))
       return false;
     // %%% Are there other node types of interest?
+    return true;
+  }
+
+  protected boolean definitelyNoConstruct(Exp exp) {
+    // Don't descend into blocks for control statements.
+    if (ExpUtil.isStatementBlock(exp))
+      return false;
+    if (ExpUtil.containsType(exp, JSExp.NEW, false))
+      return false;
     return true;
   }
 
@@ -81,7 +90,7 @@ public class JSSyntaxAnalysis {
         && polexp.getChild(0).getString().equals("jam#arg")) {
 
       // There must be a CALL/NEW for the arg predicate to be true.
-      if (definitelyNoCall(progexp)) {
+      if (definitelyNoInvoke(progexp)) {
          Exp arg = JSExp.create(sm, sm.nodeFromCode("#undefined"));
          ret.add(arg);
          return ret;
@@ -99,13 +108,30 @@ public class JSSyntaxAnalysis {
       progexp.findType(JSExp.CALL, calls, false);
       progexp.findType(JSExp.NEW, calls, false);
 
-      Exp op1 = polexp.getChild(1);
       for (Exp c : calls) {
         Exp arg = getArgument(progexp, argint.intValue());
         ret.add(arg);
       }
-      // Getting here indicates that no callsite can possibly match
-      // this argument predicate.
+      return ret;
+    } else if (polexp.isCall() && polexp.getChild(0).isName()
+        && polexp.getChild(0).getString().equals("jam#arglen")) {
+
+      // There must be a CALL/NEW for the arg predicate to be true.
+      if (definitelyNoInvoke(progexp)) {
+        // No values are possible so return an empty list. 
+        return ret;
+      }
+
+      // Get the actual argument length.
+      List<Exp> calls = new ArrayList<Exp>();
+      progexp.findType(JSExp.CALL, calls, false);
+      progexp.findType(JSExp.NEW, calls, false);
+
+      for (Exp c : calls) {
+        int len = c.getChildCount() - 1;
+        Exp lenexp = JSExp.create(sm, sm.nodeFromCode("" + len));
+        ret.add(lenexp);
+      }
       return ret;
     } else if (ExpUtil.isPrimitive(polexp)) {
       // Easy case: the policy value is a primitive literal.
@@ -158,6 +184,49 @@ public class JSSyntaxAnalysis {
     return true;
   }
 
+  protected boolean definitelyFalseInequality(Exp conj, Exp exp, PredicateType ineq) {
+    // Special case testing existence of an argument.
+    assert conj.getChildCount() == 2;
+
+    Exp op0 = conj.getChild(0);
+    Exp op1 = conj.getChild(1);
+
+    List<Exp> lhsValues = getPossibleValues(op0, exp);
+    List<Exp> rhsValues = getPossibleValues(op1, exp);
+
+    // Null values list indicates that the possible values of the
+    // expression can't be statically constrained.
+    if (lhsValues == null || rhsValues == null)
+      return false;
+    // An expression should always have some value.
+    assert lhsValues.size() > 0 && rhsValues.size() > 0;
+
+    for (Exp lval : lhsValues) {
+      // %%% Maybe just continue, since a non-number will throw an
+      // %%% exception in JavaScript?
+      if (!lval.isNumber()) return false;
+      // %%% Special cases for NaN, Infinity, -Infinity.
+      Double dl = ExpUtil.getDouble(lval);
+      for (Exp rval : rhsValues) {
+        if (!rval.isNumber()) return false;
+        Double dr = ExpUtil.getDouble(rval);
+        int comp = dl.compareTo(dr);
+        if (ineq == JSPredicateType.GT) {
+          if (comp > 0) return false;
+        } else if (ineq == JSPredicateType.GE) {
+          if (comp >= 0) return false;
+        } else if (ineq == JSPredicateType.LT) {
+          if (comp < 0) return false;
+        } else if (ineq == JSPredicateType.LE) {
+          if (comp <= 0) return false;
+        }
+      }
+    }
+
+    // Getting here means falsity of the inequality is guaranteed.
+    return true;
+  }
+  
   protected boolean definitelyFalseStrictEquality(Exp conj, Exp exp, boolean eq) {
     // Special case testing existence of an argument.
     assert conj.getChildCount() == 2;
@@ -413,8 +482,11 @@ public class JSSyntaxAnalysis {
       List<Exp> conjs = pred.getConjuncts();
 
       if (pred.isEventPredicate()) {
-        if (pt == JSPredicateType.CALL) {
-          if (definitelyNoCall(progexp))
+        if (pt == JSPredicateType.INVOKE) {
+          if (definitelyNoInvoke(progexp))
+            return Boolean.FALSE;
+        } else if (pt == JSPredicateType.CONSTRUCT) {
+          if (definitelyNoConstruct(progexp))
             return Boolean.FALSE;
         } else if (pt == JSPredicateType.WRITE) {
           Exp conj = conjs.get(0);
@@ -436,6 +508,10 @@ public class JSSyntaxAnalysis {
               return Boolean.FALSE;
           } else if (cpt == JSPredicateType.SHEQ) {
             if (definitelyFalseStrictEquality(conj, progexp, true))
+              return Boolean.FALSE;
+          } else if (cpt == JSPredicateType.GT || cpt == JSPredicateType.GE
+              || cpt == JSPredicateType.LT || cpt == JSPredicateType.LE) {
+            if (definitelyFalseInequality(conj, progexp, cpt))
               return Boolean.FALSE;
           } else if (cpt == JSPredicateType.TYPE) {
             if (definitelyFalseTypePredicate(conj, progexp))
@@ -474,6 +550,9 @@ public class JSSyntaxAnalysis {
               } else if (oppo && cannotAffectStrictEquality(conj, progexp)) {
                 conjMustBeTrue = true;
               }
+            } else if (cpt == JSPredicateType.GT || cpt == JSPredicateType.GE
+                || cpt == JSPredicateType.LT || cpt == JSPredicateType.LE) {
+              // %%% Implement |cannotAffectInequality|
             } else if (cpt == JSPredicateType.TYPE) {
               if (definitelyFalseTypePredicate(conj, progexp)) {
                 conjMustBeTrue = true;

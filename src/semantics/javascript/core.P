@@ -1619,14 +1619,15 @@ copyscope(H,L,SS) :-
   SS=[S].
 
 % Update the structure representing JavaScript's arguments[i].
-updateargs(H,[],_,H).
-updateargs(H,Args,Idx,HP) :-
+updateargs(H,Args,HP) :-
   is_list(Args),
-  Args=[Arg|Rem],
-  inttostr(Idx,IdxStr),
-  add_arg(IdxStr,Arg),
-  NextIdx is Idx+1,
-  updateargs(H,Rem,NextIdx,HP).
+  add_args(Args),
+  HP=H.
+  %Args=[Arg|Rem],
+  %inttostr(Idx,IdxStr),
+  %add_args(IdxStr,Arg),
+  %NextIdx is Idx+1,
+  %updateargs(H,Rem,NextIdx,HP).
 
 % @pforin
 % This predicate is only used in concrete mode.
@@ -1865,7 +1866,7 @@ acall(H,L,L1,L2,ArgsList,HP,LP,EP) :-
   % Update the callee meta-variable.
   add_call(L1),
   % Update the arguments structure.
-  updateargs(H,ArgsList,0,H1),
+  updateargs(H,ArgsList,H1),
   % Get the length of the arguments list (as int and string).
   length(ArgsList,ArgsLen),inttostr(ArgsLen,ArgsLenStr),
   % Save the current activation chain.
@@ -1912,7 +1913,7 @@ acall(H,L,L1,L2,A,HP,L,EP) :-
   % For symbolic length, just use all args.
   A1=A),
   % Update the arguments metavariable.
-  updateargs(H,A1,0,H1),
+  updateargs(H,A,H1),
   length(A1,I1),inttostr(I1,N1),
   heapprop(H1,L1,'@Actuals',N1,H2,_),
   new_arguments(N,A1,L,Args),
@@ -1928,12 +1929,15 @@ acall(H,L,L1,L2,A,HP,L,EP) :-
   % Update metavariables as soon as possible (at least before aexe) in
   % case the native function isn't modeled.
   add_call(L1),
-  updateargs(H,A,0,H1),
+  updateargs(H,A,H1),
   maps(H1,L1,_),
   length(A,I1),inttostr(I1,N1),
   heapprop(H1,L1,'@Actuals',N1,H2,_),
-  aexe(H2,L,L1,L2,A,H3,EP),
-  HP=H3.
+  new_arguments(N1,A,L,Args),
+  alloc(H2,Args,H3,L3),
+  (N1=0->LArgs='#null';LArgs=L3),
+  aexe(H3,L,L1,L2,A,H4,EP),
+  HP=H4.
 
 % formal parameters for native functions
 
@@ -1975,6 +1979,7 @@ aconstruct(H,L,L1,Args,HP,LP,EP) :-
   type(L2,T),T='Object',
   new_object('"Object"',L2,NewObj),
   alloc(H,NewObj,H3,L3),
+  add_constr(L1),
   acall(H3,L,L1,L3,Args,H4,_,CR),
   aconstructcall(H4,L,L3,CR,HP,LP,EP).
 
@@ -1985,6 +1990,7 @@ aconstruct(H,L,L1,Args,HP,LP,EP) :-
   type(PV,T),T\='Object',
   new_object('"Object"','#Object#prototype',NO),
   alloc(H,NO,H2,L2),
+  add_constr(L1),
   acall(H2,L,L1,L2,Args,H3,_,CR),
   aconstructcall(H3,L,L2,CR,HP,LP,EP).
 
@@ -2209,8 +2215,7 @@ getfromanalysis(H,L,M,VA,HP) :-
   symbolic(VA,_),
   heapprop(H,L,M,VA,HP,_)).
 
-% This meta-predicate triages various cases that
-% need special handling.
+% This meta-predicate triages various cases that need special handling.
 aget(H,L,M,VA,HP) :-
   L\='#undefined',
   (getfromanalysis(H,L,M,VA,HP)->true;

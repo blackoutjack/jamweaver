@@ -318,8 +318,10 @@ public class JSSemantics implements Semantics {
     if (ptcnt == 1) return null;
 
     Predicate prereq = null;
-    if (pt == JSPredicateType.CALL) {
-      prereq = getConditionPredicate("jam#called(`x)");
+    if (pt == JSPredicateType.INVOKE) {
+      prereq = getConditionPredicate("jam#invoke(`x)");
+    } else if (pt == JSPredicateType.CONSTRUCT) {
+      prereq = getConditionPredicate("jam#construct(`x)");
     } else if (pt == JSPredicateType.READ) {
       prereq = getConditionPredicate("jam#get(`x,`y)");
     } else if (pt == JSPredicateType.WRITE) {

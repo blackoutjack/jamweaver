@@ -175,6 +175,8 @@ public class Predicate {
   }
 
   public void setPrerequisite(Predicate prereq) {
+    if (prereq != null && isEvent)
+      prereq.setEventPredicate();
     prerequisite = prereq;
   }
 

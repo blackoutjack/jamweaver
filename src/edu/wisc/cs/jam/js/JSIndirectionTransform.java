@@ -648,7 +648,8 @@ public class JSIndirectionTransform extends JSTransform {
         // Unfortunately we have to transform calls to the read function.
         // If the following condition is not true, the callsite will be
         // visited and transformed anyway.
-        if (ptypes == null || !ptypes.contains(JSPredicateType.CALL)) {
+        if (ptypes == null || (!ptypes.contains(JSPredicateType.INVOKE)
+            && !ptypes.contains(JSPredicateType.CONSTRUCT))) {
           // Presumably a NEW expression will work fine without
           // transformation since it doesn't use the receiver.
           if (parent.isCall()) {
@@ -677,7 +678,8 @@ public class JSIndirectionTransform extends JSTransform {
           indirectDirectEvalCall(t, n, parent, null);
           sm.reportCodeChange();
           callTransformCnt++;
-        } else if (ptypes != null && ptypes.contains(JSPredicateType.CALL)) {
+        } else if (ptypes != null && (ptypes.contains(JSPredicateType.INVOKE)
+            || ptypes.contains(JSPredicateType.CONSTRUCT))) {
           indirectCallsite(t, n, parent, ispect);
           sm.reportCodeChange();
           callTransformCnt++;

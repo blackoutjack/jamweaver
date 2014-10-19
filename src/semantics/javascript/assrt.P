@@ -97,11 +97,9 @@ assertexp(H,L,E,HP,LP,EP) :-
   Args=[Arg],
 	is_id(Func,FuncName),
   % Dispatch based on the extension being called.
-  (FuncName='"jam#called"'->assertcall(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#retval"'->assertretval(H,L,Arg,HP,LP,EP);
-  (FuncName='"jam#arg"'->assertarg(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#stringupper"'->assertstringupper(H,L,Args,HP,LP,EP);
-  false)))).
+  false)).
 
 % Special predicate extensions
 assertexp(H,L,E,HP,LP,EP) :- 
@@ -110,15 +108,13 @@ assertexp(H,L,E,HP,LP,EP) :-
 	is_id(Func,FuncName),
   % Dispatch based on the extension being called.
   (FuncName='"jam#type"'->asserttype(H,L,Args,HP,LP,EP);
-  (FuncName='"jam#set"'->assertset(H,L,Args,HP,LP,EP);
-  (FuncName='"jam#get"'->assertget(H,L,Args,HP,LP,EP);
   (FuncName='"jam#regextest"'->assertregextest(H,L,Args,HP,LP,EP);
   (FuncName='"jam#stringcontains"'->assertstringcontains(H,L,Args,HP,LP,EP);
   (FuncName='"jam#stringstartswith"'->assertstringstartswith(H,L,Args,HP,LP,EP);
   (FuncName='"jam#getValue"'->assertgetval(H,L,Args,HP,LP,EP);
-  false))))))).
+  false))))).
 
-% Assert that the return value has a certain value.
+% Initially there is no return value.
 assertretval(H,L,ValExp,HP,LP,EP) :-
   assertexp(H,L,ValExp,H1,L1,ValRef),
   ecgv(H1,L1,ValRef,H2,L2,Val),
@@ -126,14 +122,6 @@ assertretval(H,L,ValExp,HP,LP,EP) :-
   heapprop(H2,'#Global','@ReturnVal',Sym,H3,_),
   binary_fn('=',Val,Sym,EP),
   HP=H3,LP=L2.
-
-% Assert that the specified value of the most recently called function.
-assertarg(H,L,IdxExp,HP,LP,EP) :-
-  assertexp(H,L,IdxExp,H1,L1,IdxRef),
-  ecgv(H1,L1,IdxRef,H2,L2,IdxVal),
-  symbolic(EP,_),
-  add_arg(IdxVal,EP),
-  HP=H2,LP=L2.
 
 % Get the uppercase string value.
 assertstringupper(H,L,E,HP,LP,EP) :-
@@ -143,67 +131,6 @@ assertstringupper(H,L,E,HP,LP,EP) :-
   %%% Could assert a functional relation.
   (is_symbolic(S)->symbolic(EP,'String');
   evaljs(format('String.prototype.toUpperCase.call(~a)',S),EP)).
-
-% Get the function address represented by the expression, and 
-% assert that it has been invoked.
-assertcall(H,L,E,HP,LP,EP) :-
-  assertexp(H,L,E,H1,L1,FunRef),
-  ecgv(H1,L1,FunRef,H2,L2,FunVal),
-  ecto(H2,L2,FunVal,H3,L3,FunPtr),
-  symbolic(CallFun,'Object'),
-  add_call(CallFun),
-  % Add some extra facts that might be needed.
-  fnextra(H3,FunPtr,CallFun,H4,ExtraEq),
-  binary_fn('=',FunPtr,CallFun,FunEq),
-  binary_fn('and',FunEq,ExtraEq,EP),
-	HP=H4,LP=L3.
-  
-% Assert that an object member is being assigned to.
-assertset(H,L,Args,HP,LP,EP) :- 
-  length(Args,2),
-  Args=[ObjExp,MembExp],
-	assertexp(H,L,ObjExp,H1,L1,ObjRef),
-  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
-  ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
-	assertexp(H3,L3,MembExp,H4,L4,MembRef),
-	ecgv(H4,L4,MembRef,H5,L5,MembVal),
-  ects(H5,L5,MembVal,H6,L6,MembStr),
-  symbolic(AssnObj,'Object'),
-  symbolic(AssnMemb,'String'),
-  add_assign(AssnObj,AssnMemb),
-  % Add some extra facts that might be needed.
-  fnextra(H6,ObjPtr,AssnObj,H7,ExtraEq),
-	binary_fn('=',ObjPtr,AssnObj,ObjEq),
-	binary_fn('=',MembStr,AssnMemb,MembEq),
-	binary_fn('and',ObjEq,MembEq,MainEq),
-  binary_fn('and',MainEq,ExtraEq,EP),
-	HP=H7,LP=L6.
-
-% Assert that an object member is being assigned to.
-assertget(H,L,Args,HP,LP,EP) :- 
-  length(Args,2),
-  Args=[ObjExp,MembExp],
-  % Get the object pointer.
-	assertexp(H,L,ObjExp,H1,L1,ObjRef),
-  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
-  ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
-  % Get the member string.
-	assertexp(H3,L3,MembExp,H4,L4,MembRef),
-	ecgv(H4,L4,MembRef,H5,L5,MembVal),
-  ects(H5,L5,MembVal,H6,L6,MembStr),
-  % Generate a symbolic obj/memb pair to assert as being read.
-  symbolic(ReadObj,'Object'),
-  symbolic(ReadMemb,'String'),
-  add_read(ReadObj,ReadMemb),
-  % Add some extra facts that might be needed.
-  fnextra(H6,ObjPtr,ReadObj,H7,ExtraEq),
-  % Generate a conjunction asserting equality of the symbolic values
-  % to the corresponding arguments.
-	binary_fn('=',ObjPtr,ReadObj,ObjEq),
-	binary_fn('=',MembStr,ReadMemb,MembEq),
-	binary_fn('and',ObjEq,MembEq,MainEq),
-  binary_fn('and',MainEq,ExtraEq,EP),
-	HP=H7,LP=L6.
 
 asserttype(H,L,Args,HP,LP,EP) :-
   length(Args,2),
@@ -336,6 +263,30 @@ assertexp(H,L,E,HP,LP,V) :-
 	is_strictne(E,NE),
 	assertexp(H,L,NE,H1,L1,EV),ecgv(H1,L1,EV,HP,LP,NV),
 	unary_fn('not',NV,V).
+
+assertexp(H,L,E,HP,LP,EP) :-
+  is_gt(E,E1,E2),
+  assertexp(H,L,E1,H1,L1,LHS),
+  assertexp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'>',LHS,RHS,HP,LP,EP).
+
+assertexp(H,L,E,HP,LP,EP) :-
+  is_ge(E,E1,E2),
+  assertexp(H,L,E1,H1,L1,LHS),
+  assertexp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'>=',LHS,RHS,HP,LP,EP).
+
+assertexp(H,L,E,HP,LP,EP) :-
+  is_lt(E,E1,E2),
+  assertexp(H,L,E1,H1,L1,LHS),
+  assertexp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'<',LHS,RHS,HP,LP,EP).
+
+assertexp(H,L,E,HP,LP,EP) :-
+  is_le(E,E1,E2),
+  assertexp(H,L,E1,H1,L1,LHS),
+  assertexp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'<=',LHS,RHS,HP,LP,EP).
 
 % ! operator
 assertexp(H,L,E,HP,LP,EP) :-

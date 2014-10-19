@@ -42,8 +42,10 @@ public class PolicyTransition {
         return "write";
       case READ:
         return "read";
-      case CALL:
-        return "call";
+      case INVOKE:
+        return "invoke";
+      case CONSTRUCT:
+        return "construct";
       case DELETE:
         return "delete";
       case DUMMY:

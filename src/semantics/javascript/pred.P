@@ -91,11 +91,12 @@ predexp(H,L,E,HP,LP,EP) :-
 	Args=[Arg],
 	is_id(Func,FuncName),
   % Dispatch based on the extension being called.
-  (FuncName='"jam#called"'->predcall(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#invoke"'->predcall(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#construct"'->predconstr(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#retval"'->predretval(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#arg"'->predarg(H,L,Arg,HP,LP,EP);
-  (FuncName='"jam#stringupper"'->predstringupper(H,L,Args,HP,LP,EP);
-  false)))).
+  (FuncName='"jam#stringupper"'->predstringupper(H,L,Arg,HP,LP,EP);
+  false))))).
 
 % Special extension functions.
 predexp(H,L,E,HP,LP,EP) :- 
@@ -112,6 +113,14 @@ predexp(H,L,E,HP,LP,EP) :-
   (FuncName='"jam#getValue"'->predgetval(H,L,Args,HP,LP,EP);
   false))))))).
 
+% Special extension functions.
+predexp(H,L,E,HP,LP,EP) :- 
+	is_call(E,Func,Args),
+	length(Args,0),
+	is_id(Func,FuncName),
+  % Dispatch based on the extension being called.
+  (FuncName='"jam#arglen"'->predarglen(H,L,HP,LP,EP)).
+
 % Assert that the return value has a certain value.
 predretval(H,L,ValExp,HP,LP,EP) :-
   predexp(H,L,ValExp,H1,L1,ValRef),
@@ -125,8 +134,14 @@ predretval(H,L,ValExp,HP,LP,EP) :-
 predarg(H,L,IdxExp,HP,LP,EP) :-
   predexp(H,L,IdxExp,H1,L1,IdxRef),
   ecgv(H1,L1,IdxRef,H2,L2,IdxVal),
-  get_arg(IdxVal,EP),
+  inttostr(N,IdxVal),
+  get_arg(N,EP),
   HP=H2,LP=L2.
+
+% Get the value of the actual argument of recent calls.
+predarglen(H,L,HP,LP,EP) :-
+  get_arglen(EP),
+  HP=H,LP=L.
 
 % Get the uppercase string value.
 predstringupper(H,L,E,HP,LP,EP) :-
@@ -151,6 +166,25 @@ get_next_call(Idx,Fun) :-
   get_call(Idx,Fun0)->
   ((NextIdx is Idx + 1,
   get_next_call(NextIdx,Fun1),
+  Fun=Fun1);
+  Fun=Fun0);
+  fail.
+
+% Test whether a function could have been called as a constructor.
+predconstr(H,L,E,HP,LP,EP) :-
+  predexp(H,L,E,H1,L1,FunRef),
+  ecgv(H1,L1,FunRef,H2,L2,FunVal),
+  ecto(H2,L2,FunVal,H3,L3,FunPtr),
+  get_next_constr(0,CallPtr),
+  binary_fn('=',FunPtr,CallPtr,FunEq),
+  fnextra(H3,FunPtr,CallPtr,H4,ExtraEq),
+  binary_fn('and',FunEq,ExtraEq,EP),
+  HP=H4,LP=L3.
+
+get_next_constr(Idx,Fun) :-
+  get_constr(Idx,Fun0)->
+  ((NextIdx is Idx + 1,
+  get_next_constr(NextIdx,Fun1),
   Fun=Fun1);
   Fun=Fun0);
   fail.
@@ -328,6 +362,30 @@ predexp(H,L,E,HP,LP,EP) :-
 	(EqVal='true'->EP='false';true),
 	(EqVal='false'->EP='true';true),
 	(is_symbolic(EqVal)->unary_fn('not',EqVal,EP);true).
+
+predexp(H,L,E,HP,LP,EP) :-
+  is_gt(E,E1,E2),
+  predexp(H,L,E1,H1,L1,LHS),
+  predexp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'>',LHS,RHS,HP,LP,EP).
+
+predexp(H,L,E,HP,LP,EP) :-
+  is_ge(E,E1,E2),
+  predexp(H,L,E1,H1,L1,LHS),
+  predexp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'>=',LHS,RHS,HP,LP,EP).
+
+predexp(H,L,E,HP,LP,EP) :-
+  is_lt(E,E1,E2),
+  predexp(H,L,E1,H1,L1,LHS),
+  predexp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'<',LHS,RHS,HP,LP,EP).
+
+predexp(H,L,E,HP,LP,EP) :-
+  is_le(E,E1,E2),
+  predexp(H,L,E1,H1,L1,LHS),
+  predexp(H1,L1,E2,H2,L2,RHS),
+  binop_aux(H2,L2,'<=',LHS,RHS,HP,LP,EP).
 
 % ! operator
 predexp(H,L,E,HP,LP,EP) :-

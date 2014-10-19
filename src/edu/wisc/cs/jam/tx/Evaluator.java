@@ -46,14 +46,18 @@ public class Evaluator {
     PredicateType typ = e0.getType();
     if (typ == JSPredicateType.WRITE || typ == JSPredicateType.SHEQ
         || typ == JSPredicateType.SHNE || typ == JSPredicateType.EQ
-        || typ == JSPredicateType.NE) {
+        || typ == JSPredicateType.NE || typ == JSPredicateType.GT
+        || typ == JSPredicateType.GE || typ == JSPredicateType.LT
+        || typ == JSPredicateType.LE) {
       return JSPredicateType.WRITE;
     } else if (typ == JSPredicateType.READ) {
       return JSPredicateType.READ;
     } else if (typ == JSPredicateType.DELETE) {
       return JSPredicateType.DELETE;
-    } else if (typ == JSPredicateType.CALL) {
-      return JSPredicateType.CALL;
+    } else if (typ == JSPredicateType.INVOKE) {
+      return JSPredicateType.INVOKE;
+    } else if (typ == JSPredicateType.CONSTRUCT) {
+      return JSPredicateType.CONSTRUCT;
     } else if (typ == JSPredicateType.DUMMY) {
       return JSPredicateType.DUMMY;
     } else {

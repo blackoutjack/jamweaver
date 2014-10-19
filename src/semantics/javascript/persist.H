@@ -53,8 +53,12 @@
 :- export get_read/3.
 :- export add_call/1.
 :- export get_call/2.
+:- export add_constr/1.
+:- export get_constr/2.
+:- export add_args/1.
 :- export add_arg/2.
 :- export get_arg/2.
+:- export get_arglen/1.
 :- export current_func/1.
 :- export evalunary/3.
 :- export meta_clear/0.

@@ -110,10 +110,10 @@ void RelationWeightGen::loadContext(const string &rels, const vector< pair<size_
     // we want BinRel to create half that many relation variables, since
     // each will have a pre- and post-state form.
     varcount = v / 2;
-//#ifdef JAMDEBUG
+#ifdef JAMDEBUG
     cerr << "RELATION SIZE: " << varcount << endl;
     break;
-//#endif
+#endif
   }
 
   // Heuristic BDD node table and cache sizes

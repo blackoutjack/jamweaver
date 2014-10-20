@@ -134,7 +134,8 @@ bool yices_initted = false;
 // Location of the D8 interpreter
 string d8(jamdir + "/v8/out/native/d8");
 #endif
-string spidermonkey(jamdir + "/jamscript/mozilla-esr-dev/obj-release/browser/dist/bin/js");
+// %%% Generalize!
+string spidermonkey(jamdir + "/jamscript/mozilla-esr17/obj-release/browser/dist/bin/js");
 #endif
 
 #ifdef USE_V8

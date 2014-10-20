@@ -54,6 +54,7 @@ import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.Dbg;
+import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.html.HTMLSource;
 
 public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
@@ -378,6 +379,21 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     if (ret.endsWith(";")) ret = ret.substring(0, ret.length() - 1);
 
     return ret;
+  }
+
+  @Override
+  public Exp expFromCode(String code) {
+    CompilerInput input = new CompilerInput(SourceFile.fromCode("synthetic", code));
+
+    Node script = input.getAstRoot(getCompiler());
+    assert script != null : "Unable to parse node from code: " + code;
+
+    Node body = script.getFirstChild();
+    assert body != null : "Empty script returned when parsing code: " + code;
+
+    // Unwrap from the SCRIPT tag.
+    body = body.detachFromParent();
+    return JSExp.create(this, body);
   }
 
   @Override

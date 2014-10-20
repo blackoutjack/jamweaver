@@ -76,7 +76,6 @@ public class ExpUtil {
     JSExp.STRING,
     JSExp.NUMBER,
     JSExp.NULL,
-    JSExp.REGEXP,
   };
   public static final int[] LITERAL_TYPES = {
     JSExp.FALSE,
@@ -213,7 +212,7 @@ public class ExpUtil {
     int ntype = n.getType();
     if (ntype == JSExp.NAME) {
       String name = n.getString();
-      for (String nn : NativeUtil.PRIMITIVE_NAMES)
+      for (String nn : NativeUtil.PRIMITIVES)
         if (nn.equals(name)) return true;
     } else {
       for (int t : PRIMITIVE_TYPES)
@@ -465,6 +464,11 @@ public class ExpUtil {
     if (e == null) return false;
     Node n = ((JSExp)e).getNode();
     return returnsBoolean(n);
+  }
+
+  public static String escapeString(String str) {
+    // %%% Test this
+    return str.replace("\\", "\\\\").replace("\"", "\\\"");
   }
 
   public static boolean returnsString(SourceManager src, Node n) {
@@ -772,6 +776,40 @@ public class ExpUtil {
     if (e == null) return false;
     Node n = ((JSExp)e).getNode();
     return containsInvoke(n, blocks);
+  }
+
+  public static String valueToString(Exp e) {
+    if (e == null) return null;
+    if (e.is(JSExp.EXPR_RESULT)) e = e.getChild(0);
+    // Objects can have custom |toString| methods, so there's really
+    // no way to statically determine the return value.
+    if (!isPrimitive(e)) return null;
+    if (e.isName()) {
+      String name = e.getString();
+      if (name.equals("#undefined")) return "undefined";
+      if (name.equals("#null")) return "null";
+      if (name.equals("#NaN")) return "NaN";
+      if (name.equals("#Infinity")) return "Infinity";
+      if (name.equals("#-Infinity")) return "-Infinity";
+    } else {
+      if (e.is(JSExp.STRING)) return e.getString();
+      if (e.is(JSExp.NUMBER)) return e.toCode();
+      if (e.is(JSExp.TRUE)) return "true";
+      if (e.is(JSExp.FALSE)) return "false";
+      // %%% Probably shouldn't hit this case.
+      if (e.is(JSExp.NULL)) return "null";
+
+      // If |RegExp.prototype.toString| is overwritten, then even a
+      // primitive regular expression will produce an unknown string
+      // when converted. (This was tested by using a regex as the
+      // argument to |RegExp.prototype.test|. The same problem does
+      // not apply to string literals, thankfully.)
+      if (e.is(JSExp.REGEXP)) return null;
+    }
+
+    // Shouldn't ever get here.
+    assert false;
+    return null;
   }
 
   public static int getAstSize(Node n) {

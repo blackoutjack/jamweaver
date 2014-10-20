@@ -22,8 +22,8 @@
 # "document.getElementById !== #HTMLDocument#prototype#getElementById",
 # which would be violated if the analyzed program overwrites the
 # document.getElementById reference.
-0,1: jam#called(#HTMLDocument#prototype#getElementById)
-0,1: jam#called(#HTMLDocument#prototype#getElementsByTagName)
+0,1: jam#invoke(#HTMLDocument#prototype#getElementById)
+0,1: jam#invoke(#HTMLDocument#prototype#getElementsByTagName)
 
 # This transition is taken with an assignment to document.cookie. The
 # #document component refers the target of the native "window.document"

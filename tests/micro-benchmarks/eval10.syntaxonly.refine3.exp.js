@@ -1,12 +1,12 @@
 // eval10.js
 function f() {
-  var y$$31 = x;
+  var y$$30 = x;
   if (JAM.isEval(eval)) {
     eval("introspect(JAM.policy.pFull) { " + 'eval("var x;");' + " }");
   } else {
     JAM.call(eval, null, ['eval("var x;");']);
   }
-  return y$$31;
+  return y$$30;
 }
 introspect(JAM.policy.p1) {
   x = 4;

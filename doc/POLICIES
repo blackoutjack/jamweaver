@@ -58,7 +58,7 @@ A slightly more complex policy (requiring two steps to get from initial
 to final state) is represented below, with realistic predicates. Notice
 that the intermediate policy state, 1, has one in-edge and one out-edge.
 
-0,1: jam#called(#Document#prototype#getElementById)
+0,1: jam#invoke(#Document#prototype#getElementById)
 1,-1: jam#set(#document, "cookie")
 
 The formal structure of an edge specification is as follows.
@@ -102,9 +102,10 @@ team know if there are unsupported constructs you'd like to use.
 
 The currently-implemented extension predicates are as follows.
 
-jam#called(#object#location): Returns true if the pointed-to native
-  function was invoked by the evaluated statement. Negation of this
-  type of predicate is not supported.
+jam#invoke(#object#location): Returns true if the pointed-to native
+  function was invoked (as a function, method, or constructor call) by
+  the evaluated statement. Negation of this type of predicate is not
+  supported.
 
 jam#set(#object,"member"): Returns true if the specified object member was
   assigned to in the course of evaluation. Negation of this type of
@@ -115,8 +116,18 @@ jam#get(#object,"member"): Returns true if the specified object member was
   predicate is not supported.
 
 jam#arg(i): Retrieves the value of the actual argument(s) at position i
-  of any invoked functions. This can be used in the context of other
-  predicates, such as "jam#arg(0) === value", to construct a predicate.
+  of any invoked functions. This function returns a value, and should be
+  used in the context of a larger predicate which evaluates to a
+  boolean, such as "jam#arg(0) === value". This function will fail (i.e.
+  cause the containing predicate to be false) if there no call within
+  the statement being analyzed.
+
+jam#arglen(): Retrieves the number of actual arguments for any function
+  invocation. This function returns a numeric value, and should be used
+  in the context of a larger predicate which evaluates to a boolean,
+  such as "jam#arglen() > 1". This function will fail (i.e. cause the
+  containing predicate to be false) if there no call within the
+  statement being analyzed.
 
 jam#type(ref,"Type"): Returns true if the given reference contains a
   value of type Type (where Type is one of the standard JavaScript types

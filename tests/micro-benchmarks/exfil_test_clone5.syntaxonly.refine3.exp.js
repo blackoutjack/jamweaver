@@ -3,9 +3,9 @@ function copy(obj$$16) {
   if (typeof obj$$16 !== "object") {
     return obj$$16;
   } else {
-    var value$$29 = obj$$16.valueOf();
-    if (obj$$16 != value$$29) {
-      return JAM.new(obj$$16.constructor, [value$$29]);
+    var value$$27 = obj$$16.valueOf();
+    if (obj$$16 != value$$27) {
+      return JAM.new(obj$$16.constructor, [value$$27]);
     } else {
       var v13 = obj$$16 instanceof obj$$16.constructor;
       if (v13) {
@@ -13,13 +13,13 @@ function copy(obj$$16) {
       }
       if (v13) {
         var c = clone(obj$$16.constructor.prototype);
-        var property$$3;
-        for (property$$3 in obj$$16) {
-          if (obj$$16.hasOwnProperty(property$$3)) {
+        var property;
+        for (property in obj$$16) {
+          if (obj$$16.hasOwnProperty(property)) {
             var v2 = c;
-            var v3 = property$$3;
+            var v3 = property;
             introspect(JAM.policy.p1) {
-              var v15 = obj$$16[property$$3]
+              var v15 = obj$$16[property]
             }
             var v20 = copy(v15);
             JAM.set(v2, v3, v20);
@@ -27,11 +27,11 @@ function copy(obj$$16) {
         }
       } else {
         c = {};
-        for (property$$3 in obj$$16) {
+        for (property in obj$$16) {
           var v5 = c;
-          var v6 = property$$3;
+          var v6 = property;
           introspect(JAM.policy.p1) {
-            var v16 = obj$$16[property$$3]
+            var v16 = obj$$16[property]
           }
           var v21 = copy(v16);
           JAM.set(v5, v6, v21);

@@ -142,6 +142,8 @@ public class JSExp extends Exp {
     LC = Token.LC,  // left curly braces
     COLON = Token.COLON;
 
+    // %%% Include ES6 tokens eventually.
+
   static {
     nodeMap = new LinkedHashMap<Node,JSExp>();
   }

@@ -17,7 +17,7 @@
 # This call fails with less than 2 arguments, but passing |undefined|
 # for either works, so we have to check the length of the actual
 # arguments, not the value of the arguments.
-0,-1: jam#invoke(#XMLHttpRequest#prototype#open) && jam#argslen() > 1
+0,-1: jam#invoke(#XMLHttpRequest#prototype#open) && jam#arglen() > 1
 # Without arguments, |window.open()| creates a window to about:blank,
 # which isn't a problem.
 0,-1: jam#invoke(#Window#prototype#open) && jam#arg(0) !== #undefined
@@ -27,7 +27,7 @@
 0,-1: jam#get(`x,"postMessage") && `x instanceof #Window
 # Testing in Firefox 17.0.3esr indicates that an exception is thrown if
 # the first argument is unspecified or if it doesn't start with "ws://".
-0,-1: jam#construct(#WebSocket) && jam#regextest(/^ws:\/\//i,jam#arg(0))
+0,-1: jam#invoke(#WebSocket) && jam#regextest(/^ws:\/\//i,jam#arg(0))
 # Predicates to prevent setAttribute from subverting jam#set.
 0,-1: jam#invoke(#HTMLAudioElement#prototype#setAttribute) && jam#arg(0) === "src" && jam#regextest(/^\s*(http|ftp)/i,jam#arg(1))
 0,-1: jam#invoke(#HTMLFrameElement#prototype#setAttribute) && jam#arg(0) === "src" && jam#regextest(/^\s*(http|ftp)/i,jam#arg(1))

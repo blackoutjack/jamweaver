@@ -1,7 +1,10 @@
 package edu.wisc.cs.jam.env;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.io.File;
 import java.io.IOException;
@@ -22,12 +25,14 @@ public class NativeUtil {
   public static Map<String,String> nativeExpressionToLocation;
   public static Map<String,String> closureTranslation;
 
-  public static final String[] PRIMITIVE_NAMES = {
+  private static final String[] _PRIMITIVES = {
     "#undefined",
+    "#null",
     "#Infinity",
     "#-Infinity",
     "#NaN",
   };
+  public static final Set<String> PRIMITIVES = new HashSet<String>(Arrays.asList(_PRIMITIVES));
   
   static {
     
@@ -225,7 +230,14 @@ public class NativeUtil {
           int len = parts.length;
           assert len == 4 : "Invalid native property specification: " + line;
           // Map location to expression, e.g. #window --> window.
-          if (isNativeLocation(parts[2])) {
+          if (isPrimitiveLocation(parts[2])) {
+            if (!loadFromSerializedLE) {
+              nativeLocationToExpression.put(parts[2], parts[2]);
+            }
+            if (!loadFromSerializedEL) {
+              nativeExpressionToLocation.put(parts[2], parts[2]);
+            }
+          } else if (isNativeLocation(parts[2])) {
             //Dbg.dbg("Natives: " + parts[2] + " / " + parts[3]);
             if (!loadFromSerializedLE) {
               nativeLocationToExpression.put(parts[2], parts[3]);
@@ -257,11 +269,15 @@ public class NativeUtil {
     }
   }
 
-  public static boolean isNativeLocation(String loc) {
+  protected static boolean isPrimitiveLocation(String loc) {
+    return PRIMITIVES.contains(loc);
+  }
+  protected static boolean isNativeLocation(String loc) {
+    if (PRIMITIVES.contains(loc)) return false;
     return loc.startsWith("#") && !isDynamicLocation(loc);
   }
 
-  public static boolean isDynamicLocation(String loc) {
+  protected static boolean isDynamicLocation(String loc) {
     return loc.startsWith("###");
   }
 

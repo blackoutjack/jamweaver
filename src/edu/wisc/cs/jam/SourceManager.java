@@ -26,6 +26,7 @@ public interface SourceManager {
   public abstract void reportCodeChange();
 
   // %%% Remove/modify
+  public abstract Exp expFromCode(String code);
   public abstract Node nodeFromCode(String code);
   public abstract String codeFromNode(Node n);
   public abstract Node getRootNode();

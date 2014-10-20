@@ -18,6 +18,8 @@ import edu.wisc.cs.jam.SourceManager;
 
 import edu.wisc.cs.jam.env.NativeUtil;
 
+import edu.wisc.cs.jam.interpret.SpiderMonkey;
+
 import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPredicateType;
 
 public class JSSyntaxAnalysis {
@@ -91,9 +93,8 @@ public class JSSyntaxAnalysis {
 
       // There must be a CALL/NEW for the arg predicate to be true.
       if (definitelyNoInvoke(progexp)) {
-         Exp arg = JSExp.create(sm, sm.nodeFromCode("#undefined"));
-         ret.add(arg);
-         return ret;
+        // No values are possible so return an empty list. 
+        return ret;
       }
 
       // Get the zero-indexed argument index.
@@ -109,7 +110,8 @@ public class JSSyntaxAnalysis {
       progexp.findType(JSExp.NEW, calls, false);
 
       for (Exp c : calls) {
-        Exp arg = getArgument(progexp, argint.intValue());
+        Exp arg = getArgument(c, argint.intValue());
+
         ret.add(arg);
       }
       return ret;
@@ -156,9 +158,9 @@ public class JSSyntaxAnalysis {
     Exp op1 = polexp.getChild(1);
     
     if (op0.isName()) {
-      String opname0 = op0.getString();
-      if (!NativeUtil.isNativeLocation(opname0)) {
+      if (!pl.isNativeLocation(op0)) {
         // See if the name can be the target of a write.
+        String opname0 = op0.getString();
         if (!definitelyNoWrite(progexp, opname0, true)) {
           return false;
         }
@@ -168,8 +170,8 @@ public class JSSyntaxAnalysis {
     }
     
     if (op1.isName()) {
-      String opname1 = op1.getString();
-      if (!NativeUtil.isNativeLocation(opname1)) {
+      if (!pl.isNativeLocation(op1)) {
+        String opname1 = op1.getString();
         // See if the name can be the target of a write.
         if (!definitelyNoWrite(progexp, opname1, true)) {
           return false;
@@ -257,6 +259,65 @@ public class JSSyntaxAnalysis {
     }
 
     // Getting here means that 
+    return true;
+  }
+
+  protected boolean regexTest(String re, String val) {
+    // Make a call out to SpiderMonkey rather than trying to simulate
+    // all regex expressions.
+    SpiderMonkey interp = new SpiderMonkey();
+    String code = re + ".test(\"" + ExpUtil.escapeString(val) + "\")";
+    Exp e = sm.expFromCode(code); // %%% Unused, just testing!
+    String result = interp.evaluate(code);
+    if (result != null && result.equals("false")) {
+      return false;
+    }
+    assert result != null && result.equals("true") : "Unable to evaluate regular expression test: " + code + " / " + result;
+    return true;
+  }
+
+  protected boolean definitelyFalseRegexPredicate(Exp polexp, Exp progexp) {
+    boolean not = polexp.isNot();
+    if (not) polexp = polexp.getChild(0);
+
+    assert polexp.isCall() && polexp.getChild(0).getString().equals("jam#regextest");
+    assert polexp.getChildCount() == 3;
+    Exp re = polexp.getChild(1);
+    Exp val = polexp.getChild(2);
+
+    if (!re.isRegExp()) {
+      Dbg.warn("Non-REGEXP as first argument to jam#regextest");
+      return false;
+    }
+
+    List<Exp> expvals = getPossibleValues(val, progexp);
+    if (expvals == null) {
+      // Null values list indicates that the possible values of the
+      // expression can't be statically constrained.
+      return false;
+    }
+
+    String restr = re.toCode();
+    for (Exp expval : expvals) {
+      // In the context of Regex.prototype.test, the 2nd argument is
+      // coerced to a string.
+      String valstr = ExpUtil.valueToString(expval);
+      if (valstr == null) {
+        // Null indicates that the string can't be statically
+        // determined.
+        return false;
+      }
+      if (regexTest(restr, valstr)) {
+        // |regexTest| should be deterministic, so if the test is true,
+        // a negated regex predicate is definitely false, (but a
+        // non-negated predicate is definitely true, so return |false|).
+        return not;
+      } else {
+        // And vice-versa.
+        return !not;
+      }      
+    }
+    
     return true;
   }
   
@@ -515,6 +576,9 @@ public class JSSyntaxAnalysis {
               return Boolean.FALSE;
           } else if (cpt == JSPredicateType.TYPE) {
             if (definitelyFalseTypePredicate(conj, progexp))
+              return Boolean.FALSE;
+          } else if (cpt == JSPredicateType.REGEXTEST) {
+            if (definitelyFalseRegexPredicate(conj, progexp))
               return Boolean.FALSE;
           }
         }

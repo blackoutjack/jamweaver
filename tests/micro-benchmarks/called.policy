@@ -1,1 +1,1 @@
-0,-1: jam#called(#HTMLDocument#prototype#getElementById)
+0,-1: jam#invoke(#HTMLDocument#prototype#getElementById)

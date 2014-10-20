@@ -992,8 +992,8 @@ function v177(current_state) {
   }
   return;
 }
-function v176(ta$$1, value$$30) {
-  ta$$1.value = value$$30;
+function v176(ta$$1, value$$28) {
+  ta$$1.value = value$$28;
   return;
 }
 function v175(ta) {
@@ -1208,12 +1208,12 @@ function v157(req$$4, list$$10) {
   }
   return;
 }
-function v156(req$$3, method$$2, url$$5) {
+function v156(req$$3, method$$2, url$$4) {
   this.callbacks = [];
   this.errbacks = [];
   this.req = req$$3;
   this.http_method = method$$2;
-  this.http_url = url$$5;
+  this.http_url = url$$4;
   return;
 }
 function v155(cur$$1, prev$$1) {
@@ -1463,7 +1463,7 @@ function v127(elms$$4, type$$29, handler$$7) {
     return;
   }
   elms$$4 = JAM.call(AJS.$A, AJS, [elms$$4]);
-  JAM.call(map, null, [elms$$4, v126]);
+  map(elms$$4, v126);
   return;
 }
 function v125(event$$1) {
@@ -1890,7 +1890,7 @@ function v101(txt) {
   }
   return;
 }
-function v100(url$$4, type$$26, debug) {
+function v100(url$$3, type$$26, debug) {
   function eval_req(data$$18, req$$2) {
     var text$$8 = req$$2.responseText;
     if (text$$8 == "Error") {
@@ -1900,7 +1900,7 @@ function v100(url$$4, type$$26, debug) {
     }
     return;
   }
-  var d$$1 = JAM.call(AJS.getRequest, AJS, [url$$4, type$$26]);
+  var d$$1 = JAM.call(AJS.getRequest, AJS, [url$$3, type$$26]);
   JAM.call(d$$1.addCallback, d$$1, [eval_req]);
   return d$$1;
 }
@@ -1981,33 +1981,33 @@ function v99(o$$3) {
   }
   return "{" + JAM.call(res.join, res, [","]) + "}";
 }
-function v98(url$$3, method$$1) {
+function v98(url$$2, method$$1) {
   var req$$1 = AJS.getXMLHttpRequest();
-  if (url$$3.match(/^https?:\/\//) == null) {
+  if (url$$2.match(/^https?:\/\//) == null) {
     if (AJS.BASE_URL != "") {
       if (AJS.BASE_URL.lastIndexOf("/") != AJS.BASE_URL.length - 1) {
         AJS.BASE_URL = AJS.BASE_URL + "/";
       }
-      url$$3 = AJS.BASE_URL + url$$3;
+      url$$2 = AJS.BASE_URL + url$$2;
     }
   }
   if (!method$$1) {
     method$$1 = "POST";
   }
-  return JAM.new(AJSDeferred, [req$$1, method$$1, url$$3]);
+  return JAM.new(AJSDeferred, [req$$1, method$$1, url$$2]);
 }
 function v97() {
   function v96() {
     throw "Browser does not support XMLHttpRequest";
   }
   function v95() {
-    return JAM.new(ActiveXObject, ["Msxml2.XMLHTTP.4.0"]);
+    return new ActiveXObject("Msxml2.XMLHTTP.4.0");
   }
   function v94() {
-    return JAM.new(ActiveXObject, ["Microsoft.XMLHTTP"]);
+    return new ActiveXObject("Microsoft.XMLHTTP");
   }
   function v93() {
-    return JAM.new(ActiveXObject, ["Msxml2.XMLHTTP"]);
+    return new ActiveXObject("Msxml2.XMLHTTP");
   }
   function v92() {
     return new XMLHttpRequest;
@@ -2175,33 +2175,33 @@ function v75() {
 function v74() {
   return JAM.call(AJS.__cssDim, AJS, [arguments, "width"]);
 }
-function v73(args$$9, property$$4) {
+function v73(args$$9, property$$1) {
   args$$9 = JAM.call(AJS.$FA, AJS, [args$$9]);
-  args$$9.splice(args$$9.length - 1, 0, property$$4);
+  args$$9.splice(args$$9.length - 1, 0, property$$1);
   var v713 = AJS.setStyle;
   JAM.call(v713.apply, v713, [null, args$$9]);
   return;
 }
 function v72() {
   function v71(elm$$28) {
-    if (JAM.call(AJS.isIn, AJS, [property$$3, num_styles])) {
-      var v1114 = JAM.call(AJS.isString, AJS, [value$$29]);
+    if (JAM.call(AJS.isIn, AJS, [property, num_styles])) {
+      var v1114 = JAM.call(AJS.isString, AJS, [value$$27]);
       if (v1114) {
-        v1114 = value$$29;
+        v1114 = value$$27;
       }
       var v714 = v1114;
       if (!v714) {
-        v714 = value$$29 + "px";
+        v714 = value$$27 + "px";
       }
-      value$$29 = v714;
+      value$$27 = v714;
     }
-    JAM.set(elm$$28.style, property$$3, value$$29);
+    JAM.set(elm$$28.style, property, value$$27);
     return;
   }
   function v70(elm$$27) {
     function v69(prop$$4) {
       introspect(JAM.policy.p1) {
-        var css_dim = value$$29[prop$$4]
+        var css_dim = value$$27[prop$$4]
       }
       if (JAM.call(AJS.isIn, AJS, [prop$$4, num_styles])) {
         var v1116 = JAM.call(AJS.isString, AJS, [css_dim]);
@@ -2217,16 +2217,16 @@ function v72() {
       JAM.set(elm$$27.style, prop$$4, css_dim);
       return;
     }
-    JAM.call(AJS.map, AJS, [JAM.call(AJS.keys, AJS, [value$$29]), v69]);
+    JAM.call(AJS.map, AJS, [JAM.call(AJS.keys, AJS, [value$$27]), v69]);
     return;
   }
   var args$$8 = JAM.call(AJS.flattenElmArguments, AJS, [arguments]);
-  var value$$29 = args$$8.pop();
+  var value$$27 = args$$8.pop();
   var num_styles = ["top", "left", "right", "width", "height"];
-  if (JAM.call(AJS.isObject, AJS, [value$$29])) {
+  if (JAM.call(AJS.isObject, AJS, [value$$27])) {
     JAM.call(AJS.map, AJS, [args$$8, v70]);
   } else {
-    var property$$3 = args$$8.pop();
+    var property = args$$8.pop();
     JAM.call(AJS.map, AJS, [args$$8, v71]);
   }
   return;
@@ -2360,7 +2360,7 @@ function v58(name$$31, attrs) {
 }
 function v57() {
   function v56(elm$$20) {
-    if (JAM.call($, null, [elm$$20])) {
+    if ($(elm$$20)) {
       JAM.call(AJS.swapDOM, AJS, [elm$$20, null]);
     }
     return;
@@ -2658,8 +2658,8 @@ function v28() {
     introspect(JAM.policy.p1) {
       var v781 = args$$3[i$$10]
     }
-    var element$$3 = JAM.call(AJS.getElement, AJS, [v781]);
-    elements.push(element$$3);
+    var element$$2 = JAM.call(AJS.getElement, AJS, [v781]);
+    elements.push(element$$2);
     i$$10 = i$$10 + 1;
     v782 = i$$10 < args$$3.length;
   }
@@ -3029,8 +3029,8 @@ function GoogieSpell(img_dir, server_url) {
   JAM.call(AJS.AEV, AJS, [document, "click", JAM.call(AJS.$b, AJS, [fn$$16, this])]);
   return;
 }
-function setCookie(name$$36, value$$31, expires, path, domain, secure) {
-  var v1347 = name$$36 + "=" + escape(value$$31);
+function setCookie(name$$36, value$$29, expires, path, domain, secure) {
+  var v1347 = name$$36 + "=" + escape(value$$29);
   var v1359;
   if (expires) {
     v1359 = "; expires=" + expires.toGMTString();

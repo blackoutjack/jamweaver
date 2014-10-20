@@ -2,7 +2,3 @@
 0,-1: jam#set(`x,"location") && `x instanceof #Window
 0,-1: jam#get(`x,"cookie") && `x instanceof #HTMLDocument
 # innerHTML is legitimately used
-#0,-1: jam#set(`x,"innerHTML") && `x instanceof #HTMLElement
-#1,-1: jam#get(`x,"open") && `x instanceof #XMLHttpRequest
-#0,2: jam#get(`x,"open") && `x instanceof #XMLHttpRequest
-#2,-1: jam#get(`x,"cookie") && `x instanceof #HTMLDocument

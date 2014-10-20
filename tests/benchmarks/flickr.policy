@@ -1,4 +1,4 @@
 # In Firefox 17.0.5esr, the |__proto__| property of |window| contains
 # most of what is directly on |window| in other browsers and newer
 # versions of Firefox.
-0,-1: jam#called(#Window#prototype#open) && !jam#regextest(/^http:\/\/jamscript.*/i,jam#arg(0))
+0,-1: jam#invoke(#Window#prototype#open) && !jam#regextest(/^http:\/\/jamscript.*/i,jam#arg(0))

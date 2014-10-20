@@ -458,7 +458,7 @@ function v254() {
   function v219(a$$491) {
     var v349 = this.ea;
     JAM.call(v349.push, v349, [a$$491], JAM.policy.p4);
-    JAM.call(y$$32, null, [a$$491, "click", this.rc], JAM.policy.p4);
+    JAM.call(y$$31, null, [a$$491, "click", this.rc], JAM.policy.p4);
     JAM.call(a$$491.setAttribute, a$$491, ["data-google-reveal-ad", "true"], JAM.policy.p4);
     return;
   }
@@ -549,7 +549,7 @@ function v254() {
   function v212(a$$485) {
     JAM.call(this.N, this, [!0], JAM.policy.p4);
     var b$$371 = JAM.call(ye, null, ["ifr::hide", JAM.call(r$$2, null, [this.tb, this], JAM.policy.p4)], JAM.policy.p4);
-    JAM.call(y$$32, null, [this.i, "pagehide", b$$371], JAM.policy.p4);
+    JAM.call(y$$31, null, [this.i, "pagehide", b$$371], JAM.policy.p4);
     JAM.call(this.vb, this, [a$$485], JAM.policy.p4);
     return;
   }
@@ -600,24 +600,21 @@ function v254() {
       for (;v375;) {
         var c$$246;
         var d$$154;
-        introspect(JAM.policy.p4) {
-          switch(b$$367) {
-            case 0:
-              d$$154 = c$$246 = a$$479.data;
-              break;
-            default:
-              try {
-                var v2188 = a$$479.data;
-                var v373 = d$$154 = JAM.call(gg, null, [v2188], JAM.policy.p4);
-                if (v373) {
-                  v373 = d$$154.msg_type;
-                }
-                c$$246 = v373;
-              } catch (e$$90) {
-                d$$154 = c$$246 = null;
+        switch(b$$367) {
+          case 0:
+            d$$154 = c$$246 = a$$479.data;
+            break;
+          default:
+            try {
+              var v373 = d$$154 = JAM.call(gg, null, [a$$479.data], JAM.policy.p4);
+              if (v373) {
+                v373 = d$$154.msg_type;
               }
-            ;
-          }
+              c$$246 = v373;
+            } catch (e$$90) {
+              d$$154 = c$$246 = null;
+            }
+          ;
         }
         var f$$52 = this.cc[c$$246];
         if (f$$52) {
@@ -633,7 +630,7 @@ function v254() {
   function v206() {
     JAM.call(this.pa, this, [this.cc], JAM.policy.p4);
     var a$$478 = JAM.call(ye, null, ["ras::hdlr", JAM.call(r$$2, null, [this.gc, this], JAM.policy.p4)], JAM.policy.p4);
-    JAM.call(y$$32, null, [this.i, "message", a$$478], JAM.policy.p4);
+    JAM.call(y$$31, null, [this.i, "message", a$$478], JAM.policy.p4);
     return;
   }
   function v205() {
@@ -745,32 +742,20 @@ function v254() {
   function v192(a$$472) {
     var b$$364 = this.i.innerWidth;
     var c$$245;
-    introspect(JAM.policy.p4) {
-      switch(a$$472) {
-        case "bottom":
-          var v2203 = this.gd;
-          var v395 = v2203.height;
-          c$$245 = JAM.new(u$$2, [b$$364, v395], JAM.policy.p4);
-      }
+    switch(a$$472) {
+      case "bottom":
+        c$$245 = JAM.new(u$$2, [b$$364, this.gd.height], JAM.policy.p4);
     }
     return c$$245;
   }
   function v191(a$$471, b$$363) {
     var c$$244;
-    introspect(JAM.policy.p4) {
-      switch(a$$471) {
-        case "bottom":
-          var v4269 = this.i;
-          var v3501 = v4269.document;
-          var v2204 = v3501.body;
-          var v396 = c$$244 = JAM.call(Qd, null, [v2204, "padding"], JAM.policy.p4);
-          if (v396) {
-            var v2205 = c$$244.bottom;
-            var v2206 = b$$363.height;
-            c$$244.bottom = v2205 + v2206;
-          }
-        ;
-      }
+    switch(a$$471) {
+      case "bottom":
+        if (c$$244 = JAM.call(Qd, null, [this.i.document.body, "padding"], JAM.policy.p4)) {
+          c$$244.bottom = c$$244.bottom + b$$363.height;
+        }
+      ;
     }
     return c$$244;
   }
@@ -1297,41 +1282,34 @@ function v254() {
     return;
   }
   function v159(a$$407, b$$321) {
-    var v503 = typeof a$$407;
-    introspect(JAM.policy.p4) {
-      switch(v503) {
-        case "string":
-          JAM.call(this.r, this, [a$$407, b$$321], JAM.policy.p4);
-          break;
-        case "number":
-          JAM.call(this.L, this, [a$$407, b$$321], JAM.policy.p4);
-          break;
-        case "boolean":
-          JAM.call(b$$321.push, b$$321, [a$$407], JAM.policy.p4);
-          break;
-        case "undefined":
+    switch(typeof a$$407) {
+      case "string":
+        JAM.call(this.r, this, [a$$407, b$$321], JAM.policy.p4);
+        break;
+      case "number":
+        JAM.call(this.L, this, [a$$407, b$$321], JAM.policy.p4);
+        break;
+      case "boolean":
+        JAM.call(b$$321.push, b$$321, [a$$407], JAM.policy.p4);
+        break;
+      case "undefined":
+        JAM.call(b$$321.push, b$$321, ["null"], JAM.policy.p4);
+        break;
+      case "object":
+        if (null == a$$407) {
           JAM.call(b$$321.push, b$$321, ["null"], JAM.policy.p4);
           break;
-        case "object":
-          var v500 = null == a$$407;
-          if (v500) {
-            JAM.call(b$$321.push, b$$321, ["null"], JAM.policy.p4);
-            break;
-          }
-          var v501 = JAM.call(n$$2, null, [a$$407], JAM.policy.p4);
-          if (v501) {
-            JAM.call(this.xc, this, [a$$407, b$$321], JAM.policy.p4);
-            break;
-          }
-          JAM.call(this.M, this, [a$$407, b$$321], JAM.policy.p4);
+        }
+        if (JAM.call(n$$2, null, [a$$407], JAM.policy.p4)) {
+          JAM.call(this.xc, this, [a$$407, b$$321], JAM.policy.p4);
           break;
-        case "function":
-          break;
-        default:
-          var v2256 = typeof a$$407;
-          var v502 = "Unknown type: " + v2256;
-          throw JAM.call(Error, null, [v502], JAM.policy.p4);;
-      }
+        }
+        JAM.call(this.M, this, [a$$407, b$$321], JAM.policy.p4);
+        break;
+      case "function":
+        break;
+      default:
+        throw JAM.call(Error, null, ["Unknown type: " + typeof a$$407], JAM.policy.p4);;
     }
     return;
   }
@@ -1370,7 +1348,7 @@ function v254() {
         b$$316 = ag;
         var e$$76 = !1;
         var f$$49 = !1;
-        JAM.call(x$$51, null, [b$$316, v156], JAM.policy.p4);
+        JAM.call(x$$50, null, [b$$316, v156], JAM.policy.p4);
       }
     }
     return;
@@ -1920,41 +1898,34 @@ function v254() {
     return;
   }
   function v116(a$$317, b$$251) {
-    var v582 = typeof a$$317;
-    introspect(JAM.policy.p4) {
-      switch(v582) {
-        case "string":
-          JAM.call(this.r, this, [a$$317, b$$251], JAM.policy.p4);
-          break;
-        case "number":
-          JAM.call(this.L, this, [a$$317, b$$251], JAM.policy.p4);
-          break;
-        case "boolean":
-          JAM.call(b$$251.push, b$$251, [a$$317], JAM.policy.p4);
-          break;
-        case "undefined":
+    switch(typeof a$$317) {
+      case "string":
+        JAM.call(this.r, this, [a$$317, b$$251], JAM.policy.p4);
+        break;
+      case "number":
+        JAM.call(this.L, this, [a$$317, b$$251], JAM.policy.p4);
+        break;
+      case "boolean":
+        JAM.call(b$$251.push, b$$251, [a$$317], JAM.policy.p4);
+        break;
+      case "undefined":
+        JAM.call(b$$251.push, b$$251, ["null"], JAM.policy.p4);
+        break;
+      case "object":
+        if (null == a$$317) {
           JAM.call(b$$251.push, b$$251, ["null"], JAM.policy.p4);
           break;
-        case "object":
-          var v579 = null == a$$317;
-          if (v579) {
-            JAM.call(b$$251.push, b$$251, ["null"], JAM.policy.p4);
-            break;
-          }
-          var v580 = a$$317 instanceof Array;
-          if (v580) {
-            JAM.call(this.yc, this, [a$$317, b$$251], JAM.policy.p4);
-            break;
-          }
-          JAM.call(this.M, this, [a$$317, b$$251], JAM.policy.p4);
+        }
+        if (a$$317 instanceof Array) {
+          JAM.call(this.yc, this, [a$$317, b$$251], JAM.policy.p4);
           break;
-        case "function":
-          break;
-        default:
-          var v2315 = typeof a$$317;
-          var v581 = "Unknown type: " + v2315;
-          throw JAM.call(Error, null, [v581], JAM.policy.p4);;
-      }
+        }
+        JAM.call(this.M, this, [a$$317, b$$251], JAM.policy.p4);
+        break;
+      case "function":
+        break;
+      default:
+        throw JAM.call(Error, null, ["Unknown type: " + typeof a$$317], JAM.policy.p4);;
     }
     return;
   }
@@ -2459,7 +2430,7 @@ function v254() {
       return;
     }
     var a$$192 = [];
-    JAM.call(x$$51, null, [this.layers, b$$153], JAM.policy.p4);
+    JAM.call(x$$50, null, [this.layers, b$$153], JAM.policy.p4);
     var v663;
     var v3592 = 0 < this.defaultBucket.length;
     if (v3592) {
@@ -2762,9 +2733,9 @@ function v254() {
       JAM.set(a$$558, b$$429, window[c$$290], JAM.policy.p2);
       return;
     }
-    JAM.call(x$$51, null, [wh, v23], JAM.policy.p4);
-    JAM.call(x$$51, null, [vh, v24], JAM.policy.p4);
-    JAM.call(x$$51, null, [xh, v25], JAM.policy.p4);
+    JAM.call(x$$50, null, [wh, v23], JAM.policy.p4);
+    JAM.call(x$$50, null, [vh, v24], JAM.policy.p4);
+    JAM.call(x$$50, null, [xh, v25], JAM.policy.p4);
     return;
   }
   function Yi(a$$557, b$$428, c$$289, d$$178) {
@@ -4177,32 +4148,25 @@ function v254() {
               JSCompiler_inline_label_909: {
                 var a$$inline_903 = a$$inline_899;
                 var b$$inline_904 = b$$inline_900;
-                introspect(JAM.policy.p4) {
-                  switch(c$$inline_901) {
-                    case 1:
-                      var JSCompiler_temp$$940;
-                      var v892 = JSCompiler_temp$$940 = JAM.call(Hg, null, [a$$inline_903], JAM.policy.p4);
-                      if (v892) {
-                        JAM.call(rg, null, [a$$inline_903], JAM.policy.p4);
-                        JSCompiler_temp$$940 = !0;
-                      }
-                      JSCompiler_inline_result$$inline_902 = JSCompiler_temp$$940;
-                      break JSCompiler_inline_label_909;
-                    case 2:
-                      var a$$inline_1030 = a$$inline_903;
-                      var JSCompiler_temp$$1033;
-                      var v894 = JSCompiler_temp$$1033 = JAM.call(Rg, null, [a$$inline_1030, b$$inline_904], JAM.policy.p4);
-                      if (v894) {
-                        var a$$inline_1034 = a$$inline_1030;
-                        a$$inline_1034 = JAM.call(rg, null, [a$$inline_1034], JAM.policy.p4);
-                        var v3712 = a$$inline_1034.wasReactiveAdConfigReceived;
-                        var v2579 = v3712[2];
-                        var v893 = !v2579;
-                        JSCompiler_temp$$1033 = !v893;
-                      }
-                      JSCompiler_inline_result$$inline_902 = JSCompiler_temp$$1033;
-                      break JSCompiler_inline_label_909;
-                  }
+                switch(c$$inline_901) {
+                  case 1:
+                    var JSCompiler_temp$$940;
+                    if (JSCompiler_temp$$940 = JAM.call(Hg, null, [a$$inline_903], JAM.policy.p4)) {
+                      JAM.call(rg, null, [a$$inline_903], JAM.policy.p4);
+                      JSCompiler_temp$$940 = !0;
+                    }
+                    JSCompiler_inline_result$$inline_902 = JSCompiler_temp$$940;
+                    break JSCompiler_inline_label_909;
+                  case 2:
+                    var a$$inline_1030 = a$$inline_903;
+                    var JSCompiler_temp$$1033;
+                    if (JSCompiler_temp$$1033 = JAM.call(Rg, null, [a$$inline_1030, b$$inline_904], JAM.policy.p4)) {
+                      var a$$inline_1034 = a$$inline_1030;
+                      a$$inline_1034 = JAM.call(rg, null, [a$$inline_1034], JAM.policy.p4);
+                      JSCompiler_temp$$1033 = !!a$$inline_1034.wasReactiveAdConfigReceived[2];
+                    }
+                    JSCompiler_inline_result$$inline_902 = JSCompiler_temp$$1033;
+                    break JSCompiler_inline_label_909;
                 }
                 JSCompiler_inline_result$$inline_902 = !1;
               }
@@ -4339,7 +4303,7 @@ function v254() {
       JAM.call(xi, null, [yi, a$$541], JAM.policy.p4);
     } else {
       var c$$278 = v26;
-      JAM.call(y$$32, null, [b$$413, "webkitvisibilitychange", c$$278], JAM.policy.p4);
+      JAM.call(y$$31, null, [b$$413, "webkitvisibilitychange", c$$278], JAM.policy.p4);
     }
     zi = !1;
     return;
@@ -4562,7 +4526,7 @@ function v254() {
     var d$$163 = v935;
     var e$$95 = [b$$403];
     c$$271 = v28;
-    JAM.call(x$$51, null, [a$$531, c$$271], JAM.policy.p4);
+    JAM.call(x$$50, null, [a$$531, c$$271], JAM.policy.p4);
     return JAM.call(e$$95.join, e$$95, [""], JAM.policy.p4);
   }
   function di() {
@@ -5045,9 +5009,9 @@ function v254() {
       JAM.set(a$$510, c$$260, null, JAM.policy.p2);
       return;
     }
-    JAM.call(x$$51, null, [vh, v30], JAM.policy.p4);
-    JAM.call(x$$51, null, [wh, v31], JAM.policy.p4);
-    JAM.call(x$$51, null, [xh, v32], JAM.policy.p4);
+    JAM.call(x$$50, null, [vh, v30], JAM.policy.p4);
+    JAM.call(x$$50, null, [wh, v31], JAM.policy.p4);
+    JAM.call(x$$50, null, [xh, v32], JAM.policy.p4);
     a$$510.google_container_id = null;
     a$$510.google_enable_async = null;
     a$$510.google_eids = null;
@@ -5083,35 +5047,32 @@ function v254() {
       v996 = null;
     }
     var e$$91 = v996;
-    introspect(JAM.policy.p4) {
-      switch(e$$91) {
-        case 1:
-          var JSCompiler_inline_result$$28;
-          var a$$inline_382 = a$$503;
-          var b$$inline_383 = b$$382;
-          var c$$inline_384 = c$$254;
-          var d$$inline_385 = d$$155;
-          JSCompiler_inline_label_Ig_642: {
-            var v997 = a$$inline_382.google_reactive_ad_format;
-            switch(v997) {
-              case 1:
-                a$$inline_382 = "bottom";
-                break JSCompiler_inline_label_Ig_642;
-            }
-            a$$inline_382 = null;
+    switch(e$$91) {
+      case 1:
+        var JSCompiler_inline_result$$28;
+        var a$$inline_382 = a$$503;
+        var b$$inline_383 = b$$382;
+        var c$$inline_384 = c$$254;
+        var d$$inline_385 = d$$155;
+        JSCompiler_inline_label_Ig_642: {
+          switch(a$$inline_382.google_reactive_ad_format) {
+            case 1:
+              a$$inline_382 = "bottom";
+              break JSCompiler_inline_label_Ig_642;
           }
-          b$$inline_383 = JAM.new(X$$1, [b$$inline_383, c$$inline_384, d$$inline_385, a$$inline_382], JAM.policy.p4);
-          JSCompiler_inline_result$$28 = JAM.new(jh, [d$$inline_385, b$$inline_383], JAM.policy.p4);
-          return JSCompiler_inline_result$$28;
-        case 2:
-          var JSCompiler_inline_result$$30;
-          var a$$inline_387 = a$$503;
-          var c$$inline_389 = c$$254;
-          var d$$inline_390 = d$$155;
-          a$$inline_387 = JAM.new(Y$$1, [b$$382, c$$inline_389, d$$inline_390], JAM.policy.p4);
-          JSCompiler_inline_result$$30 = JAM.new(Z$$1, [d$$inline_390, c$$inline_389, a$$inline_387], JAM.policy.p4);
-          return JSCompiler_inline_result$$30;
-      }
+          a$$inline_382 = null;
+        }
+        b$$inline_383 = JAM.new(X$$1, [b$$inline_383, c$$inline_384, d$$inline_385, a$$inline_382], JAM.policy.p4);
+        JSCompiler_inline_result$$28 = JAM.new(jh, [d$$inline_385, b$$inline_383], JAM.policy.p4);
+        return JSCompiler_inline_result$$28;
+      case 2:
+        var JSCompiler_inline_result$$30;
+        var a$$inline_387 = a$$503;
+        var c$$inline_389 = c$$254;
+        var d$$inline_390 = d$$155;
+        a$$inline_387 = JAM.new(Y$$1, [b$$382, c$$inline_389, d$$inline_390], JAM.policy.p4);
+        JSCompiler_inline_result$$30 = JAM.new(Z$$1, [d$$inline_390, c$$inline_389, a$$inline_387], JAM.policy.p4);
+        return JSCompiler_inline_result$$30;
     }
     return null;
   }
@@ -5246,7 +5207,7 @@ function v254() {
     this.lc = a$$454;
     var v5181 = JAM.call(ye, null, ["rach::hdlr", JAM.call(r$$2, null, [this.ub, this], JAM.policy.p4)], JAM.policy.p4);
     this.K = v5181;
-    JAM.call(y$$32, null, [a$$454, "message", this.K], JAM.policy.p4);
+    JAM.call(y$$31, null, [a$$454, "message", this.K], JAM.policy.p4);
     return;
   }
   function $g(a$$453, b$$352, c$$236) {
@@ -5260,15 +5221,13 @@ function v254() {
     JSCompiler_inline_label_Wg_370: {
       var a$$inline_367 = b$$352;
       var b$$inline_368 = a$$453;
-      introspect(JAM.policy.p4) {
-        switch(c$$236) {
-          case 1:
-            JSCompiler_inline_result$$55 = JAM.call(Hg, null, [a$$inline_367], JAM.policy.p4);
-            break JSCompiler_inline_label_Wg_370;
-          case 2:
-            JSCompiler_inline_result$$55 = JAM.call(Rg, null, [a$$inline_367, b$$inline_368], JAM.policy.p4);
-            break JSCompiler_inline_label_Wg_370;
-        }
+      switch(c$$236) {
+        case 1:
+          JSCompiler_inline_result$$55 = JAM.call(Hg, null, [a$$inline_367], JAM.policy.p4);
+          break JSCompiler_inline_label_Wg_370;
+        case 2:
+          JSCompiler_inline_result$$55 = JAM.call(Rg, null, [a$$inline_367, b$$inline_368], JAM.policy.p4);
+          break JSCompiler_inline_label_Wg_370;
       }
       JSCompiler_inline_result$$55 = !1;
     }
@@ -5300,7 +5259,7 @@ function v254() {
       return!1;
     }
     var e$$87 = !1;
-    JAM.call(x$$51, null, [kg, v33], JAM.policy.p4);
+    JAM.call(x$$50, null, [kg, v33], JAM.policy.p4);
     return c$$234.wasReactiveAdConfigHandlerRegistered = e$$87;
   }
   function ah(a$$450, b$$349) {
@@ -5312,7 +5271,7 @@ function v254() {
       return;
     }
     var c$$232 = 0;
-    JAM.call(x$$51, null, [kg, v34], JAM.policy.p4);
+    JAM.call(x$$50, null, [kg, v34], JAM.policy.p4);
     var v1031;
     if (c$$232) {
       v1031 = "" + c$$232;
@@ -5332,13 +5291,11 @@ function v254() {
     return v1032;
   }
   function Yg(a$$448) {
-    introspect(JAM.policy.p4) {
-      switch(a$$448) {
-        case 1:
-          return JAM.new(Mg, [], JAM.policy.p4);
-        case 2:
-          return JAM.new(Qg, [], JAM.policy.p4);
-      }
+    switch(a$$448) {
+      case 1:
+        return JAM.new(Mg, [], JAM.policy.p4);
+      case 2:
+        return JAM.new(Qg, [], JAM.policy.p4);
     }
     return null;
   }
@@ -5705,7 +5662,7 @@ function v254() {
     this.Sb = this.Fc = this.Pa = this.Tb = this.jc = this.ma = this.va = !1;
     var v5184 = JAM.call(ye, null, ["zrt_mh::handler", JAM.call(r$$2, null, [V$$1.prototype.Qa, this], JAM.policy.p4), d$$130], JAM.policy.p4);
     this.K = v5184;
-    JAM.call(y$$32, null, [a$$387, "message", this.K], JAM.policy.p4);
+    JAM.call(y$$31, null, [a$$387, "message", this.K], JAM.policy.p4);
     return;
   }
   function Jf(a$$378, b$$299, c$$197, d$$125, e$$75) {
@@ -6070,7 +6027,7 @@ function v254() {
       return;
     }
     var b$$291 = ["<iframe"];
-    JAM.call(x$$51, null, [a$$368, v38], JAM.policy.p4);
+    JAM.call(x$$50, null, [a$$368, v38], JAM.policy.p4);
     JAM.call(b$$291.push, b$$291, ["></iframe>"], JAM.policy.p4);
     return JAM.call(b$$291.join, b$$291, [""], JAM.policy.p4);
   }
@@ -6083,7 +6040,7 @@ function v254() {
       return;
     }
     var d$$119 = JAM.call(a$$366.createElement, a$$366, ["iframe"], JAM.policy.p4);
-    JAM.call(x$$51, null, [b$$289, v39], JAM.policy.p4);
+    JAM.call(x$$50, null, [b$$289, v39], JAM.policy.p4);
     if (c$$190) {
       d$$119.style.display = c$$190;
     }
@@ -6451,7 +6408,7 @@ function v254() {
       JAM.set(v2803, v2804, v5187, JAM.policy.p2);
     }
     var c$$174 = [];
-    JAM.call(x$$51, null, [a$$323, v41], JAM.policy.p4);
+    JAM.call(x$$50, null, [a$$323, v41], JAM.policy.p4);
     return JAM.call(c$$174.join, c$$174, [""], JAM.policy.p4);
   }
   function Be() {
@@ -6477,7 +6434,7 @@ function v254() {
       return;
     }
     var b$$247 = "";
-    JAM.call(x$$51, null, [a$$312, v42], JAM.policy.p4);
+    JAM.call(x$$50, null, [a$$312, v42], JAM.policy.p4);
     return b$$247;
   }
   function ye(a$$310, b$$246, c$$170, d$$105) {
@@ -6498,7 +6455,7 @@ function v254() {
       return;
     }
     var b$$244 = a$$307 || {};
-    JAM.call(x$$51, null, [pe, v44], JAM.policy.p4);
+    JAM.call(x$$50, null, [pe, v44], JAM.policy.p4);
     return b$$244;
   }
   function se(a$$306, b$$243, c$$168) {
@@ -6725,9 +6682,9 @@ function v254() {
     }
     if (JAM.call(rb$$1, null, [], JAM.policy.p4)) {
       var c$$155 = v45;
-      JAM.call(y$$32, null, [a$$290, "readystatechange", c$$155], JAM.policy.p4);
+      JAM.call(y$$31, null, [a$$290, "readystatechange", c$$155], JAM.policy.p4);
     } else {
-      JAM.call(y$$32, null, [a$$290, "load", b$$227], JAM.policy.p4);
+      JAM.call(y$$31, null, [a$$290, "load", b$$227], JAM.policy.p4);
     }
     return;
   }
@@ -8170,7 +8127,7 @@ function v254() {
         c$$inline_108 = c$$inline_108 + 1;
         v1354 = c$$inline_108 < d$$inline_109;
       }
-      JAM.call(x$$51, null, [a$$inline_106.layers, JAM.call(r$$2, null, [E$$1.prototype.Ga, b$$inline_107], JAM.policy.p4)], JAM.policy.p4);
+      JAM.call(x$$50, null, [a$$inline_106.layers, JAM.call(r$$2, null, [E$$1.prototype.Ga, b$$inline_107], JAM.policy.p4)], JAM.policy.p4);
       uc = b$$inline_107;
     }
     return uc;
@@ -8758,14 +8715,14 @@ function v254() {
   function lb$$1(a$$147, b$$117, c$$80, d$$53, e$$37) {
     c$$80 = JAM.call(r$$2, null, [d$$53, c$$80], JAM.policy.p4);
     var v1426;
-    if (JAM.call(y$$32, null, [a$$147, b$$117, c$$80, e$$37], JAM.policy.p4)) {
+    if (JAM.call(y$$31, null, [a$$147, b$$117, c$$80, e$$37], JAM.policy.p4)) {
       v1426 = c$$80;
     } else {
       v1426 = null;
     }
     return v1426;
   }
-  function y$$32(a$$146, b$$116, c$$79, d$$52) {
+  function y$$31(a$$146, b$$116, c$$79, d$$52) {
     var v1427;
     if (a$$146.addEventListener) {
       var v4593 = d$$52;
@@ -8820,7 +8777,7 @@ function v254() {
       return!1;
     }
     var c$$77 = !0;
-    JAM.call(x$$51, null, [b$$113, v51], JAM.policy.p4);
+    JAM.call(x$$50, null, [b$$113, v51], JAM.policy.p4);
     return c$$77;
   }
   function gb$$1(a$$143) {
@@ -8845,7 +8802,7 @@ function v254() {
     }
     return v1434;
   }
-  function x$$51(a$$141, b$$112) {
+  function x$$50(a$$141, b$$112) {
     var c$$76;
     for (c$$76 in a$$141) {
       var v3057 = Object.prototype.hasOwnProperty;
@@ -8984,31 +8941,23 @@ function v254() {
   }
   function Ua$$1(a$$128) {
     function v54(a$$129, c$$67) {
-      introspect(JAM.policy.p4) {
-        switch(c$$67) {
-          case "amp":
-            return "&";
-          case "lt":
-            return "<";
-          case "gt":
-            return ">";
-          case "quot":
-            return'"';
-          default:
-            var v3072 = JAM.call(c$$67.charAt, c$$67, [0], JAM.policy.p4);
-            var v1454 = "#" == v3072;
-            if (v1454) {
-              var v3073 = JAM.call(c$$67.substr, c$$67, [1], JAM.policy.p4);
-              var v1452 = "0" + v3073;
-              var d$$47 = JAM.call(Number, null, [v1452], JAM.policy.p4);
-              var v3074 = JAM.call(isNaN, null, [d$$47], JAM.policy.p4);
-              var v1453 = !v3074;
-              if (v1453) {
-                return JAM.call(String.fromCharCode, String, [d$$47], JAM.policy.p4);
-              }
+      switch(c$$67) {
+        case "amp":
+          return "&";
+        case "lt":
+          return "<";
+        case "gt":
+          return ">";
+        case "quot":
+          return'"';
+        default:
+          if ("#" == JAM.call(c$$67.charAt, c$$67, [0], JAM.policy.p4)) {
+            var d$$47 = JAM.call(Number, null, ["0" + JAM.call(c$$67.substr, c$$67, [1], JAM.policy.p4)], JAM.policy.p4);
+            if (!JAM.call(isNaN, null, [d$$47], JAM.policy.p4)) {
+              return JAM.call(String.fromCharCode, String, [d$$47], JAM.policy.p4);
             }
-            return a$$129;
-        }
+          }
+          return a$$129;
       }
       return;
     }
@@ -9399,7 +9348,7 @@ function v254() {
     return!0;
   }
   function kb$$1(a$$72, b$$57) {
-    return JAM.call(y$$32, null, [a$$72, "load", b$$57], JAM.policy.p4);
+    return JAM.call(y$$31, null, [a$$72, "load", b$$57], JAM.policy.p4);
   }
   function rb$$1() {
     var JSCompiler_inline_result$$74;
@@ -9556,7 +9505,7 @@ function v254() {
       JAM.set(a$$78, "google_" + d$$28, b$$62, JAM.policy.p2);
       return;
     }
-    JAM.call(x$$51, null, [b$$61, v61], JAM.policy.p4);
+    JAM.call(x$$50, null, [b$$61, v61], JAM.policy.p4);
     return;
   }
   function bf(a$$79, b$$63) {
@@ -11005,12 +10954,12 @@ function v22() {
           if (!v1906) {
             v1906 = a$$58.google_ad_height;
           }
-          var x$$50 = v1906;
+          var x$$49 = v1906;
           if (a$$58.top == a$$58) {
             m$$2 = !1;
           } else {
             var B$$1 = m$$2.documentElement;
-            if (q$$2 && x$$50) {
+            if (q$$2 && x$$49) {
               var u$$1 = 1;
               var r$$1 = 1;
               var v1907;
@@ -11037,7 +10986,7 @@ function v22() {
                 v1907 = v3310;
               }
               v1907;
-              var v3312 = r$$1 > 2 * x$$50;
+              var v3312 = r$$1 > 2 * x$$49;
               if (!v3312) {
                 v3312 = u$$1 > 2 * q$$2;
               }
@@ -11275,7 +11224,7 @@ function v22() {
             for (;v1948;) {
               var m$$1 = JAM.call(f$$5.charAt, f$$5, [k$$1], JAM.policy.p4);
               var q$$1 = JAM.call(m$$1.charCodeAt, m$$1, [0], JAM.policy.p4);
-              var x$$49 = g$$4;
+              var x$$48 = g$$4;
               var B = k$$1 + 1;
               var u;
               if (!(u = E[m$$1])) {
@@ -11295,32 +11244,32 @@ function v22() {
                       r = JAM.set(F, t, E[t], JAM.policy.p2);
                     } else {
                       var s$$2 = t;
-                      var y$$31 = JAM.call(t.charCodeAt, t, [0], JAM.policy.p4);
-                      var v3344 = 31 < y$$31;
+                      var y$$30 = JAM.call(t.charCodeAt, t, [0], JAM.policy.p4);
+                      var v3344 = 31 < y$$30;
                       if (v3344) {
-                        v3344 = 127 > y$$31;
+                        v3344 = 127 > y$$30;
                       }
                       if (v3344) {
                         s$$2 = t;
                       } else {
-                        if (256 > y$$31) {
+                        if (256 > y$$30) {
                           s$$2 = "\\x";
-                          var v4184 = 16 > y$$31;
+                          var v4184 = 16 > y$$30;
                           if (!v4184) {
-                            v4184 = 256 < y$$31;
+                            v4184 = 256 < y$$30;
                           }
                           if (v4184) {
                             s$$2 = s$$2 + "0";
                           }
                         } else {
                           s$$2 = "\\u";
-                          var v3345 = 4096 > y$$31;
+                          var v3345 = 4096 > y$$30;
                           if (v3345) {
                             s$$2 = s$$2 + "0";
                           }
                         }
                         var v3346 = s$$2;
-                        var v4185 = JAM.call(y$$31.toString, y$$31, [16], JAM.policy.p4);
+                        var v4185 = JAM.call(y$$30.toString, y$$30, [16], JAM.policy.p4);
                         s$$2 = v3346 + JAM.call(v4185.toUpperCase, v4185, [], JAM.policy.p4);
                       }
                       r = JAM.set(F, t, s$$2, JAM.policy.p2);
@@ -11330,7 +11279,7 @@ function v22() {
                 u = r;
               }
               introspect(JAM.policy.p2) {
-                x$$49[B] = u;
+                x$$48[B] = u;
               }
               k$$1 = k$$1 + 1;
               v1948 = k$$1 < f$$5.length;
@@ -11549,84 +11498,72 @@ function v22() {
     return;
   }
   function O(a$$27, b$$22, c$$17) {
-    var v1979 = typeof b$$22;
-    introspect(JAM.policy.p4) {
-      switch(v1979) {
-        case "string":
-          JAM.call(Fa, null, [b$$22, c$$17], JAM.policy.p4);
-          break;
-        case "number":
-          var v3369;
-          var v4682 = JAM.call(isFinite, null, [b$$22], JAM.policy.p4);
-          if (v4682) {
-            var v4927 = JAM.call(isNaN, null, [b$$22], JAM.policy.p4);
-            v4682 = !v4927;
-          }
-          var v4199 = v4682;
-          if (v4199) {
-            v3369 = b$$22;
-          } else {
-            v3369 = "null";
-          }
-          var v1973 = v3369;
-          JAM.call(c$$17.push, c$$17, [v1973], JAM.policy.p4);
-          break;
-        case "boolean":
-          JAM.call(c$$17.push, c$$17, [b$$22], JAM.policy.p4);
-          break;
-        case "undefined":
+    switch(typeof b$$22) {
+      case "string":
+        JAM.call(Fa, null, [b$$22, c$$17], JAM.policy.p4);
+        break;
+      case "number":
+        var v3369;
+        var v4682 = JAM.call(isFinite, null, [b$$22], JAM.policy.p4);
+        if (v4682) {
+          v4682 = !JAM.call(isNaN, null, [b$$22], JAM.policy.p4);
+        }
+        if (v4682) {
+          v3369 = b$$22;
+        } else {
+          v3369 = "null";
+        }
+        JAM.call(c$$17.push, c$$17, [v3369], JAM.policy.p4);
+        break;
+      case "boolean":
+        JAM.call(c$$17.push, c$$17, [b$$22], JAM.policy.p4);
+        break;
+      case "undefined":
+        JAM.call(c$$17.push, c$$17, ["null"], JAM.policy.p4);
+        break;
+      case "object":
+        if (null == b$$22) {
           JAM.call(c$$17.push, c$$17, ["null"], JAM.policy.p4);
           break;
-        case "object":
-          var v1974 = null == b$$22;
-          if (v1974) {
-            JAM.call(c$$17.push, c$$17, ["null"], JAM.policy.p4);
-            break;
+        }
+        if (b$$22 instanceof Array) {
+          var d$$11 = b$$22.length;
+          JAM.call(c$$17.push, c$$17, ["["], JAM.policy.p4);
+          var e$$10 = "";
+          var f$$3 = 0;
+          var v1975 = f$$3 < d$$11;
+          for (;v1975;) {
+            JAM.call(c$$17.push, c$$17, [e$$10], JAM.policy.p4);
+            JAM.call(O, null, [a$$27, b$$22[f$$3], c$$17], JAM.policy.p4);
+            e$$10 = ",";
+            f$$3 = f$$3 + 1;
+            v1975 = f$$3 < d$$11;
           }
-          var v1976 = b$$22 instanceof Array;
-          if (v1976) {
-            var d$$11 = b$$22.length;
-            JAM.call(c$$17.push, c$$17, ["["], JAM.policy.p4);
-            var e$$10 = "";
-            var f$$3 = 0;
-            var v1975 = f$$3 < d$$11;
-            for (;v1975;) {
-              JAM.call(c$$17.push, c$$17, [e$$10], JAM.policy.p4);
-              var v4200 = b$$22[f$$3];
-              JAM.call(O, null, [a$$27, v4200, c$$17], JAM.policy.p4);
-              e$$10 = ",";
-              f$$3 = f$$3 + 1;
-              v1975 = f$$3 < d$$11;
-            }
-            JAM.call(c$$17.push, c$$17, ["]"], JAM.policy.p4);
-            break;
-          }
-          JAM.call(c$$17.push, c$$17, ["{"], JAM.policy.p4);
-          d$$11 = "";
-          for (e$$10 in b$$22) {
-            var v1977 = JAM.call(b$$22.hasOwnProperty, b$$22, [e$$10], JAM.policy.p4);
-            if (v1977) {
-              f$$3 = b$$22[e$$10];
-              var v4683 = typeof f$$3;
-              var v4201 = "function" != v4683;
-              if (v4201) {
-                JAM.call(c$$17.push, c$$17, [d$$11], JAM.policy.p4);
-                JAM.call(Fa, null, [e$$10, c$$17], JAM.policy.p4);
-                JAM.call(c$$17.push, c$$17, [":"], JAM.policy.p4);
-                JAM.call(O, null, [a$$27, f$$3, c$$17], JAM.policy.p4);
-                d$$11 = ",";
-              }
+          JAM.call(c$$17.push, c$$17, ["]"], JAM.policy.p4);
+          break;
+        }
+        JAM.call(c$$17.push, c$$17, ["{"], JAM.policy.p4);
+        d$$11 = "";
+        for (e$$10 in b$$22) {
+          var v1977 = JAM.call(b$$22.hasOwnProperty, b$$22, [e$$10], JAM.policy.p4);
+          if (v1977) {
+            f$$3 = b$$22[e$$10];
+            var v4201 = "function" != typeof f$$3;
+            if (v4201) {
+              JAM.call(c$$17.push, c$$17, [d$$11], JAM.policy.p4);
+              JAM.call(Fa, null, [e$$10, c$$17], JAM.policy.p4);
+              JAM.call(c$$17.push, c$$17, [":"], JAM.policy.p4);
+              JAM.call(O, null, [a$$27, f$$3, c$$17], JAM.policy.p4);
+              d$$11 = ",";
             }
           }
-          JAM.call(c$$17.push, c$$17, ["}"], JAM.policy.p4);
-          break;
-        case "function":
-          break;
-        default:
-          var v3370 = typeof b$$22;
-          var v1978 = "Unknown type: " + v3370;
-          throw JAM.call(Error, null, [v1978], JAM.policy.p4);;
-      }
+        }
+        JAM.call(c$$17.push, c$$17, ["}"], JAM.policy.p4);
+        break;
+      case "function":
+        break;
+      default:
+        throw JAM.call(Error, null, ["Unknown type: " + typeof b$$22], JAM.policy.p4);;
     }
     return;
   }
@@ -11804,9 +11741,9 @@ function v22() {
           m = "";
         }
         c$$14 = JAM.call(b$$15, null, [a$$18, f$$2, g$$2, h$$5, m], JAM.policy.p4);
-      } catch (x$$48) {
-        var v4209 = JAM.call(x$$48.toString, x$$48, [], JAM.policy.p4) + "\n";
-        var v4691 = x$$48.stack;
+      } catch (x$$47) {
+        var v4209 = JAM.call(x$$47.toString, x$$47, [], JAM.policy.p4) + "\n";
+        var v4691 = x$$47.stack;
         if (!v4691) {
           v4691 = "";
         }

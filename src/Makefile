@@ -34,6 +34,7 @@ XSBDIR=$(MAINDIR)/xsb
 BDDDIR=$(MAINDIR)/bdd
 NWADIR=$(MAINDIR)/opennwa
 TXDIR=$(MAINDIR)/tx
+INTDIR=$(MAINDIR)/interpret
 UTLDIR=$(MAINDIR)/util
 WALADIR=$(MAINDIR)/wala
 HTMLDIR=$(MAINDIR)/html
@@ -69,6 +70,11 @@ BDDBASE=BDDRelation BDDRelationDomain
 BDDSRC=$(BDDBASE:%=$(BDDDIR)/%.java)
 BDDCLS=$(BDDSRC:.java=.class)
 
+# Java classes in the edu.wisc.cs.jam.interpret package
+INTBASE=SpiderMonkey
+INTSRC=$(INTBASE:%=$(INTDIR)/%.java)
+INTCLS=$(INTSRC:.java=.class)
+
 # Java classes in the com.google.javascript.jscomp package
 COMBASE=JAMControlFlowGraph JAMPassConfig ClosureUtil
 COMSRC=$(COMBASE:%=$(COMDIR)/%.java)
@@ -102,9 +108,9 @@ WALACLS=$(WALASRC:.java=.class)
 
 jam: $(JAMJAR)
 
-$(JAMJAR): $(JSCLS) $(ENVCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(NWACLS) $(TXCLS) $(HTMLCLS) $(COMCLS) $(MAINCLS)
+$(JAMJAR): $(JSCLS) $(ENVCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(INTCLS) $(NWACLS) $(TXCLS) $(HTMLCLS) $(COMCLS) $(MAINCLS)
 	mkdir -p ../bin
-	jar cfm $@ MANIFEST.MF $(MAINDIR)/*.class $(COMDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(ENVDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class
+	jar cfm $@ MANIFEST.MF $(MAINDIR)/*.class $(COMDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(ENVDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class $(INTDIR)/*.class
 
 util: $(UTILJAR)
 

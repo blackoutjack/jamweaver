@@ -145,14 +145,14 @@ function rtmItURL() {
     return;
   }
 }
-function getURLParameter(url$$3, name$$30, delimiter) {
+function getURLParameter(url$$2, name$$30, delimiter) {
   introspect(JAM.policy.p2) {
     var p = name$$30
   }
   introspect(JAM.policy.p2) {
     var n$$1 = p.length
   }
-  var i$$1 = JAM.call(url$$3.indexOf, url$$3, [p]);
+  var i$$1 = JAM.call(url$$2.indexOf, url$$2, [p]);
   var v;
   var s$$2;
   var e$$4;
@@ -165,15 +165,15 @@ function getURLParameter(url$$3, name$$30, delimiter) {
       introspect(JAM.policy.p2) {
         s$$2 = i$$1 + n$$1;
       }
-      e$$4 = JAM.call(url$$3.indexOf, url$$3, [delimiter, s$$2]);
-      h$$4 = JAM.call(url$$3.indexOf, url$$3, ["#", s$$2]);
+      e$$4 = JAM.call(url$$2.indexOf, url$$2, [delimiter, s$$2]);
+      h$$4 = JAM.call(url$$2.indexOf, url$$2, ["#", s$$2]);
       introspect(JAM.policy.p2) {
         var v13 = e$$4 == -1
       }
       introspect(JAM.policy.p2) {
         if (v13) {
           introspect(JAM.policy.p2) {
-            e$$4 = url$$3.length;
+            e$$4 = url$$2.length;
           }
         }
       }
@@ -197,7 +197,7 @@ function getURLParameter(url$$3, name$$30, delimiter) {
           }
         }
       }
-      v = JAM.call(url$$3.substring, url$$3, [s$$2, e$$4]);
+      v = JAM.call(url$$2.substring, url$$2, [s$$2, e$$4]);
     }
   }
   introspect(JAM.policy.p2) {

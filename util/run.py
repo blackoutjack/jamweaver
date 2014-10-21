@@ -45,8 +45,6 @@ def load_testcases(from_dir, defwarn=True):
 # /load_testcases
 
 def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False):
-  if refine is None:
-    refine = 3
   tot = 0
   info_ok = 0
   tot_ok = 0
@@ -81,15 +79,24 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
 
       tot += 1
 
+      # If the user provided a refinement limit, use that always.
+      # Otherwise, use some special logic.
       ref = refine
-      if not synonly:
-        if seeds is not None:
-          ref = 0
-        if base == 'timeout0':
-          # Don't waste too much time waiting.
-          opts.append('--querytimeout')
-          opts.append('5')
-          ref = 0
+      if ref is None:
+        ref = 3
+        if not synonly:
+          if seeds is not None:
+            ref = 0
+          if base.startswith('exfil_test'):
+            # These tests are to exercise the enforcement primarily,
+            # not the static analysis. Refinement takes too long.
+            ref = 0
+          if base == 'timeout0':
+            # This tests the query timeout mechanism.
+            # Don't waste too much time waiting.
+            opts.append('--querytimeout')
+            opts.append('5')
+            ref = 0
 
       # Print the name of the file being analyzed.
       jsname = os.path.basename(srcfl)

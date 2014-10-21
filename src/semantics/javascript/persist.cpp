@@ -281,6 +281,11 @@ bool callback_mode = false;
 // Whether native references (like document.getElementById) should
 // be assumed to point to the actual native object
 bool native_mode = false;
+// Whether an explicit constructor call (with |new|) is underway. This
+// is used within native constructors that need to behave as if they
+// were invoked as a constructor even if called as a function. See
+// #XMLHttpRequest as an example.
+bool construct_mode = false;
 // Once statement evaluation begins, we want to clear metadata that was
 // accumulated during the assertion phase when new metadata comes in.
 bool clear_next_call = false;
@@ -754,6 +759,21 @@ extern "C" int leave_clear_mode(CTXTdecl) {
   clear_next_assign = false;
   clear_next_read = false;
   return TRUE;
+}
+
+extern "C" int enter_construct_mode(CTXTdecl) {
+  construct_mode = true;
+  return TRUE;
+}
+
+extern "C" int leave_construct_mode(CTXTdecl) {
+  construct_mode = false;
+  return TRUE;
+}
+
+extern "C" int is_construct_mode(CTXTdecl) {
+  if (construct_mode) return TRUE;
+  return FALSE;
 }
 
 extern "C" int enter_native_mode(CTXTdecl) {

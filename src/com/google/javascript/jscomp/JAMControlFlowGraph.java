@@ -40,7 +40,7 @@ public class JAMControlFlowGraph {
 
   private Map<Node,State> stateMap;
   private Map<Function,State> functionEntryMap;
-  private Map<Function,List<State>> functionReturnMap;
+  private Map<Function,State> functionReturnMap;
 
   private Node externs;
 
@@ -51,7 +51,7 @@ public class JAMControlFlowGraph {
 
     stateMap = new HashMap<Node,State>();
     functionEntryMap = new HashMap<Function,State>();
-    functionReturnMap = new HashMap<Function,List<State>>();
+    functionReturnMap = new HashMap<Function,State>();
 
     //ControlFlowAnalysis cfa = new ControlFlowAnalysis(sm.getCompiler(), true, false);
     //cfa.process(externs, root);
@@ -68,7 +68,7 @@ public class JAMControlFlowGraph {
     return functionEntryMap;
   }
 
-  public Map<Function,List<State>> getFunctionReturnMap() {
+  public Map<Function,State> getFunctionReturnMap() {
     // Don't copy, given the friendly relationship with ControlStructure.
     return functionReturnMap;
   }
@@ -85,12 +85,8 @@ public class JAMControlFlowGraph {
   }
 
   protected void mapReturnState(Function f, State r) {
-    List<State> returns = functionReturnMap.get(f);
-    if (returns == null) {
-      returns = new ArrayList<State>();
-      functionReturnMap.put(f, returns);
-    }
-    returns.add(r);
+    assert !functionReturnMap.containsKey(f) : "Function has multiple return states: " + f.getName();
+    functionReturnMap.put(f, r);
   }
 
   protected void processStatement(Function f, State srcState, ExpSymbol sym, State destState) {
@@ -193,7 +189,12 @@ public class JAMControlFlowGraph {
 
     // Add the function entry pseudo-statement to the automaton.
     processEntryNode(f, entryNode, worklist);
+    // Don't overwrite the return state that was previously created.
+    if (worklist.isEmpty()) return;
+
+    // Establish a mapping between a function and a return node.
     State returnState = new State();
+    mapReturnState(f, returnState);
 
     // When the worklist is empty, we will have processed the global 
     // code entirely.
@@ -227,8 +228,6 @@ public class JAMControlFlowGraph {
         // This is the case when a throw statement ends a function.
         // %%% Route it to the implicit return node for now.
         State destState = returnState;
-        // Establish a mapping between a function and a return node.
-        mapReturnState(f, destState);
         caut.addEdge(caut.makeExceptionEdge(sym, srcState, destState));
       }
 
@@ -257,9 +256,6 @@ public class JAMControlFlowGraph {
             sym = new ExpSymbol(JSExp.create(sm, new Node(Token.RETURN)));
             srcState = midState;
           }
-
-          // Establish a mapping between a function and a return node.
-          mapReturnState(f, destState);
         } else {
 
           // Add the destination state to the worklist if necessary.

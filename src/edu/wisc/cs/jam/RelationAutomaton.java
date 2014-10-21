@@ -102,13 +102,11 @@ public class RelationAutomaton extends ControlAutomaton {
     learnedPredicates = new ArrayList<Predicate>();
 
     relations = new LinkedHashMap<Predicate,Map<Edge,Relation>>(); 
-    if (policyPath != null) {
-      for (Predicate p : policyPath.getPredicates()) {
-        relations.put(p, new LinkedHashMap<Edge,Relation>());
-      }
+    for (Predicate p : getPolicyPredicateKeys()) {
+      relations.put(p, new LinkedHashMap<Edge,Relation>());
     }
-    relations.put(Predicate.TRUE, new LinkedHashMap<Edge,Relation>());
 
+    // Initialize the |transitioningSymbols| collection.
     // Synchronize modifications to the static collection.
     if (policyPath != null) {
       synchronized (getClass()) {
@@ -133,6 +131,21 @@ public class RelationAutomaton extends ControlAutomaton {
     serialSymbolMap = new LinkedHashMap<String, ComboSymbol<PredicateSymbol,ExpSymbol>>();
   }
 
+  protected void mapClauseToTransition(QueryMap queryMap, Clause c, DataTransition tran) {
+    // Get the transition list for the clause
+    List<DataTransition> trans = queryMap.get(c);
+    if (trans == null) {
+      trans = new ArrayList<DataTransition>();
+      queryMap.put(c, trans);
+    }
+    
+    // Map the clause to the edges. It's organized like so since
+    // removeEdgeOrReturnClause can potentially return identical
+    // clauses for different transitions, and we want to avoid
+    // submitting both of them to the semantics.
+    trans.add(tran);
+  }
+
   // Retrieve the relation that weights the combination edge consisting
   // of the policy edge represented by the predicate p, and the given
   // control edge.
@@ -155,7 +168,9 @@ public class RelationAutomaton extends ControlAutomaton {
 
     // Get the stored relation.
     Relation rel = relations.get(p).get(ce);
-    if (rel == null) return relationDomain.getFalseRelation();
+    if (rel == null) {
+      return relationDomain.getFalseRelation();
+    }
     return rel;
   }
 
@@ -191,10 +206,19 @@ public class RelationAutomaton extends ControlAutomaton {
     return learnedPredicates.size();
   }
 
+  public boolean canTransition(PredicateValue pv, ExpSymbol sym) {
+    if (pv.getPredicate() == Predicate.TRUE) {
+      return true;
+    }
+    return transitioningSymbols.get(pv).contains(sym);
+  }
+
   // Return all control automaton symbols that may flip the given 
   // to its negation.
   public Set<ExpSymbol> getTransitioningSymbols(PredicateValue pv) {
     assert pv != null : "Null key passed to getTransitioningSymbols"; 
+    if (pv.getPredicate() == Predicate.TRUE)
+      return new LinkedHashSet<ExpSymbol>(getSymbols());
     Set<ExpSymbol> syms = transitioningSymbols.get(pv);
     assert syms != null : "Null transitioning symbols list: " + pv;
     return new LinkedHashSet<ExpSymbol>(syms);
@@ -233,83 +257,6 @@ public class RelationAutomaton extends ControlAutomaton {
         return true;
       }
     }
-    return false;
-  }
-
-  /*
-  // Returns true if we don't need to test the transition between the
-  // states. This assumes that omitEdgesWithSource was already called
-  // for state s0 (i.e. this function will not weed out edges that that
-  // one does).
-  protected boolean omitEdge(DataState s0, DataState s1) {
-    // The two states should either 1) contains the same policy
-    // predicates, or 2) have the untriggered version of the first
-    // false predicate in the pre-state, and the triggered version
-    // in the post-state.
-    
-    List<PredicateValue> pvs0 = s0.getValues();
-    List<PredicateValue> pvs1 = s1.getValues();
-
-    assert pvs0.size() == pvs1.size() : "Malformed data transition.";
-
-    boolean same = true;
-    List<Predicate> polPreds = policyPath.getPredicates();
-    for (int i=0; i<polPreds.size(); i++) {
-      Predicate pp = polPreds.get(i);
-      boolean prepos = pvs0.contains(pp.getPositive());
-      boolean postpos = pvs1.contains(pp.getPositive());
-
-      if (prepos ^ postpos) {
-        // If there is more than one discrepancy, omit the edge.
-        if (!same) return true;
-        // If the policy transition isn't from the negation of the
-        // policy predicate to it's positive value, omit the edge.
-        if (prepos) return true;
-        same = false;
-      }
-    }
-
-    return false;
-  }
-  */
-
-  // Determine whether relation edges away from this state should even
-  // be considered.
-  protected boolean omitEdgesWithSource(DataState ds) {
-    // Due to the event-like interpretation of policy predicates (i.e.
-    // program operations are observed and interpreted with only an eye
-    // towards the next policy transition out of the current state),
-    // we are able to restrict the state transitions tested for
-    // inclusion in the relations.
-    // 
-    // For example, a policy path with 4 states (and therefore 3
-    // transitions/predicates) will only need to test relation edges out
-    // of the states consisting of the following policy predicates (and
-    // any potential combination of learned/seeded predicates).
-    //
-    // (~a,~b,~c), (a,~b,~c), (a,b,~c)
-    //
-    // The final state, which is (a,b,c), never needs to have outgoing
-    // edges, so we omit that also.
-    boolean negFound = false;
-    List<PredicateValue> stateVals = ds.getValues();
-    for (Predicate pp : policyPath.getPredicates()) {
-      if (stateVals.contains(pp.getNegative())) {
-        // Record that a negative policy predicate has been encountered.
-        negFound = true;
-      } else {
-        if (negFound) {
-          // Here we've encountered a positive predicate after a
-          // negative was found, which matches the pattern of pre-states
-          // we want to omit.
-          return true;
-        }
-      }
-    }
-
-    // This is the final state ... don't check out-edges from here.
-    if (!negFound) return true;
-
     return false;
   }
 
@@ -395,7 +342,8 @@ public class RelationAutomaton extends ControlAutomaton {
       // Only test what is most likely to fail: that a symbol can
       // change the value of this predicate.
       DataState d0 = new DataState();
-      d0.addValue(p.getNegative());
+      if (!p.isEventPredicate())
+        d0.addValue(p.getNegative());
       DataState d1 = new DataState();
       d1.addValue(p.getPositive());
 
@@ -426,7 +374,7 @@ public class RelationAutomaton extends ControlAutomaton {
           prepareQuery(trans, queryMap);
 
           // Test the other direction for non-policy predicates.
-          if (!p.isPolicyPredicate()) {
+          if (!p.isEventPredicate()) {
             DataTransition backtrans = new DataTransition(null, d1, sym, d0);
             prepareQuery(backtrans, queryMap);
           }
@@ -458,7 +406,7 @@ public class RelationAutomaton extends ControlAutomaton {
               addToCleverCache(sym, preState, postState);
             } else {
               // We note that this symbol can change this predicate value.
-              PredicateValue pre = preState.getValues().get(0);
+              PredicateValue pre = p.getNegative();
               transitioningSymbols.get(pre).add(sym);
             }
           }
@@ -593,47 +541,66 @@ public class RelationAutomaton extends ControlAutomaton {
   // appropriate in some way without have to query the semantics.
   // The idea is that if a statement has not been shown to change the
   // data state, then the data state doesn't change.
-  protected boolean setIdentityRelationForNoOpSymbol(Predicate p, ExpSymbol sym) {
+  protected boolean setKnownRelation(Predicate p, ExpSymbol sym) {
     // Predicate |p| is assumed to be a policy transition symbol.
+    assert p == Predicate.TRUE || p.isPolicyPredicate();
 
-    boolean noOp = true;
+    boolean ret = false;
+    boolean noOp = false;
+    boolean havoc = sym.isHavoc();
 
-    // The implemented logic doesn't apply to BranchSymbols and
-    // FunctionEntrySymbols, so return false if they relation may need
-    // more investigation.
-    if (sym instanceof BranchSymbol) {
-      if (checkBranch) return false;
-      // Fall through with noOp = true.
-    } else if (sym instanceof FunctionEntrySymbol) {
-      if (checkFunctionEntry) return false;
-      // Fall through with noOp = true.
-    } else if (!sym.isNoOp()) {
-      // Use some special logic to determine what symbols we can assign
-      // the id relation to, given the predicates in our model.
-      if (p != null && getTransitioningSymbols(p.getNegative()).contains(sym)) {
-        // The policy predicate can be triggered by this symbol.
-        noOp = false;
-      } else {
-        for (Predicate lp : getLearnedPredicates()) {
-          if (getTransitioningSymbols(lp.getNegative()).contains(sym)) {
-            noOp = false;
-            break;
-          } else if (getTransitioningSymbols(lp.getPositive()).contains(sym)) {
-            noOp = false;
-            break;
+    if (!canTransition(p.getNegative(), sym)) {
+      Relation rel = relationDomain.getFalseRelation();
+      setRelation(p, sym, rel);
+      return true;
+    }
+
+    if (!havoc) {
+      noOp = true;
+      // The implemented logic doesn't apply to BranchSymbols and
+      // FunctionEntrySymbols, so return false if they relation may need
+      // more investigation.
+      if (sym instanceof BranchSymbol) {
+        if (checkBranch) noOp = false;
+        // Else fall through with noOp = true.
+      } else if (sym instanceof FunctionEntrySymbol) {
+        if (checkFunctionEntry) noOp = false;
+        // Else fall through with noOp = true.
+      } else if (!sym.isNoOp()) {
+        // Use some special logic to determine what symbols we can assign
+        // the id relation to, given the predicates in our model.
+        if (canTransition(p.getNegative(), sym)) {
+          // The policy predicate can be triggered by this symbol.
+          noOp = false;
+        } else {
+          for (Predicate lp : getLearnedPredicates()) {
+            if (canTransition(lp.getNegative(), sym)) {
+              noOp = false;
+              break;
+            } else if (canTransition(lp.getPositive(), sym)) {
+              noOp = false;
+              break;
+            }
           }
         }
       }
     }
+    assert !(havoc && noOp);
 
     if (noOp) {
       Relation idrel = relationDomain.getIdRelation();
       // The policy self-edges get the id relation, while the policy
       // transitions are impossible.
-      setRelation(Predicate.TRUE, sym, idrel);
+      setRelation(p, sym, idrel);
+      ret = true;
+    } else if (havoc) {
+      PredicateValue pre = p.getNegative();
+      Relation rel = relationDomain.getTrueRelation();
+      setRelation(p, sym, rel);
+      ret = true;
     }
 
-    return noOp;
+    return ret;
   }
 
   // %%% This is an awful function and should be phased out.
@@ -652,9 +619,10 @@ public class RelationAutomaton extends ControlAutomaton {
 
       // An event predicate value has no bearing on any transitions if
       // it's value is positive in the prestate.
-      if (pv.isEventValue() && pv.isPositive()) continue;
+      assert !pv.isEventValue(): "Event value in prestate: " + pv;
+      assert !(pv.getPredicate() == Predicate.TRUE) : "True predicate included in prestate: " + pre;
 
-      if (getTransitioningSymbols(pv).contains(sym)) {
+      if (canTransition(pv, sym)) {
         noOp = false;
         break;
       }
@@ -662,31 +630,6 @@ public class RelationAutomaton extends ControlAutomaton {
 
     return noOp;
   }
-
-  /*
-  protected Relation getFullRelation() {
-    // %%% Maybe no longer necessary.
-    // Create the relation for this symbol.
-    Relation fullRel = relationDomain.getTrueRelation();
-    // Remove edges that we know we don't want, having to do with the
-    // restriction that the policy only advances one step on any symbol.
-    List<DataState> cube = getFullCube();
-    for (DataState preState : cube) {
-      if (omitEdgesWithSource(preState)) {
-        // In some cases, we don't need to take the effort
-        // to check edges out of this state.
-        fullRel.removeEdges(preState, null);
-      } else {
-        for (DataState postState : cube) {
-          if (omitEdge(preState, postState)) {
-            fullRel.removeEdge(preState, postState); 
-          }
-        }
-      }
-    }
-    return fullRel;
-  }
-  */
 
   // Get a single list containing all combinations of all predicates.
   public List<DataState> getFullCube() {
@@ -708,10 +651,8 @@ public class RelationAutomaton extends ControlAutomaton {
     return createClause(pre, fsym, null);
   }
 
-  // Do the policy predicates contained in the pre- and post-state
-  // represent a policy transition? This assumes that omitEdge
-  // and omitEdgesFromSource have already weeded out all the transitions
-  // that have more than one policy predicate difference.
+  // Do the predicate values contained in the pre- and post-state
+  // represent a policy transition?
   public Predicate getPolicyTransitionPredicate(DataState s0, DataState s1) {
     List<PredicateValue> pvs0 = s0.getValues();
     List<PredicateValue> pvs1 = s1.getValues();
@@ -719,7 +660,9 @@ public class RelationAutomaton extends ControlAutomaton {
       // If the predicate is contained in the post-state, and its
       // negation is contained in the pre-state, we have ourselves a
       // policy transition.
-      if (pvs0.contains(pp.getNegative()) && pvs1.contains(pp.getPositive())) {
+      PredicateValue pre = pp.isEventPredicate() ? null : pp.getNegative();
+      PredicateValue post = pp.getPositive();
+      if ((pre == null || pvs0.contains(pre)) && pvs1.contains(post)) {
         // Return the (positive transitioning version of) the policy
         // predicate that differed between the two states.
         return pp;
@@ -736,34 +679,19 @@ public class RelationAutomaton extends ControlAutomaton {
       if (learnedPredicates.size() == 0) return null;
     }
 
-    // Tell createClause what policy predicate we're interested in, if
-    // any.
-    Predicate pp = getPolicyTransitionPredicate(s0, s1);
-
-    return createClause(s0, sym, s1, pp);
-  }
-
-  protected Clause createClause(DataState s0, ExpSymbol sym, DataState s1) {
-    return createClause(s0, sym, s1, null);
+    return createClause(s0, sym, s1);
   }
 
   // Generate a clause testing the transition on statement sym
   // between states s0 and s1.
-  protected Clause createClause(DataState s0, ExpSymbol sym, DataState s1, Predicate polpred) {
+  protected Clause createClause(DataState s0, ExpSymbol sym, DataState s1) {
     List<Clause> clauses = new ArrayList<Clause>();
     String transitionString = "";
 
     if (s0 != null) {
       List<PredicateValue> pvsBefore = s0.getValues();
-      for (PredicateValue pv : new ArrayList<PredicateValue>(pvsBefore)) {
-        if (pv.isEventValue()) {
-          // Remove any event predicate values, since these don't apply
-          // in the pre-state.
-          pvsBefore.remove(pv);
-        }
-      }
-
       for (PredicateValue pv : pvsBefore) {
+        assert !pv.isEventValue();
         if (JAM.Opts.debugQueries) {
           if (pv.equals(pv.getPredicate().getNegative())) {
             transitionString += "-";
@@ -795,16 +723,6 @@ public class RelationAutomaton extends ControlAutomaton {
       
     if (s1 != null) {
       List<PredicateValue> pvsAfter = s1.getValues();
-      for (PredicateValue pv : new ArrayList<PredicateValue>(pvsAfter)) {
-        if (pv.isEventValue()) {
-          if (polpred == null || !pv.equals(polpred.getPositive())) {
-            // Remove any policy predicate values that don't equal the
-            // positive value of the specified predicate.
-            pvsAfter.remove(pv);
-          }
-        }
-      }
-
       for (PredicateValue pv : pvsAfter) {
         if (JAM.Opts.debugQueries) {
           transitionString += " " + pv.getPredicate().getId();
@@ -962,6 +880,50 @@ public class RelationAutomaton extends ControlAutomaton {
     relationDomain = new BDDRelationDomain(preds);
   }
 
+  // Returns a list of DataTransitions that are realizable in the
+  // current abstraction, which will give the call a chance to refine.
+  protected List<DataTransition> processBatch(QueryMap queryMap) {
+    List<Clause> clauses = new ArrayList<Clause>(queryMap.keySet());
+    Dbg.out("Processing batch results: " + clauses.size(), 3);
+
+    // Process the query batch.
+    List<Boolean> results = semantics.batchQuery(clauses, true);
+
+    // The semantics module should guarantee this.
+    assert results.size() == clauses.size();
+
+    List<DataTransition> realizableTransitions = new ArrayList<DataTransition>();
+
+    // Process the results with regards to the corresponding clause.
+    for (int i=0; i<clauses.size(); i++) {
+      Boolean result = results.get(i);
+      Clause c = clauses.get(i);
+      List<DataTransition> transitions = queryMap.get(c);
+
+      for (DataTransition tran : transitions) {
+        // Retrieve the relation for this symbol.
+        Relation rel = tran.getRelation();
+        DataState preState = tran.getSource();
+        DataState postState = tran.getDestination();
+        ExpSymbol sym = tran.getSymbol();
+
+        if (!result.booleanValue()) {
+          rel.removeEdges(preState, postState);
+
+          // If we got to the point where we made a query to XSB
+          // and it was unsat, we can record the blocking predicates
+          // in the clever cache.
+          addToCleverCache(sym, preState, postState);
+        } else {
+          realizableTransitions.add(tran);
+        }
+      }
+    }
+
+    return realizableTransitions;
+  }
+
+
   protected void loadInitializerRelation() {
 
     Relation rel = relationDomain.getTrueRelation();
@@ -1001,26 +963,6 @@ public class RelationAutomaton extends ControlAutomaton {
       }
     }
   }
-
-  /*
-  public void removeObsoleteStates(List<DataState> cube) {
-    for (DataState ds : new ArrayList<DataState>(cube)) {
-      boolean negFound = false;
-      for (Predicate p : policyPath.getPredicates()) {
-        if (ds.getValues().contains(p.getNegative())) {
-          negFound = true;
-        } else {
-          // If a previous policy predicate was false, and the current
-          // one is true, the state isn't relevant.
-          if (negFound) {
-            cube.remove(ds);
-            break;
-          }
-        }
-      }
-    }
-  }
-  */
 
   // Collect new learned predicates passed by the client, and indicate
   // through the loaded member whether there are any new predicates.
@@ -1068,6 +1010,22 @@ public class RelationAutomaton extends ControlAutomaton {
     //uniqueRelations.clear();
   }
 
+  // We often want to loop through all the policy predicates to build
+  // relations for policy transitions, including |null| to track general
+  // state transitions.
+  protected List<Predicate> getPolicyPredicateKeys() {
+    List<Predicate> polpreds = null;
+    if (policyPath != null) {
+      polpreds = policyPath.getPredicates();
+    } else {
+      polpreds = new ArrayList<Predicate>();
+    }
+    // The TRUE predicate denotes no policy transition (i.e. a self-loop
+    // in the policy automaton).
+    polpreds.add(Predicate.TRUE);
+    return polpreds;
+  }
+
   // This is called when no new predicates have been added, (but a
   // runtime check may have been), so only particular edges need to be
   // modified in place.
@@ -1078,8 +1036,12 @@ public class RelationAutomaton extends ControlAutomaton {
       Exp s = sym.getExp();
       if (cm.isRuntimeCheck(s)) {
         Set<Edge> symEdges = getEdgesWithSymbol(sym);
+        // Runtime checks are assumed to not change the state or
+        // trigger event predicates.
         Relation id = relationDomain.getIdRelation();
-        setRelation(Predicate.TRUE, sym, id);
+        for (Predicate pp : getPolicyPredicateKeys()) {
+          setRelation(pp, sym, id);
+        }
       }
     }
   }
@@ -1180,8 +1142,7 @@ public class RelationAutomaton extends ControlAutomaton {
 
     // Don't output any policy-transitioning edge if this symbol
     // cannot transition the policy on this predicate.
-    if (p != null && !p.equals(Predicate.TRUE)
-        && !getTransitioningSymbols(p.getNegative()).contains(ns))
+    if (!canTransition(p.getNegative(), ns))
       return;
 
     Relation rel = getRelation(p, cedge);

@@ -15,6 +15,7 @@ public class CallbackEntrySymbol extends ExpSymbol {
 
   @Override
   public boolean isNoOp() {
+    // %%% Should this be false?
     return true;
   }
 

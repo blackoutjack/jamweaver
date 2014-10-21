@@ -62,6 +62,9 @@
 :- export current_func/1.
 :- export evalunary/3.
 :- export meta_clear/0.
+:- export enter_construct_mode/0.
+:- export leave_construct_mode/0.
+:- export is_construct_mode/0.
 :- export enter_symbolic_mode/0.
 :- export enter_concrete_mode/0.
 :- export enter_clear_mode/0.

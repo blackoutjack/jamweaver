@@ -112,14 +112,14 @@ public class CartesianAutomaton extends RelationAutomaton {
     return c;
   }
 
-  protected void loadQueryBatch(Map<Clause,List<DataTransition>> queryMap, Predicate p, List<DataState> preStateCube, List<List<DataState>> postStateCubes) {
+  protected void loadQueryBatch(QueryMap queryMap, Predicate p, List<DataState> preStateCube, List<List<DataState>> postStateCubes) {
 
     // Examine all possible internal edges to generate all
     // semantically viable edges.
     for (ExpSymbol sym : getSymbols()) {
 
       // Return transitions and other no-ops just have the id relation.
-      if (setIdentityRelationForNoOpSymbol(p, sym)) continue;
+      if (setKnownRelation(p, sym)) continue;
 
       Relation rel = p == null ? relationDomain.getTrueRelation() : getRelation(null, sym).copy();
       setRelation(p, sym, rel);
@@ -127,9 +127,6 @@ public class CartesianAutomaton extends RelationAutomaton {
       // The edges can be traversed without restriction if there are no
       // predicates to prevent it.
       if (getRelationSize() == 0) continue;
-
-      // Havoc symbols have the unrestricted true relation.
-      if (sym.isHavoc()) continue;
 
       if (p != null) {
         DataState polPostState = new DataState();
@@ -179,19 +176,8 @@ public class CartesianAutomaton extends RelationAutomaton {
             if (!JAM.Opts.syntaxOnly && c != null) {
               // We can't tell whether the transition is valid, so add
               // it to the batch to send to the semantics.
-   
-              // Get the transition list for the clause
-              List<DataTransition> trans = queryMap.get(c);
-              if (trans == null) {
-                trans = new ArrayList<DataTransition>();
-                queryMap.put(c, trans);
-              }
-              
-              // Map the clause to the edges. It's organized like so since
-              // addEdgeOrReturnClause can potentially return identical
-              // clauses for different transitions, and we want to avoid
-              // submitting both of them to the semantics.
-              trans.add(new DataTransition(rel, preState, sym, postState));
+              DataTransition tran = new DataTransition(rel, preState, sym, postState);
+              mapClauseToTransition(queryMap, c, tran);
             }
           }
         }
@@ -201,12 +187,13 @@ public class CartesianAutomaton extends RelationAutomaton {
 
   // Compute the relations for all non-call and non-return nodes.
   protected void loadInternalRelationsBatch(List<DataState> preStateCube, List<List<DataState>> postStateCubes) {
+    /*
     Dbg.writeQueryHeader("Batching internal relations", false);
 
     // Associate a clause with the data transitions it evaluates.
     QueryMap queryMap = new QueryMap();
     // Load the queries for the policy self-edges.
-    loadQueryBatch(queryMap, null, preStateCube, postStateCubes);
+    loadQueryBatch(queryMap, Predicate.TRUE, preStateCube, postStateCubes);
     // Loop through all the policy predicates to build the relations for
     // policy transitions.
     for (Predicate p : policyPath.getPredicates()) {
@@ -245,6 +232,72 @@ public class CartesianAutomaton extends RelationAutomaton {
         }
       }
     }
+    */
+
+    Dbg.writeQueryHeader("Batching internal relations", false);
+
+    // Associate a clause with the data transitions it evaluates.
+    QueryMap queryMap = new QueryMap();
+
+    for (Predicate p : getPolicyPredicateKeys()) {
+      for (ExpSymbol sym : getSymbols()) {
+
+        // Return transitions and other no-ops just get the id relation.
+        if (setKnownRelation(p, sym)) continue;
+
+        // We start with the havoc relation and whittle our way down.
+        // This helps ensure by construction that we're conservative.
+        Relation rel = relationDomain.getTrueRelation();
+        setRelation(p, sym, rel);
+
+        for (DataState preState : preStateCube) {
+          // The null set of predicates can't preclude any transition.
+          if (preState.getValues().size() == 0) continue;
+
+          // Event predicates are meaningless in the prestate, but if
+          // the policy predicate is not an event, copy the DataState
+          // and add the negative policy predicate value.
+          if (p != Predicate.TRUE && !p.isEventPredicate()) {
+            preState = new DataState(preState);
+            preState.addValue(p.getNegative());
+          }
+
+          boolean noOp = false; //isNoOpFromState(sym, preState);
+
+          for (List<DataState> postStateCube : postStateCubes) {
+            for (DataState postState : postStateCube) {
+
+              if (p != Predicate.TRUE) {
+                postState = new DataState(postState);
+                postState.addValue(p.getPositive());
+              }
+
+              Clause c = null;
+              if (noOp) {
+                if (hasDataDifference(preState, postState))
+                  rel.removeEdges(preState, postState);
+              } else {
+                // Test whether the transition is possible given the
+                // semantics of the program statement represented by the 
+                // ExpSymbol.
+                if (!JAM.Opts.syntaxOnly)
+                  c = removeEdgeOrReturnClause(rel, sym, preState, postState);
+              }
+
+              if (c != null) {
+                // We can't tell offhand whether the transition is valid,
+                // so add it to the batch to send to the semantics.
+                DataTransition tran = new DataTransition(rel, preState, sym, postState);
+                mapClauseToTransition(queryMap, c, tran);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    processBatch(queryMap);
+    queryMap.clear();
   }
 
   /*
@@ -303,7 +356,7 @@ public class CartesianAutomaton extends RelationAutomaton {
     for (ExpSymbol sym : getSymbols()) {
 
       // Return transitions and other no-ops just have the id relation.
-      if (setIdentityRelationForNoOpSymbol(sym)) continue;
+      if (setKnownRelation(sym)) continue;
       
       Relation rel = fullRel.copy();
       // Associate the relation with the edges labeled by this symbol.

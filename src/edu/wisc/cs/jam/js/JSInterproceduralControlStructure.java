@@ -305,15 +305,15 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
     // Now add all of the return edges
     for (Function curFunc : allFunctions) {
 
-      // Get the return sites, and the calling functions
-      List<State> returnStates = functionReturnMap.get(curFunc);
+      // Get the return site, and the calling functions
+      State returnState = functionReturnMap.get(curFunc);
 
       // If there are no return sites for a function, it must be the case
       // that it always throws an uncaught exception, so connect this to
       // the end/loopback state for the program.
       // %%% See colorpicker.js for an example. Not sure if this is safe
       // %%% generally.
-      if (returnStates == null) {
+      if (returnState == null) {
         // %%% Hack this for now.
         //Dbg.warn("Cannot find return site states: " + curFunc.getName());
         continue;
@@ -341,67 +341,47 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
       // information.
       callingSites.addAll(conservativeCalls); 
 
-      // Loop through all the returns. We may have to alter the return
-      // state collection, so we copy it first.
-      List<State> retStates = new ArrayList<State>(returnStates);
-      for (State retSource : retStates) {
-        if (JAM.Opts.debug) {
-          // Verify that there is an explicit return statement on each
-          // return edge.
-          List<Edge> inedges = getInEdges(retSource);
-          boolean isExplicit = false;
-          for (Edge re : inedges) {
-            ExpSymbol insym = re.getSymbol();
+      if (JAM.Opts.debug) {
+        // Verify that there is an explicit return statement on each
+        // return edge.
+        List<Edge> inedges = getInEdges(returnState);
+        boolean isExplicit = false;
+        for (Edge re : inedges) {
+          ExpSymbol insym = re.getSymbol();
 
-            // Otherwise this should definitely be a ExpSymbol.
-            ExpSymbol sym = re.getSymbol();
-            Exp rsym = sym.getExp();
-            if (rsym.isReturn() || rsym.isThrow()) {
-              isExplicit = true;
-              // Keep going to test following assertion.
-            } else {
-              assert false : "Something other than return on return edge: " + rsym.toCode();
-            }
+          // Otherwise this should definitely be a ExpSymbol.
+          ExpSymbol sym = re.getSymbol();
+          Exp rsym = sym.getExp();
+          if (rsym.isReturn() || rsym.isThrow()) {
+            isExplicit = true;
+            // Keep going to test following assertion.
+          } else {
+            assert false : "Something other than return on return edge: " + rsym.toCode();
           }
-
-          assert isExplicit : "Return edge without explicit return";
         }
 
-        /*
-        // Add an edge with an argumentless return as the symbol.
-        if (!isExplicit) {
-          State newRetSource = new State();
-          Edge implicitRet = makeEdge(ExpSymbol.IMPLICIT_RETURN, retSource, newRetSource);
-          addEdge(implicitRet);
-          // Alter the return state collection to reflect the new edge.
-          // %%% It would likely be cleaner to do this in
-          // %%% JAMControlFlowGraph.
-          returnStates.remove(retSource);
-          retSource = newRetSource;
-          returnStates.add(newRetSource);
+        assert isExplicit : "Return edge without explicit return";
+      }
+
+      for (Callsite curSite : callingSites) {
+        // If we haven't processed the node containing this call,
+        // we have a problem.
+        Node callNode = curSite.getAstNode();
+        Node stmt = ExpUtil.getEnclosingStatement(callNode);
+        State callDest = stateMap.get(stmt);
+        if (callDest == null) {
+          Dbg.warn("Cannot find callsite state: " + callNode);
+          continue;
         }
-        */
 
-        for (Callsite curSite : callingSites) {
-          // If we haven't processed the node containing this call,
-          // we have a problem.
-          Node callNode = curSite.getAstNode();
-          Node stmt = ExpUtil.getEnclosingStatement(callNode);
-          State callDest = stateMap.get(stmt);
-          if (callDest == null) {
-            Dbg.warn("Cannot find callsite state: " + callNode);
-            continue;
-          }
+        // Finally, add the return edge
+        State calledFrom = callStateMap.get(curSite);
 
-          // Finally, add the return edge
-          State calledFrom = callStateMap.get(curSite);
+        // This will happen in the case of externs.
+        if (calledFrom == null) break;
 
-          // This will happen in the case of externs.
-          if (calledFrom == null) break;
-
-          Edge retEdge = makeReturnEdge(retSym, retSource, calledFrom, callDest);
-          addEdge(retEdge);
-        }
+        Edge retEdge = makeReturnEdge(retSym, returnState, calledFrom, callDest);
+        addEdge(retEdge);
       }
     }
   }

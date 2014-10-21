@@ -90,7 +90,14 @@ public class CounterExample {
       Exp s = sym.getExp();
 
       // This is necessary to skip BLOCK nodes and the like.
-      if (sym.isNoOp()) continue;
+      // %%% Don't want to change CBESymbol.isNoOp to false right now,
+      // %%% for fear of other effects elsewhere.
+      if (!(sym instanceof CallbackEntrySymbol) && sym.isNoOp())
+        continue;
+      // Don't include the final RETURN node in the {#main} function,
+      // because it screws up the query.
+      if (s.isReturn() && s.getParent() == null)
+        continue;
 
       // Don't process instrumentation during counterexample checking.
       if (cm.isRuntimeCheck(s)) continue;

@@ -1980,7 +1980,9 @@ aconstruct(H,L,L1,Args,HP,LP,EP) :-
   new_object('"Object"',L2,NewObj),
   alloc(H,NewObj,H3,L3),
   add_constr(L1),
-  acall(H3,L,L1,L3,Args,H4,_,CR),
+  enter_construct_mode,
+  (acall(H3,L,L1,L3,Args,H4,_,CR)->
+  leave_construct_mode;leave_construct_mode,fail),
   aconstructcall(H4,L,L3,CR,HP,LP,EP).
 
 % I-Construct-Global
@@ -1991,7 +1993,9 @@ aconstruct(H,L,L1,Args,HP,LP,EP) :-
   new_object('"Object"','#Object#prototype',NO),
   alloc(H,NO,H2,L2),
   add_constr(L1),
-  acall(H2,L,L1,L2,Args,H3,_,CR),
+  enter_construct_mode,
+  (acall(H2,L,L1,L2,Args,H3,_,CR)->
+  leave_construct_mode;leave_construct_mode,fail),
   aconstructcall(H3,L,L2,CR,HP,LP,EP).
 
 % Get the @Class to assign to objects constructed by this function

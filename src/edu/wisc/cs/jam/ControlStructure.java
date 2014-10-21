@@ -51,7 +51,7 @@ public abstract class ControlStructure extends ControlAutomaton {
   protected Map<Function,State> functionEntryMap;
 
   // Maps a function to the states to which it can return
-  protected Map<Function,List<State>> functionReturnMap;
+  protected Map<Function,State> functionReturnMap;
 
   // Callsites for which we have no target information
   protected Collection<Callsite> conservativeCalls;
@@ -238,11 +238,10 @@ public abstract class ControlStructure extends ControlAutomaton {
       addEdge(callbackEdge);
 
       // Get the return sites for this function
-      List<State> returnStates = functionReturnMap.get(curFunc);
+      State returnState = functionReturnMap.get(curFunc);
       // %%% See note above about hack.
-      if (returnStates == null) continue;
-      assert returnStates != null : "Can't find return states for function " + curFunc.getName();
-      assert returnStates.size() > 0 : "No return states for function " + curFunc.getName();
+      if (returnState == null) continue;
+      assert returnState != null : "Can't find return state for function " + curFunc.getName();
 
       // Either use the global return symbol, or create a function-
       // specific one, which can be useful for debugging.
@@ -251,12 +250,9 @@ public abstract class ControlStructure extends ControlAutomaton {
         retSym = new ReturnSymbol(sm, curFunc);
       }
 
-      // Loop through all of the function's exit points
-      for (State retState : returnStates) {
-        // And insert the return edge
-        Edge retEdge = makeReturnEdge(retSym, retState, loopState, loopState);
-        addEdge(retEdge);
-      }
+      // And insert the return edge
+      Edge retEdge = makeReturnEdge(retSym, returnState, loopState, loopState);
+      addEdge(retEdge);
     }
   }
 

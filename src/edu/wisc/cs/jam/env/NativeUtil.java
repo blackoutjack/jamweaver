@@ -231,11 +231,13 @@ public class NativeUtil {
           assert len == 4 : "Invalid native property specification: " + line;
           // Map location to expression, e.g. #window --> window.
           if (isPrimitiveLocation(parts[2])) {
+            // Remove the "#" from the beginning.
+            String expr = parts[2].substring(1);
             if (!loadFromSerializedLE) {
-              nativeLocationToExpression.put(parts[2], parts[2]);
+              nativeLocationToExpression.put(parts[2], expr);
             }
             if (!loadFromSerializedEL) {
-              nativeExpressionToLocation.put(parts[2], parts[2]);
+              nativeExpressionToLocation.put(expr, parts[2]);
             }
           } else if (isNativeLocation(parts[2])) {
             //Dbg.dbg("Natives: " + parts[2] + " / " + parts[3]);

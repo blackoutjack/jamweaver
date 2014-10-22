@@ -41,8 +41,8 @@ REPACK_SCRIPT = os.path.join(UTILDIR, 'repack.py')
 DEFAULT_POLICY = os.path.join(MICROBENCHMARK_DIR, 'simple.policy')
 DEFAULT_POLICIES = {
   MICROBENCHMARK_DIR: os.path.join(MICROBENCHMARK_DIR, 'simple.policy'),
-  BENCHMARK_DIR: os.path.join(MICROBENCHMARK_DIR, 'exfil_test.policy'),
-  WEBSITE_DIR: os.path.join(MICROBENCHMARK_DIR, 'exfil_test.policy'),
+  BENCHMARK_DIR: os.path.join(MICROBENCHMARK_DIR, 'exfil_test.call.policy'),
+  WEBSITE_DIR: os.path.join(MICROBENCHMARK_DIR, 'exfil_test.call.policy'),
 }
 
 JAMSCRIPT_DOCDIR = os.path.join(JAMSCRIPT_DIR, 'doc')
@@ -62,6 +62,34 @@ JAMCOMMAND = os.getenv('JAMCOMMAND', 'java -ea -Xms256m -Xmx3072m -jar ' + JAMJA
 JAMDBGCOMMAND = os.getenv('JAMDBGCOMMAND', 'java -ea -Xms256m -Xmx3072m -Xdebug -agentlib:jdwp=transport=dt_socket,address=localhost:9009,server=y,suspend=n -jar ' + JAMJAR).split(' ')
 JAMUTILJAR = os.path.join(BINDIR, "util.jar")
 JAMUTILCOMMAND = os.getenv('JAMUTILCOMMAND', 'java -jar ' + JAMUTILJAR).split(' ')
+
+# Benchmark applications that will blow up interprocedural analysis.
+LARGE_BENCHMARKS = [
+  'phylojive',
+  'octane',
+  'googlemaps',
+  'octane-mandreel',
+  'octane-pdf',
+  'octane-typescript',
+]
+
+# Keys for source code output produced by JAM analysis.
+SOURCE_KEYS = [
+  'original',
+  'closure',
+  'normalized',
+  'instrumented',
+  'indirection',
+  'collapsed',
+  'optimized',
+]
+
+# Sources for which a modular (coarse-grained) version should be made.
+MODULAR_SOURCE_KEYS = [
+  'original',
+  'normalized',
+  'closure'
+]
 
 # Configure files that are symlinked in woven test case directories. 
 SYMLINK_FILES = [

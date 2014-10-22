@@ -27,6 +27,83 @@ from util import get_result_info
 from util import parse_info_file
 from util import compare_info
 
+# A collection of RunResult objects that can print a summary.
+class RunResults():
+  def __init__(self, desc='test cases', overwrite=False):
+    self.desc = desc
+    self.results = []
+    self.overwrite = overwrite
+    self.start = time.time()
+  # /RunResults.__init__
+
+  def add(self, res):
+    if isinstance(res, RunResults):
+      self.results.extend(res.results)
+    else:
+      assert isinstance(res, RunResult)
+      self.results.append(res)
+  # /RunResults.add
+
+  def printSummary(self):
+    self.end = time.time()
+    tottime = self.end - self.start
+
+    tot = 0
+    js_tot = 0
+    js_ok = 0
+    info_tot = 0
+    info_ok = 0
+    html_tot = 0
+    html_ok = 0
+    for res in self.results:
+      assert isinstance(res, RunResult)
+      tot += 1
+      if res.js_ok is not None:
+        js_tot += 1
+        if res.js_ok: js_ok += 1
+      if res.info_ok is not None:
+        info_tot += 1
+        if res.info_ok: info_ok += 1
+      if res.html_ok is not None:
+        html_tot += 1
+        if res.html_ok: html_ok += 1
+
+    if self.overwrite:
+      action = 'overwrote'
+    else:
+      action = 'verified'
+
+    txts = []
+    if js_tot > 0:
+      jstxt = '%d/%d JS output' % (js_ok, js_tot)
+      txts.append(jstxt)
+    if info_tot > 0:
+      infotxt = '%d/%d info files' % (info_ok, info_tot)
+      txts.append(infotxt)
+    if html_tot > 0:
+      htmltxt = '%d/%d HTML output' % (html_ok, html_tot)
+      txts.append(htmltxt)
+    
+    if len(txts) > 0:
+      restxt = '%s %s' % (action, ', '.join(txts))
+    else:
+      restxt = 'no results'
+
+    out('%s for %d %s; %.2fs\n' % (restxt, tot, self.desc, tottime))
+  # /RunResults.printSummary
+# /RunResults
+
+# The status of a single test case.
+# Pass |False| to initialize each value. Otherwise, |None| indicates
+# that the value doesn't apply to this case.
+class RunResult():
+  def __init__(self, js=None, info=None, html=None):
+    self.html_ok = html
+    self.js_ok = js
+    self.info_ok = info
+  # /RunResult.__init__
+# /RunResult
+
 def load_testcases(from_dir, defwarn=True):
   cases = []
   paths = load_sources(from_dir, '.js', '.exp.js')
@@ -43,157 +120,6 @@ def load_testcases(from_dir, defwarn=True):
 
   return cases
 # /load_testcases
-
-def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False):
-  tot = 0
-  info_ok = 0
-  tot_ok = 0
-  start = time.time()
-
-  for inps in load_testcases(MICROBENCHMARK_DIR, defwarn=False):
-    srcfl = inps[0]
-    poldict = inps[1]
-    seeds = inps[2]
-    base = get_base(srcfl)
-
-    # Run with each policy file separately.
-    for poldesc, polfile in poldict.iteritems():
-      opts = []
-
-      synsuf = ''
-      if synonly:
-        opts.append('-z')
-        synsuf = '.syntaxonly'
-
-      # Differentiate the output if policy indexed by a non-numeric key.
-      # For example, the policy file jsqrcode.call.policy will be
-      # indexed by "call", and the output will be stored separately from
-      # the analysis using jsqrcode.get.policy. Alter the .exp filename
-      # accordingly.
-      if poldesc != '':
-        opts.append('--appsuffix')
-        opts.append(poldesc)
-        exppre = '.' + poldesc
-      else:
-        exppre = ''
-
-      tot += 1
-
-      # If the user provided a refinement limit, use that always.
-      # Otherwise, use some special logic.
-      ref = refine
-      if ref is None:
-        ref = 3
-        if not synonly:
-          if seeds is not None:
-            ref = 0
-          if base.startswith('exfil_test'):
-            # These tests are to exercise the enforcement primarily,
-            # not the static analysis. Refinement takes too long.
-            ref = 0
-          if base == 'timeout0':
-            # This tests the query timeout mechanism.
-            # Don't waste too much time waiting.
-            opts.append('--querytimeout')
-            opts.append('5')
-            ref = 0
-
-      # Print the name of the file being analyzed.
-      jsname = os.path.basename(srcfl)
-      out(jsname)
-
-      # Use the union of all policy files for a particular test.
-      outp = run_jam(srcfl, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
-
-      expsuf = '%s%s.refine%d.exp.js' % (exppre, synsuf, ref)
-
-      exppath = get_exp_path(srcfl, expsuf)
-      if process_result(outp, exppath, overwrite):
-        tot_ok += 1
-
-      infoexpsuf = '%s%s.refine%d.info.exp.txt' % (exppre, synsuf, ref)
-      infoexppath = get_exp_path(srcfl, infoexpsuf)
-      if process_info('%s%s' % (base, exppre), infoexppath, overwrite):
-        info_ok += 1
-      sys.stderr.write('\n')
-
-  end = time.time()
-  tottime = end - start
-
-  vals = (tot_ok, info_ok, tot, tottime)
-  if overwrite:
-    out('overwrote %d output, %d info for %d microbenchmarks; %.2fs\n' % vals)
-  else:
-    out('verified %d output, %d info for %d microbenchmarks; %.2fs\n' % vals)
-# /run_microbenchmarks
-      
-def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
-  if refine is None:
-    refine = 0
-  tot = 0
-  info_ok = 0
-  tot_ok = 0
-  start = time.time()
-
-  for inps in load_testcases(BENCHMARK_DIR):
-    srcfl = inps[0]
-    poldict = inps[1]
-    seeds = inps[2]
-
-    # Run with each policy file separately.
-    for poldesc, polfile in poldict.iteritems():
-      opts = []
-
-      synsuf = ''
-      if synonly:
-        opts.append('-z')
-        synsuf = '.syntaxonly'
-
-      # Differentiate the output if policy indexed by a non-numeric key.
-      # For example, the policy file jsqrcode.call.policy will be
-      # indexed by "call", and the output will be stored separately from
-      # the analysis using jsqrcode.get.policy. Alter the .exp filename
-      # accordingly.
-      if poldesc != '':
-        opts.append('--appsuffix')
-        opts.append(poldesc)
-        exppre = '.' + poldesc
-      else:
-        exppre = ''
-
-      base = get_base(srcfl)
-      if base in ['phylojive', 'octane', 'googlemaps', 'octane-mandreel',
-          'octane-pdf', 'octane-typescript']:
-        # These apps are quite large and interprocedural edges explode.
-        opts.append('-P')
-
-      # Print the name of the file being analyzed.
-      jsname = os.path.basename(srcfl)
-      out(jsname)
-      tot += 1
-      outp = run_jam(srcfl, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
-
-      expsuf = '%s%s.refine%d.exp.js' % (exppre, synsuf, refine)
-
-      exppath = get_exp_path(srcfl, expsuf)
-      if process_result(outp, exppath, overwrite):
-        tot_ok += 1
-
-      infoexpsuf = '%s%s.refine%d.info.exp.txt' % (exppre, synsuf, refine)
-      infoexppath = get_exp_path(srcfl, infoexpsuf)
-      if process_info('%s%s' % (base, exppre), infoexppath, overwrite):
-        info_ok += 1
-      sys.stderr.write('\n')
-
-  end = time.time()
-  tottime = end - start
-
-  vals = (tot_ok, info_ok, tot, tottime)
-  if overwrite:
-    out('overwrote %d output, %d info for %d benchmarks; %.2fs\n' % vals)
-  else:
-    out('verified %d output, %d info for %d benchmarks; %.2fs\n' % vals)
-# /run_benchmarks
 
 def process_info(base, exppath, overwrite):
   ok = False
@@ -215,13 +141,19 @@ def process_info(base, exppath, overwrite):
     else:
       stat = 'missing'
 
-    if not ok and overwrite:
-      infofl = open(infofile, 'r')
-      infoout = infofl.read()
-      infofl.close()
-      stat = overwrite_expected(infoout, exppath)
-      if stat == 'overwritten' or stat == 'created':
-        ok = True
+    if overwrite:
+      # The meaning of |ok| is sort of flipped when we're overwriting.
+      if ok:
+        ok = False
+      else:
+        infofl = open(infofile, 'r')
+        infoout = infofl.read()
+        infofl.close()
+        stat = overwrite_expected(infoout, exppath)
+        if stat == 'overwritten' or stat == 'created':
+          ok = True
+        else:
+          ok = False
   else:
     warn('Unable to load info file for results: %s' % base)
 
@@ -246,29 +178,21 @@ def process_result(outp, exppath, overwrite):
   return ok
 # /process_result
 
-class Result():
-  def __init__(self):
-    self.html_ok = False
-    self.js_ok = False
-    self.info_ok = False
-  # /Result.__init__
-# /Result
-
 def run_website(url, policies, debug=False, overwrite=False, refine=None, synonly=False):
   if refine is None:
     refine = 0
-  results = []
+  results = RunResults()
 
   # Run the unpacker.
   out("Unpacking %s" % url)
   appname, unpackdir = run_unpacker(url, debug=debug, saveall=True)
   if unpackdir is None:
     warn('Unable to retrieve unpack directory: %s' % (url))
-    results.append(Result())
+    results.add(RunResult(False, False, False))
     return results
   if appname is None:
     warn('Unable to retrieve application name: %s' % (url))
-    results.append(Result())
+    results.add(RunResult(False, False, False))
     return results
 
   srclist = os.path.join(unpackdir, 'scripts.txt')
@@ -276,14 +200,14 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
 
   if not os.path.isfile(srclist):
     warn('No JavaScript found at URL: %s' % url)
-    results.append(Result())
+    results.add(RunResult(False, False, False))
     return results
 
   # Run with each policy file separately.
   for poldesc, polfile in policies.iteritems():
-    # Generate a new Result for each policy.
-    result = Result()
-    results.append(result)
+    # Generate a new RunResult for each policy.
+    result = RunResult(False, False, False)
+    results.add(result)
 
     opts = ['-X', '-P', '-N', appname, '-h', htmlfile]
 
@@ -307,8 +231,8 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     result.js_ok = process_result(outp, exppath, overwrite)
 
     infoexpsuf = '%s%s.refine%d.info.exp.txt' % (exppre, synsuf, refine)
-    infoexppath = get_exp_path(srcfl, infoexpsuf)
-    result.info_ok = process_info('%s%s' % (base, exppre), infoexppath, overwrite)
+    infoexppath = os.path.join(WEBSITE_DIR, appname + infoexpsuf)
+    result.info_ok = process_info('%s%s' % (appname, exppre), infoexppath, overwrite)
 
     # Repack the HTML file.
 
@@ -346,11 +270,7 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
 # /run_website
 
 def run_websites(debug=False, overwrite=False, refine=None, synonly=False):
-  tot = 0
-  js_ok = 0
-  info_ok = 0
-  html_ok = 0
-  start = time.time()
+  results = RunResults('websites', overwrite)
   
   sites = get_lines(WEBSITE_FILE, comment='#')
   for site in sites:
@@ -358,25 +278,147 @@ def run_websites(debug=False, overwrite=False, refine=None, synonly=False):
     policies = load_policies(WEBSITE_DIR, site, defwarn=False)
     
     url = 'http://' + site
-    results = run_website(url, policies, debug=debug, overwrite=overwrite, refine=refine, synonly=synonly)
+    res = run_website(url, policies, debug=debug, overwrite=overwrite, refine=refine, synonly=synonly)
 
     # Track successful results
-    tot += len(results)
-    for result in results:
-      if result.html_ok: html_ok += 1
-      if result.js_ok: js_ok += 1
-      if result.info_ok: info_ok += 1
+    results.add(res)
+
+    # Space the output.
     sys.stderr.write('\n')
 
-  end = time.time()
-  tottime = end - start
-
-  vals = (js_ok, info_ok, html_ok, tot, tottime)
-  if overwrite:
-    out('overwrote %d JS-output, %d info, %d HTML-output for %d websites; %.2fs\n' % vals)
-  else:
-    out('verified %d JS-output, %d info, %d HTML-output for %d websites; %.2fs\n' % vals)
+  results.printSummary()
 # /run_websites
+
+def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False):
+  results = RunResults('microbenchmarks', overwrite)
+
+  for inps in load_testcases(MICROBENCHMARK_DIR, defwarn=False):
+    srcfl = inps[0]
+    poldict = inps[1]
+    seeds = inps[2]
+    base = get_base(srcfl)
+
+    # Run with each policy file separately.
+    for poldesc, polfile in poldict.iteritems():
+      result = RunResult(False, False)
+      results.add(result)
+
+      opts = []
+
+      synsuf = ''
+      if synonly:
+        opts.append('-z')
+        synsuf = '.syntaxonly'
+
+      # Differentiate the output if policy indexed by a non-numeric key.
+      # For example, the policy file jsqrcode.call.policy will be
+      # indexed by "call", and the output will be stored separately from
+      # the analysis using jsqrcode.get.policy. Alter the .exp filename
+      # accordingly.
+      if poldesc != '':
+        opts.append('--appsuffix')
+        opts.append(poldesc)
+        exppre = '.' + poldesc
+      else:
+        exppre = ''
+
+      # If the user provided a refinement limit, use that always.
+      # Otherwise, use some special logic.
+      ref = refine
+      if ref is None:
+        ref = 3
+        if not synonly:
+          if seeds is not None:
+            ref = 0
+          if base.startswith('exfil_test'):
+            # These tests are to exercise the enforcement primarily,
+            # not the static analysis. Refinement takes too long.
+            ref = 0
+          if base == 'timeout0':
+            # This tests the query timeout mechanism.
+            # Don't waste too much time waiting.
+            opts.append('--querytimeout')
+            opts.append('5')
+            ref = 0
+
+      # Print the name of the file being analyzed.
+      jsname = os.path.basename(srcfl)
+      out(jsname)
+
+      # Use the union of all policy files for a particular test.
+      outp = run_jam(srcfl, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
+
+      expsuf = '%s%s.refine%d.exp.js' % (exppre, synsuf, ref)
+
+      exppath = get_exp_path(srcfl, expsuf)
+      result.js_ok = process_result(outp, exppath, overwrite)
+
+      infoexpsuf = '%s%s.refine%d.info.exp.txt' % (exppre, synsuf, ref)
+      infoexppath = get_exp_path(srcfl, infoexpsuf)
+      result.info_ok = process_info('%s%s' % (base, exppre), infoexppath, overwrite)
+
+      sys.stderr.write('\n')
+
+  results.printSummary()
+# /run_microbenchmarks
+      
+def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
+  results = RunResults('benchmarks', overwrite)
+  if refine is None:
+    refine = 0
+
+  for inps in load_testcases(BENCHMARK_DIR):
+    srcfl = inps[0]
+    poldict = inps[1]
+    seeds = inps[2]
+
+    # Run with each policy file separately.
+    for poldesc, polfile in poldict.iteritems():
+      result = RunResult(False, False)
+      results.add(result)
+
+      opts = []
+
+      synsuf = ''
+      if synonly:
+        opts.append('-z')
+        synsuf = '.syntaxonly'
+
+      # Differentiate the output if policy indexed by a non-numeric key.
+      # For example, the policy file jsqrcode.call.policy will be
+      # indexed by "call", and the output will be stored separately from
+      # the analysis using jsqrcode.get.policy. Alter the .exp filename
+      # accordingly.
+      if poldesc != '':
+        opts.append('--appsuffix')
+        opts.append(poldesc)
+        exppre = '.' + poldesc
+      else:
+        exppre = ''
+
+      base = get_base(srcfl)
+      if base in LARGE_BENCHMARKS:
+        # Forgo interprocedural analysis for these benchmarks.
+        opts.append('-P')
+
+      # Print the name of the file being analyzed.
+      jsname = os.path.basename(srcfl)
+      out(jsname)
+      outp = run_jam(srcfl, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
+
+      expsuf = '%s%s.refine%d.exp.js' % (exppre, synsuf, refine)
+
+      exppath = get_exp_path(srcfl, expsuf)
+      result.js_ok = process_result(outp, exppath, overwrite)
+
+      infoexpsuf = '%s%s.refine%d.info.exp.txt' % (exppre, synsuf, refine)
+      infoexppath = get_exp_path(srcfl, infoexpsuf)
+      result.info_ok = process_info('%s%s' % (base, exppre), infoexppath, overwrite)
+
+      sys.stderr.write('\n')
+
+  results.printSummary()
+# /run_benchmarks
 
 def run_interpreter_tests(debug=False):
   tot = 0

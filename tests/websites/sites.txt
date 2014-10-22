@@ -105,3 +105,12 @@ slashdot.org
 mediamatters.org
 blackoutjack.com
 richjoiner.com
+www.jspell.com/ajax-spell-checker.html
+coursera.org
+archive.org
+archive.org/browse.php?collection=etree&field=%2Fmetadata%2Fcreator
+www.nytimes.com/2001/07/17/politics/17MANS.html
+litkicks.com
+indymedia.org
+alexa.com
+randomwebsite.com

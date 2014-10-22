@@ -129,7 +129,7 @@ walaclean:
 	rm -f $(WALADIR)/*.class $(WALAJAR)
 
 clean: utilclean walaclean
-	rm -f $(COMDIR)/*.class $(MAINDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TSTDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class
+	rm -f $(COMDIR)/*.class $(MAINDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TSTDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class $(ENVDIR)/*.class
 
 .java.class:
 	$(JAVAC) -classpath $(JCLASSPATH) $(JFLAGS) $*.java

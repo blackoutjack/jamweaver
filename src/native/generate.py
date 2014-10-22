@@ -26,6 +26,10 @@ from tempfile import *
 # PROP_NAME TYPE [CLASS|-] [CONSTRUCTOR|-] [ReadOnly|DontEnum|DontDelete] [VALUE|-]
 ##
 
+
+# %%% Move this to scripts/ and update Makefile.
+# %%% Create a new option for printing model stubs (and others)
+
 # Some cursory setup checking
 if 'JAMPKG' not in os.environ:
   print >> sys.stderr, "Please set the JAMPKG environment variable to the JAM installation directory."
@@ -81,6 +85,8 @@ types = []
 mappings = {'#Global': '@Global'}
 # Track which functions' predicates have already been output.
 printed_functions = []
+# A mapping from location (e.g. #Global) to an object record
+objects = {}
 
 # Return a list of non-comment, non-empty lines.
 def get_lines(fl):
@@ -190,21 +196,25 @@ def load_functions():
   funfl.close()
 
 # Initialize the values mapping for printf style use.
-def base_vals(id):
-
+def make_obj_vals(obj, loc):
   return {
-    'id': id,
-    'obj': id,
-    'addr': id.replace('@', '#'),
-    'expr': '',
-    'prop': '',
-    'proptype': '',
+    'id': obj,
+    'obj': obj,
+    'addr': loc,
+    'props': {},
+  }
+
+def make_prop_vals(name):
+  return {
+    'name': name,
+    'type': '',
     'value': '',
-    'name': '',
+    'expr': '',
     'length': '',
     'constr': False,
     'varlen': False,
-    'attr': '',
+    'attrs': [],
+    'props': {},
   }
 
 # Load a single model file into the accumulated target file.
@@ -281,7 +291,9 @@ def load_props_from_file(propfile, outfl):
   pfl = open(propfile, 'r')
   lns = get_lines(pfl)
 
-  vals = None
+  curobj = None
+  objid = None
+  locid = None
 
   # Lines that begin with @ demarcate a new object id.
   # The other non-comment, non-empty lines are properties.
@@ -291,22 +303,26 @@ def load_props_from_file(propfile, outfl):
       # Starting a new object
 
       objid = ln
-      # Initialize and use the |vals| dict until the next object.
-      # %%% A bit ugly
-      vals = base_vals(objid)
+      locid = objid.replace('@', '#')
+      # Initialize and use the |basevals| dict until the next object.
+      if locid in objects:
+        curobj = objects[locid]
+      else:
+        curobj = make_obj_vals(objid, locid)
+        objects[locid] = curobj
 
       # Process the function header.
       print >> outfl
-      print >> outfl, "%% %(id)s" % vals
-      map_native(outfl, vals['addr'], vals['obj'])
+      print >> outfl, "%% %s" % objid
+      map_native(outfl, locid, objid)
 
       # Output the standard constructor/function properties.
-      if vals["addr"] in functions:
-        print_function_props(outfl, vals)
-      elif vals['id'] == '@Array':
-        print >> outfl, "ghasprop('%(obj)s','@Class','\"Array\"')." % vals
+      if locid in functions:
+        print_function_props(outfl, curobj)
+      elif objid == '@Array':
+        print >> outfl, "ghasprop('%s','@Class','\"Array\"')." % objid
       else:
-        print >> outfl, "ghasprop('%(obj)s','@Class','\"Object\"')." % vals
+        print >> outfl, "ghasprop('%s','@Class','\"Object\"')." % objid
 
     else:
       # Processing a property of the current object.
@@ -316,43 +332,61 @@ def load_props_from_file(propfile, outfl):
       # propName [Attribute[,List]] value ref.expr
       assert len(specs) == 4, "Invalid property specification: %s" % ln
 
-      vals["prop"] = specs[0].replace("'", "''")
-      vals["value"] = specs[2].replace("'", "''")
-      vals["expr"] = specs[3]
+      prop = specs[0].replace("'", "''")
+      if prop in curobj['props']:
+        vals = curobj['props'][prop]
+      else:
+        vals = make_prop_vals(prop)
+        curobj['props'][prop] = vals
+
+      assert vals["name"] == prop
+      value = specs[2].replace("'", "''")
+      vals['expr'] = specs[3]
 
       # Potentially replace the concrete value with a symbolic one.
       # This can also increase precision by adding a type to an
       # otherwise purely symbolic value.
-      if vals['addr'] in symbolic_properties:
-        symprops = symbolic_properties[vals['addr']]
-        if vals['prop'] in symprops:
-          proptyp = symprops[vals['prop']]
-          vals['value'] = '?/' + proptyp
+      if locid in symbolic_properties:
+        symprops = symbolic_properties[locid]
+        if prop in symprops:
+          proptyp = symprops[prop]
+          value = '?/' + proptyp
+
+      isobj = value.startswith("#") and value not in PRIMITIVES
+      if isobj:
+        if value in objects:
+          propobj = objects[value]
+        else:
+          propobjid = value.replace('#', '@')
+          propobj = make_obj_vals(propobjid, value)
+          objects[value] = propobj
+
+      vals['value'] = value
 
       # Get a list of property attributes.
       attrs = specs[1]
-      if attrs == "-":
-        attrs = []
-      else:
+      if attrs != "-":
         attrs = attrs.split(',')
+        vals['attrs'] = attrs
 
       readonly = 'ReadOnly' in attrs
 
-      if vals['value'][0] == '?':
+      if value[0] == '?':
         # Process symbolic values. They will be represented as ?/[type|?]
-        val,typ = vals['value'].split('/')
+        val,typ = value.split('/')
         if typ == '?':
-          print >> outfl, "shasprop('%(obj)s','\"%(prop)s\"',V) :- symbolic(V,_)." % vals
+          print >> outfl, "shasprop('%s','\"%s\"',V) :- symbolic(V,_)." % (objid, prop)
+          vals['type'] = 'Symbolic'
         else:
-          vals['proptype'] = typ
+          vals['type'] = typ
           if readonly:
             # Even if we haven't specified a value, we might be able to 
             # assert a type for the symbolic value if it's read-only.
-            print >> outfl, "shasprop('%(obj)s','\"%(prop)s\"',V) :- symbolic(V,'%(proptype)s')." % vals
+            print >> outfl, "shasprop('%s','\"%s\"',V) :- symbolic(V,'%s')." % (objid, prop, typ)
           else:
             # Otherwise, the value is unconstrained in symbolic mode, or
             # appropriately typed in concrete mode.
-            print >> outfl, "shasprop('%(obj)s','\"%(prop)s\"',V) :- is_symbolic_mode,symbolic(V,_)->true;symbolic(V,'%(proptype)s')." % vals
+            print >> outfl, "shasprop('%s','\"%s\"',V) :- is_symbolic_mode,symbolic(V,_)->true;symbolic(V,'%s')." % (objid, prop, typ)
 
       else:
         # There is a known initial value for this property.
@@ -361,33 +395,25 @@ def load_props_from_file(propfile, outfl):
         # the prototype chain for an object.
         # %%% This should be removed if/when we support modeling __proto__
         # %%% overwrites.
-        if vals["prop"] == "__proto__":
-          print >> outfl, "ghasprop('%(obj)s','@Prototype','%(value)s')." % vals
+        if prop == "__proto__":
+          print >> outfl, "ghasprop('%s','@Prototype','%s')." % (objid, value)
 
         print >> outfl
 
         if readonly:
-          print >> outfl, "ghasprop('%(obj)s','\"%(prop)s\"','%(value)s')." % vals
+          print >> outfl, "ghasprop('%s','\"%s\"','%s')." % (objid, prop, value)
         else:
-          print >> outfl, "ihasprop('%(obj)s','\"%(prop)s\"','%(value)s')." % vals
+          print >> outfl, "ihasprop('%s','\"%s\"','%s')." % (objid, prop, value)
         
       for attr in attrs:
-        vals['attr'] = attr
-        print >> outfl, "native_hasattr('%(obj)s','\"%(prop)s\"','%(attr)s')." % vals
+        print >> outfl, "native_hasattr('%s','\"%s\"','%s')." % (objid, prop, attr)
 
       # Any objects should be mapped.
-      if vals['value'][0] == '#':
-        # %%% Use config
-        if vals['value'] not in PRIMITIVES:
-          # %%% Kludgy
-          # Copy the vals array and set the addr and obj to that of the
-          # value, so it can be passed to |map_native|.
-          valscpy = dict(vals)
-          valscpy['addr'] = vals['value']
-          valscpy['obj'] = valscpy['addr'].replace('#', '@')
-          map_native(outfl, valscpy['addr'], valscpy['obj'])
-          if valscpy['addr'] in functions:
-            print_function_props(outfl, valscpy)
+      if isobj:
+        assert propobj is not None
+        map_native(outfl, value, propobj['obj'])
+        if value in functions:
+          print_function_props(outfl, propobj)
 
   # end load_props_from_file
 

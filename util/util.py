@@ -252,7 +252,7 @@ def get_result_info(resdir, app):
 
   if app not in resultdirs:
     warn('No results found for %s' % app)
-    return {}
+    return None
 
   appinfo = {'version': None}
   appresults = resultdirs[app]
@@ -263,8 +263,8 @@ def get_result_info(resdir, app):
   dirinfo = appresults[-1]
   dirpath = os.path.join(resdir, dirinfo['dir'])
   if not os.path.isdir(dirpath):
-    warn("Non-directory file encountered in source directory: %s" % dirfile)
-    return appinfo
+    warn("Non-directory encountered in results: %s" % dirfile)
+    return None
 
   version = dirinfo['version']
   appinfo['version'] = version
@@ -284,8 +284,7 @@ def get_result_info(resdir, app):
   else:
     warn('Unable to locate full script file: %s' % fullfile)
 
-  keys = ['original','closure','normalized','instrumented','indirection','collapsed','optimized']
-  for key in keys:
+  for key in SOURCE_KEYS:
     keydir = os.path.join(dirpath, 'source-%s' % key)
     if os.path.isdir(keydir):
       jslist = []
@@ -301,6 +300,7 @@ def get_result_info(resdir, app):
     appinfo['info'] = infofile
 
   return appinfo
+# /get_result_info
 
 def get_results_info(resdir, bases):
   # Map the application name to a triple consisting of the output
@@ -310,9 +310,12 @@ def get_results_info(resdir, bases):
 
   bases.sort()
   for app in bases:
-    appfiles[app] = get_result_info(resdir, app)
+    info = get_result_info(resdir, app)
+    if info is not None:
+      appfiles[app] = info
 
   return appfiles
+# /get_results_info
 
 def compare_info(actinfo, expinfo):
   keys = actinfo.keys()

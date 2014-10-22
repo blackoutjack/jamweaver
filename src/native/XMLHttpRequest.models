@@ -1,6 +1,8 @@
 
 %%% How to model side-effect?
 aexe(H,L,'#XMLHttpRequest',This,_,HP,EP) :-
+  % If this constructor is called as a regular function rather than with
+  % |new|, mimic object construction anyway.
   (is_construct_mode->EP=This,H1=H;
   maps(H,'#XMLHttpRequest',O),
   hasprop(O,'"prototype"',Proto),
@@ -9,17 +11,23 @@ aexe(H,L,'#XMLHttpRequest',This,_,HP,EP) :-
   heapprop(H1,EP,'"constructor"','#XMLHttpRequest',HP,_),
   always(L).
 
-aexe(H,L,'#XMLHttpRequest#prototype#abort',This,_,H,This) :-
-  always(L),always(This).
+aexe(H,L,'#XMLHttpRequest#prototype#abort',This,_,H,EP) :-
+  always(L),always(This),
+  EP='#undefined'.
 
-aexe(H,L,'#XMLHttpRequest#prototype#getAllResponseHeaders',This,_,H,This) :-
-  always(L),always(This).
+aexe(H,L,'#XMLHttpRequest#prototype#getAllResponseHeaders',This,_,H,EP) :-
+  always(L),always(This),
+  symbolic(EP,'String').
 
-aexe(H,L,'#XMLHttpRequest#prototype#getInterface',This,_,H,This) :-
-  always(L),always(This).
+aexe(H,L,'#XMLHttpRequest#prototype#getResponseHeader',This,_,H,EP) :-
+  always(L),always(This),
+  % Return value can be a string or |null|.
+  symbolic(EP,_).
 
-aexe(H,L,'#XMLHttpRequest#prototype#getResponseHeader',This,_,H,This) :-
-  always(L),always(This).
+aexe(H,L,'#XMLHttpRequest#prototype#getInterface',This,_,H,EP) :-
+  always(L),always(This),
+  % Not sure what this returns.
+  symbolic(EP,_).
 
 aexe(H,L,'#XMLHttpRequest#prototype#open',This,_,H,EP) :-
   always(L),always(This),

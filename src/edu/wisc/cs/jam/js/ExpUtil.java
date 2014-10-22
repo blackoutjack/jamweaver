@@ -468,7 +468,10 @@ public class ExpUtil {
 
   public static String escapeString(String str) {
     // %%% Test this
-    return str.replace("\\", "\\\\").replace("\"", "\\\"");
+    str = str.replace("\\", "\\\\").replace("\"", "\\\"");
+    str = str.replace("\n", "\\n");
+    // %%% What about "\r", other weird characters?
+    return str;
   }
 
   public static boolean returnsString(SourceManager src, Node n) {

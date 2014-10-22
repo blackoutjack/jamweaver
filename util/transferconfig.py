@@ -19,24 +19,22 @@ from util import overwrite_expected
 from util import validate_output
 from util import symlink
 
-ffbases = get_variant_bases(MICROBENCHMARK_DIR)
-fftgt = os.path.join(JSTESTDIR, 'micro')
+microbases = get_variant_bases(MICROBENCHMARK_DIR)
+microtgt = os.path.join(JSTESTDIR, 'micro')
 
-appsbases = get_variant_bases(BENCHMARK_DIR)
-appstgt = os.path.join(JSTESTDIR, 'bench')
+benchbases = get_variant_bases(BENCHMARK_DIR)
+benchtgt = os.path.join(JSTESTDIR, 'bench')
 
 RESULTSDIR = OUTDIR
 
 TARGETDIRS = {
-  appstgt: {
-    'basenames': appsbases,
+  benchtgt: {
+    'basenames': benchbases,
     'wrap': False,
-    'isolate': True,
   },
-  fftgt: {
-    'basenames': ffbases,
+  microtgt: {
+    'basenames': microbases,
     'wrap': True,
-    'isolate': False,
   }
 }
 

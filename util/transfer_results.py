@@ -163,24 +163,23 @@ def insert_profile(txt, desc, specs, extra=None):
     cfg.warn(warning0 + warning1 + " insertion point not found")
 
   return txt
+# /insert_profile
 
-
-def copy_source(app, desc, src, tgtdir, wrap=False, mod=False):
+def copy_source(app, desc, src, tgtdir, wrap=False, prof=False, mod=False):
   assert os.path.isfile(src)
+  if not load_dir(tgtdir):
+    return
 
-  tgt = os.path.join(tgtdir, app + '.' + desc + '.js')
-  profdesc = desc + '.profile'
-  proftgt = os.path.join(tgtdir, app + '.' + profdesc + '.js')
+  if desc is None:
+    desc = ''
+  else:
+    desc = '.' + desc
+
+  tgt = os.path.join(tgtdir, app + desc + '.js')
 
   # Don't copy if the source hasn't been updated.
   update_tgt = should_update(src, tgt)
-  update_prof = should_update(src, proftgt)
-
-  if not update_tgt and not update_prof: return
-
-  if not prepare_dir(tgtdir):
-    cfg.warn('Unable to prepare target directory: %s' % tgtdir)
-    return
+  if not update_tgt: return False
 
   srcfl = open(src, 'r')
   if wrap:
@@ -217,29 +216,16 @@ def copy_source(app, desc, src, tgtdir, wrap=False, mod=False):
     else:
       respred = "\"RESULT NOT SPECIFIED\""
 
-  if update_tgt:
-    tgttxt = srctxt
-    if wrap:
-      # Generate a version with global code wrapped in |runTest|.
-      tgttxt = "function runTest() {\n" + tgttxt + "\n  return " + respred + ";\n}\n"
-
-    if has_change(tgt, tgttxt):
-      write_text(tgt, tgttxt)
-      print app + "." + desc,
-    else:
-      if VERBOSE:
-        cfg.out("No change from current text: %s" % (app + "." + desc))
-
-  if update_prof:
+  if prof:
     # Insert the standard "load" profile.
     profspec = {
       'beginafter': None,
       'endbefore': None,
       'indent': len(ind)
     }
-    proftxt = insert_profile(srctxt, 'load', profspec, app + "." + desc)
+    srctxt = insert_profile(srctxt, 'load', profspec, app + "." + desc)
 
-    if app.startswith('sms2-') and app.endswith('-big'):
+    if app.startswith('sms2-') and app.endswith('.big'):
       appkey = app[:-4]
     else:
       appkey = app
@@ -252,40 +238,60 @@ def copy_source(app, desc, src, tgtdir, wrap=False, mod=False):
         extraprofspecs = profspecs[extraprofdesc]
         if desc in extraprofspecs:
           profspec = extraprofspecs[desc]
-          proftxt = insert_profile(proftxt, extraprofdesc, profspec, app + "." + desc)
+          srctxt = insert_profile(srctxt, extraprofdesc, profspec, app + "." + desc)
 
-    if wrap:
-      proftxt = "function runTest() {\n" + proftxt + "\n  return " + respred + ";\n}\n"
 
-    if has_change(proftgt, proftxt):
-      write_text(proftgt, proftxt)
-      print app + "." + profdesc,
-    else:
-      if VERBOSE:
-        cfg.out("No change from current text: %s" % (app + "." + profdesc))
+  tgttxt = srctxt
+  if wrap:
+    # Generate a version with global code wrapped in |runTest|.
+    tgttxt = "function runTest() {\n" + tgttxt + "\n  return " + respred + ";\n}\n"
+
+  if has_change(tgt, tgttxt):
+    write_text(tgt, tgttxt)
+    return True
+  else:
+    if VERBOSE:
+      cfg.out("No change from current text: %s" % (app + "." + desc))
+    return False
+# /copy_source
 
 def copy_policy(app, desc, polsrc, tgtdir):
+  assert os.path.isfile(polsrc)
+  if not load_dir(tgtdir):
+    return False
+
   poltgt = os.path.join(tgtdir, app + '.' + desc + '.js')
 
   # Don't copy if the source hasn't been updated.
-  if not should_update(polsrc, poltgt, True): return
+  if not should_update(polsrc, poltgt, True):
+    return False
 
   shutil.copy(polsrc, poltgt)
-  print app + "." + desc,
+  return True
+# /copy_policy
 
-def prepare_dir(tgtdir):
+def load_dir(tgtdir):
   if not os.path.isdir(tgtdir):
     try:
       os.makedirs(tgtdir)
+      return True
     except:
       cfg.err("Unable to create target directory: %s" % tgtdir)
       return False
+  return True
+# /load_dir
 
+def prepare_dir(tgtdir):
+  if not load_dir(tgtdir):
+    return False
+
+  # Symbolically link to various utility files.
   for fileattrs in cfg.SYMLINK_FILES:
     assert len(fileattrs) == 2, 'Invalid SYMLINK_FILES configuration: %r' % fileattrs
     srcpath, linkname = fileattrs
     cfg.symlink(srcpath, tgtdir, linkname=linkname, relative=True)
 
+  # Copy additional files for SMS2 applications.
   tgtbase = os.path.basename(tgtdir)
   if tgtbase.startswith('sms2-'):
     srcpath = os.path.join(cfg.SMS2DIR, 'includes')
@@ -294,27 +300,96 @@ def prepare_dir(tgtdir):
     linkname = tgtbase + '.head.html'
     cfg.symlink(srcpath, tgtdir, linkname=linkname, relative=True)
   return True
+# /prepare_dir
+
+def copy_subvariants(app, desc, jsfile, tgtdir, w):
+  changed = False
+
+  if copy_source(app, None, jsfile, tgtdir, w, prof=False, mod=False):
+    changed = True
+  proftgtdir = '%s.profile' % tgtdir
+  if copy_source(app, None, jsfile, proftgtdir, w, prof=True, mod=False):
+    changed = True
+
+  if desc in cfg.MODULAR_SOURCE_KEYS:
+    # Create a modular transaction version of the original.
+    modtgtdir = '%s.modular' % tgtdir
+    if copy_source(app, None, jsfile, modtgtdir, w, prof=False, mod=True):
+      changed = True
+    modproftgtdir = '%s.modular.profile' % tgtdir
+    if copy_source(app, None, jsfile, modproftgtdir, w, prof=True, mod=True):
+      changed = True
+
+  return changed
+# /copy_subvariants
+
+def copy_topvariants(app, desc, jsfile, tgtdir, w):
+  changed = False
+
+  if copy_source(app, desc, jsfile, tgtdir, w, prof=False, mod=False):
+    changed = True
+  profdesc = '%s.profile' % desc
+  if copy_source(app, profdesc, jsfile, tgtdir, w, prof=True, mod=False):
+    changed = True
+
+  if desc in cfg.MODULAR_SOURCE_KEYS:
+    # Create a modular transaction version of the original.
+    moddesc = '%s.modular' % desc 
+    if copy_source(app, moddesc, jsfile, tgtdir, w, prof=False, mod=True):
+      changed = True
+    modprofdesc = '%s.modular.profile' % desc
+    if copy_source(app, modprofdesc, jsfile, tgtdir, w, prof=True, mod=True):
+      changed = True
+
+  return changed
+# /copy_topvariants
   
-def copy_files(appfiles, tgtdir, wrap=False, iso=False):
+def copy_variants(app, desc, jssrc, tgtdir, w):
+  changed = False
+
+  sms2 = False
+  if app.startswith('sms2-'):
+    sms2 = True
+    bigapp = app + '.big'
+    bigtgtdir = tgtdir + '.big'
+
+  if isinstance(jssrc, str):
+    assert os.path.isfile(jssrc)
+    if copy_topvariants(app, desc, jssrc, tgtdir, w):
+      changed = True
+    if sms2:
+      if copy_topvariants(bigapp, desc, jssrc, bigtgtdir, w):
+        changed = True
+  elif isinstance(jssrc, list):
+    for jsfile in jssrc:
+      assert os.path.isfile(jsfile)
+      subtgtdir = os.path.join(tgtdir, 'source-%s' % desc)
+      if copy_subvariants(app, desc, jsfile, subtgtdir, w):
+        changed = True
+      if sms2:
+        bigsubtgtdir = os.path.join(bigtgtdir, 'source-%s' % desc)
+        if copy_subvariants(bigapp, desc, jsfile, bigsubtgtdir, w):
+          changed = True
+
+  return changed
+# /copy_variants
+  
+def copy_files(appfiles, tgtdir, wrap=False):
   
   # Now copy the files to the target directory, changing the file names
   # to "app.js" and "app.policy.js".
   for app, info in appfiles.iteritems():
-    sms2 = app.startswith("sms2-")
-    # %%% Special case
+    # %%% Special cases
     if app.startswith("exfil_test"):
       w = False
     else:
       w = wrap
 
-    if iso:
-      subtgtdir = os.path.join(tgtdir, app)
-    else:
-      subtgtdir = tgtdir
+    subtgtdir = os.path.join(tgtdir, app)
 
-    if sms2:
-      bigsubtgtdir = subtgtdir + '-big'
-      bigapp = app + '-big'
+    if not prepare_dir(subtgtdir):
+      cfg.warn('Unable to prepare target directory: %s' % subtgtdir)
+      return
 
     for desc, jssrc in info.iteritems():
       if desc == 'dir': continue
@@ -323,43 +398,35 @@ def copy_files(appfiles, tgtdir, wrap=False, iso=False):
       if desc == 'modular.policy': continue
       if desc == 'info': continue
 
-      if jssrc is str:
-        assert os.path.isfile(jssrc)
-        copy_source(app, desc, jssrc, subtgtdir, w, False)
-        if sms2:
-          copy_source(bigapp, desc, jssrc, bigsubtgtdir, w, False)
-      elif jssrc is list:
-        for jsfile in jssrc:
-          assert os.path.isfile(jsfile)
-          subsubtgtdir = os.path.join(subtgtdir, 'source-%s' % desc)
-          copy_source(app, desc, jsfile, subsubtgtdir, w, False)
-          if sms2:
-            bigsubsubtgtdir = os.path.join(bigsubtgtdir, 'source-%s' % desc)
-            copy_source(bigapp, desc, jsfile, bigsubsubtgtdir, w, False)
+      changed = copy_variants(app, desc, jssrc, subtgtdir, w)
+      if changed:
+        cfg.out('Updated %s.%s' % (app, desc))
 
-          if desc in ['original', 'normalized', 'closure']:
-            # Create a modular transaction version of the original.
-            moddesc = '%s.modular' % desc
-            modsubsubtgtdir = os.path.join(subtgtdir, 'source-%s' % moddesc)
-            copy_source(app, moddesc, jsfile, modsubsubtgtdir, w, True)
-            if sms2:
-              bigmodsubsubtgtdir = os.path.join(bigsubtgtdir, 'source-%s' % moddesc)
-              copy_source(bigapp, moddesc, jsfile, bigmodsubsubtgtdir, w, True)
-    
     # Collect various policy variations.
+    polchanged = False
     for desc in ['policy', 'modular.policy']:
       if desc in info:
-        copy_policy(app, desc, info[desc], subtgtdir)
-        if sms2:
-          copy_policy(bigapp, desc, info[desc], bigsubtgtdir)
+        if copy_policy(app, desc, info[desc], subtgtdir):
+          polichanged = True
+
+        if app.startswith("sms2-"):
+          bigsubtgtdir = subtgtdir + '.big'
+          bigapp = app + '.big'
+          if copy_policy(bigapp, desc, info[desc], bigsubtgtdir):
+            polchanged = True
+
+    if polchanged:
+      cfg.out('Updated policy for %s' % app)
+      
   return True
+# /copy_files
 
-def transfer_results(srcdir, tgtdir, bases, wrap, iso):
+def transfer_results(srcdir, tgtdir, bases, wrap):
   appfiles = cfg.get_results_info(srcdir, bases)
-  copy_files(appfiles, tgtdir, wrap, iso)
+  copy_files(appfiles, tgtdir, wrap)
 
-def update_profile(tgtdir, app, wrap, iso):
-  if app.startswith('sms2-') and app.endswith('-big'):
+def update_profile(tgtdir, app, wrap):
+  if app.startswith('sms2-') and app.endswith('.big'):
     appkey = app[:-4]
   else:
     appkey = app 
@@ -367,10 +434,8 @@ def update_profile(tgtdir, app, wrap, iso):
   # Do nothing if there are no custom profile actions specified.
   if appkey not in cfg.PROFILES: return
 
-  if iso:
-    appdir = os.path.join(tgtdir, app)
-  else:
-    appdir = tgtdir
+  appdir = os.path.join(tgtdir, app)
+
   # Do nothing if the files haven't been previously transferred.
   if not os.path.isdir(appdir): return 
 
@@ -436,16 +501,16 @@ def update_profile(tgtdir, app, wrap, iso):
         cfg.out("No change from current text: %s" % (app + "." + profdesc))
   
 
-def update_profiles(tgtdir, bases, wrap, iso):
+def update_profiles(tgtdir, bases, wrap):
   if not os.path.isdir(tgtdir):
     cfg.err("Profile target directory not found: %s" % tgtdir)
     return
 
   for app in bases:
-    update_profile(tgtdir, app, wrap, iso)
+    update_profile(tgtdir, app, wrap)
     sms2 = app.startswith("sms2-")
     if sms2:
-      update_profile(tgtdir, app + '-big', wrap, iso)
+      update_profile(tgtdir, app + '.big', wrap)
 
 def update_expected(bases):
   appfiles = cfg.get_results_info(cfg.RESULTSDIR, bases)
@@ -526,15 +591,21 @@ def main():
   parser.add_option('-a', '--app', action='store', default=None, dest='app', help='limit transfer to the given app')
   parser.add_option('-u', '--updateprof', action='store_true', default=False, dest='updateprof', help='just update previously-transferred profile sources')
   parser.add_option('-e', '--updateexp', action='store_true', default=False, dest='updateexp', help='just update expected results')
+  parser.add_option('-c', '--config', action='store', default=os.path.join(os.path.dirname(__file__), 'transferconfig.py'), dest='config', help='configuration.py file')
 
   opts, args = parser.parse_args()
 
-  if len(args) != 1:
+  if len(args) != 0:
     parser.error("Invalid number of arguments")
 
   global cfg
-  cfg = imp.load_source("cfg", args[0])
-  assert os.path.isdir(cfg.SOURCEDIR), "Source path %s doesn't exist." % cfg.SOURCEDIR
+  try:
+    cfg = imp.load_source("cfg", opts.config)
+  except:
+    print >> sys.stderr, "Unable to load configuration file: %s" % opts.config
+    sys.exit(1)
+
+  assert os.path.isdir(cfg.RESULTSDIR), "Source path %s doesn't exist." % cfg.RESULTSDIR
 
   global OVERWRITE, VERBOSE
   OVERWRITE = opts.overwrite
@@ -545,13 +616,12 @@ def main():
     bases = props['basenames']
     if opts.app is not None:
       bases = [base for base in bases if fnmatch.fnmatch(base, opts.app)]
-    iso = props['isolate']
     if opts.updateprof:
-      update_profiles(destdir, bases, wrap, iso)
+      update_profiles(destdir, bases, wrap)
     elif opts.updateexp:
       update_expected(bases)
     else:
-      transfer_results(cfg.SOURCEDIR, destdir, bases, wrap, iso)
+      transfer_results(cfg.RESULTSDIR, destdir, bases, wrap)
 
 if __name__ == "__main__":
   main()

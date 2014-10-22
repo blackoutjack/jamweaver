@@ -5,27 +5,34 @@ the structure of policies files and how they are used by the system.
 
 ######## Policy structure and semantics ########
 
-A JAM policy is an automaton with JavaScript state predicates labeling 
+A JAM policy is an automaton with JavaScript predicates labeling 
 the edges. Currently JAM limits support to acyclic policies (save for
 the implicit self-loops on each state) with a single initial state and
 a single final state.
 
-Each edge of a policy automaton specifies a predicate that must evaluate
-to true for that edge to be traversed. During the static analysis
-portion of JAM, the truth values of these predicates are evaluated with
-respect to the abstract (and potentially imprecise) program model; the
-result of this static analysis is a rewritten program with
-instrumentation that tracks the state of the policy automaton with
-regards to the concrete state of the execution.
+Each edge of a policy automaton is labeled with a predicate, which must
+evaluate to true for the edge to be traversed. Each predicate represents
+either an event occurence (like a function call) or a program state
+(such as the value of a variable, or simply true, in the case of the
+self-loops). During JAM's static analysis, the truth values of these
+predicates are evaluated with respect to the abstract semantics of each
+program statement to construct an abstract (and therefore potentially
+imprecise) program model. A product of program model and the policy
+automaton is constructed, and words accepted by this product automaton
+represent paths through the program which violate the policy. A
+rewriting algorithm then weaves instrumentation into the program to
+track, at runtime, the state of the policy automaton with regards to the
+concrete state of the execution.
 
 In either case (static or runtime evaluation), the policy begins in the
 initial state. On the evaluation of each program statement, the policy
 can remain in the same state (thanks to the aforementioned self-loops on
 each state), or if the statement has the ability to transition the
 predicate labeling any out-edge from false to true, proceed to the 
-destination state of that edge. Transitions are non-deterministic, in
-that all policy states that are reachable will be occupied, and can be
-the source of subsequent transitions.
+destination state of that edge. The policy automaton is
+non-deterministic because of the self-loops labeled with "true", and all
+policy states that are reached can be the source of subsequent
+transitions.
 
 To support policies that specify multiple transitions on the same
 predicate (such as the write-once policy for the Secure Note
@@ -61,6 +68,17 @@ that the intermediate policy state, 1, has one in-edge and one out-edge.
 0,1: jam#invoke(#Document#prototype#getElementById)
 1,-1: jam#set(#document, "cookie")
 
+Disjoint policy paths can be used to specify unrelated actions that
+should be prevented. 
+
+0,-1: jam#invoke(#WebSocket)
+0,-1: jam#invoke(#XMLHttpRequest)
+
+Each predicate can be composed of multiple conjuncts, which must all
+be satisfied to trigger the policy transition.
+
+0,-1: jam#invoke(#XMLHttpRequest#prototype#open) && jam#arglen() > 1
+
 The formal structure of an edge specification is as follows.
 
 SourceState,DestState: Predicate
@@ -84,11 +102,12 @@ blank lines.
 ######## Predicate language ########
 
 JAM officially supports predicates indicating weak equality (==), strict
-equality (===), corresponding inequality (!=, !==), the JavaScript
-instanceof operator, and a set of special extension functions explained
-below. It's best to specify strict equality when possible, as this will
-be more efficient (by avoiding the analysis of JavaScript's complicated
-type coersion rules).
+equality (===), corresponding non-equality (!=, !==), numeric
+inequalities (<, <=, >, >=), the JavaScript instanceof operator, and a
+set of special extension functions explained below. It's best to specify
+strict (non-)equality over weak (non-)equality when possible, as this
+will be more efficient (by avoiding the analysis of JavaScript's
+complicated type coersion rules).
 
 JAM also supports arbitrary conjunctions (but not disjunctions) of any
 supported predicates on a given edge. Disjunctions are effectively
@@ -100,20 +119,25 @@ Other JavaScript expressions that evaluate to boolean may be tried,
 though you may find support to be sketchy. Please let the UW-Madison
 team know if there are unsupported constructs you'd like to use.
 
-The currently-implemented extension predicates are as follows.
+The currently-implemented extension functions are as follows.
 
 jam#invoke(#object#location): Returns true if the pointed-to native
   function was invoked (as a function, method, or constructor call) by
-  the evaluated statement. Negation of this type of predicate is not
-  supported.
+  the evaluated statement. This is an event predicate, so negation of
+  this type of predicate is not supported.
+
+jam#construct(#object#location): Returns true if the pointed-to native
+  function was invoked as a constructor by the evaluated statement.
+  This is an event predicate, so negation of this type of predicate is
+  not supported.
 
 jam#set(#object,"member"): Returns true if the specified object member was
-  assigned to in the course of evaluation. Negation of this type of
-  predicate is not supported.
+  assigned to in the course of evaluation. This is an event predicate, so
+  negation of this type of predicate is not supported.
 
-jam#get(#object,"member"): Returns true if the specified object member was
-  retrieved during the course of evaluation. Negation of this type of
-  predicate is not supported.
+jam#get(#object,"member"): Returns true if the specified object member
+  was read during the course of evaluation. This is an event predicate,
+  so negation of this type of predicate is not supported.
 
 jam#arg(i): Retrieves the value of the actual argument(s) at position i
   of any invoked functions. This function returns a value, and should be
@@ -138,11 +162,13 @@ jam#regextest(/regex/,ref): Returns true if the regular expression
 
 jam#stringstartswith(ref,"string"): Returns true if the value
   referenced by the first argument is string that begins with the 2nd
-  argument. (This predicate type is subsumed by jam#regextest.)
+  argument. Note: this function is deprecated, please use jam#regextest
+  instead.
 
 jam#stringcontains(ref,"string"): Returns true if the value
   referenced in the first argument is string that contains with the 2nd
-  argument. (This predicate type is subsumed by jam#regextest.)
+  argument. Note: this function is deprecated. Please use jam#regextest
+  instead.
 
 Predicates may also contain special "wildcard" identifiers beginning
 with the ` (backtick) character. These may be used to construct more
@@ -153,14 +179,14 @@ assigned to.
 
 jam#set(`x,"src") && `x instanceof #HTMLElement
 
-The use of the # character to indicate native objects can be thought of
-as immutable references. If the example above used HTMLElement instead
-of #HTMLElement, then the predicate would be evaluating whether `x is
+The # character can be thought of as indicating an immutable reference
+to a native object. If the example above used "HTMLElement" instead
+of "#HTMLElement", then the predicate would be evaluating whether `x is
 an instance of *whatever* value the HTMLElement identifier points to at
 the point in the program being analyzed (since the HTMLElement
 identifier may be overwritten in the course of a program). So the #
 syntax to represent the immutable location of the native object is
-needed for soundness of the analysis.
+typically needed for soundness of the analysis.
 
 See doc/RUNNING ("Utilities" section) for instructions for retrieving
 the precise name of a given native reference for use in a policy

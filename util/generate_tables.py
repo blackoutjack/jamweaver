@@ -115,6 +115,7 @@ def collect_results(results, srcdir, bases):
     info = None
     for dirinfo in dirlist:
       version = dirinfo['version']
+      # %%% Should already be sorted, so just pick the last one.
       if info is None or dirinfo['version'] > info['version']:
         info = dirinfo
     if info is None:

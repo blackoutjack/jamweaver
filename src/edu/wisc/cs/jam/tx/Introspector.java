@@ -187,7 +187,8 @@ public class Introspector {
     }
 
     public String getTypeName() {
-      return transitions.get(0).getTypeName();
+      String tname = transitions.get(0).getTypeName();
+      return tname;
     }
 
     public boolean matches(PolicyTransition pt) {
@@ -332,6 +333,10 @@ public class Introspector {
     assert seqtype != null;
     // Get the uppercase form to fill in the method call.
     String seqType = seqtype.substring(0, 1).toUpperCase() + seqtype.substring(1);
+    // %%% Naming inconsistency in JAMScript.
+    if (seqType.equals("Invoke")) {
+      seqType = "Call";
+    }
 
     sb.append(ind1);
     sb.append("var as = tx.get");

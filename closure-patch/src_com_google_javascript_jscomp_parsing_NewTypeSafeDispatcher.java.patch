@@ -1,0 +1,23 @@
+--- closure-orig/src/com/google/javascript/jscomp/parsing/NewTypeSafeDispatcher.java	2014-10-03 11:38:06.682298473 -0500
++++ closure/src/com/google/javascript/jscomp/parsing/NewTypeSafeDispatcher.java	2014-10-02 17:50:47.801231787 -0500
+@@ -59,6 +59,9 @@
+   abstract T processTemplateLiteral(TemplateLiteralExpressionTree tree);
+   abstract T processTemplateLiteralPortion(TemplateLiteralPortionTree tree);
+   abstract T processTemplateSubstitution(TemplateSubstitutionTree tree);
++  // JAM begin
++  abstract T processTransactionStatement(TransactionStatementTree tree);
++  // JAM end
+   abstract T processTryStatement(TryStatementTree tree);
+   abstract T processUnaryExpression(UnaryExpressionTree tree);
+   abstract T processVariableStatement(VariableStatementTree tree);
+@@ -208,6 +211,10 @@
+         return processSwitchStatement(node.asSwitchStatement());
+       case THROW_STATEMENT:
+         return processThrowStatement(node.asThrowStatement());
++      // JAM begin
++      case TRANSACTION:
++        return processTransactionStatement(node.asTransactionStatement());
++      // JAM end
+       case TRY_STATEMENT:
+         return processTryStatement(node.asTryStatement());
+       case VARIABLE_STATEMENT: // var const let

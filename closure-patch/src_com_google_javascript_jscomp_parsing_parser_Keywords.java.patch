@@ -1,0 +1,12 @@
+--- closure-orig/src/com/google/javascript/jscomp/parsing/parser/Keywords.java	2014-10-03 11:38:06.682298473 -0500
++++ closure/src/com/google/javascript/jscomp/parsing/parser/Keywords.java	2014-10-02 16:25:44.861359311 -0500
+@@ -74,6 +74,9 @@
+     PUBLIC("public", TokenType.PUBLIC),
+     STATIC("static", TokenType.STATIC),
+     YIELD("yield", TokenType.YIELD),
++    // JAM begin
++    TRANSACTION("introspect", TokenType.TRANSACTION),
++    // JAM end
+ 
+     //7.8 Literals
+     NULL("null", TokenType.NULL),

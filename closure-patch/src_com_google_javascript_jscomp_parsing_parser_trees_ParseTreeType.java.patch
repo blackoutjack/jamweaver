@@ -1,0 +1,10 @@
+--- closure-orig/src/com/google/javascript/jscomp/parsing/parser/trees/ParseTreeType.java	2014-10-03 11:38:06.686298473 -0500
++++ closure/src/com/google/javascript/jscomp/parsing/parser/trees/ParseTreeType.java	2014-10-02 16:37:02.357342380 -0500
+@@ -96,4 +96,7 @@
+   TEMPLATE_LITERAL_EXPRESSION,
+   TEMPLATE_LITERAL_PORTION,
+   TEMPLATE_SUBSTITUTION,
++  // JAM begin
++  TRANSACTION,
++  // JAM end
+ }

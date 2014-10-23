@@ -1,0 +1,13 @@
+--- closure-orig/src/com/google/javascript/jscomp/ConstCheck.java	2014-10-03 11:38:06.622298474 -0500
++++ closure/src/com/google/javascript/jscomp/ConstCheck.java	2014-10-13 12:27:03.084477542 -0500
+@@ -36,7 +36,9 @@
+     implements CompilerPass {
+ 
+   static final DiagnosticType CONST_REASSIGNED_VALUE_ERROR =
+-      DiagnosticType.error(
++      // JAM begin
++      DiagnosticType.warning(
++      // JAM end
+           "JSC_CONSTANT_REASSIGNED_VALUE_ERROR",
+           "constant {0} assigned a value more than once.\n" +
+           "Original definition at {1}");

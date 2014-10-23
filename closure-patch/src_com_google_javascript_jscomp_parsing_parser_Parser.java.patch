@@ -1,0 +1,71 @@
+--- closure-orig/src/com/google/javascript/jscomp/parsing/parser/Parser.java	2014-10-23 11:43:01.883685919 -0500
++++ closure/src/com/google/javascript/jscomp/parsing/parser/Parser.java	2014-10-13 17:41:03.436246924 -0500
+@@ -546,6 +546,12 @@
+     return peek(index, TokenType.FUNCTION);
+   }
+ 
++  // JAM begin
++  private boolean peekTransaction() {
++    return peek(0, TokenType.TRANSACTION);
++  }
++  // JAM end
++
+   private ParseTree parseArrowFunction(Expression expressionIn) {
+     SourcePosition start = getTreeStartLocation();
+ 
+@@ -617,6 +623,23 @@
+         FunctionDeclarationTree.Kind.EXPRESSION);
+   }
+ 
++  // JAM begin
++  private ParseTree parseTransaction() {
++    SourcePosition start = getTreeStartLocation();
++    eat(TokenType.TRANSACTION);
++
++    eat(TokenType.OPEN_PAREN);
++    ParseTree introspector = parseExpression();
++    eat(TokenType.CLOSE_PAREN);
++    BlockTree transactionBody = parseBlock();
++
++    TransactionStatementTree transaction =  new TransactionStatementTree(
++        getTreeLocation(start), introspector, transactionBody);
++
++    return transaction;
++  }
++  // JAM end 
++
+   private FormalParameterListTree parseFormalParameterList() {
+     SourcePosition listStart = getTreeStartLocation();
+     eat(TokenType.OPEN_PAREN);
+@@ -746,6 +769,10 @@
+       return parseTryStatement();
+     case DEBUGGER:
+       return parseDebuggerStatement();
++    // JAM begin
++    case TRANSACTION:
++      return parseTransaction();
++    // JAM end
+     default:
+       if (peekLabelledStatement()) {
+         return parseLabelledStatement();
+@@ -808,6 +835,9 @@
+     case MINUS:
+     case TILDE:
+     case BANG:
++    // JAM begin
++    case TRANSACTION:
++    // JAM end
+       return true;
+     default:
+       return false;
+@@ -1312,6 +1342,10 @@
+     case SLASH:
+     case SLASH_EQUAL:
+       return parseRegularExpressionLiteral();
++    // JAM begin
++    case TRANSACTION:
++      return parseTransaction();  
++    // JAM end
+     default:
+       return parseMissingPrimaryExpression();
+     }

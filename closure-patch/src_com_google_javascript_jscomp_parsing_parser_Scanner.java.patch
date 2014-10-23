@@ -1,0 +1,41 @@
+--- closure-orig/src/com/google/javascript/jscomp/parsing/parser/Scanner.java	2014-10-03 11:38:06.682298473 -0500
++++ closure/src/com/google/javascript/jscomp/parsing/parser/Scanner.java	2014-10-02 18:32:34.293169149 -0500
+@@ -552,8 +552,11 @@
+         default:
+           return createToken(TokenType.BAR, beginToken);
+         }
+-      case '#':
+-        return createToken(TokenType.POUND, beginToken);
++      // JAM begin
++      // %%% Whoops, conflicts with policy language.
++      //case '#':
++      //  return createToken(TokenType.POUND, beginToken);
++      // JAM end
+       // TODO: add NumberToken
+       // TODO: character following NumericLiteral must not be an IdentifierStart or DecimalDigit
+       case '0':
+@@ -563,8 +566,11 @@
+       case '"':
+       case '\'':
+         return scanStringLiteral(beginToken, ch);
+-      case '`':
+-        return scanTemplateLiteral(beginToken);
++      // JAM begin
++      // %%% Also conflicts.
++      //case '`':
++      //  return scanTemplateLiteral(beginToken);
++      // JAM end
+       default:
+         return scanIdentifierOrKeyword(beginToken, ch);
+       }
+@@ -735,6 +741,10 @@
+     switch (ch) {
+     case '$':
+     case '_':
++    // JAM begin
++    case '`':
++    case '#':
++    // JAM end
+       return true;
+     default:
+       // TODO: UnicodeLetter also includes Letter Number (NI)

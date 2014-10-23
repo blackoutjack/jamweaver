@@ -1,0 +1,29 @@
+--- closure-orig/src/com/google/javascript/jscomp/parsing/NewIRFactory.java	2014-10-23 11:43:01.883685919 -0500
++++ closure/src/com/google/javascript/jscomp/parsing/NewIRFactory.java	2014-10-02 18:44:52.785150694 -0500
+@@ -93,6 +93,9 @@
+ import com.google.javascript.jscomp.parsing.parser.trees.TemplateSubstitutionTree;
+ import com.google.javascript.jscomp.parsing.parser.trees.ThisExpressionTree;
+ import com.google.javascript.jscomp.parsing.parser.trees.ThrowStatementTree;
++// JAM begin
++import com.google.javascript.jscomp.parsing.parser.trees.TransactionStatementTree;
++// JAM end
+ import com.google.javascript.jscomp.parsing.parser.trees.TryStatementTree;
+ import com.google.javascript.jscomp.parsing.parser.trees.UnaryExpressionTree;
+ import com.google.javascript.jscomp.parsing.parser.trees.VariableDeclarationListTree;
+@@ -1907,6 +1910,16 @@
+           transformBlock(stmt.body));
+     }
+ 
++    // JAM begin
++    @Override
++    Node processTransactionStatement(TransactionStatementTree stmt) {
++      return newNode(
++        Token.TRANSACTION,
++        transform(stmt.introspector),
++        transformBlock(stmt.body));
++    }
++    // JAM end
++
+     @Override
+     Node processMissingExpression(MissingPrimaryExpressionTree tree) {
+       // This will already have been reported as an error by the parser.

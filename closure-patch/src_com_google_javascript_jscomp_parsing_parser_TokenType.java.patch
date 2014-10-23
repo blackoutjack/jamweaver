@@ -1,0 +1,13 @@
+--- closure-orig/src/com/google/javascript/jscomp/parsing/parser/TokenType.java	2014-10-03 11:38:06.682298473 -0500
++++ closure/src/com/google/javascript/jscomp/parsing/parser/TokenType.java	2014-10-02 16:25:41.769359388 -0500
+@@ -144,6 +144,10 @@
+   TEMPLATE_MIDDLE("template middle"),
+   TEMPLATE_TAIL("template tail"),
+   NO_SUBSTITUTION_TEMPLATE("no substitution template"),
++
++  // JAM begin
++  TRANSACTION,
++  // JAM end
+   ;
+ 
+   public final String value;

@@ -4,8 +4,9 @@ This repository contains the files constituting the JavaScript Model-
 Checker, a.k.a. JAM. This project is being built and maintained by Rich
 Joiner (joiner@cs.wisc.edu) at the University of Wisconsin-Madison.
 The idea was concieved and prototyped by Matt Fredrikson, also of
-UW-Madison. This work is done under the advisement of Professors
-Tom Reps and Somesh Jha.
+UW-Madison, while working with Philip Porras and Hassen Saïdi at SRI.
+This work is done under the advisement of Professors Tom Reps and
+Somesh Jha.
 
 The latest version of the repository can be obtained via the Git
 repository hosted at the following address.

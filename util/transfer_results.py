@@ -517,7 +517,7 @@ def update_expected(bases):
   dirs = [cfg.MICROBENCHMARK_DIR, cfg.BENCHMARK_DIR]
 
   for from_dir in dirs:
-    paths = cfg.load_sources(from_dir, '.js', '.exp.js')
+    paths = cfg.load_sources(from_dir, '.js', '.out.js')
     
     for flpath in paths:
       base = cfg.get_base(flpath)
@@ -533,7 +533,7 @@ def update_expected(bases):
         # Differentiate the output if policy indexed by a non-numeric key.
         # For example, the policy file jsqrcode.call.policy will be
         # indexed by "call", and the output will be stored separately from
-        # the analysis using jsqrcode.get.policy. Alter the .exp filename
+        # the analysis using jsqrcode.get.policy. Alter the .out filename
         # accordingly.
         if poldesc != '':
           outbase = base + '.' + poldesc
@@ -547,42 +547,41 @@ def update_expected(bases):
         synonly = False
         if 'info' in appinfo:
           runinfofile = appinfo['info']
-          runinfo = parse_info_file(runinfofile)
+          runinfo = cfg.parse_info_file(runinfofile)
           if 'predicate-limit' in runinfo:
             refine = runinfo['predicate-limit']
           else:
             cfg.warn('No predicate-limit info for run: %s' % appinfo['dir'])
+            continue
 
           if 'syntax-only' in runinfo:
             if runinfo['syntax-only'] == 'true':
               synonly = True
           else:
             cfg.warn('No syntax-only info for run: %s' % appinfo['dir'])
+            continue
         else:
           cfg.warn('No run information: %s' % appinfo['dir'])
+          continue
 
-        if synonly:
-          synsuf = '.syntaxonly'
-        else:
-          synsuf = ''
+        refsuf = cfg.get_suffix(exppre, synonly, refine)
 
-        expsuf = '%s%s.refine%d.exp.js' % (exppre, synsuf, ref)
+        expsuf = '%s.out.js' % refsuf
 
-        appinfo = appfiles[outbase]
         if 'full' in appinfo:
           outfile = appinfo['full']
           outfl = open(outfile, 'r')
           outp = outfl.read()
           outfl.close()
           
-          expfile = cfg.get_exp_path(flpath, expsuf)
-          #stat = cfg.validate_output(flpath, outp, expsuf)
-          #print stat + ":", expfile, "/", outfile
-          stat = cfg.overwrite_expected(flpath, outp, expsuf)
-          if stat == "overwritten":
-            print base + expsuf, stat
+          exppath = cfg.get_exp_path(flpath, expsuf)
+          stat = cfg.overwrite_expected(outp, exppath)
+          if stat == 'overwritten' or stat == 'created':
+            expname = os.path.basename(exppath)
+            cfg.out('%s %s' % (expname, stat))
         else:
           cfg.warn("Output not found: " + base)
+# /update_expected
 
 def main():
   parser = OptionParser(usage="%prog transferconfig.py")

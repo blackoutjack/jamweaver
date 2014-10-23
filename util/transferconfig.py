@@ -13,9 +13,11 @@ from util import warn
 from util import sort_dirs
 from util import get_results_info
 from util import get_exp_path
+from util import get_suffix
 from util import get_variant_bases
 from util import get_descriptors
 from util import overwrite_expected
+from util import parse_info_file
 from util import validate_output
 from util import symlink
 

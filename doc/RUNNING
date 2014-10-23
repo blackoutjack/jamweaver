@@ -18,7 +18,7 @@ You can set up the following aliases in your login script to
 make invoking JAM easier.
 
 alias jam="java -Xms256m -Xmx4096m -jar $JAMPKG/bin/jam.jar"
-alias jamdbg="java -ea -Xms256m -Xmx4096m -Xdebug -agentlib:jdwp=transport=dt_socket,address=localhost:9009,server=y,suspend=n -jar \$JAMPKG/bin/jam.jar -g -b -v 3"
+alias jamdbg="java -ea -Xms256m -Xmx4096m -Xdebug -agentlib:jdwp=transport=dt_socket,address=localhost:9009,server=y,suspend=n -jar $JAMPKG/bin/jam.jar -g -b"
 alias jamutil="java -jar $JAMPKG/bin/util.jar"
 alias jamwala="java -jar $JAMPKG/bin/wala.jar"
 
@@ -57,82 +57,87 @@ these conversion for you, but this is not yet available.
 ##### Running JAM #####
 
 To analyze a JavaScript source file with regard to a JAM policy:
-jam source.js safe.policy
+jam source.js -Y safe.policy
 
 To do the same, and collect debug information:
-jamdbg source.js safe.policy
+jamdbg source.js -Y safe.policy
 
-Multiple policy files can be supplied:
-jam source.js p0.policy p1.policy p2.policy ...
+Multiple source files can be supplied as independent arguments, and
+multiple policy files can be supplied as a comma-delimited list:
+jam source0.js source1.js ... -Y p0.policy,p1.policy,p2.policy,...
 
-usage: java edu.wisc.cs.jam.JAM SRCFILE [POLFILE+ ...] [--appsuffix VAL] [--bddformat FMTID] [--help] [--noindirect] [--querytimeout SECONDS] [--retids] [-C] [-F] [-G] [-I] [-L] [-M] [-O] [-P] [-R THREADS] [-S] [-T THREADS] [-U] [-b] [-c] [-d FILE] [-e] [-f] [-g] [-i] [-j] [-k PREDICATES] [-l] [-m] [-n] [-p MAX] [-r] [-s] [-t THREADS] [-v N] [-x] [-y]
- SRCFILE                : source file
- POLFILE+               : policy file(s)
- --appsuffix VAL        : Append this suffix to the application name in output
-                          files
- --bddformat FMTID      : 0=sat paths, 1=tree, 2=both (debug)
- --help                 : display this message
- --noindirect           : Use direct introspection rather than indirection
- --querytimeout SECONDS : Timeout (s) for semantics queries
- --retids               : Embed return symbol ids in automata (can be expensive)
- -C                     : Output node count for various artifacts
- -F                     : Forward analysis: add and analyze checks one-by-one
- -G                     : Log semantic queries (subsumed by -g)
- -I                     : Skip the call-site transformation
- -L                     : Only seed predicates locally
- -M                     : Output memory usage information
- -O                     : Skip final optimization of instrumented code
- -P                     : Do intraprocedural analysis only
- -R THREADS             : Number of threads to spawn for path analyses
- -S                     : Output intermediate source with each new counter-examp
-                          le
- -T THREADS             : Number of threads to spawn for finding counter-example
-                          s
- -U                     : Make no assumptions about the initial environment
- -b                     : Report statements the language model can't evaluate
- -c                     : Use the Cartesian abstraction
- -d FILE                : Build the program model with predicates found in this
-                          file
- -e                     : Suppress time output to stderr and in queries
- -f                     : Do ancillary analysis, but no instrumentation
- -g                     : Output debugging information
- -i                     : Access OpenNWA as a library instead of a separate
-                          process
- -j                     : Use the Disjoint abstraction
- -k PREDICATES          : Maximum predicate cube size
- -l                     : Analyze incrementally over seeded cubes
- -m                     : Stand-alone mode: assume functions will not be called
-                          from outside this program
- -n                     : Don't output final source to STDOUT
- -p MAX                 : Maximum number of learned predicates (-1 = unlimited)
- -r                     : Output .dot files for BDDs
- -s                     : Skip the preprocessing step
- -t THREADS             : Number of threads to spawn for semantic queries
- -v N                   : Amount of information output to STDERR (0-4,default:1)
- -x                     : Don't load standard externs
- -y                     : Skip type inference
+As an alternative to listing the source files on directly on the
+command line, you can use the -X option and supply a text file that
+lists paths of the input JavaScript files relative to the list file
+itself. The resulting woven files will be saved in a directory
+structure identical to the original layout. This options helps to
+facilitate the end-to-end webpage analysis.
+jam sources0.txt -X -Y safe.policy
+
+usage: java edu.wisc.cs.jam.JAM SRCFILE+ ... [--appsuffix VAL] [--bddformat FMTID] [--help] [--noindirect] [--querytimeout SECONDS] [--retids] [-F] [-G] [-L] [-M] [-N APPNAME] [-O] [-P] [-R THREADS] [-S] [-T THREADS] [-U] [-X] [-Y POLFILE1[,POLFILE2...]] [-b] [-c] [-d FILE] [-e] [-f] [-g] [-h HTMLFILE] [-i] [-j] [-k PREDICATES] [-l] [-m] [-n] [-p MAX] [-r] [-s] [-t THREADS] [-v N] [-x] [-y] [-z]
+ SRCFILE+                  : source file(s)
+ --appsuffix VAL           : Append this suffix to the application name in output files
+ --help                    : display this message
+ --noindirect              : Use direct introspection rather than indirection
+ --querytimeout SECONDS    : Timeout (s) for semantics queries
+ --retids                  : Embed return symbol ids in automata (can be expensive)
+ -G                        : Log semantic queries (subsumed by -g)
+ -L                        : Only seed predicates locally
+ -M                        : Output memory usage information
+ -N APPNAME                : JavaScript application name
+ -O                        : Skip final optimization of instrumented code
+ -P                        : Do intraprocedural analysis only
+ -S                        : Output intermediate source with each new counter-example
+ -U                        : Make no assumptions about the initial environment
+ -X                        : Indicates that the given source files are lists (see doc/RUNNING for formatting)
+ -Y POLFILE1[,POLFILE2...] : policy file(s)
+ -b                        : Report statements the language model can't evaluate
+ -c                        : Use the Cartesian abstraction
+ -d FILE                   : Build the program model with predicates found in this file
+ -e                        : Suppress time output to stderr and in queries
+ -f                        : Do ancillary analysis, but no instrumentation
+ -g                        : Output debugging information
+ -h HTMLFILE               : HTML file
+ -j                        : Use the Disjoint abstraction
+ -l                        : Analyze incrementally over seeded cubes
+ -m                        : Stand-alone mode: assume functions will not be called from outside this program
+ -n                        : Don't output final source to STDOUT
+ -p MAX                    : Maximum number of learned predicates (-1 = unlimited)
+ -s                        : Skip the preprocessing step
+ -t THREADS                : Number of threads to spawn for semantic queries
+ -v N                      : Amount of information output to STDERR (0-4,default:1)
+ -x                        : Don't load standard externs
+ -y                        : Skip type inference
+ -z                        : Use only the conservative (but imprecise) syntax analysis
 
 ##### Running test suites #####
 
 The util/ directory contains scripts for running a series of test suites
-contained in tests/. Test cases typically include a .exp.js file
+contained in tests/. Test cases typically include a .out.js file
 containing the expected output, which is compared by the framework
 against the actual output. Running the microbenchmarks is done with the
-following command. The microbenchmark suite typically takes around 0.75
-hours to complete.
+following command. The microbenchmark suite typically takes around an
+hour to complete.
 
 $JAMPKG/util/run.py -m
 
 Larger benchmark tests are run with the -b option. The entire benchmark
-suite typically takes 2-4 days to complete, depending on the resources
-allotted to the JAM process.
+suite typically takes about a day to complete, depending on the
+resources allotted to the JAM process.
 
 Command line options:
-  -h, --help         show this help message and exit
-  -b, --benchmarks   analyze benchmark applications
-  -m, --micro        analyze microbenchmark applications
-  -e, --overwrite    overwrite expected output
-  -g, --debug        generate debug output
+  -h, --help            show this help message and exit
+  -b, --benchmarks      analyze benchmark applications
+  -w, --websites        end-to-end website analysis
+  -m, --micro           analyze microbenchmark applications
+  -e, --overwrite       overwrite expected output
+  -g, --debug           generate debug output
+  -u URL, --url=URL     analyze HTML/JS at given URL
+  -Y POLICY, --policy=POLICY
+                        policy file to apply to URL
+  -p REFINE, --refine=REFINE
+                        maximum of number of predicates to learn
+  -z, --syntax-only     use syntax-only (not semantic) analysis
 
 ##### Interpreting the output #####
 

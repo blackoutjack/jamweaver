@@ -156,14 +156,31 @@ public class JSSyntaxAnalysis {
 
     Exp op0 = polexp.getChild(0);
     Exp op1 = polexp.getChild(1);
+
+    // Handle a few 1-off problem cases.
+    if (progexp.isReturn()) {
+      if (progexp.getChildCount() == 0)
+        return true;
+      if (progexp.getChild(0).isName())
+        return true;
+      if (ExpUtil.isPrimitive(progexp.getChild(0)))
+        return true;
+    }
     
     if (op0.isName()) {
       if (!pl.isNativeLocation(op0)) {
         // See if the name can be the target of a write.
         String opname0 = op0.getString();
-        if (!definitelyNoWrite(progexp, opname0, true)) {
+        if (!definitelyNoWrite(progexp, opname0, true))
           return false;
-        }
+      }
+    } else if (op0.isAccessor()) {
+      Exp propexp = op0.getChild(1);
+      if (propexp.isString()) {
+        String prop = propexp.getString();
+        // %%% Could use special no-scope logic.
+        if (!definitelyNoWrite(progexp, prop, true))
+          return false;
       }
     } else if (!ExpUtil.isPrimitive(op0)) {
       return false;
@@ -176,6 +193,14 @@ public class JSSyntaxAnalysis {
         if (!definitelyNoWrite(progexp, opname1, true)) {
           return false;
         }
+      }
+    } else if (op1.isAccessor()) {
+      Exp propexp = op1.getChild(1);
+      if (propexp.isString()) {
+        String prop = propexp.getString();
+        // %%% Could use special no-scope logic.
+        if (!definitelyNoWrite(progexp, prop, true))
+          return false;
       }
     } else if (!ExpUtil.isPrimitive(op1)) {
       return false;

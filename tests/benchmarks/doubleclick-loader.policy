@@ -1,2 +1,2 @@
-0,1: jam#getValue(#location,"href") === "http://localhost/"
-1,-1: jam#getValue(#location,"href") !== "http://localhost/"
+0,1: #location.href === "http://localhost/"
+1,-1: #location.href !== "http://localhost/"

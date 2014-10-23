@@ -106,7 +106,7 @@ class RunResult():
 
 def load_testcases(from_dir, defwarn=True):
   cases = []
-  paths = load_sources(from_dir, '.js', '.exp.js')
+  paths = load_sources(from_dir, '.js', '.out.js')
   for flpath in paths:
     base = get_base(flpath)
 
@@ -163,6 +163,14 @@ def process_info(base, exppath, overwrite):
   return ok
 # /process_info
 
+def get_suffix(pre, syn, ref):
+  if syn:
+    refsuf = '.syntax'
+  else:
+    refsuf = '.semantic%d' % ref
+  suf = '%s%s' % (pre, refsuf)
+  return suf
+
 def process_result(outp, exppath, overwrite):
   ok = False
   if overwrite:
@@ -211,10 +219,8 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
 
     opts = ['-X', '-P', '-N', appname, '-h', htmlfile]
 
-    synsuf = ''
     if synonly:
       opts.append('-z')
-      synsuf = '.syntax'
 
     if poldesc != '':
       opts.append('--appsuffix')
@@ -226,11 +232,13 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     out("Analyzing %s" % appname)
     outp = run_jam(srclist, [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
 
-    expsuf = '%s%s.refine%d.exp.js' % (exppre, synsuf, refine)
+    refsuf = get_suffix(exppre, synonly, refine)
+
+    expsuf = '%s.out.js' % refsuf
     exppath = os.path.join(WEBSITE_DIR, appname + expsuf)
     result.js_ok = process_result(outp, exppath, overwrite)
 
-    infoexpsuf = '%s%s.refine%d.info.exp.txt' % (exppre, synsuf, refine)
+    infoexpsuf = '%s.info.out.txt' % refsuf
     infoexppath = os.path.join(WEBSITE_DIR, appname + infoexpsuf)
     result.info_ok = process_info('%s%s' % (appname, exppre), infoexppath, overwrite)
 
@@ -262,7 +270,7 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     rpfl.close()
     out("Saved to %s" % rpfile)
 
-    rpexpsuf = '%s%s.refine%d.exp.html' % (exppre, synsuf, refine)
+    rpexpsuf = '%s.out.html' % refsuf
     rpexppath = os.path.join(WEBSITE_DIR, appname + rpexpsuf)
     result.html_ok = process_result(rpout, rpexppath, overwrite)
 
@@ -305,15 +313,10 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
 
       opts = []
 
-      synsuf = ''
-      if synonly:
-        opts.append('-z')
-        synsuf = '.syntax'
-
       # Differentiate the output if policy indexed by a non-numeric key.
       # For example, the policy file jsqrcode.call.policy will be
       # indexed by "call", and the output will be stored separately from
-      # the analysis using jsqrcode.get.policy. Alter the .exp filename
+      # the analysis using jsqrcode.get.policy. Alter the .out filename
       # accordingly.
       if poldesc != '':
         opts.append('--appsuffix')
@@ -322,12 +325,15 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
       else:
         exppre = ''
 
-      # If the user provided a refinement limit, use that always.
-      # Otherwise, use some special logic.
+      # If the user provided a refinement limit (-p), use that for all
+      # test cases. Otherwise, use some special logic.
       ref = refine
       if ref is None:
-        ref = 3
-        if not synonly:
+        if synonly:
+          # Refinement is not likely to help without semantic modeling.
+          ref = 0
+        else:
+          ref = 3
           if seeds is not None:
             ref = 0
           if base.startswith('exfil_test'):
@@ -341,6 +347,9 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
             opts.append('5')
             ref = 0
 
+      if synonly:
+        opts.append('-z')
+
       # Print the name of the file being analyzed.
       jsname = os.path.basename(srcfl)
       out(jsname)
@@ -348,12 +357,13 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
       # Use the union of all policy files for a particular test.
       outp = run_jam(srcfl, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
 
-      expsuf = '%s%s.refine%d.exp.js' % (exppre, synsuf, ref)
+      refsuf = get_suffix(exppre, synonly, ref)
 
+      expsuf = '%s.out.js' % refsuf
       exppath = get_exp_path(srcfl, expsuf)
       result.js_ok = process_result(outp, exppath, overwrite)
 
-      infoexpsuf = '%s%s.refine%d.info.exp.txt' % (exppre, synsuf, ref)
+      infoexpsuf = '%s.info.out.txt' % refsuf
       infoexppath = get_exp_path(srcfl, infoexpsuf)
       result.info_ok = process_info('%s%s' % (base, exppre), infoexppath, overwrite)
 
@@ -379,15 +389,10 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
 
       opts = []
 
-      synsuf = ''
-      if synonly:
-        opts.append('-z')
-        synsuf = '.syntax'
-
       # Differentiate the output if policy indexed by a non-numeric key.
       # For example, the policy file jsqrcode.call.policy will be
       # indexed by "call", and the output will be stored separately from
-      # the analysis using jsqrcode.get.policy. Alter the .exp filename
+      # the analysis using jsqrcode.get.policy. Alter the .out filename
       # accordingly.
       if poldesc != '':
         opts.append('--appsuffix')
@@ -401,17 +406,21 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
         # Forgo interprocedural analysis for these benchmarks.
         opts.append('-P')
 
+      if synonly:
+        opts.append('-z')
+
       # Print the name of the file being analyzed.
       jsname = os.path.basename(srcfl)
       out(jsname)
       outp = run_jam(srcfl, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
 
-      expsuf = '%s%s.refine%d.exp.js' % (exppre, synsuf, refine)
+      refsuf = get_suffix(exppre, synonly, refine)
 
+      expsuf = '%s.out.js' % refsuf
       exppath = get_exp_path(srcfl, expsuf)
       result.js_ok = process_result(outp, exppath, overwrite)
 
-      infoexpsuf = '%s%s.refine%d.info.exp.txt' % (exppre, synsuf, refine)
+      infoexpsuf = '%s.info.out.txt' % refsuf
       infoexppath = get_exp_path(srcfl, infoexpsuf)
       result.info_ok = process_info('%s%s' % (base, exppre), infoexppath, overwrite)
 

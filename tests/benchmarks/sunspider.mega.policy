@@ -2,8 +2,8 @@
 0,1: jam#get(`x,"getElementsByTagName") && `x instanceof #HTMLDocument
 1,-1: jam#set(#document,"cookie")
 0,-1: jam#get(`x,"cookie") && `x instanceof #HTMLDocument
-0,2: jam#getValue(#location,"href") === "http://localhost/"
-2,3: jam#getValue(#location,"href") !== "http://localhost/"
+0,2: #location.href === "http://localhost/"
+2,3: #location.href !== "http://localhost/"
 0,3: jam#invoke(#Storage#prototype#getItem)
 3,-1: jam#set(#document,"cookie")
 0,4: jam#invoke(#HTMLDocument#prototype#getElementById) && jam#arg(0) === "content"

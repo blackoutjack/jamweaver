@@ -345,7 +345,7 @@ def parse_info_file(infofile):
         warn('Invalid info file line: %s' % infoline)
   return info
 
-def load_sources(from_dir, srcsuf='.js', excludesuf='.exp.js'):
+def load_sources(from_dir, srcsuf='.js', excludesuf='.out.js'):
   allfls = os.listdir(from_dir)
   # Sort the files so that tests are run in a consistent order.
   allfls.sort()

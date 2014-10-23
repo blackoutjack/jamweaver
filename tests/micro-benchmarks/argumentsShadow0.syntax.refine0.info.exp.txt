@@ -1,2 +1,0 @@
-predicate-limit:0
-syntax-only:true

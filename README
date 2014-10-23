@@ -25,7 +25,7 @@ the doc/ directory. INSTALL.bash handles environmental setup (installing
 packages with apt-get and setting the JAMPKG environment variable,
 e.g.). Then DEPENDENCIES.mk can be invoked as a makefile to download and
 install 3rd-party resources. (This currently needs to be done from the
-$JAMPKG directory.)
+$JAMPKG directory: ``make -C $JAMPKG -f doc/DEPENDENCIES.mk [target]''.)
 
 Once the environment and dependencies are in place, you can build the
 system by invoking ``make'' (within $JAMPKG). See doc/RUNNING for
@@ -54,16 +54,16 @@ doc/: Documentation for installing and running JAM.
   RUNNING: instructions for invoking JAM
   POLICIES: description of policy structure and language
 
-tests/: Contains various test cases and benchmarks for JAM, as well as
-  scripts for running them automatically. See doc/RUNNING for details.
+tests/: Contains various targeted test cases and benchmark
+  applications for JAM, including expected results.
 
-util/: Some ancillary scripts, mostly for generating collecting and
-  analyzing results and performance statistics.
+util/: Scripts, mostly for generating, collecting and analyzing results
+  and performance statistics. See doc/RUNNING for details.
 
 cache/: This (initially empty) directory will be populated with a XSB
   query cache, so that subsequent invocations of JAM will avoid calls
-  to XSB that have previously been evaluated. The cache can be cleared
-  by running ``make cacheclean.''
+  to the semantics module that have previously been evaluated. The cache
+  can be cleared by running ``make cacheclean.''
 
 output/: This directory will contain the output of a JAM analysis. A
   new subdirectory prefixed with the name of the input JavaScript file

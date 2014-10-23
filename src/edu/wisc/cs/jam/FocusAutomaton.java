@@ -139,7 +139,7 @@ public class FocusAutomaton extends RelationAutomaton {
     // Only associate the destination policy state with the destination
     // of focused-on control edges.
     String pdestserial = pdest.serialize();
-    for (Edge ce : getTransitioningEdges(ppred.getNegative())) {
+    for (Edge ce : getTransitioningEdges(ppred.getPositive())) {
       if (ce.getSymbol().getExp() == focusNode) {
         out.append(pdestserial);
         out.append(".");

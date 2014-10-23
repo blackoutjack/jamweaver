@@ -74,7 +74,7 @@ public class DisjointAutomaton extends RelationAutomaton {
             }
 
             // %%% Does this even do anything anymore?
-            boolean noOp = isNoOpFromState(sym, preState);
+            boolean noOp = false; //isNoOpFromState(sym, preState);
 
             for (DataState postState : predCube) {
 
@@ -181,7 +181,7 @@ public class DisjointAutomaton extends RelationAutomaton {
             }
 
             // %%% Does this even do anything anymore?
-            boolean noOp = isNoOpFromState(sym, preState);
+            boolean noOp = false; //isNoOpFromState(sym, preState);
 
             for (DataState postState : predCube) {
 

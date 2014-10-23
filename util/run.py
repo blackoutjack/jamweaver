@@ -214,7 +214,7 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     synsuf = ''
     if synonly:
       opts.append('-z')
-      synsuf = '.syntaxonly'
+      synsuf = '.syntax'
 
     if poldesc != '':
       opts.append('--appsuffix')
@@ -308,7 +308,7 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
       synsuf = ''
       if synonly:
         opts.append('-z')
-        synsuf = '.syntaxonly'
+        synsuf = '.syntax'
 
       # Differentiate the output if policy indexed by a non-numeric key.
       # For example, the policy file jsqrcode.call.policy will be
@@ -382,7 +382,7 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
       synsuf = ''
       if synonly:
         opts.append('-z')
-        synsuf = '.syntaxonly'
+        synsuf = '.syntax'
 
       # Differentiate the output if policy indexed by a non-numeric key.
       # For example, the policy file jsqrcode.call.policy will be
@@ -470,18 +470,27 @@ def main():
   if opts.benchmarks or opts.micro or opts.websites or opts.url is not None:
     allmods = False
 
+  ref = opts.refine
+  if ref is not None:
+    try:
+      ref = int(ref)
+      if ref < -1:
+        raise
+    except:
+      fatal('Invalid refinement limit: %s (should be positive integer, or -1 for unlimited)' % (opts.refine))
+
   #if opts.interpreter:
   #  err('Interpreter tests are currently out-of-order')
   #  run_interpreter_tests(opts.debug)
   if opts.url is not None:
     pol = load_policy(opts.policy)
-    run_website(opts.url, pol, debug=opts.debug, overwrite=opts.overwrite, refine=opts.refine, synonly=opts.syntaxonly)
+    run_website(opts.url, pol, debug=opts.debug, overwrite=opts.overwrite, refine=ref, synonly=opts.syntaxonly)
   if allmods or opts.micro:
-    run_microbenchmarks(opts.debug, opts.overwrite, refine=opts.refine, synonly=opts.syntaxonly)
+    run_microbenchmarks(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly)
   if allmods or opts.benchmarks:
-    run_benchmarks(opts.debug, opts.overwrite, refine=opts.refine, synonly=opts.syntaxonly)
+    run_benchmarks(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly)
   if allmods or opts.websites:
-    run_websites(opts.debug, opts.overwrite, refine=opts.refine, synonly=opts.syntaxonly)
+    run_websites(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly)
 # /main
 
 

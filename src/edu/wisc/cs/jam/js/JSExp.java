@@ -188,6 +188,10 @@ public class JSExp extends Exp {
     return new JSExp(src);
   }
 
+  public static JSExp createNumber(SourceManager src, double num) {
+    return create(src, Node.newNumber(num));
+  }
+
   public static JSExp create(SourceManager src, Node n) {
     if (nodeMap.containsKey(n)) {
       return nodeMap.get(n);

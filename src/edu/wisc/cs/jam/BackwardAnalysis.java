@@ -47,7 +47,7 @@ public class BackwardAnalysis extends JAMAnalysis {
     for (Policy.Edge pe : policyPath.getPolicyEdges()) {
       Predicate pred = pe.getSymbol().getPredicate();
       assert pred != Predicate.TRUE;
-      PredicateValue pv = pred.getNegative();
+      PredicateValue pv = pred.getPositive();
 
       for (ExpSymbol sym : ra.getTransitioningSymbols(pv)) {
         RuntimeCheck check = cm.getCheck(sym, pe);

@@ -131,7 +131,7 @@ public class JSSyntaxAnalysis {
 
       for (Exp c : calls) {
         int len = c.getChildCount() - 1;
-        Exp lenexp = JSExp.create(sm, sm.nodeFromCode("" + len));
+        Exp lenexp = JSExp.createNumber(sm, len);
         ret.add(lenexp);
       }
       return ret;

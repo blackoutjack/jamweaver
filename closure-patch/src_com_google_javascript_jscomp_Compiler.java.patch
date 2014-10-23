@@ -1,8 +1,8 @@
---- closure-orig/src/com/google/javascript/jscomp/Compiler.java	2013-08-19 15:26:58.300335367 -0500
-+++ closure/src/com/google/javascript/jscomp/Compiler.java	2013-09-28 17:31:52.722578911 -0500
-@@ -2610,4 +2610,10 @@
-   public AstRoot getOldParseTreeByName(String sourceName) {
-     return null;
+--- closure-orig/src/com/google/javascript/jscomp/Compiler.java	2014-10-23 11:43:01.851685920 -0500
++++ closure/src/com/google/javascript/jscomp/Compiler.java	2014-10-02 15:52:29.441409177 -0500
+@@ -2742,4 +2742,10 @@
+   ImmutableMap<String, Node> getDefaultDefineValues() {
+     return this.defaultDefineValues;
    }
 +
 +  // JAM begin

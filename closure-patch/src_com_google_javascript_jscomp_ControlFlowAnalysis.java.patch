@@ -1,6 +1,16 @@
---- closure-orig/src/com/google/javascript/jscomp/ControlFlowAnalysis.java	2013-08-19 15:26:58.300335367 -0500
-+++ closure/src/com/google/javascript/jscomp/ControlFlowAnalysis.java	2013-08-18 21:34:39.380397003 -0500
-@@ -348,12 +348,28 @@
+--- closure-orig/src/com/google/javascript/jscomp/ControlFlowAnalysis.java	2014-10-03 11:38:06.622298474 -0500
++++ closure/src/com/google/javascript/jscomp/ControlFlowAnalysis.java	2014-10-02 21:15:28.800924881 -0500
+@@ -256,6 +256,9 @@
+         case Token.IF:
+         case Token.WHILE:
+         case Token.WITH:
++        // JAM begin
++        case Token.TRANSACTION:
++        // JAM end
+           return n != parent.getFirstChild();
+         case Token.DO:
+           return n != parent.getFirstChild().getNext();
+@@ -347,12 +350,28 @@
          return;
        case Token.LABEL:
          return;
@@ -17,10 +27,10 @@
  
 +  // JAM begin
 +  private void handleTransaction(Node node) {
-+    Node handler = node.getFirstChild();
-+    Node body = handler.getNext();
-+    createEdge(node, Branch.UNCOND, handler);
-+    createEdge(handler, Branch.UNCOND, body);
++    Node ispect = node.getFirstChild();
++    Node body = ispect.getNext();
++    createEdge(node, Branch.UNCOND, computeFallThrough(body));
++    connectToPossibleExceptionHandler(node, ispect);
 +    // %%% Also need to model the potential calling of the handler, 
 +    // %%% which is somewhat like exceptions.
 +  }

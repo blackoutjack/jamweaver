@@ -1,14 +1,14 @@
---- closure-orig/src/com/google/javascript/jscomp/ControlFlowGraph.java	2013-08-19 15:26:58.300335367 -0500
-+++ closure/src/com/google/javascript/jscomp/ControlFlowGraph.java	2013-08-18 21:15:14.744436007 -0500
+--- closure-orig/src/com/google/javascript/jscomp/ControlFlowGraph.java	2014-10-03 11:38:06.622298474 -0500
++++ closure/src/com/google/javascript/jscomp/ControlFlowGraph.java	2014-10-02 20:41:39.944975583 -0500
 @@ -172,6 +172,13 @@
          // control is going into the function's body, represented by the second
          // child.
          return n != parent.getFirstChild().getNext();
 +      // JAM begin
 +      case Token.TRANSACTION:
-+        // When a transaction block is approached, the handler expression is
-+        // evaluated first (though the resulting value is not called), followed
-+        // by the body.
++        // When a transaction block is approached, the introspector
++        // expression is evaluated first (though the resulting value is
++        // not called), followed by the body.
 +        return true;
 +      // JAM end
        case Token.WHILE:

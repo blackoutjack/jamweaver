@@ -1,19 +1,19 @@
---- closure-orig/src/com/google/javascript/jscomp/AstValidator.java	2013-08-19 15:26:58.296335367 -0500
-+++ closure/src/com/google/javascript/jscomp/AstValidator.java	2014-05-02 21:11:52.065905123 -0500
-@@ -119,6 +119,11 @@
-       case Token.IF:
-         validateIf(n);
+--- closure-orig/src/com/google/javascript/jscomp/AstValidator.java	2014-10-03 11:38:06.614298474 -0500
++++ closure/src/com/google/javascript/jscomp/AstValidator.java	2014-10-02 17:12:47.653288768 -0500
+@@ -162,6 +162,11 @@
+       case Token.EXPORT:
+         validateExport(n);
          return;
 +      // JAM begin
 +      case Token.TRANSACTION:
 +        validateTransaction(n);
 +        return;
 +      // JAM end
-       case Token.VAR:
-         validateVar(n);
-         return;
-@@ -265,6 +270,12 @@
-         validateNew(n);
+       default:
+         violation("Expected statement but was "
+             + Token.name(n.getType()) + ".", n);
+@@ -302,6 +307,12 @@
+         validateYield(n);
          return;
  
 +      // JAM begin
@@ -22,10 +22,10 @@
 +        return;
 +      // JAM end
 +
-       case Token.FUNCTION:
-         validateFunctionExpression(n);
-         return;
-@@ -471,6 +482,15 @@
+       default:
+         violation("Expected expression but was "
+             + Token.name(n.getType()), n);
+@@ -827,6 +838,15 @@
      }
    }
  
@@ -40,4 +40,4 @@
 +
    private void validateExprStmt(Node n) {
      validateNodeType(Token.EXPR_RESULT, n);
-     validateChildCount(n, 1);
+     validateChildCount(n, Token.arity(Token.EXPR_RESULT));

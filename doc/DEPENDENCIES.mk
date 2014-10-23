@@ -2,7 +2,7 @@
 
 YICESVERSION=1.0.40
 JAVABDDVERSION=1.0b2
-CLOSURECOMMIT=9ae1d1f981b951a2332ff7f3ecd9dff4a7db2f88
+CLOSURECOMMIT=ce00015cf8b238f380ac679aaba39c444828d158
 XSBVERSION=340
 
 all:
@@ -54,7 +54,7 @@ yices:
 
 closure:
 	# Check out and build Closure compiler from Google. 
-	git clone http://code.google.com/p/closure-compiler closure
+	git clone git@github.com:google/closure-compiler.git closure
 	# Get the revision that was developed against.
 	cd closure && git checkout $(CLOSURECOMMIT)
 	# Apply JAM-specific patches.

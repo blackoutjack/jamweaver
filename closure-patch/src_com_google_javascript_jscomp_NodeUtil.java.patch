@@ -1,6 +1,6 @@
---- closure-orig/src/com/google/javascript/jscomp/NodeUtil.java	2013-08-19 15:26:58.308335367 -0500
-+++ closure/src/com/google/javascript/jscomp/NodeUtil.java	2013-09-28 18:46:58.710447165 -0500
-@@ -812,6 +812,9 @@
+--- closure-orig/src/com/google/javascript/jscomp/NodeUtil.java	2014-10-03 11:38:06.646298474 -0500
++++ closure/src/com/google/javascript/jscomp/NodeUtil.java	2014-10-02 17:26:11.565268678 -0500
+@@ -931,6 +931,9 @@
        case Token.SWITCH:
        case Token.TRY:
        case Token.EMPTY:
@@ -10,7 +10,7 @@
          break;
  
        // Throws are by definition side effects
-@@ -1706,6 +1709,9 @@
+@@ -1981,6 +1984,9 @@
        case Token.SWITCH:
        case Token.CASE:
        case Token.DEFAULT_CASE:
@@ -20,7 +20,7 @@
          return true;
        default:
          return false;
-@@ -1736,6 +1742,10 @@
+@@ -2012,6 +2018,10 @@
          return parent.getFirstChild() != n;
        case Token.DEFAULT_CASE:
          return true;
@@ -31,13 +31,14 @@
        default:
          Preconditions.checkState(isControlStructure(parent));
          return false;
-@@ -3259,6 +3269,9 @@
-           continue inspect;
+@@ -3686,6 +3696,10 @@
          case Token.WHILE:
          case Token.DO:
+           return false;
 +        // JAM begin
 +        case Token.TRANSACTION:
++          return parent.getFirstChild() == n;
 +        // JAM end
-           return false;
          case Token.TRY:
            // Consider all code under a try/catch to be conditionally executed.
+           if (!hasFinally(parent) || parent.getLastChild() != n) {

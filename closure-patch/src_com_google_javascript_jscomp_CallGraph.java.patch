@@ -1,22 +1,25 @@
---- closure-orig/src/com/google/javascript/jscomp/CallGraph.java	2013-08-19 15:26:58.296335367 -0500
-+++ closure/src/com/google/javascript/jscomp/CallGraph.java	2013-11-20 12:06:51.678301467 -0600
-@@ -308,6 +308,15 @@
+--- closure-orig/src/com/google/javascript/jscomp/CallGraph.java	2014-10-03 11:38:06.614298474 -0500
++++ closure/src/com/google/javascript/jscomp/CallGraph.java	2014-10-15 20:54:53.878198577 -0500
+@@ -309,6 +309,18 @@
        for (Definition definition : definitions) {
          if (definition.isExtern()) {
            callsite.hasExternTarget = true;
 +          // JAM begin
 +          Node target = definition.getLValue();
-+
 +          assert target != null;
-+
-+          if (computeForwardGraph) {
-+            callsite.addPossibleExternTarget(target);
++          Node exval = definition.getRValue();
++          // We are only interested in function-valued externs, and
++          // not other types of values or undefined values.
++          if (exval != null && exval.isFunction()) {
++            if (computeForwardGraph && exval != null) {
++              callsite.addPossibleExternTarget(target);
++            }
 +          }
 +          // JAM end
          } else {
            Node target = definition.getRValue();
  
-@@ -678,6 +687,10 @@
+@@ -679,6 +691,10 @@
  
      private Collection<Function> possibleTargets;
  
@@ -27,7 +30,7 @@
      private Callsite(Node callsiteAstNode) {
        astNode = callsiteAstNode;
      }
-@@ -727,6 +740,31 @@
+@@ -728,6 +744,31 @@
        possibleTargets.add(target);
      }
  

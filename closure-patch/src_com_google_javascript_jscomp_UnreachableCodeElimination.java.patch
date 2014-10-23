@@ -1,6 +1,6 @@
---- closure-orig/src/com/google/javascript/jscomp/UnreachableCodeElimination.java	2013-08-19 15:26:58.320335366 -0500
-+++ closure/src/com/google/javascript/jscomp/UnreachableCodeElimination.java	2013-08-30 01:45:24.186675747 -0500
-@@ -209,6 +209,21 @@
+--- closure-orig/src/com/google/javascript/jscomp/UnreachableCodeElimination.java	2014-10-03 11:38:06.666298473 -0500
++++ closure/src/com/google/javascript/jscomp/UnreachableCodeElimination.java	2014-10-02 18:50:51.805141722 -0500
+@@ -209,6 +209,27 @@
          return;
        }
  
@@ -8,17 +8,23 @@
 +      // %%% This is not efficient.
 +      // %%% Really need to update the unreachable code logic to mark
 +      // %%% transaction introspector expressions as reachable.
-+      Node p = n; 
++      Node np = n;
++      Node p = np.getParent(); 
 +      while (p != null) {
-+        // %%% And it's part of the handler expression. It should be
-+        // %%% fine to remove unreachable statements within the block.
 +        if (p.getType() == Token.TRANSACTION) {
-+          return;
++          if (np == p.getFirstChild()) {
++            return;
++          } else {
++            // It should be fine to remove unreachable statements within
++            // the block.
++            break;
++          }
 +        }
-+        p = p.getParent();
++        np = p;
++        p = np.getParent();
 +      }
 +      // JAM end
 +
        switch (n.getType()) {
-         // Removing an unreachable DO node is messy b/c it means we still have
-         // to execute one iteration. If the DO's body has breaks in the middle,
+         // In the CFG, the only incoming edges the the DO node are from
+         // breaks/continues and the condition. The edge from the previous

@@ -1,6 +1,6 @@
---- closure-orig/src/com/google/javascript/jscomp/TypeCheck.java	2013-08-19 15:26:58.316335366 -0500
-+++ closure/src/com/google/javascript/jscomp/TypeCheck.java	2013-09-28 19:04:11.046416981 -0500
-@@ -822,6 +822,9 @@
+--- closure-orig/src/com/google/javascript/jscomp/TypeCheck.java	2014-10-03 11:38:06.662298473 -0500
++++ closure/src/com/google/javascript/jscomp/TypeCheck.java	2014-10-02 17:26:57.909267520 -0500
+@@ -833,6 +833,9 @@
        case Token.DO:
        case Token.IF:
        case Token.WHILE:

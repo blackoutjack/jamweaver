@@ -190,6 +190,8 @@ public class EvaluatorNode {
     String objid = null;
     if ((objid = parseWild(obj, null)) != null) {
       // |objid| gets the value unified to the wildcard.
+    } else if ((objid = parseNativeLocation(obj)) != null) {
+      // |objid| gets the native value.
     } else {
       // %%% Output code that compares |varname === native| where
       // %%% |native| is the native object corresponding to the

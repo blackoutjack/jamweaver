@@ -1,0 +1,1 @@
+0,-1: jam#invoke(#WebSocket) && jam#regextest(/^ws:\/\//i,jam#arg(0))

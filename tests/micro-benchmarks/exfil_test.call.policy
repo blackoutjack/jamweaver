@@ -1,0 +1,1 @@
+0,-1: jam#invoke(#XMLHttpRequest#prototype#open) && jam#arglen() > 1

@@ -1,0 +1,5 @@
+
+% WebSocket constructor
+aexe(H,_,'#WebSocket',This,Args,H,This) :-
+  always(Args).
+

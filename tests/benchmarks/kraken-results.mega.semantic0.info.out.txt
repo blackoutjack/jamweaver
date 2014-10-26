@@ -2,7 +2,7 @@ predicate-limit:0
 syntax-only:false
 kraken-results.mega.original.js:4779
 kraken-results.mega.normalized.js:6781
-policy.aut:1108
+policy.aut:1106
 allFunctions:42
 allCallsites:178
 intraprocedural-edges:1851
@@ -13,8 +13,8 @@ returns-added-edges:2794
 returns-added-states:1945
 callbacks-added-edges:2879
 callbacks-added-states:1946
-concrete-query-cache:concrete-914027969.bin
-symbolic-query-cache:symbolic-914027969.bin
+concrete-query-cache:concrete-910816918.bin
+symbolic-query-cache:symbolic-910816918.bin
 modular.policy.js:3691
 policy.js:9710
 transactions:305

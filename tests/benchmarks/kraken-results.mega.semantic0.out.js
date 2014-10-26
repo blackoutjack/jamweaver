@@ -14,7 +14,7 @@ function v6() {
     function walk(holder$$1, key$$17) {
       var k$$1;
       var v$$1;
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var value$$29 = holder$$1[key$$17]
       }
       var v198 = value$$29;
@@ -37,7 +37,7 @@ function v6() {
       return JAM.call(reviver.call, reviver, [holder$$1, key$$17, value$$29], JAM.policy.p154);
     }
     var j;
-    introspect(JAM.policy.p17) {
+    introspect(JAM.policy.p18) {
       cx.lastIndex = 0;
     }
     if (JAM.call(cx.test, cx, [text$$7], JAM.policy.p156)) {
@@ -120,7 +120,7 @@ function v6() {
   }
   function quote(string) {
     function v0(a) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var c = meta[a]
       }
       var v24;
@@ -133,7 +133,7 @@ function v6() {
       }
       return v24;
     }
-    introspect(JAM.policy.p17) {
+    introspect(JAM.policy.p18) {
       escapable.lastIndex = 0;
     }
     var v25;
@@ -151,7 +151,7 @@ function v6() {
     var length$$11;
     var mind = gap;
     var partial;
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var value$$27 = holder[key$$14]
     }
     var v348 = value$$27;
@@ -232,7 +232,7 @@ function v6() {
           i$$2 = 0;
           var v37 = i$$2 < length$$11;
           for (;v37;) {
-            introspect(JAM.policy.p169) {
+            introspect(JAM.policy.p170) {
               k = rep[i$$2];
             }
             if (typeof k === "string") {
@@ -289,13 +289,13 @@ function v6() {
   }
   if (typeof Date.prototype.toJSON !== "function") {
     var v43 = Date.prototype;
-    introspect(JAM.policy.p17) {
+    introspect(JAM.policy.p18) {
       v43.toJSON = v1;
     }
     var v44 = String.prototype;
     var v230 = Number.prototype;
     var v364 = Boolean.prototype;
-    introspect(JAM.policy.p17) {
+    introspect(JAM.policy.p18) {
       v44.toJSON = v230.toJSON = v364.toJSON = v2;
     }
   }
@@ -306,12 +306,12 @@ function v6() {
   var meta = {"\b":"\\b", "\t":"\\t", "\n":"\\n", "\f":"\\f", "\r":"\\r", '"':'\\"', "\\":"\\\\"};
   var rep;
   if (typeof JSON.stringify !== "function") {
-    introspect(JAM.policy.p17) {
+    introspect(JAM.policy.p18) {
       JSON.stringify = v3;
     }
   }
   if (typeof JSON.parse !== "function") {
-    introspect(JAM.policy.p17) {
+    introspect(JAM.policy.p18) {
       JSON.parse = v5;
     }
   }
@@ -322,12 +322,12 @@ function pivot(input) {
   var test;
   for (test in input) {
     var i$$4 = 0;
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v367 = input[test]
     }
     var v50 = i$$4 < v367.length;
     for (;v50;) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v234 = output$$1[i$$4]
       }
       if (!v234) {
@@ -335,15 +335,15 @@ function pivot(input) {
           output$$1[i$$4] = {};
         }
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v49 = output$$1[i$$4]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v235 = input[test]
       }
       JAM.set(v49, test, JAM.get(v235, i$$4, JAM.policy.p172), JAM.policy.p172);
       i$$4 = i$$4 + 1;
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v368 = input[test]
       }
       v50 = i$$4 < v368.length;
@@ -353,8 +353,8 @@ function pivot(input) {
 }
 function print(str$$7) {
   var console = JAM.call(JAM.get(document, "getElementById", JAM.policy.p157), document, ["console"], JAM.policy.p157);
-  JAM.set(console, "innerHTML", console.innerHTML + str$$7, JAM.policy.p84);
-  JAM.set(console, "innerHTML", console.innerHTML + "<br>", JAM.policy.p84);
+  JAM.set(console, "innerHTML", console.innerHTML + str$$7, JAM.policy.p82);
+  JAM.set(console, "innerHTML", console.innerHTML + "<br>", JAM.policy.p82);
   return;
 }
 function initialize() {
@@ -362,7 +362,7 @@ function initialize() {
   var i$$5 = 0;
   var v51 = i$$5 < categories.length;
   for (;v51;) {
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var category = categories[i$$5]
     }
     JAM.set(itemTotals, category, [], JAM.policy.p171);
@@ -380,24 +380,24 @@ function initialize() {
   i$$5 = 0;
   var v56 = i$$5 < tests.length;
   for (;v56;) {
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var test$$1 = tests[i$$5]
     }
     JAM.set(itemTotals, test$$1, [], JAM.policy.p171);
     category = JAM.call(test$$1.replace, test$$1, [/-.*/, ""], JAM.policy.p155);
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v52 = testTotalsByCategory[category]
     }
     JAM.set(v52, test$$1, 0, JAM.policy.p171);
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v53 = testMeansByCategory[category]
     }
     JAM.set(v53, test$$1, 0, JAM.policy.p171);
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v54 = testStdDevsByCategory[category]
     }
     JAM.set(v54, test$$1, 0, JAM.policy.p171);
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v55 = testStdErrsByCategory[category]
     }
     JAM.set(v55, test$$1, 0, JAM.policy.p171);
@@ -412,17 +412,17 @@ function initialize() {
       v57[i$$5] = 0;
     }
     for (category in categoryTotals) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v58 = itemTotals[category]
       }
       introspect(JAM.policy.p171) {
         v58[i$$5] = 0;
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v60 = testTotalsByCategory[category]
       }
       for (test$$1 in v60) {
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v59 = itemTotals[test$$1]
         }
         introspect(JAM.policy.p171) {
@@ -439,35 +439,35 @@ function computeItemTotals() {
   var i$$6 = 0;
   var v65 = i$$6 < output.length;
   for (;v65;) {
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var result$$1 = output[i$$6]
     }
     var test$$2;
     for (test$$2 in result$$1) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var time = result$$1[test$$2]
       }
       var category$$1 = JAM.call(test$$2.replace, test$$2, [/-.*/, ""], JAM.policy.p155);
       var v62 = itemTotals["total"];
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v369 = v62[i$$6]
       }
       introspect(JAM.policy.p171) {
         v62[i$$6] = v369 + time;
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v63 = itemTotals[category$$1]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v370 = v63[i$$6]
       }
       introspect(JAM.policy.p171) {
         v63[i$$6] = v370 + time;
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v64 = itemTotals[test$$2]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v371 = v64[i$$6]
       }
       introspect(JAM.policy.p171) {
@@ -483,24 +483,24 @@ function computeTotals() {
   var i$$7 = 0;
   var v67 = i$$7 < output.length;
   for (;v67;) {
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var result$$2 = output[i$$7]
     }
     var test$$3;
     for (test$$3 in result$$2) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var time$$1 = result$$2[test$$3]
       }
       var category$$2 = JAM.call(test$$3.replace, test$$3, [/-.*/, ""], JAM.policy.p155);
       total = total + time$$1;
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v246 = categoryTotals[category$$2]
       }
       JAM.set(categoryTotals, category$$2, v246 + time$$1, JAM.policy.p171);
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v66 = testTotalsByCategory[category$$2]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v372 = v66[test$$3]
       }
       JAM.set(v66, test$$3, v372 + time$$1, JAM.policy.p171);
@@ -514,22 +514,22 @@ function computeMeans() {
   mean = total / count;
   var category$$3;
   for (category$$3 in categoryTotals) {
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v68 = categoryTotals[category$$3]
     }
     JAM.set(categoryMeans, category$$3, v68 / count, JAM.policy.p171);
     var test$$4;
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v70 = testTotalsByCategory[category$$3]
     }
     for (test$$4 in v70) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v69 = testMeansByCategory[category$$3]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v373 = testTotalsByCategory[category$$3]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v248 = v373[test$$4]
       }
       JAM.set(v69, test$$4, v248 / count, JAM.policy.p171);
@@ -542,7 +542,7 @@ function standardDeviation(mean$$1, items) {
   var i$$8 = 0;
   var v72 = i$$8 < items.length;
   for (;v72;) {
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v71 = items[i$$8]
     }
     var delta$$1 = v71 - mean$$1;
@@ -559,10 +559,10 @@ function computeStdDevs() {
   for (category$$4 in categoryStdDevs) {
     var v75 = categoryStdDevs;
     var v76 = category$$4;
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v253 = categoryMeans[category$$4]
     }
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v254 = itemTotals[category$$4]
     }
     var v474 = standardDeviation(v253, v254);
@@ -570,21 +570,21 @@ function computeStdDevs() {
   }
   for (category$$4 in categoryStdDevs) {
     var test$$5;
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v79 = testStdDevsByCategory[category$$4]
     }
     for (test$$5 in v79) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v77 = testStdDevsByCategory[category$$4]
       }
       var v78 = test$$5;
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v374 = testMeansByCategory[category$$4]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v255 = v374[test$$5]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v256 = itemTotals[test$$5]
       }
       var v475 = standardDeviation(v255, v256);
@@ -598,24 +598,24 @@ function computeStdErrors() {
   stdErr = stdDev / sqrtCount;
   var category$$5;
   for (category$$5 in categoryStdErrs) {
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v80 = categoryStdDevs[category$$5]
     }
     JAM.set(categoryStdErrs, category$$5, v80 / sqrtCount, JAM.policy.p171);
   }
   for (category$$5 in categoryStdDevs) {
     var test$$6;
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v82 = testStdErrsByCategory[category$$5]
     }
     for (test$$6 in v82) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v81 = testStdErrsByCategory[category$$5]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v375 = testStdDevsByCategory[category$$5]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v257 = v375[test$$6]
       }
       JAM.set(v81, test$$6, v257 / sqrtCount, JAM.policy.p171);
@@ -627,7 +627,7 @@ function tDist(n$$2) {
   if (n$$2 > tMax) {
     return tLimit;
   }
-  introspect(JAM.policy.p169) {
+  introspect(JAM.policy.p170) {
     return tDistribution[n$$2];
   }
 }
@@ -657,7 +657,7 @@ function computeLabelWidth() {
   var i$$9 = 0;
   var v93 = i$$9 < tests.length;
   for (;v93;) {
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v90 = tests[i$$9]
     }
     var shortName = JAM.call(v90.replace, v90, [/^[^-]*-/, ""], JAM.policy.p155);
@@ -674,7 +674,7 @@ function computeMeanWidth() {
   var width$$10 = JAM.call(v266.toString, v266, [], JAM.policy.p158).length;
   var category$$7;
   for (category$$7 in categoryMeans) {
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v379 = categoryMeans[category$$7]
     }
     var v267 = JAM.call(v379.toFixed, v379, [2], JAM.policy.p155);
@@ -683,14 +683,14 @@ function computeMeanWidth() {
       width$$10 = candidate;
     }
     var test$$7;
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v99 = testMeansByCategory[category$$7]
     }
     for (test$$7 in v99) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v431 = testMeansByCategory[category$$7]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v380 = v431[test$$7]
       }
       var v268 = JAM.call(v380.toFixed, v380, [2], JAM.policy.p155);
@@ -712,7 +712,7 @@ function resultLine(labelWidth, indent$$1, label, meanWidth$$1, mean$$3, stdErr$
     v100 = i < indent$$1;
   }
   if (label in explanations) {
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v457 = explanations[label]
     }
     result$$3 = result$$3 + ("<a href='" + v457 + "'>" + label + "</a>: ");
@@ -744,29 +744,29 @@ function printOutput() {
   var category$$8;
   for (category$$8 in categoryMeans) {
     print("");
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v273 = categoryMeans[category$$8]
     }
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v274 = categoryStdErrs[category$$8]
     }
     print(resultLine(labelWidth$$1, 2, category$$8, meanWidth$$2, v273, v274));
     var test$$8;
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       var v109 = testMeansByCategory[category$$8]
     }
     for (test$$8 in v109) {
       var shortName$$1 = JAM.call(test$$8.replace, test$$8, [/^[^-]*-/, ""], JAM.policy.p155);
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v384 = testMeansByCategory[category$$8]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v275 = v384[test$$8]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v385 = testStdErrsByCategory[category$$8]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v276 = v385[test$$8]
       }
       print(resultLine(labelWidth$$1, 4, shortName$$1, meanWidth$$2, v275, v276));
@@ -780,7 +780,7 @@ function sunspiderCompareResults(output1, output2$$1) {
     var i$$10 = 0;
     var v110 = i$$10 < categories.length;
     for (;v110;) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var category$$9 = categories[i$$10]
       }
       JAM.set(itemTotals1, category$$9, [], JAM.policy.p171);
@@ -798,24 +798,24 @@ function sunspiderCompareResults(output1, output2$$1) {
     i$$10 = 0;
     var v115 = i$$10 < tests.length;
     for (;v115;) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var test$$9 = tests[i$$10]
       }
       JAM.set(itemTotals1, test$$9, [], JAM.policy.p171);
       category$$9 = JAM.call(test$$9.replace, test$$9, [/-.*/, ""], JAM.policy.p155);
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v111 = testTotalsByCategory1[category$$9]
       }
       JAM.set(v111, test$$9, 0, JAM.policy.p171);
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v112 = testMeansByCategory1[category$$9]
       }
       JAM.set(v112, test$$9, 0, JAM.policy.p171);
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v113 = testStdDevsByCategory1[category$$9]
       }
       JAM.set(v113, test$$9, 0, JAM.policy.p171);
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v114 = testStdErrsByCategory1[category$$9]
       }
       JAM.set(v114, test$$9, 0, JAM.policy.p171);
@@ -830,17 +830,17 @@ function sunspiderCompareResults(output1, output2$$1) {
         v116[i$$10] = 0;
       }
       for (category$$9 in categoryTotals1) {
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v117 = itemTotals1[category$$9]
         }
         introspect(JAM.policy.p171) {
           v117[i$$10] = 0;
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v119 = testTotalsByCategory1[category$$9]
         }
         for (test$$9 in v119) {
-          introspect(JAM.policy.p169) {
+          introspect(JAM.policy.p170) {
             var v118 = itemTotals1[test$$9]
           }
           introspect(JAM.policy.p171) {
@@ -855,7 +855,7 @@ function sunspiderCompareResults(output1, output2$$1) {
     i$$10 = 0;
     var v121 = i$$10 < categories.length;
     for (;v121;) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         category$$9 = categories[i$$10];
       }
       JAM.set(itemTotals2, category$$9, [], JAM.policy.p171);
@@ -873,24 +873,24 @@ function sunspiderCompareResults(output1, output2$$1) {
     i$$10 = 0;
     var v126 = i$$10 < tests.length;
     for (;v126;) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         test$$9 = tests[i$$10];
       }
       JAM.set(itemTotals2, test$$9, [], JAM.policy.p171);
       category$$9 = JAM.call(test$$9.replace, test$$9, [/-.*/, ""], JAM.policy.p155);
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v122 = testTotalsByCategory2[category$$9]
       }
       JAM.set(v122, test$$9, 0, JAM.policy.p171);
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v123 = testMeansByCategory2[category$$9]
       }
       JAM.set(v123, test$$9, 0, JAM.policy.p171);
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v124 = testStdDevsByCategory2[category$$9]
       }
       JAM.set(v124, test$$9, 0, JAM.policy.p171);
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v125 = testStdErrsByCategory2[category$$9]
       }
       JAM.set(v125, test$$9, 0, JAM.policy.p171);
@@ -905,17 +905,17 @@ function sunspiderCompareResults(output1, output2$$1) {
         v127[i$$10] = 0;
       }
       for (category$$9 in categoryTotals2) {
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v128 = itemTotals2[category$$9]
         }
         introspect(JAM.policy.p171) {
           v128[i$$10] = 0;
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v130 = testTotalsByCategory2[category$$9]
         }
         for (test$$9 in v130) {
-          introspect(JAM.policy.p169) {
+          introspect(JAM.policy.p170) {
             var v129 = itemTotals2[test$$9]
           }
           introspect(JAM.policy.p171) {
@@ -932,35 +932,35 @@ function sunspiderCompareResults(output1, output2$$1) {
     var i$$11 = 0;
     var v135 = i$$11 < output$$2.length;
     for (;v135;) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var result$$4 = output$$2[i$$11]
       }
       var test$$10;
       for (test$$10 in result$$4) {
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var time$$2 = result$$4[test$$10]
         }
         var category$$10 = JAM.call(test$$10.replace, test$$10, [/-.*/, ""], JAM.policy.p155);
         var v132 = itemTotals$$1["total"];
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v386 = v132[i$$11]
         }
         introspect(JAM.policy.p171) {
           v132[i$$11] = v386 + time$$2;
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v133 = itemTotals$$1[category$$10]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v387 = v133[i$$11]
         }
         introspect(JAM.policy.p171) {
           v133[i$$11] = v387 + time$$2;
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v134 = itemTotals$$1[test$$10]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v388 = v134[i$$11]
         }
         introspect(JAM.policy.p171) {
@@ -977,24 +977,24 @@ function sunspiderCompareResults(output1, output2$$1) {
     var i$$12 = 0;
     var v137 = i$$12 < output$$3.length;
     for (;v137;) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var result$$5 = output$$3[i$$12]
       }
       var test$$11;
       for (test$$11 in result$$5) {
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var time$$3 = result$$5[test$$11]
         }
         var category$$11 = JAM.call(test$$11.replace, test$$11, [/-.*/, ""], JAM.policy.p155);
         total$$1 = total$$1 + time$$3;
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v288 = categoryTotals$$1[category$$11]
         }
         JAM.set(categoryTotals$$1, category$$11, v288 + time$$3, JAM.policy.p171);
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v136 = testTotalsByCategory$$1[category$$11]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v389 = v136[test$$11]
         }
         JAM.set(v136, test$$11, v389 + time$$3, JAM.policy.p171);
@@ -1008,22 +1008,22 @@ function sunspiderCompareResults(output1, output2$$1) {
     var mean$$4 = total$$2 / count$$4;
     var category$$12;
     for (category$$12 in categoryTotals$$2) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v138 = categoryTotals$$2[category$$12]
       }
       JAM.set(categoryMeans$$1, category$$12, v138 / count$$4, JAM.policy.p171);
       var test$$12;
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v140 = testTotalsByCategory$$2[category$$12]
       }
       for (test$$12 in v140) {
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v139 = testMeansByCategory$$1[category$$12]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v390 = testTotalsByCategory$$2[category$$12]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v290 = v390[test$$12]
         }
         JAM.set(v139, test$$12, v290 / count$$4, JAM.policy.p171);
@@ -1036,7 +1036,7 @@ function sunspiderCompareResults(output1, output2$$1) {
     var i$$13 = 0;
     var v142 = i$$13 < items$$1.length;
     for (;v142;) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v141 = items$$1[i$$13]
       }
       var delta$$2 = v141 - mean$$5;
@@ -1053,10 +1053,10 @@ function sunspiderCompareResults(output1, output2$$1) {
     for (category$$13 in categoryStdDevs$$1) {
       var v145 = categoryStdDevs$$1;
       var v146 = category$$13;
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v295 = categoryMeans$$2[category$$13]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v296 = itemTotals$$2[category$$13]
       }
       var v476 = standardDeviation$$1(v295, v296);
@@ -1064,21 +1064,21 @@ function sunspiderCompareResults(output1, output2$$1) {
     }
     for (category$$13 in categoryStdDevs$$1) {
       var test$$13;
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v149 = testStdDevsByCategory$$1[category$$13]
       }
       for (test$$13 in v149) {
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v147 = testStdDevsByCategory$$1[category$$13]
         }
         var v148 = test$$13;
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v391 = testMeansByCategory$$2[category$$13]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v297 = v391[test$$13]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v298 = itemTotals$$2[test$$13]
         }
         var v477 = standardDeviation$$1(v297, v298);
@@ -1092,24 +1092,24 @@ function sunspiderCompareResults(output1, output2$$1) {
     var stdErr$$3 = stdDev$$2 / sqrtCount$$1;
     var category$$14;
     for (category$$14 in categoryStdErrs$$1) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v150 = categoryStdDevs$$2[category$$14]
       }
       JAM.set(categoryStdErrs$$1, category$$14, v150 / sqrtCount$$1, JAM.policy.p171);
     }
     for (category$$14 in categoryStdDevs$$2) {
       var test$$14;
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v152 = testStdErrsByCategory$$1[category$$14]
       }
       for (test$$14 in v152) {
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v151 = testStdErrsByCategory$$1[category$$14]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v392 = testStdDevsByCategory$$2[category$$14]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v299 = v392[test$$14]
         }
         JAM.set(v151, test$$14, v299 / sqrtCount$$1, JAM.policy.p171);
@@ -1121,7 +1121,7 @@ function sunspiderCompareResults(output1, output2$$1) {
     if (n$$4 > tMax$$1) {
       return tLimit$$1;
     }
-    introspect(JAM.policy.p169) {
+    introspect(JAM.policy.p170) {
       return tDistribution$$1[n$$4];
     }
   }
@@ -1142,7 +1142,7 @@ function sunspiderCompareResults(output1, output2$$1) {
     var width$$12 = JAM.call(v303.toString, v303, [], JAM.policy.p158).length;
     var category$$16;
     for (category$$16 in categoryMeans$$3) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v394 = categoryMeans$$3[category$$16]
       }
       var v304 = JAM.call(v394.toFixed, v394, [1], JAM.policy.p155);
@@ -1151,14 +1151,14 @@ function sunspiderCompareResults(output1, output2$$1) {
         width$$12 = candidate$$1;
       }
       var test$$15;
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v163 = testMeansByCategory$$3[category$$16]
       }
       for (test$$15 in v163) {
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v436 = testMeansByCategory$$3[category$$16]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v395 = v436[test$$15]
         }
         var v305 = JAM.call(v395.toFixed, v395, [1], JAM.policy.p155);
@@ -1251,7 +1251,7 @@ function sunspiderCompareResults(output1, output2$$1) {
     var i$$inline_2 = 0;
     var v183 = i$$inline_2 < tests.length;
     for (;v183;) {
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v180 = tests[i$$inline_2]
       }
       var shortName$$inline_3 = JAM.call(v180.replace, v180, [/^[^-]*-/, ""], JAM.policy.p155);
@@ -1282,47 +1282,47 @@ function sunspiderCompareResults(output1, output2$$1) {
     var category$$17;
     for (category$$17 in categoryMeans1) {
       print("");
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v323 = categoryMeans1[category$$17]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v324 = categoryStdErrs1[category$$17]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v325 = categoryMeans2[category$$17]
       }
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v326 = categoryStdErrs2[category$$17]
       }
       print(resultLine$$1(labelWidth$$3, 2, category$$17, meanWidth1$$1, v323, v324, meanWidth2$$1, v325, v326));
       var test$$16;
-      introspect(JAM.policy.p169) {
+      introspect(JAM.policy.p170) {
         var v188 = testMeansByCategory1[category$$17]
       }
       for (test$$16 in v188) {
         var shortName$$3 = JAM.call(test$$16.replace, test$$16, [/^[^-]*-/, ""], JAM.policy.p155);
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v404 = testMeansByCategory1[category$$17]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v327 = v404[test$$16]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v405 = testStdErrsByCategory1[category$$17]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v328 = v405[test$$16]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v406 = testMeansByCategory2[category$$17]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v329 = v406[test$$16]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v407 = testStdErrsByCategory2[category$$17]
         }
-        introspect(JAM.policy.p169) {
+        introspect(JAM.policy.p170) {
           var v330 = v407[test$$16]
         }
         print(resultLine$$1(labelWidth$$3, 4, shortName$$3, meanWidth1$$1, v327, v328, meanWidth2$$1, v329, v330));
@@ -1333,7 +1333,7 @@ function sunspiderCompareResults(output1, output2$$1) {
   var count1 = output1.length;
   var count2 = output2$$1.length;
   var itemTotals1 = {};
-  introspect(JAM.policy.p17) {
+  introspect(JAM.policy.p18) {
     itemTotals1.length = count1;
   }
   var total1 = 0;
@@ -1349,7 +1349,7 @@ function sunspiderCompareResults(output1, output2$$1) {
   var categoryStdErrs1 = {};
   var testStdErrsByCategory1 = {};
   var itemTotals2 = {};
-  introspect(JAM.policy.p17) {
+  introspect(JAM.policy.p18) {
     itemTotals2.length = count2;
   }
   var total2 = 0;
@@ -1387,7 +1387,7 @@ function sunspiderCompareResults(output1, output2$$1) {
   return;
 }
 function compare(other$$5) {
-  JAM.set(JAM.call(JAM.get(document, "getElementById", JAM.policy.p157), document, ["console"], JAM.policy.p157), "innerHTML", "", JAM.policy.p84);
+  JAM.set(JAM.call(JAM.get(document, "getElementById", JAM.policy.p157), document, ["console"], JAM.policy.p157), "innerHTML", "", JAM.policy.p82);
   var output1JSON = JAM.call(JSON.parse, JSON, [decodeURI(JAM.call(other$$5.split, other$$5, ["?"], JAM.policy.p155)[1])], JAM.policy.p156);
   var version1 = output1JSON["v"];
   delete output1JSON["v"];
@@ -1400,14 +1400,14 @@ function compare(other$$5) {
   return;
 }
 if (!this.JSON) {
-  introspect(JAM.policy.p17) {
+  introspect(JAM.policy.p18) {
     this.JSON = {};
   }
 }
 v6();
 var explanations = {"astar":"../explanations/astar.html", "gaussian-blur":"../explanations/gaussian-blur.html", "darkroom":"../explanations/darkroom.html", "desaturate":"../explanations/desaturate.html", "beat-detection":"../explanations/beat-detection.html", "dft":"../explanations/dft.html", "fft":"../explanations/fft.html", "oscillator":"../explanations/oscillator.html", "parse-financial":"../explanations/parse-financial.html", "stringify-tinderbox":"../explanations/stringify-tinderbox.html"};
 var selfUrlInput = JAM.call(JAM.get(document, "getElementById", JAM.policy.p157), document, ["selfUrl"], JAM.policy.p157);
-introspect(JAM.policy.p17) {
+introspect(JAM.policy.p18) {
   selfUrlInput.value = location;
 }
 var v410 = location.search;
@@ -1419,7 +1419,7 @@ var tests = ["ai-astar", "audio-beat-detection", "audio-dft", "audio-fft", "audi
 var categories = ["ai", "audio", "imaging", "json", "stanford"];
 var count = output.length;
 var itemTotals = {};
-introspect(JAM.policy.p17) {
+introspect(JAM.policy.p18) {
   itemTotals.length = count;
 }
 var total = 0;
@@ -1454,5 +1454,5 @@ computeStdErrors();
 printOutput();
 var output2 = output;
 var version2 = version;
-JAM.set(JAM.call(JAM.get(document, "getElementById", JAM.policy.p157), document, ["compare"], JAM.policy.p157), "onsubmit", v7, JAM.policy.p17)
+JAM.set(JAM.call(JAM.get(document, "getElementById", JAM.policy.p157), document, ["compare"], JAM.policy.p157), "onsubmit", v7, JAM.policy.p18)
 

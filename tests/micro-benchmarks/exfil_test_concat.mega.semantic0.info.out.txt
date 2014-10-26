@@ -2,7 +2,7 @@ predicate-limit:0
 syntax-only:false
 exfil_test_concat.mega.original.js:48
 exfil_test_concat.mega.normalized.js:67
-policy.aut:1237
+policy.aut:1235
 allFunctions:1
 allCallsites:2
 intraprocedural-edges:18
@@ -13,8 +13,8 @@ returns-added-edges:18
 returns-added-states:20
 callbacks-added-edges:21
 callbacks-added-states:21
-concrete-query-cache:concrete-681148193.bin
-symbolic-query-cache:symbolic-681148193.bin
+concrete-query-cache:concrete-677937142.bin
+symbolic-query-cache:symbolic-677937142.bin
 modular.policy.js:3869
 policy.js:4278
 transactions:2

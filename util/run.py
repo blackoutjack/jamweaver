@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3.4
 import sys
 import os
 import time
@@ -20,6 +20,7 @@ from util import load_seeds
 from util import load_sources
 from util import evaluate_file
 from util import get_base
+from util import get_suffix
 from util import get_exp_path
 from util import overwrite_expected
 from util import get_lines
@@ -126,8 +127,10 @@ def process_info(base, exppath, overwrite):
   stat = None
   results = get_result_info(OUTDIR, base)
   if 'info' in results:
+    resdir = results['dir']
     infofile = results['info']
-    actinfo = parse_info_file(infofile)
+    infopath = os.path.join(resdir, infofile)
+    actinfo = parse_info_file(infopath)
     expinfo = parse_info_file(exppath)
     if len(expinfo) > 0:
       diff = compare_info(actinfo, expinfo)
@@ -135,7 +138,7 @@ def process_info(base, exppath, overwrite):
         ok = True
         stat = 'match'
       else:
-        for k, m in diff.iteritems():
+        for k, m in diff.items():
           out('info:%s %s' % (k, m))
           stat = 'wrong'
     else:
@@ -146,7 +149,7 @@ def process_info(base, exppath, overwrite):
       if ok:
         ok = False
       else:
-        infofl = open(infofile, 'r')
+        infofl = open(infopath, 'r')
         infoout = infofl.read()
         infofl.close()
         stat = overwrite_expected(infoout, exppath)
@@ -162,14 +165,6 @@ def process_info(base, exppath, overwrite):
 
   return ok
 # /process_info
-
-def get_suffix(pre, syn, ref):
-  if syn:
-    refsuf = '.syntax'
-  else:
-    refsuf = '.semantic%d' % ref
-  suf = '%s%s' % (pre, refsuf)
-  return suf
 
 def process_result(outp, exppath, overwrite):
   ok = False
@@ -212,7 +207,7 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     return results
 
   # Run with each policy file separately.
-  for poldesc, polfile in policies.iteritems():
+  for poldesc, polfile in policies.items():
     # Generate a new RunResult for each policy.
     result = RunResult(False, False, False)
     results.add(result)
@@ -232,9 +227,9 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     out("Analyzing %s" % appname)
     outp = run_jam(srclist, [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
 
-    refsuf = get_suffix(exppre, synonly, refine)
+    refsuf = get_suffix(synonly, refine)
 
-    expsuf = '%s.out.js' % refsuf
+    expsuf = '%s.%s.out.js' % (exppre, refsuf)
     exppath = os.path.join(WEBSITE_DIR, appname + expsuf)
     result.js_ok = process_result(outp, exppath, overwrite)
 
@@ -307,7 +302,7 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
     base = get_base(srcfl)
 
     # Run with each policy file separately.
-    for poldesc, polfile in poldict.iteritems():
+    for poldesc, polfile in poldict.items():
       result = RunResult(False, False)
       results.add(result)
 
@@ -357,13 +352,13 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
       # Use the union of all policy files for a particular test.
       outp = run_jam(srcfl, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
 
-      refsuf = get_suffix(exppre, synonly, ref)
+      refsuf = get_suffix(synonly, ref)
 
-      expsuf = '%s.out.js' % refsuf
+      expsuf = '%s.%s.out.js' % (exppre, refsuf)
       exppath = get_exp_path(srcfl, expsuf)
       result.js_ok = process_result(outp, exppath, overwrite)
 
-      infoexpsuf = '%s.info.out.txt' % refsuf
+      infoexpsuf = '%s.%s.info.out.txt' % (exppre, refsuf)
       infoexppath = get_exp_path(srcfl, infoexpsuf)
       result.info_ok = process_info('%s%s' % (base, exppre), infoexppath, overwrite)
 
@@ -383,7 +378,7 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
     seeds = inps[2]
 
     # Run with each policy file separately.
-    for poldesc, polfile in poldict.iteritems():
+    for poldesc, polfile in poldict.items():
       result = RunResult(False, False)
       results.add(result)
 
@@ -414,13 +409,13 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
       out(jsname)
       outp = run_jam(srcfl, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
 
-      refsuf = get_suffix(exppre, synonly, refine)
+      refsuf = get_suffix(synonly, refine)
 
-      expsuf = '%s.out.js' % refsuf
+      expsuf = '%s.%s.out.js' % (exppre, refsuf)
       exppath = get_exp_path(srcfl, expsuf)
       result.js_ok = process_result(outp, exppath, overwrite)
 
-      infoexpsuf = '%s.info.out.txt' % refsuf
+      infoexpsuf = '%s.%s.info.out.txt' % (exppre, refsuf)
       infoexppath = get_exp_path(srcfl, infoexpsuf)
       result.info_ok = process_info('%s%s' % (base, exppre), infoexppath, overwrite)
 

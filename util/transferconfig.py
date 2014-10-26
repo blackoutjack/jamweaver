@@ -13,7 +13,7 @@ from util import warn
 from util import sort_dirs
 from util import get_results_info
 from util import get_exp_path
-from util import get_suffix
+from util import get_suffix_from_info
 from util import get_variant_bases
 from util import get_descriptors
 from util import overwrite_expected
@@ -27,6 +27,9 @@ microtgt = os.path.join(JSTESTDIR, 'micro')
 benchbases = get_variant_bases(BENCHMARK_DIR)
 benchtgt = os.path.join(JSTESTDIR, 'bench')
 
+webbases = get_variant_bases(WEBSITE_FILE)
+webtgt = os.path.join(JSTESTDIR, 'sites')
+
 RESULTSDIR = OUTDIR
 
 TARGETDIRS = {
@@ -37,6 +40,10 @@ TARGETDIRS = {
   microtgt: {
     'basenames': microbases,
     'wrap': True,
+  },
+  webtgt: {
+    'basenames': webbases,
+    'wrap': False,
   }
 }
 
@@ -1405,16 +1412,24 @@ sms2windowextractproteinOptimizedSpec = {
 
 def appStd(appname, action='', closure='Processed', collapsed='Processed'):
   return {
-    'original': globals()[appname + 'Original' + action + 'Spec'],
-    'original.modular': globals()[appname + 'Original' + action + 'Spec'],
-    'closure': globals()[appname + closure + action + 'Spec'],
-    'closure.modular': globals()[appname + closure + action + 'Spec'],
-    'preprocessed': globals()[appname + 'Processed' + action + 'Spec'],
-    'preprocessed.modular': globals()[appname + 'Processed' + action + 'Spec'],
-    'instrumented': globals()[appname + 'Processed' + action + 'Spec'],
-    'indirection': globals()[appname + 'Processed' + action + 'Spec'],
-    'collapsed': globals()[appname + collapsed + action + 'Spec'],
-    'optimized': globals()[appname + 'Optimized' + action + 'Spec'],
+    'unprotected.original': globals()[appname + 'Original' + action + 'Spec'],
+    'coarse.original': globals()[appname + 'Original' + action + 'Spec'],
+    'unprotected.closure': globals()[appname + closure + action + 'Spec'],
+    'coarse.closure': globals()[appname + closure + action + 'Spec'],
+    'unprotected.preprocessed': globals()[appname + 'Processed' + action + 'Spec'],
+    'coarse.preprocessed': globals()[appname + 'Processed' + action + 'Spec'],
+    'refine0.instrumented': globals()[appname + 'Processed' + action + 'Spec'],
+    'refine0.indirection': globals()[appname + 'Processed' + action + 'Spec'],
+    'refine0.collapsed': globals()[appname + collapsed + action + 'Spec'],
+    'refine0.optimized': globals()[appname + 'Optimized' + action + 'Spec'],
+    'refine3.instrumented': globals()[appname + 'Processed' + action + 'Spec'],
+    'refine3.indirection': globals()[appname + 'Processed' + action + 'Spec'],
+    'refine3.collapsed': globals()[appname + collapsed + action + 'Spec'],
+    'refine3.optimized': globals()[appname + 'Optimized' + action + 'Spec'],
+    'syntax.instrumented': globals()[appname + 'Processed' + action + 'Spec'],
+    'syntax.indirection': globals()[appname + 'Processed' + action + 'Spec'],
+    'syntax.collapsed': globals()[appname + collapsed + action + 'Spec'],
+    'syntax.optimized': globals()[appname + 'Optimized' + action + 'Spec'],
   }
 
 def sms2Std(sms2name, action='', closure='Processed', collapsed='Processed'):

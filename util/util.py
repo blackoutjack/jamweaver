@@ -1,4 +1,6 @@
 import sys
+import urllib.parse
+import re
 import subprocess
 from subprocess import PIPE
 from subprocess import STDOUT
@@ -89,6 +91,44 @@ def parse_time_output(timeout, sep1=" ", sep2=":", element=None):
   else:
     err("Invalid time key: %s" % element)
     return False
+
+def get_suffix(syn, ref):
+  if syn:
+    refsuf = 'syntax'
+  else:
+    refsuf = 'semantic%d' % ref
+  return refsuf
+
+def get_suffix_from_info(appinfo):
+  refine = 0
+  synonly = False
+  if 'info' in appinfo:
+    infopath = os.path.join(appinfo['dir'], appinfo['info'])
+    info = parse_info_file(infopath)
+    if 'predicate-limit' in info:
+      refine = info['predicate-limit']
+      try:
+        refine = int(refine)
+        if refine < -1: raise
+      except:
+        warn('Invalid refinement limit for run: %s' % refine)
+        return None
+    else:
+      warn('No predicate-limit info for run: %s' % appinfo['dir'])
+      return None
+
+    if 'syntax-only' in info:
+      if info['syntax-only'] == 'true':
+        synonly = True
+    else:
+      warn('No syntax-only info for run: %s' % appinfo['dir'])
+      return None
+  else:
+    warn('No run information: %s' % appinfo['dir'])
+    return None
+
+  return get_suffix(synonly, refine)
+# /get_suffix_from_info
 
 def get_unique_filename(origpath):
   dirpath, filename = os.path.split(origpath)
@@ -193,7 +233,7 @@ def env_error(varname):
 def make(target, workingdir=JAMPKG):
   cmd = ['make', '-C', workingdir, target]
   mk = subprocess.Popen(cmd, stdout=PIPE, stderr=STDOUT)
-  mkout = mk.communicate()[0]
+  mkout = mk.communicate()[0].decode(sys.stdout.encoding)
   mkret = mk.returncode
 
   if mkret != 0:
@@ -263,7 +303,7 @@ def get_result_info(resdir, app):
   dirinfo = appresults[-1]
   dirpath = os.path.join(resdir, dirinfo['dir'])
   if not os.path.isdir(dirpath):
-    warn("Non-directory encountered in results: %s" % dirfile)
+    warn("Non-directory encountered in results: %s" % dirpath)
     return None
 
   version = dirinfo['version']
@@ -271,36 +311,56 @@ def get_result_info(resdir, app):
 
   appinfo['dir'] = dirpath
 
-  polfile = os.path.join(dirpath, 'policy.js')
-  if os.path.isfile(polfile):
+  polfile = 'policy.js'
+  polpath = os.path.join(dirpath, polfile)
+  if os.path.isfile(polpath):
+    # Log the relative path.
     appinfo['policy'] = polfile
-  modpolfile = os.path.join(dirpath, 'modular.policy.js')
-  if os.path.isfile(modpolfile):
+  modpolfile = 'modular.policy.js'
+  modpolpath = os.path.join(dirpath, modpolfile)
+  if os.path.isfile(modpolpath):
     appinfo['modular.policy'] = modpolfile
 
-  fullfile = os.path.join(dirpath, '%s.js' % app)
-  if os.path.isfile(fullfile):
+  fullfile = '%s.js' % app
+  fullpath = os.path.join(dirpath, fullfile)
+  if os.path.isfile(fullpath):
     appinfo['full'] = fullfile
   else:
     warn('Unable to locate full script file: %s' % fullfile)
 
   for key in SOURCE_KEYS:
-    keydir = os.path.join(dirpath, 'source-%s' % key)
-    if os.path.isdir(keydir):
+    keydir = 'source-%s' % key
+    keypath = os.path.join(dirpath, keydir)
+    if os.path.isdir(keypath):
       jslist = []
+      find_files_recursive(keypath, '', jslist)
       appinfo[key] = jslist
-      for jsfile in os.listdir(keydir):
-        if jsfile.endswith('.js'):
-          jspath = os.path.join(keydir, jsfile)
-          jslist.append(jspath)
 
   # Parse the run's information file into a dictionary.
-  infofile = os.path.join(dirpath, 'info.txt')
-  if os.path.exists(infofile):
+  infofile = 'info.txt'
+  infopath = os.path.join(dirpath, infofile)
+  if os.path.exists(infopath):
     appinfo['info'] = infofile
 
   return appinfo
 # /get_result_info
+
+def find_files_recursive(toppath, relpath, outlist):
+  if relpath == '':
+    abspath = toppath
+  else:
+    abspath = os.path.join(toppath, relpath)
+  for f in os.listdir(abspath):
+    path = os.path.join(abspath, f)
+    if relpath == '':
+      rel = f
+    else:
+      rel = os.path.join(relpath, f)
+    if os.path.isdir(path):
+      find_files_recursive(toppath, rel, outlist)
+    else:
+      outlist.append(rel)
+# /find_files_recursive
 
 def get_results_info(resdir, bases):
   # Map the application name to a triple consisting of the output
@@ -318,7 +378,7 @@ def get_results_info(resdir, bases):
 # /get_results_info
 
 def compare_info(actinfo, expinfo):
-  keys = actinfo.keys()
+  keys = list(actinfo.keys())
   keys.extend(expinfo.keys())
   keys = set(keys)
   disparities = {}
@@ -338,6 +398,7 @@ def parse_info_file(infofile):
     infolines = infofl.readlines()
     infofl.close()
     for infoline in infolines:
+      infoline = infoline.strip()
       infoparts = infoline.split(':', 1)
       if len(infoparts) == 2:
         info[infoparts[0]] = infoparts[1]
@@ -504,7 +565,7 @@ def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=
   # Let the user see the debugging output, demonstrating progress.
   jam = subprocess.Popen(cmd, stdout=PIPE)
 
-  outp = jam.communicate()[0]
+  outp = jam.communicate()[0].decode(sys.stdout.encoding)
   # Little hack to remove a debug message.
   if outp.startswith("Listening for transport"):
     endl = outp.find("\n") + 1
@@ -523,6 +584,8 @@ def run_repacker(htmlfile, srclist, outdir, polpath=None, debug=False):
 
   repacker = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
   outp, errp = repacker.communicate()
+  outp = outp.decode(sys.stdout.encoding)
+  errp = errp.decode(sys.stdout.encoding)
   code = repacker.returncode
   if code != 0:
     out("OUTPUT: %s" % outp)
@@ -548,7 +611,7 @@ def run_unpacker(url, debug=False, saveall=False):
     cmd.append('-s')
  
   unpacker = subprocess.Popen(cmd, stdout=PIPE, stderr=STDOUT)
-  outp = unpacker.communicate()[0]
+  outp = unpacker.communicate()[0].decode(sys.stdout.encoding)
   code = unpacker.returncode
   if code != 0:
     out(outp)
@@ -642,18 +705,72 @@ def symlink(srcpath, linkdir, linkname=None, relative=False):
     os.symlink(src, linkpath)
   return linkpath
 
-def get_variant_bases(directory):
-  apps = load_sources(directory)
+def is_url(uri):
+  return get_protocol(uri) in ['http', 'https']
+# end isURL
+
+def get_protocol(url):
+  urlparts = urllib.parse.urlparse(url)
+  prot = urlparts[0]
+  return prot
+# end getProtocol
+
+def get_relative_path(url, usedomain=False, referer=None):
+  urlparts = urllib.parse.urlparse(url)
+  filepath = urlparts[2]
+      
+  if usedomain and is_url(url):
+    # Prepend the domain
+    filepath = os.path.join(urlparts[1], filepath)
+
+  if referer is not None:
+    # Get the path relative to the referer.
+    refparts = urllib.parse.urlparse(referer)
+    refpath = refparts[2]
+    # Assume the referer is a file, and remove the filename.
+    refpath = os.path.split(refpath)[0]
+    if refpath.startswith('/'):
+      refpath = refpath[1:]
+    filepath = os.path.relpath(filepath, refpath)
+
+  # Remove beginning and ending slashes.
+  filepath = filepath.strip('/')
+
+  return filepath
+# /get_relative_path
+
+def get_variant_bases(src):
   bases = []
-  for app in apps:
-    base = get_base(app)
-    pols = load_policies(directory, base, defwarn=False)
-    for poldesc, pol in pols.iteritems():
-      if poldesc != '':
-        bases.append(base + '.' + poldesc)
-      else:
-        bases.append(base)
+  if os.path.isdir(src):
+    apps = load_sources(src)
+    for app in apps:
+      base = get_base(app)
+      pols = load_policies(src, base, defwarn=False)
+      for poldesc, pol in pols.items():
+        if poldesc != '':
+          bases.append(base + '.' + poldesc)
+        else:
+          bases.append(base)
+  elif os.path.isfile(src):
+    lines = get_lines(src, comment='#')
+    for line in lines:
+      dirpath = os.path.dirname(src)
+      # Mimic the app calculation in |unpack.Unpacker|.
+      url = 'http://' + line
+      relpath = get_relative_path(url, usedomain=True)
+      base = re.sub('/', '-', relpath)
+
+      pols = load_policies(dirpath, line, defwarn=False)
+      for poldesc, pol in pols.items():
+        if poldesc != '':
+          bases.append(base + '.' + poldesc)
+        else:
+          bases.append(base)
+  else:
+    warn('Unable to load variants: %s' % src)
+
   return bases
+# /get_variant_bases
 
 def get_ast(filename):
   cmd = []
@@ -664,7 +781,10 @@ def get_ast(filename):
 
   util = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
   astout, asterr = util.communicate()  
+  astout = astout.decode(sys.stderr.encoding)
+  asterr = asterr.decode(sys.stderr.encoding)
   return astout.strip()
+# /get_ast
 
 def overwrite_expected(outp, expfile):
   valid = validate_output(outp, expfile)
@@ -679,13 +799,17 @@ def overwrite_expected(outp, expfile):
   elif valid == 'wrong':
     valid = 'overwritten'
   return valid
+# /overwrite_expected
 
 def run_query(query):
   qbase = "assert(library_directory('%s')).\n" % LIBDIR
   query = qbase + query
   xsb = subprocess.Popen([XSBEXE, "--quietload", "--noprompt", "--nobanner"], stdout=PIPE, stderr=PIPE, stdin=PIPE)
   xsbout, xsberr = xsb.communicate(query)  
+  xsbout = xsbout.decode(sys.stdout.encoding)
+  xsberr = xsberr.decode(sys.stdout.encoding)
   return xsbout
+# /run_query
 
 def validate_value(outp, exppath):
   if not os.path.exists(exppath):
@@ -704,6 +828,7 @@ def validate_value(outp, exppath):
         return 'wrong: ' + act + ' !== ' + exp
 
   return 'fail'
+# /validate_value
 
 # Compare the resulting source code of a run to the expected output.
 def validate_output(outp, exppath):
@@ -720,6 +845,7 @@ def validate_output(outp, exppath):
     #sys.stderr.write("OUTPUT: %s" % outp)
     #sys.stderr.write("EXPECT: %s" % exp)
     return 'wrong'
+# /validate_output
 
 def evaluate_file(filename, verbose=False):
   ast = get_ast(filename)
@@ -742,6 +868,7 @@ ecgv(H1,L1,V,H2,L2,VALUE).''' % ast
     sys.stdout.write("OUTPUT:\n%s\n" % output)
 
   return output
+# /evaluate_file
 
 def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
   # Print the name of the file being analyzed.
@@ -793,6 +920,8 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
   jam = subprocess.Popen(cmd, stdout=PIPE, stderr=errstrm)
 
   outp, errp = jam.communicate()
+  outp = outp.decode(sys.stdout.encoding)
+  errp = errp.decode(sys.stdout.encoding)
   outp = outp.strip()
   if perf:
     outlines = outp.split("\n")

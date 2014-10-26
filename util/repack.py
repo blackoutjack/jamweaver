@@ -2,8 +2,6 @@
 import sys
 import os
 import re
-import subprocess
-from subprocess import PIPE
 import shutil
 import time
 import imp

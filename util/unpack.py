@@ -2,8 +2,6 @@
 import sys
 import os
 import re
-import subprocess
-from subprocess import PIPE
 import shutil
 import time
 import imp
@@ -48,6 +46,8 @@ from util import get_base
 from util import get_file_info
 from util import get_output_dir
 from util import get_unique_filename
+from util import get_relative_path
+from util import get_protocol
 from util import fatal
 from util import err
 from util import warn
@@ -517,7 +517,7 @@ class CSSParser(cssutils.CSSParser):
         impurl = combineURLs(url, href)
         imports.append(impurl)
 
-        impfilename = getRelativePath(impurl, referer=url)
+        impfilename = get_relative_path(impurl, referer=url)
         rule.href = impfilename
         if VERBOSE:
           out('Replaced css.import: %s -> %s' % (href, impfilename))
@@ -567,7 +567,7 @@ class CSSParser(cssutils.CSSParser):
 
               if image is not None:
                 images.append(image)
-                filename = getRelativePath(image, referer=url)
+                filename = get_relative_path(image, referer=url)
                 newtext = 'url(' + filename + ')'
                 newvals.append(newtext)
                 replaced = True
@@ -591,7 +591,7 @@ class CSSParser(cssutils.CSSParser):
                 else:
                   image = absuri
                   images.append(image)
-                  filename = getRelativePath(image, referer=url)
+                  filename = get_relative_path(image, referer=url)
                   newtext = 'url(' + filename + ')'
                   newvals.append(newtext)
                   replaced = True
@@ -1116,11 +1116,11 @@ class Unpacker():
 
   # Create an Unpacker.
   def __init__(self, infile, app=None, outdir=None) :
-    prot = getProtocol(infile)
+    prot = get_protocol(infile)
     if prot in ['http', 'https']:
       self.url = infile
       if app is None:
-        relpath = getRelativePath(self.url, usedomain=True)
+        relpath = get_relative_path(self.url, usedomain=True)
         self.app = re.sub('/', '-', relpath)
       else:
         self.app = app
@@ -1144,7 +1144,7 @@ class Unpacker():
           fatal('Output directory exists, use -f to overwrite')
     else:
       # Get a unique, non-existent directory.
-      relpath = getRelativePath(self.url, usedomain=True)
+      relpath = get_relative_path(self.url, usedomain=True)
       OUTDIR = get_output_dir(UNPACKDIR, relpath)
   # /Unpacker.__init__
 
@@ -1316,45 +1316,11 @@ def createFile(relpath, content):
   return outpath
 # /createFile
 
-def isURL(uri):
-  return getProtocol(uri) in ['http', 'https']
-# end isURL
-
-def getProtocol(url):
-  urlparts = urllib.parse.urlparse(url)
-  prot = urlparts[0]
-  return prot
-# end getProtocol
-
 def getDomain(url):
   urlparts = urllib.parse.urlparse(url)
   domain = urlparts[1]
   return domain
 # end getDomain
-
-def getRelativePath(url, usedomain=False, referer=None):
-  urlparts = urllib.parse.urlparse(url)
-  filepath = urlparts[2]
-      
-  if usedomain and isURL(url):
-    # Prepend the domain
-    filepath = os.path.join(urlparts[1], filepath)
-
-  if referer is not None:
-    # Get the path relative to the referer.
-    refparts = urllib.parse.urlparse(referer)
-    refpath = refparts[2]
-    # Assume the referer is a file, and remove the filename.
-    refpath = os.path.split(refpath)[0]
-    if refpath.startswith('/'):
-      refpath = refpath[1:]
-    filepath = os.path.relpath(filepath, refpath)
-
-  # Remove beginning and ending slashes.
-  filepath = filepath.strip('/')
-
-  return filepath
-# /getRelativePath
 
 # Get an extension appropriate for saving to the file system.
 def getExtension(url, ctype=None):

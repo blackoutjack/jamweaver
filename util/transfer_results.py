@@ -357,6 +357,10 @@ def copy_files(appfiles, tgtdir, wrap=False):
   # Now copy the files to the target directory, changing the file names
   # to "app.js" and "app.policy.js".
   for app, infos in appfiles.items():
+    if infos is None:
+      cfg.err('No info for application: %s' % app)
+      continue
+
     # %%% Special cases
     if app.startswith("exfil_test"):
       w = False

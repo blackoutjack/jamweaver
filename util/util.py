@@ -281,7 +281,19 @@ def sort_dirs(apps, dirs):
   return sorted_dirs
 # /sort_dirs
 
-# %%% This needs simplifying!
+def get_info_path(errp):
+  # %%% Ugly string searching.
+  lines = errp.split('\n')
+  infopath = None
+  infosearch = ' Analysis information: '
+  for line in lines:
+    # Parse the application name.
+    pos = line.find(infosearch)
+    if pos > -1:
+      endpos = pos + len(infosearch)
+      infopath = line[endpos:].strip()
+  return infopath
+
 def get_result_info(resdir, app):
   # Assumes that directories within |resdir| are of the form "app-iter",
   # where "iter" is a label to separate the results of multiple analyses
@@ -293,56 +305,62 @@ def get_result_info(resdir, app):
   if app not in resultdirs:
     warn('No results found for %s' % app)
     return None
-
-  appinfo = {'version': None}
+  
+  infos = []
   appresults = resultdirs[app]
-    
-  # Each element of |appresults| is a triple of directory information
-  # consisting of application, results version, and directory name.
-  # Just extract the last one.
-  dirinfo = appresults[-1]
-  dirpath = os.path.join(resdir, dirinfo['dir'])
-  if not os.path.isdir(dirpath):
-    warn("Non-directory encountered in results: %s" % dirpath)
-    return None
+  if len(appresults) > 0:
+    # %%% I want to get the latest results for each precision
+    # %%% configuration, but at present, can't see a way to do that
+    # %%% without lots of file opening and scanning.
+    dirinfo = appresults[-1]
+    # Each element of |appresults| is a triple of directory information
+    # consisting of application, results version, and directory name.
+    # Just extract the last one.
+    dirpath = os.path.join(resdir, dirinfo['dir'])
+    if not os.path.isdir(dirpath):
+      warn("Non-directory encountered in results: %s" % dirpath)
+      return None
 
-  version = dirinfo['version']
-  appinfo['version'] = version
+    appinfo = {}
+    version = dirinfo['version']
+    appinfo['version'] = version
 
-  appinfo['dir'] = dirpath
+    appinfo['dir'] = dirpath
 
-  polfile = 'policy.js'
-  polpath = os.path.join(dirpath, polfile)
-  if os.path.isfile(polpath):
-    # Log the relative path.
-    appinfo['policy'] = polfile
-  modpolfile = 'modular.policy.js'
-  modpolpath = os.path.join(dirpath, modpolfile)
-  if os.path.isfile(modpolpath):
-    appinfo['modular.policy'] = modpolfile
+    polfile = 'policy.js'
+    polpath = os.path.join(dirpath, polfile)
+    if os.path.isfile(polpath):
+      # Log the relative path.
+      appinfo['policy'] = polfile
+    modpolfile = 'modular.policy.js'
+    modpolpath = os.path.join(dirpath, modpolfile)
+    if os.path.isfile(modpolpath):
+      appinfo['modular.policy'] = modpolfile
 
-  fullfile = '%s.js' % app
-  fullpath = os.path.join(dirpath, fullfile)
-  if os.path.isfile(fullpath):
-    appinfo['full'] = fullfile
-  else:
-    warn('Unable to locate full script file: %s' % fullfile)
+    fullfile = '%s.js' % app
+    fullpath = os.path.join(dirpath, fullfile)
+    if os.path.isfile(fullpath):
+      appinfo['full'] = fullfile
+    else:
+      warn('Unable to locate full script file: %s' % fullfile)
 
-  for key in SOURCE_KEYS:
-    keydir = 'source-%s' % key
-    keypath = os.path.join(dirpath, keydir)
-    if os.path.isdir(keypath):
-      jslist = []
-      find_files_recursive(keypath, '', jslist)
-      appinfo[key] = jslist
+    for key in SOURCE_KEYS:
+      keydir = 'source-%s' % key
+      keypath = os.path.join(dirpath, keydir)
+      if os.path.isdir(keypath):
+        jslist = []
+        find_files_recursive(keypath, '', jslist)
+        appinfo[key] = jslist
 
-  # Parse the run's information file into a dictionary.
-  infofile = 'info.txt'
-  infopath = os.path.join(dirpath, infofile)
-  if os.path.exists(infopath):
-    appinfo['info'] = infofile
+    # Parse the run's information file into a dictionary.
+    infofile = 'info.txt'
+    infopath = os.path.join(dirpath, infofile)
+    if os.path.exists(infopath):
+      appinfo['info'] = infofile
 
-  return appinfo
+    infos.append(appinfo)
+
+  return infos
 # /get_result_info
 
 def find_files_recursive(toppath, relpath, outlist):
@@ -370,9 +388,9 @@ def get_results_info(resdir, bases):
 
   bases.sort()
   for app in bases:
-    info = get_result_info(resdir, app)
-    if info is not None:
-      appfiles[app] = info
+    infos = get_result_info(resdir, app)
+    if infos is None or len(infos) > 0:
+      appfiles[app] = infos
 
   return appfiles
 # /get_results_info
@@ -563,15 +581,21 @@ def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=
   sys.stdout.flush()
 
   # Let the user see the debugging output, demonstrating progress.
-  jam = subprocess.Popen(cmd, stdout=PIPE)
+  jam = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
 
-  outp = jam.communicate()[0].decode(sys.stdout.encoding)
+  outp, errp = jam.communicate()
+  outp = outp.decode(sys.stdout.encoding)
+  errp = errp.decode(sys.stderr.encoding)
+  code = jam.returncode
+  if code != 0:
+    err('JAM process returned non-zero error code: %d' % code)
+
   # Little hack to remove a debug message.
   if outp.startswith("Listening for transport"):
     endl = outp.find("\n") + 1
     outp = outp[endl:]
 
-  return outp
+  return outp, errp
 # /run_jam
 
 def run_repacker(htmlfile, srclist, outdir, polpath=None, debug=False):
@@ -611,11 +635,13 @@ def run_unpacker(url, debug=False, saveall=False):
     cmd.append('-s')
  
   unpacker = subprocess.Popen(cmd, stdout=PIPE, stderr=STDOUT)
-  outp = unpacker.communicate()[0].decode(sys.stdout.encoding)
+  outp, errp = unpacker.communicate()
+  outp = outp.decode(sys.stdout.encoding)
+  errp = errp.decode(sys.stderr.encoding)
   code = unpacker.returncode
   if code != 0:
     out(outp)
-    err('Non-zero error code unpacking %s: %s' % (url, code))
+    err('Non-zero error code unpacking %s: %d' % (url, code))
     return None, None
   
   # %%% Ugly string searching. Instead, import and interact directly.

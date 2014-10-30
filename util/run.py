@@ -24,7 +24,7 @@ from util import get_suffix
 from util import get_exp_path
 from util import overwrite_expected
 from util import get_lines
-from util import get_result_info
+from util import get_info_path
 from util import parse_info_file
 from util import compare_info
 
@@ -122,43 +122,37 @@ def load_testcases(from_dir, defwarn=True):
   return cases
 # /load_testcases
 
-def process_info(base, exppath, overwrite):
+def process_info(infopath, exppath, overwrite):
   ok = False
   stat = None
-  results = get_result_info(OUTDIR, base)
-  if 'info' in results:
-    resdir = results['dir']
-    infofile = results['info']
-    infopath = os.path.join(resdir, infofile)
-    actinfo = parse_info_file(infopath)
-    expinfo = parse_info_file(exppath)
-    if len(expinfo) > 0:
-      diff = compare_info(actinfo, expinfo)
-      if len(diff) == 0:
-        ok = True
-        stat = 'match'
-      else:
-        for k, m in diff.items():
-          out('info:%s %s' % (k, m))
-          stat = 'wrong'
-    else:
-      stat = 'missing'
 
-    if overwrite:
-      # The meaning of |ok| is sort of flipped when we're overwriting.
-      if ok:
-        ok = False
-      else:
-        infofl = open(infopath, 'r')
-        infoout = infofl.read()
-        infofl.close()
-        stat = overwrite_expected(infoout, exppath)
-        if stat == 'overwritten' or stat == 'created':
-          ok = True
-        else:
-          ok = False
+  actinfo = parse_info_file(infopath)
+  expinfo = parse_info_file(exppath)
+  if len(expinfo) > 0:
+    diff = compare_info(actinfo, expinfo)
+    if len(diff) == 0:
+      ok = True
+      stat = 'match'
+    else:
+      for k, m in diff.items():
+        out('info:%s %s' % (k, m))
+        stat = 'wrong'
   else:
-    warn('Unable to load info file for results: %s' % base)
+    stat = 'missing'
+
+  if overwrite:
+    # The meaning of |ok| is sort of flipped when we're overwriting.
+    if ok:
+      ok = False
+    else:
+      infofl = open(infopath, 'r')
+      infoout = infofl.read()
+      infofl.close()
+      stat = overwrite_expected(infoout, exppath)
+      if stat == 'overwritten' or stat == 'created':
+        ok = True
+      else:
+        ok = False
 
   expname = os.path.basename(exppath)
   out('%s %s' % (expname, stat))
@@ -225,7 +219,10 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
       exppre = ''
 
     out("Analyzing %s" % appname)
-    outp = run_jam(srclist, [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
+    outp, errp = run_jam(srclist, [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
+    
+    # Error case, message printed in |run_jam|.
+    if outp is None: continue
 
     refsuf = get_suffix(synonly, refine)
 
@@ -233,9 +230,12 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     exppath = os.path.join(WEBSITE_DIR, appname + expsuf)
     result.js_ok = process_result(outp, exppath, overwrite)
 
+    infopath = get_info_path(errp)
+    if infopath is None: continue
+
     infoexpsuf = '%s.info.out.txt' % refsuf
     infoexppath = os.path.join(WEBSITE_DIR, appname + infoexpsuf)
-    result.info_ok = process_info('%s%s' % (appname, exppre), infoexppath, overwrite)
+    result.info_ok = process_info(infopath, infoexppath, overwrite)
 
     # Repack the HTML file.
 
@@ -350,7 +350,10 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
       out(jsname)
 
       # Use the union of all policy files for a particular test.
-      outp = run_jam(srcfl, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
+      outp, errp = run_jam(srcfl, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
+      
+      # Error case, message printed in |run_jam|.
+      if outp is None: continue
 
       refsuf = get_suffix(synonly, ref)
 
@@ -358,9 +361,12 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
       exppath = get_exp_path(srcfl, expsuf)
       result.js_ok = process_result(outp, exppath, overwrite)
 
+      infopath = get_info_path(errp)
+      if infopath is None: continue
+
       infoexpsuf = '%s.%s.info.out.txt' % (exppre, refsuf)
       infoexppath = get_exp_path(srcfl, infoexpsuf)
-      result.info_ok = process_info('%s%s' % (base, exppre), infoexppath, overwrite)
+      result.info_ok = process_info(infopath, infoexppath, overwrite)
 
       sys.stderr.write('\n')
 
@@ -407,7 +413,10 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
       # Print the name of the file being analyzed.
       jsname = os.path.basename(srcfl)
       out(jsname)
-      outp = run_jam(srcfl, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
+      outp, errp = run_jam(srcfl, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
+      
+      # Error case, message printed in |run_jam|.
+      if outp is None: continue
 
       refsuf = get_suffix(synonly, refine)
 
@@ -415,9 +424,12 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
       exppath = get_exp_path(srcfl, expsuf)
       result.js_ok = process_result(outp, exppath, overwrite)
 
+      infopath = get_info_path(errp)
+      if infopath is None: continue
+
       infoexpsuf = '%s.%s.info.out.txt' % (exppre, refsuf)
       infoexppath = get_exp_path(srcfl, infoexpsuf)
-      result.info_ok = process_info('%s%s' % (base, exppre), infoexppath, overwrite)
+      result.info_ok = process_info(infopath, infoexppath, overwrite)
 
       sys.stderr.write('\n')
 

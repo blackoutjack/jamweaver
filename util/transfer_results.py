@@ -356,7 +356,7 @@ def copy_files(appfiles, tgtdir, wrap=False):
   
   # Now copy the files to the target directory, changing the file names
   # to "app.js" and "app.policy.js".
-  for app, info in appfiles.items():
+  for app, infos in appfiles.items():
     # %%% Special cases
     if app.startswith("exfil_test"):
       w = False
@@ -394,55 +394,56 @@ def copy_files(appfiles, tgtdir, wrap=False):
       else:
         respred = None
 
-      refsuf = cfg.get_suffix_from_info(info)
-      if refsuf is None:
-        # Error printed within |get_suffix_from_info|.
-        continue
+      for info in infos:
+        refsuf = cfg.get_suffix_from_info(info)
+        if refsuf is None:
+          # Error printed within |get_suffix_from_info|.
+          continue
 
-      srcdir = info['dir']
-      for desc, jssrc in info.items():
-        if desc == 'dir': continue
-        if desc == 'version': continue
-        if desc == 'policy': continue
-        if desc == 'modular.policy': continue
-        if desc == 'info': continue
-      
-        if desc in cfg.MODULAR_SOURCE_KEYS:
-          mod = True
-          suf = desc
-        else:
-          mod = False
-          suf = '%s.%s' % (refsuf, desc)
-
-        changed = False
-        if isinstance(jssrc, str):
-          jspath = os.path.join(srcdir, jssrc)
-          assert os.path.isfile(jspath)
-          if copy_variants(appcur, suf, srcdir, jssrc, apptgtdir, respred, mod):
-            changed = True
-        elif isinstance(jssrc, list):
-          srcsub = os.path.join(srcdir, 'source-%s' % desc)
-          if copy_sources(appcur, suf, srcsub, jssrc, apptgtdir, respred, mod):
-            changed = True
-
-        if changed:
-          cfg.out('Updated %s.%s' % (appcur, suf))
-
-      # Collect various policy variations.
-      polchanged = False
-      for desc in ['policy', 'modular.policy']:
-        if desc in info:
-          polsrc = os.path.join(srcdir, info[desc])
-          if desc == 'modular.policy':
-            # The refinement indicator isn't meaningful for the
-            # coarse-grained policy.
-            suf = 'coarse.policy'
+        srcdir = info['dir']
+        for desc, jssrc in info.items():
+          if desc == 'dir': continue
+          if desc == 'version': continue
+          if desc == 'policy': continue
+          if desc == 'modular.policy': continue
+          if desc == 'info': continue
+        
+          if desc in cfg.MODULAR_SOURCE_KEYS:
+            mod = True
+            suf = desc
           else:
+            mod = False
             suf = '%s.%s' % (refsuf, desc)
-          if copy_policy(appcur, suf, polsrc, apptgtdir):
-            polchanged = True
-      if polchanged:
-        cfg.out('Updated policy for %s' % app)
+
+          changed = False
+          if isinstance(jssrc, str):
+            jspath = os.path.join(srcdir, jssrc)
+            assert os.path.isfile(jspath)
+            if copy_variants(appcur, suf, srcdir, jssrc, apptgtdir, respred, mod):
+              changed = True
+          elif isinstance(jssrc, list):
+            srcsub = os.path.join(srcdir, 'source-%s' % desc)
+            if copy_sources(appcur, suf, srcsub, jssrc, apptgtdir, respred, mod):
+              changed = True
+
+          if changed:
+            cfg.out('Updated %s.%s' % (appcur, suf))
+
+        # Collect various policy variations.
+        polchanged = False
+        for desc in ['policy', 'modular.policy']:
+          if desc in info:
+            polsrc = os.path.join(srcdir, info[desc])
+            if desc == 'modular.policy':
+              # The refinement indicator isn't meaningful for the
+              # coarse-grained policy.
+              suf = 'coarse.policy'
+            else:
+              suf = '%s.%s' % (refsuf, desc)
+            if copy_policy(appcur, suf, polsrc, apptgtdir):
+              polchanged = True
+        if polchanged:
+          cfg.out('Updated policy for %s' % app)
       
   return True
 # /copy_files
@@ -570,27 +571,27 @@ def update_expected(bases):
           exppre = ''
         outbase = base + exppre
         
-        appinfo = appfiles[outbase]
-        refsuf = cfg.get_suffix_from_info(exppre, appinfo)
-        if refsuf is None:
-          # Error printed within |get_suffix_from_info|.
-          continue
+        for appinfo in appfiles[outbase]:
+          refsuf = cfg.get_suffix_from_info(exppre, appinfo)
+          if refsuf is None:
+            # Error printed within |get_suffix_from_info|.
+            continue
 
-        outsuf = '%s.%s.out.js' % (exppre, refsuf)
+          outsuf = '%s.%s.out.js' % (exppre, refsuf)
 
-        if 'full' in appinfo:
-          outpath = os.path.join(appinfo['dir'], appinfo['full'])
-          outfl = open(outpath, 'r')
-          outp = outfl.read()
-          outfl.close()
-          
-          exppath = cfg.get_exp_path(flpath, outsuf)
-          stat = cfg.overwrite_expected(outp, exppath)
-          if stat == 'overwritten' or stat == 'created':
-            expname = os.path.basename(exppath)
-            cfg.out('%s %s' % (expname, stat))
-        else:
-          cfg.warn("Output not found: " + base)
+          if 'full' in appinfo:
+            outpath = os.path.join(appinfo['dir'], appinfo['full'])
+            outfl = open(outpath, 'r')
+            outp = outfl.read()
+            outfl.close()
+            
+            exppath = cfg.get_exp_path(flpath, outsuf)
+            stat = cfg.overwrite_expected(outp, exppath)
+            if stat == 'overwritten' or stat == 'created':
+              expname = os.path.basename(exppath)
+              cfg.out('%s %s' % (expname, stat))
+          else:
+            cfg.warn("Output not found: " + base)
 # /update_expected
 
 def main():
@@ -616,7 +617,7 @@ def main():
   global OVERWRITE, VERBOSE, COMPARE_TIME
   OVERWRITE = opts.overwrite
   VERBOSE = opts.verbose
-  COMPARE_TIME = !opts.nodifftime
+  COMPARE_TIME = not opts.nodifftime
 
   for destdir, props in cfg.TARGETDIRS.items():
     wrap = props['wrap']

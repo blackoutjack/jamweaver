@@ -5,15 +5,144 @@ import shutil
 import operator
 import math
 import matplotlib.pyplot as plt
-from perc_box_plot import percentile_box_plot as perc_box
-
 from matplotlib.ticker import FormatStrFormatter
+from perc_box_plot import percentile_box_plot as perc_box
 
 from optparse import OptionParser
 
 from util import out
 
 plt.rcParams['pdf.fonttype'] = 42
+
+def geomeanPercent(vals):
+  tot = 0.0
+  for val in vals:
+    tot += math.log(float(val) / 100.0 + 1.0)
+  return math.exp(tot / len(vals)) * 100
+# /geomeanPercent
+
+def geomean(vals):
+  tot = 0.0
+  for val in vals:
+    tot += math.log(float(val))
+  return math.exp(tot / len(vals))
+# /geomean
+
+#
+# Plot of the average overhead of modular and woven transactions
+#
+# Input:
+#   stats: a list of triples (original_time, woven_time, modular_time)
+#
+# Output:
+#   x-axis: modular overhead (%)
+#   y-axis: woven overhead (%)
+#
+def modularVsWovenOverhead(stats, log=True, threshold=100.0, absolute=True):
+  wovenOverhead = []
+  modularOverhead = []
+
+  ylimit = 10000.0
+  xmin = 0.0
+  ymin = 0.0
+  xmax = 0.0
+  ymax = 0.0
+
+  for times in stats:
+    orig = times['input']
+    woven = times['semantic0.collapsed']
+    modular = times['coarse.input']
+
+    # Skip actions that humans can't distinguish.
+    #if woven < threshold and modular < threshold and orig < threshold:
+    #  continue
+
+    if absolute:
+      wo = woven / orig
+    else:
+      wo = 100 * (woven - orig) / orig
+    if wo < ymin: ymin = wo
+    if wo > ymax: ymax = wo
+
+    if absolute:
+      mo = modular / orig
+    else:
+      mo = 100 * (modular - orig) / orig
+
+    if mo > ylimit:
+      moo = mo
+      mo = ylimit * 0.98
+      ymax = ylimit
+      txt = "(" + str(int(moo)) + ", " + str(int(wo)) + ")"
+      plt.annotate(txt, (mo, wo), xytext=(mo - 1000, wo + 300), xycoords='data', textcoords='data', arrowprops=dict(arrowstyle='->'))
+      #fig, ax = plt.subplots()
+      #ax.annotate('', xy=(x[0], y[0]), xytext=(-20,20), 
+      #            textcoords='offset points', ha='center', va='bottom',
+      #            bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
+      #            arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.5', 
+      #                            color='red'))
+
+    if mo < xmin: xmin = mo
+    if mo > xmax: xmax = mo
+    if wo < ymin: ymin = wo
+    if wo > ymax: ymax = wo
+
+    modularOverhead.append(mo)
+    wovenOverhead.append(wo)
+
+
+  if ymax > 10000.0:
+    ymax = 10000.0
+
+  totmax = max(xmax, ymax) * 1.10
+
+  if absolute:
+    wogm = geomean(wovenOverhead)
+    mogm = geomean(modularOverhead)
+  else:
+    wogm = geomeanPercent(wovenOverhead)
+    mogm = geomeanPercent(modularOverhead)
+
+  out("GEOMETRIC MEAN (WOVEN): %.2f" % wogm)
+  out("GEOMETRIC MEAN (MODULAR): %.2f" % mogm)
+  
+  if absolute:
+    plt.xlabel('exec. time of coarse-grained transactions / unprotected')
+    plt.ylabel('exec. time of fine-grained transactions / unprotected')
+  else:
+    plt.xlabel('overhead (%) of coarse-grained transactions')
+    plt.ylabel('overhead (%) of fine-grained transactions')
+    
+  plt.xlim(0, totmax)
+  plt.ylim(0, totmax)
+  
+  cas = plt.gca()
+  if log:
+    cas.set_xscale('log')
+    cas.set_yscale('log')
+  majorFormatter = FormatStrFormatter('%d')
+  cas.xaxis.set_major_formatter(majorFormatter)
+  cas.yaxis.set_major_formatter(majorFormatter)
+
+
+  if log:
+    plt.plot([0.1, totmax], [0.1, totmax])
+  else:
+    plt.plot([0.0, totmax], [0.0, totmax])
+  plt.scatter(modularOverhead, wovenOverhead, marker='x')
+  #plt.legend(
+  #  ('modular', 'woven'),
+  #  loc='upper right'
+  #)
+
+  #plt.savefig('overhead.eps', format='eps')
+  if log:
+    plt.savefig('overheadcomp-log.pdf', format='pdf')
+  else:
+    plt.savefig('overheadcomp.pdf', format='pdf')
+  #plt.savefig('overhead.jpg', format='jpg')
+  plt.clf()
+#/modularVsWovenOverhead
 
 #
 # Plot of execution time of woven transactions vs. unprotected.
@@ -127,7 +256,6 @@ def wovenOverheadByOriginal(stats, variants, display, log=True):
   overhead1.extend(loadoverhead1)
   gmboth1 = geomean(overhead1)
   out("GEOMETRIC MEAN (all, %s / %s): %.2f" % (disp1, disp0, gmboth1))
-
 #/wovenOverheadByOriginal
 
 #
@@ -251,220 +379,3 @@ def modularVsWovenOverheadByOriginal(stats, variants, display, log=True):
   out("GEOMETRIC MEAN (all, %s / %s): %.2f" % (disp2, disp1, gmboth))
 
 #/modularVsWovenOverheadByOriginal
-
-
-#
-# Plot of the average overhead of modular and woven transactions
-#
-# Input:
-#   stats: a list of triples (original_time, woven_time, modular_time)
-#
-# Output:
-#   x-axis: original, unprotected execution time (ms)
-#   y-axis: overhead (%)
-#
-def modularVsWovenOverheadByOriginalOld(stats):
-  wovenOverhead = []
-  modularOverhead = []
-  originalTime = []
-
-  ylimit = 6000.0
-  xmin = 0.0
-  ymin = 0.0
-  xmax = 0.0
-  ymax = 0.0
-
-  for times in stats:
-    orig = times['input']
-    woven = times['semantic0.collapsed']
-    modular = times['coarse.input']
-
-    originalTime.append(orig)
-    if orig < xmin: xmin = orig
-    if orig > xmax: xmax = orig
-
-    wo = 100 * (woven - orig) / orig
-    if wo < ymin: ymin = wo
-    if wo > ymax: ymax = wo
-
-    mo = 100 * (modular - orig) / orig
-
-    if mo > ylimit:
-      moo = mo
-      mo = ylimit * 1.05
-      ymax = ylimit
-      txt = "(" + str(int(orig)) + ", " + str(int(moo)) + ")"
-      plt.annotate(txt, (orig, mo), xytext=(orig - 50, mo * 0.90), xycoords='data', textcoords='data', arrowprops=dict(arrowstyle='->'))
-      #fig, ax = plt.subplots()
-      #ax.annotate('', xy=(x[0], y[0]), xytext=(-20,20), 
-      #            textcoords='offset points', ha='center', va='bottom',
-      #            bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
-      #            arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.5', 
-      #                            color='red'))
-
-    if wo < ymin: ymin = wo
-    if wo > ymax: ymax = wo
-
-    wovenOverhead.append(wo)
-    modularOverhead.append(mo)
-
-
-  if ymax > 6000.0:
-    ymax = 6000.0
-
-  #geometricMean = math.exp(sum(specByB2_percentList) / len(specByB2_percentList)) * 100
-  #print "GEOMETRIC MEAN: " + str(geometricMean)
-  
-  plt.xlabel('execution time (ms) for unprotected program')
-  plt.ylabel('overhead (%) of coarse-grained and fine-grained transactions')
-  plt.xlim(0.0, xmax * 1.10)
-  plt.ylim(ymin * 1.10, ymax * 1.10)
-  
-  cas = plt.gca()
-  majorFormatter = FormatStrFormatter('%d')
-  cas.xaxis.set_major_formatter(majorFormatter)
-  cas.yaxis.set_major_formatter(majorFormatter)
-  #cas.set_yscale('log')
-
-
-  #plt.plot([0, 1000], [0, 1000])
-  plt.scatter(originalTime, wovenOverhead, marker='o', facecolors='none')
-  plt.scatter(originalTime, modularOverhead, marker='x', facecolors='none')
-  plt.legend(
-    ('coarse-grained', 'fine-grained'),
-    loc='upper right'
-  )
-
-  #plt.savefig('overhead.eps', format='eps')
-  plt.savefig('overheadbyoriginal.png', format='png')
-  #plt.savefig('overhead.jpg', format='jpg')
-  plt.clf()
-#/modularVsWovenOverheadByOriginalOld
-
-def geomeanPercent(vals):
-  tot = 0.0
-  for val in vals:
-    tot += math.log(float(val) / 100.0 + 1.0)
-  return math.exp(tot / len(vals)) * 100
-
-def geomean(vals):
-  tot = 0.0
-  for val in vals:
-    tot += math.log(float(val))
-  return math.exp(tot / len(vals))
-
-#
-# Plot of the average overhead of modular and woven transactions
-#
-# Input:
-#   stats: a list of triples (original_time, woven_time, modular_time)
-#
-# Output:
-#   x-axis: modular overhead (%)
-#   y-axis: woven overhead (%)
-#
-def modularVsWovenOverhead(stats, log=True, threshold=100.0, absolute=True):
-  wovenOverhead = []
-  modularOverhead = []
-
-  ylimit = 10000.0
-  xmin = 0.0
-  ymin = 0.0
-  xmax = 0.0
-  ymax = 0.0
-
-  for times in stats:
-    orig = times['input']
-    woven = times['semantic0.collapsed']
-    modular = times['coarse.input']
-
-    # Skip actions that humans can't distinguish.
-    #if woven < threshold and modular < threshold and orig < threshold:
-    #  continue
-
-    if absolute:
-      wo = woven / orig
-    else:
-      wo = 100 * (woven - orig) / orig
-    if wo < ymin: ymin = wo
-    if wo > ymax: ymax = wo
-
-    if absolute:
-      mo = modular / orig
-    else:
-      mo = 100 * (modular - orig) / orig
-
-    if mo > ylimit:
-      moo = mo
-      mo = ylimit * 0.98
-      ymax = ylimit
-      txt = "(" + str(int(moo)) + ", " + str(int(wo)) + ")"
-      plt.annotate(txt, (mo, wo), xytext=(mo - 1000, wo + 300), xycoords='data', textcoords='data', arrowprops=dict(arrowstyle='->'))
-      #fig, ax = plt.subplots()
-      #ax.annotate('', xy=(x[0], y[0]), xytext=(-20,20), 
-      #            textcoords='offset points', ha='center', va='bottom',
-      #            bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
-      #            arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.5', 
-      #                            color='red'))
-
-    if mo < xmin: xmin = mo
-    if mo > xmax: xmax = mo
-    if wo < ymin: ymin = wo
-    if wo > ymax: ymax = wo
-
-    modularOverhead.append(mo)
-    wovenOverhead.append(wo)
-
-
-  if ymax > 10000.0:
-    ymax = 10000.0
-
-  totmax = max(xmax, ymax) * 1.10
-
-  if absolute:
-    wogm = geomean(wovenOverhead)
-    mogm = geomean(modularOverhead)
-  else:
-    wogm = geomeanPercent(wovenOverhead)
-    mogm = geomeanPercent(modularOverhead)
-
-  out("GEOMETRIC MEAN (WOVEN): %.2f" % wogm)
-  out("GEOMETRIC MEAN (MODULAR): %.2f" % mogm)
-  
-  if absolute:
-    plt.xlabel('exec. time of coarse-grained transactions / unprotected')
-    plt.ylabel('exec. time of fine-grained transactions / unprotected')
-  else:
-    plt.xlabel('overhead (%) of coarse-grained transactions')
-    plt.ylabel('overhead (%) of fine-grained transactions')
-    
-  plt.xlim(0, totmax)
-  plt.ylim(0, totmax)
-  
-  cas = plt.gca()
-  if log:
-    cas.set_xscale('log')
-    cas.set_yscale('log')
-  majorFormatter = FormatStrFormatter('%d')
-  cas.xaxis.set_major_formatter(majorFormatter)
-  cas.yaxis.set_major_formatter(majorFormatter)
-
-
-  if log:
-    plt.plot([0.1, totmax], [0.1, totmax])
-  else:
-    plt.plot([0.0, totmax], [0.0, totmax])
-  plt.scatter(modularOverhead, wovenOverhead, marker='x')
-  #plt.legend(
-  #  ('modular', 'woven'),
-  #  loc='upper right'
-  #)
-
-  #plt.savefig('overhead.eps', format='eps')
-  if log:
-    plt.savefig('overheadcomp-log.pdf', format='pdf')
-  else:
-    plt.savefig('overheadcomp.pdf', format='pdf')
-  #plt.savefig('overhead.jpg', format='jpg')
-  plt.clf()
-#/modularVsWovenOverhead

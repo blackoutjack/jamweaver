@@ -66,7 +66,7 @@ DISABLED = [
   'octane-pdf', 'octane-zlib', 'octane-zlib-eval', 'octane-eb',
   'octane-gb', 'octane-mandreel', 'octane-codeload',
   'octane-typescript', 'octane', 'googlemaps', 'jsqrcode-get',
-  'squirrelmail-bad',
+  'squirrelmail-bad', 'dmc-cc',
 ]
 
 POLICY_DESCRIPTIONS = {
@@ -101,14 +101,12 @@ POLICY_DESCRIPTIONS = {
 }
 
 APP_TRANSLATE = {
-  'jsqrcode-call': 'jsqrcode',
   'jsbench-google-chrome-urem': 'jsbench-google',
   'jsbench-amazon-chrome-urem': 'jsbench-amazon',
   'jsbench-facebook-chrome-urem': 'jsbench-facebook',
 }
 
 APP_REVERSE_TRANSLATE = {
-  'jsqrcode': 'jsqrcode-call',
   'jsbench-google': 'jsbench-google-chrome-urem',
   'jsbench-amazon':'jsbench-amazon-chrome-urem',
   'jsbench-facebook' : 'jsbench-facebook-chrome-urem',

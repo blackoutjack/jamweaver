@@ -10,6 +10,7 @@ import imp
 from optparse import OptionParser
 import tempfile
 import filecmp
+#import warnings
 
 import grapher
 
@@ -181,10 +182,15 @@ def parse_results(lines):
       appinfo, stackInfo = parse_stack(stack)
       # Generate or retrieve the AppStats object.
       appname = appinfo['app']
-      if appname.startswith(cfg.SMS2PREFIX) and appname.endswith('-big'):
-        appkey = appname[:-4]
-      else:
-        appkey = appname
+      appkey = appname
+      if appkey.startswith(cfg.SMS2PREFIX):
+        if appkey.endswith('.big') or appkey.endswith('-big'):
+          appkey = appkey[:-4]
+        if appkey.endswith('-newcall'):
+          appkey = appkey[:-8]
+      elif appkey == 'jsqrcode-call':
+        appkey = 'jsqrcode'
+
       if appkey in stats:
         curAppStats = stats[appkey]
       else:
@@ -198,7 +204,7 @@ def parse_results(lines):
 
       curVariant = curAppStats.getVariant(descparts)
       # The app/variant info is assumed to come right after the action.
-      if appname.startswith(cfg.SMS2PREFIX) and appname.endswith('-big') and curActionDesc == "compute":
+      if appname.startswith(cfg.SMS2PREFIX) and appname.endswith('.big') and curActionDesc == "compute":
         curActionDesc = "bigcompute"
         
       curAction = curVariant.getAction(curActionDesc, stackInfo)
@@ -513,7 +519,9 @@ def generate_graphs(stats):
     }
   }
   for app in apps:
-    #if app.startswith(cfg.SMS2PREFIX) and not app.endswith('-big'): continue
+    if app in cfg.DISABLED:
+      continue
+    #if app.startswith(cfg.SMS2PREFIX) and not app.endswith('.big'): continue
     stat = stats[app]
     actdescs = load_actions(stat)
     for actdesc in actdescs:
@@ -530,14 +538,14 @@ def generate_graphs(stats):
 
         # Optionally add on policy.js and libTx.js load time.
         if cfg.INCLUDE_INIT:
-          if actdesc == 'load' and vardesc != 'unprotected.original':
+          if actdesc == 'load' and vardesc != 'input':
             if 'init' in variant.actions:
               inittm = variant.actions['init'].avg_time() 
               updateMinMax(minmax, inittm, 'init', desc)
               tm += inittm
             else:
               cfg.warn("No init time for load: %s/%s" % (app, vardesc))
-        elif actdesc == 'init' and vardesc != 'unprotected.original':
+        elif actdesc == 'init' and vardesc != 'input':
           updateMinMax(minmax, inittm, 'init', desc)
 
         times[vardesc] = tm
@@ -599,10 +607,10 @@ def main():
   parser = OptionParser(usage="%prog results.txt")
   parser.add_option('-c', '--config', action='store', default=os.path.join(os.path.dirname(__file__), 'resultsconfig.py'), dest='config', help='configuration.py file')
   parser.add_option('-v', '--verbose', action='store_true', default=False, dest='verbose', help='generate verbose output')
-  parser.add_option('-a', '--analysis', action='store', default='t', dest='analysis', help='analysis to conduct:\n  t  fine-grained vs. coarsed-grain runtime\n  c  compare profile information across results files\n  m  compare running time across results files\n  a  all')
+  parser.add_option('-a', '--analysis', action='store', default='t', dest='analysis', help='t: fine-grained vs. coarsed-grain runtime; c: compare profile information across results files; m: compare running time across results files; a: all')
 
   opts, args = parser.parse_args()
-
+  #warnings.simplefilter('error', UserWarning)
   global cfg
   cfg = imp.load_source("cfg", opts.config)
 

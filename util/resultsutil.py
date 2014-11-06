@@ -150,6 +150,13 @@ class AppStats:
 
   def getVariant(self, descparts):
     desc = '.'.join(descparts)
+    # Translate legacy descriptors.
+    if desc == 'original':
+      desc = 'input'
+    elif desc == 'original.modular':
+      desc = 'coarse.input'
+    elif desc == 'collapsed':
+      desc = 'semantic0.collapsed'
     # %%% May want to match A.B to B.A
     if desc not in self.variants:
       self.variants[desc] = SourceVariant(self, descparts)

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3.4
 import sys
 import os
 import re
@@ -16,9 +16,7 @@ import grapher
 from resultsutil import AppStats, SourceVariant, Action, Section
 
 def collect_results_from_file(filepath, results):
-  fl = open(filepath, 'r')
-  lns = fl.readlines()
-  fl.close()
+  lns = cfg.get_lines(filepath)
     
   # Detect whether the file contains any results via the format.
   # %%% Does this short-circuit when it finds a match?
@@ -33,7 +31,7 @@ def collect_results(filelist):
     collect_results_from_file(respath, lines)
 
   if len(lines) == 0:
-    util.warn("no results found")
+    cfg.warn("No results found")
 
   return lines
 #/collect_results
@@ -45,7 +43,7 @@ def collect_separate_results(filelist):
     assert os.path.exists(respath), "Results source does not exist: %s" % respath
     collect_results_from_file(respath, lines)
     if len(lines) == 0:
-      util.warn("no results found for file: %s" % respath)
+      cfg.warn("No results found for file: %s" % respath)
     results.append(lines)
 
   return results
@@ -55,7 +53,7 @@ def parse_profile_header(ln):
   assert ln.startswith(cfg.PROFILE_MARKER)
   action = ln[len(cfg.PROFILE_MARKER):-len(cfg.PROFILE_MARKER_TAIL)]
   if len(action) < 1:
-    print >> sys.stderr, "Action name is empty: %s" % ln
+    cfg.err("Action name is empty: %s" % ln)
   return action
 #/parse_profile_header
 
@@ -68,7 +66,7 @@ def parse_section_header(ln):
     info = info.lstrip(": ")
     section = cfg.TIME_SECTION_NAME
   if len(section) < 1:
-    print >> sys.stderr, "Section name is empty: %s" % ln
+    cfg.err("Section name is empty: %s" % ln)
 
   return section, info
 #/parse_section_header
@@ -83,23 +81,28 @@ def parse_stack(lines):
     flln = parts[2]
     srcfl, lineno = flln.rsplit(':', 1)
     stackinfo.append((srcfl, lineno))
-
   for i in range(0, len(stackinfo)):
     idx = len(stackinfo) - 1 - i
     lastsrc = stackinfo[idx][0]
     if lastsrc.startswith('http://'):
       lastsrc = lastsrc[7:]
     # Get the init time.
+    # %%% Ugly string matching
     if lastsrc.startswith(cfg.TEST_DIR):
       lastsrc = lastsrc[len(cfg.TEST_DIR):]
-      begin = lastsrc.find("/test.php?script=")
-      if begin > -1:
-        begin += 17
-        lastsrc = lastsrc[begin:]
-        end = lastsrc.find("&policy=")
-        if end > -1:
-          lastsrc = lastsrc[:end]
-    appinfo = util.get_file_info(lastsrc)
+
+      for marker in ['/test.php?script=', '/test.php?sources[]=']:
+        begin = -1
+        begin = lastsrc.find(marker)
+        if begin > -1:
+          begin += len(marker)
+          lastsrc = lastsrc[begin:]
+          end = lastsrc.find("&policy=")
+          if end > -1:
+            lastsrc = lastsrc[:end]
+          break
+
+    appinfo = cfg.get_file_info(lastsrc)
 
     if appinfo['app'] != 'libTx' and appinfo['app'] != 'auto' and appinfo['app'] != 'autoextra':
       break
@@ -126,6 +129,8 @@ def parse_results(lines):
   for idx in idxes:
     ln = lines[idx].strip()
 
+    if ln == '':
+      continue
     isjunk = False
     for junk in cfg.JUNK_MARKERS:
       if ln.startswith(junk):
@@ -137,15 +142,15 @@ def parse_results(lines):
       errtxt = ln[len(cfg.ERROR_MARKER):]
       if curAction is not None:
         curAction.addError(errtxt)
-        print >> sys.stderr, "Error inkey action %s, variant %s, app %s: %s" % (curAction.description, curVariant.descriptor(), curAppStats.name, errtxt)
+        cfg.err("Error inkey action %s, variant %s, app %s: %s" % (curAction.description, curVariant.descriptor(), curAppStats.name, errtxt))
       elif curVariant is not None:
         curVariant.addError(errtxt)
-        print >> sys.stderr, "Error in variant %s, app %s: %s" % (curVariant.descriptor(), curAppStats.name, errtxt)
+        cfg.err("Error in variant %s, app %s: %s" % (curVariant.descriptor(), curAppStats.name, errtxt))
       elif curAppStats is not None:
         curAppStats.addError(errtxt)
-        print >> sys.stderr, "Error in app %s: %s" % (curAppStats.name, errtxt)
+        cfg.err("Error in app %s: %s" % (curAppStats.name, errtxt))
       else:
-        print >> sys.stderr, "Unassociated error: %s" % errtxt
+        cfg.err("Unassociated error: %s" % errtxt)
       continue
 
     if ln.startswith(cfg.PROFILE_MARKER):
@@ -166,11 +171,12 @@ def parse_results(lines):
           nextln = lines[nextidx]
           if nextln.startswith(cfg.STACK_MARKER):
             stack.append(nextln)
-            idxes.next() # Exhaust the line from the iterator.
+            next(idxes) # Exhaust the line from the iterator.
             nextidx += 1
           else:
             break
-        except:
+        except Exception as e:
+          cfg.err('While parsing stack: %s' % str(e))
           break
       appinfo, stackInfo = parse_stack(stack)
       # Generate or retrieve the AppStats object.
@@ -188,7 +194,7 @@ def parse_results(lines):
 
       # "profile" is expected for all of these data.
       try: descparts.remove('profile')
-      except: print >> sys.stderr, "No \"profile\" component of variant description: %r" % appinfo
+      except: cfg.err('No "profile" component of variant description: %r' % appinfo)
 
       curVariant = curAppStats.getVariant(descparts)
       # The app/variant info is assumed to come right after the action.
@@ -206,16 +212,16 @@ def parse_results(lines):
 
 def print_all_times(stats):
   # Print the time stats for each app.
-  for app, stat in stats.iteritems():
-    print stat.name
+  for app, stat in stats.items():
+    cfg.out(stat.name)
     for i in stat.variants:
-      print str(stat.variants[i])
+      cfg.out(str(stat.variants[i]))
 
 def print_times(app, actdesc, timemap):
-  print app + "/" + actdesc, 
-  for v, t in timemap.iteritems():
-    print v + ":" + str(t),
-  print
+  out = '%s/%s' % (app, actdesc)
+  for v, t in timemap.items():
+    out += ' %s:%s' % (v, str(t))
+  cfg.out(out)
 
 def compare_sections(sect0, sect1, action, variant, app):
   allsame = True
@@ -227,10 +233,10 @@ def compare_sections(sect0, sect1, action, variant, app):
   addl0 = keys0 - keys1
   addl1 = keys1 - keys0
   for a0 in addl0:
-    print >> sys.stderr, "Row '%s' not found in 2nd section '%s', action '%s', variant '%s' for app '%s'" % (a0, section, action, variant, app)
+    cfg.err("Row '%s' not found in 2nd section '%s', action '%s', variant '%s' for app '%s'" % (a0, section, action, variant, app))
     allsame = False
   for a1 in addl1:
-    print >> sys.stderr, "Row '%s' not found in 2nd section '%s', action '%s', variant '%s' for app '%s'" % (a1, section, action, variant, app)
+    cfg.err("Row '%s' not found in 2nd section '%s', action '%s', variant '%s' for app '%s'" % (a1, section, action, variant, app))
     allsame = False
 
   common = keys0 & keys1
@@ -238,7 +244,7 @@ def compare_sections(sect0, sect1, action, variant, app):
     rowdata0 = sect0.rows[rowdesc]
     rowdata1 = sect1.rows[rowdesc]
     if rowdata0 != rowdata1:
-      print >> sys.stderr, "Data is inconsistent: %r != %r in section '%s', action '%s', variant '%s', app '%s'" % (rowdata0, rowdata1, section, action, variant, app)
+      cfg.err("Data is inconsistent: %r != %r in section '%s', action '%s', variant '%s', app '%s'" % (rowdata0, rowdata1, section, action, variant, app))
       allsame = False
 
   return allsame
@@ -254,10 +260,10 @@ def compare_actions(act0, act1, variant, app):
   addl0 = keys0 - keys1
   addl1 = keys1 - keys0
   for a0 in addl0:
-    print >> sys.stderr, "Section '%s' not found for 2nd action '%s' in variant '%s' for app '%s'" % (a0, action, variant, app)
+    cfg.err("Section '%s' not found for 2nd action '%s' in variant '%s' for app '%s'" % (a0, action, variant, app))
     allsame = False
   for a1 in addl1:
-    print >> sys.stderr, "Section '%s' not found for 1st action '%s' in variant '%s' for app '%s'" % (a1, action, variant, app)
+    cfg.err("Section '%s' not found for 1st action '%s' in variant '%s' for app '%s'" % (a1, action, variant, app))
     allsame = False
 
   common = keys0 & keys1
@@ -282,10 +288,10 @@ def compare_variants(var0, var1, app):
   addl0 = keys0 - keys1
   addl1 = keys1 - keys0
   for a0 in addl0:
-    print >> sys.stderr, "Action '%s' not found in 2nd variant '%s' for app '%s'" % (a0, variant, app)
+    cfg.err("Action '%s' not found in 2nd variant '%s' for app '%s'" % (a0, variant, app))
     allsame = False
   for a1 in addl1:
-    print >> sys.stderr, "Action '%s' not found in 1st variant '%s' for app '%s'" % (a1, variant, app)
+    cfg.err("Action '%s' not found in 1st variant '%s' for app '%s'" % (a1, variant, app))
     allsame = False
 
   common = keys0 & keys1
@@ -307,10 +313,10 @@ def compare_stats(statsobj0, statsobj1):
   addl0 = keys0 - keys1
   addl1 = keys1 - keys0
   for a0 in addl0:
-    print >> sys.stderr, "Variant '%s' not found in 2nd variant list for app '%s'" % (a0, app)
+    cfg.err("Variant '%s' not found in 2nd variant list for app '%s'" % (a0, app))
     allsame = False
   for a1 in addl1:
-    print >> sys.stderr, "Variant '%s' not found in 1st variant list for app '%s'" % (a1, app)
+    cfg.err("Variant '%s' not found in 1st variant list for app '%s'" % (a1, app))
     allsame = False
 
   common = keys0 & keys1
@@ -332,11 +338,11 @@ def compare_results(stats0, stats1):
   addl0 = keys0 - keys1
   addl1 = keys1 - keys0
   for a0 in addl0:
-      print >> sys.stderr, "Application '%s' not found in 2nd stats list" % a0
-      allsame = False
+    cfg.err("Application '%s' not found in 2nd stats list" % a0)
+    allsame = False
   for a1 in addl1:
-      print >> sys.stderr, "Application '%s' not found in 1st stats list" % a1
-      allsame = False
+    cfg.err("Application '%s' not found in 1st stats list" % a1)
+    allsame = False
 
   common = keys0 & keys1
   for app in common:
@@ -346,7 +352,7 @@ def compare_results(stats0, stats1):
       allsame = False
 
   if allsame:
-    print >> sys.stderr, "Statistics match exactly"
+    cfg.out("Statistics match exactly")
 #/compare_results
 
 def compare_actions_times(act0, act1, variant, app):
@@ -370,7 +376,7 @@ def compare_actions_times(act0, act1, variant, app):
     faststr = 'Same time'
     ratio = 1.0
     
-  print "%s for app '%s', variant '%s', action '%s', difference: %.2f, ratio: %.2f" % (faststr, app, variant, action, diff, ratio) 
+  cfg.out("%s for app '%s', variant '%s', action '%s', difference: %.2f, ratio: %.2f" % (faststr, app, variant, action, diff, ratio))
   return (fast, diff, ratio)
 #/compare_actions_times
 
@@ -384,9 +390,9 @@ def compare_variants_times(var0, var1, app):
   addl0 = keys0 - keys1
   addl1 = keys1 - keys0
   for a0 in addl0:
-    print >> sys.stderr, "Action '%s' not found in 2nd variant '%s' for app '%s'" % (a0, variant, app)
+    cfg.err("Action '%s' not found in 2nd variant '%s' for app '%s'" % (a0, variant, app))
   for a1 in addl1:
-    print >> sys.stderr, "Action '%s' not found in 1st variant '%s' for app '%s'" % (a1, variant, app)
+    cfg.err("Action '%s' not found in 1st variant '%s' for app '%s'" % (a1, variant, app))
 
   common = keys0 & keys1
   for actdesc in common:
@@ -405,9 +411,9 @@ def compare_stats_times(statsobj0, statsobj1):
   addl0 = keys0 - keys1
   addl1 = keys1 - keys0
   for a0 in addl0:
-      print >> sys.stderr, "Variant '%s' not found in 2nd variant list for app '%s'" % (a0, app)
+      cfg.err("Variant '%s' not found in 2nd variant list for app '%s'" % (a0, app))
   for a1 in addl1:
-      print >> sys.stderr, "Variant '%s' not found in 1st variant list for app '%s'" % (a1, app)
+      cfg.err("Variant '%s' not found in 1st variant list for app '%s'" % (a1, app))
 
   common = keys0 & keys1
   for vardesc in common:
@@ -423,9 +429,9 @@ def compare_times(stats0, stats1):
   addl0 = keys0 - keys1
   addl1 = keys1 - keys0
   for a0 in addl0:
-      print >> sys.stderr, "Application '%s' not found in 2nd stats list" % a0
+      cfg.err("Application '%s' not found in 2nd stats list" % a0)
   for a1 in addl1:
-      print >> sys.stderr, "Application '%s' not found in 1st stats list" % a1
+      cfg.err("Application '%s' not found in 1st stats list" % a1)
 
   common = keys0 & keys1
   for app in common:
@@ -470,11 +476,11 @@ def print_time_comparison(stats):
       try:
         variants = load_variants(stat, actdesc)
         times = {}
-        for vardesc, variant in variants.iteritems():
+        for vardesc, variant in variants.items():
           times[vardesc] = variant.actions[actdesc].avg_time()
         print_times(app, actdesc, times)
       except Exception as e:
-        util.warn(str(e))
+        cfg.err('Time comparison for %s/%s: %s' (app, actdesc, str(e)))
 
 def updateMinMax(minmax, tm, sub, desc):
   curmin = minmax[sub]['mintime'] 
@@ -490,7 +496,7 @@ def updateMinMax(minmax, tm, sub, desc):
 # Create graphs.
 def generate_graphs(stats):
   timelist = []
-  apps = stats.keys()
+  apps = list(stats.keys())
   apps.sort()
   minmax = {
     'overall': {
@@ -515,74 +521,72 @@ def generate_graphs(stats):
       if cfg.INCLUDE_INIT and actdesc == 'init': continue
       if cfg.SUPPRESS_SMS2_LOAD and actdesc == 'load' and app.startswith(cfg.SMS2PREFIX): continue
 
-      try:
-        variants = load_variants(stat, actdesc)
-        times = {}
-        times['action'] = actdesc
-        for vardesc, variant in variants.iteritems():
-          tm = variant.actions[actdesc].avg_time()
-          desc = app + '/' + actdesc + '/' + vardesc
+      variants = load_variants(stat, actdesc)
+      times = {}
+      times['action'] = actdesc
+      for vardesc, variant in variants.items():
+        tm = variant.actions[actdesc].avg_time()
+        desc = app + '/' + actdesc + '/' + vardesc
 
-          # Optionally add on policy.js and libTx.js load time.
-          if cfg.INCLUDE_INIT:
-            if actdesc == 'load' and vardesc != 'original':
-              if 'init' in variant.actions:
-                inittm = variant.actions['init'].avg_time() 
-                updateMinMax(minmax, inittm, 'init', desc)
-                tm += inittm
-              else:
-                util.warn("No init time for load: %s/%s" % (app, vardesc))
-          elif actdesc == 'init' and vardesc != 'original':
-            updateMinMax(minmax, inittm, 'init', desc)
+        # Optionally add on policy.js and libTx.js load time.
+        if cfg.INCLUDE_INIT:
+          if actdesc == 'load' and vardesc != 'unprotected.original':
+            if 'init' in variant.actions:
+              inittm = variant.actions['init'].avg_time() 
+              updateMinMax(minmax, inittm, 'init', desc)
+              tm += inittm
+            else:
+              cfg.warn("No init time for load: %s/%s" % (app, vardesc))
+        elif actdesc == 'init' and vardesc != 'unprotected.original':
+          updateMinMax(minmax, inittm, 'init', desc)
 
-          times[vardesc] = tm
-          updateMinMax(minmax, tm, 'overall', desc)
+        times[vardesc] = tm
+        updateMinMax(minmax, tm, 'overall', desc)
 
-        # Check for zero/negative times.
-        ok = True
-        for vardesc, time in times.iteritems():
-          if time <= 0:
-            print >> sys.stderr, "NON-POSITIVE TIME: %s/%s/%s/%.2f" % (app, actdesc, vardesc, time)
-            ok = False
-        if not ok: continue
+      # Check for zero/negative times.
+      ok = True
+      for vardesc, time in times.items():
+        if vardesc == 'action': continue
+        if time <= 0:
+          cfg.err("NON-POSITIVE TIME: %s/%s/%s/%.2f" % (app, actdesc, vardesc, time))
+          ok = False
+      if not ok: continue
 
-        # Check for cases where woven performs worse than modular
-        # on long-duration base case.
-        time0 = float(times[cfg.VARIANTS[0]])
-        time1 = float(times[cfg.VARIANTS[1]])
-        time2 = float(times[cfg.VARIANTS[2]])
-        if time2 > time1 and time0 > 100.0:
-          print >> sys.stderr, "LONG-DURATION OUTLIER: %s/%s/%.2f/%.2f/%.2f" % (app, actdesc, time0, time1, time2)
+      # Check for cases where woven performs worse than modular
+      # on long-duration base case.
+      time0 = float(times[cfg.VARIANTS[0]])
+      time1 = float(times[cfg.VARIANTS[1]])
+      time2 = float(times[cfg.VARIANTS[2]])
+      if time2 > time1 and time0 > 100.0:
+        cfg.warn("LONG-DURATION OUTLIER: %s/%s/%.2f/%.2f/%.2f" % (app, actdesc, time0, time1, time2))
 
-        if actdesc != 'init' and time0 < 0.1 or time1 < 0.1 or time2 < 0.1:
-          print >> sys.stderr, "TINY TIME: %s/%s/%.2f/%.2f/%.2f" % (app, actdesc, time0, time1, time2)
+      if actdesc != 'init' and time0 < 0.1 or time1 < 0.1 or time2 < 0.1:
+        cfg.warn("TINY TIME: %s/%s/%.2f/%.2f/%.2f" % (app, actdesc, time0, time1, time2))
 
-        # Check for cases where secure code is faster than unprotected.
-        if actdesc != 'init' and time2 / time0 <= 0.90:
-          print >> sys.stderr, "WOVEN UNDERLIER: %s/%s %.2f" % (app, actdesc, time2 / time0)
+      # Check for cases where secure code is faster than unprotected.
+      if actdesc != 'init' and time2 / time0 <= 0.90:
+        cfg.warn("WOVEN UNDERLIER: %s/%s %.2f" % (app, actdesc, time2 / time0))
 
-        if actdesc != 'init' and time1 / time0 < 0.90:
-          print >> sys.stderr, "MODULAR UNDERLIER: %s/%s %.2f" % (app, actdesc, time1 / time0)
+      if actdesc != 'init' and time1 / time0 < 0.90:
+        cfg.warn("MODULAR UNDERLIER: %s/%s %.2f" % (app, actdesc, time1 / time0))
 
-        if time2 / time1 > 1.5:
-          print >> sys.stderr, "LARGE TRANSFORMED/MODULAR RATIO: %s/%s/%.2f/%.2f" % (app, actdesc, time2 / time1, time0)
+      if time2 / time1 > 1.5:
+        cfg.warn("LARGE TRANSFORMED/MODULAR RATIO: %s/%s/%.2f/%.2f" % (app, actdesc, time2 / time1, time0))
 
-        if actdesc != 'init' and actdesc != 'load' and time2 / time0 > 5:
-          print >> sys.stderr, "LARGE TRANSFORMED/ORIGINAL RATIO: %s/%s/%.2f" % (app, actdesc, time2 / time0)
+      if actdesc != 'init' and actdesc != 'load' and time2 / time0 > 5:
+        cfg.warn("LARGE TRANSFORMED/ORIGINAL RATIO: %s/%s/%.2f" % (app, actdesc, time2 / time0))
 
-        timelist.append(times)
-      except Exception as e:
-        util.warn(str(e))
+      timelist.append(times)
 
   grapher.modularVsWovenOverheadByOriginal(timelist, cfg.VARIANTS, cfg.VARIANT_DISPLAY)
   #grapher.modularVsWovenOverhead(timelist, False)
   grapher.modularVsWovenOverhead(timelist, True)
   grapher.wovenOverheadByOriginal(timelist, cfg.VARIANTS, cfg.VARIANT_DISPLAY)
 
-  print "MIN INIT TIME: %s/%s" % (minmax['init']['mintime'], minmax['init']['minapp'])
-  print "MAX INIT TIME: %s/%s" % (minmax['init']['maxtime'], minmax['init']['maxapp'])
-  print "MIN ACTION TIME: %s/%s" % (minmax['overall']['mintime'], minmax['overall']['minapp'])
-  print "MAX ACTION TIME: %s/%s" % (minmax['overall']['maxtime'], minmax['overall']['maxapp'])
+  cfg.out("MIN INIT TIME: %s/%s" % (minmax['init']['mintime'], minmax['init']['minapp']))
+  cfg.out("MAX INIT TIME: %s/%s" % (minmax['init']['maxtime'], minmax['init']['maxapp']))
+  cfg.out("MIN ACTION TIME: %s/%s" % (minmax['overall']['mintime'], minmax['overall']['minapp']))
+  cfg.out("MAX ACTION TIME: %s/%s" % (minmax['overall']['maxtime'], minmax['overall']['maxapp']))
 #/generate_graphs
 
 def generate_output(stats):
@@ -593,18 +597,14 @@ def generate_output(stats):
 
 def main():
   parser = OptionParser(usage="%prog results.txt")
-  parser.add_option('-c', '--config', action='store', default='util/resultsconfig.py', dest='config', help='configuration.py file')
+  parser.add_option('-c', '--config', action='store', default=os.path.join(os.path.dirname(__file__), 'resultsconfig.py'), dest='config', help='configuration.py file')
   parser.add_option('-v', '--verbose', action='store_true', default=False, dest='verbose', help='generate verbose output')
   parser.add_option('-a', '--analysis', action='store', default='t', dest='analysis', help='analysis to conduct:\n  t  fine-grained vs. coarsed-grain runtime\n  c  compare profile information across results files\n  m  compare running time across results files\n  a  all')
 
   opts, args = parser.parse_args()
 
   global cfg
-  try:
-    cfg = imp.load_source("cfg", opts.config)
-  except:
-    print >> sys.stderr, "Unable to load configuration file: %s" % opts.config
-    sys.exit(1)
+  cfg = imp.load_source("cfg", opts.config)
 
   global VERBOSE
   VERBOSE = opts.verbose
@@ -620,7 +620,7 @@ def main():
     resultsfiles = []
     for resfile in args:
       if not os.path.exists(resfile):
-        util.warn("results file %s doesn't exist." % resfile)
+        cfg.warn("results file %s doesn't exist." % resfile)
       if os.path.isdir(resfile):
         # Doesn't recurse.
         resultsfiles.extend([os.path.join(resfile, filename) for filename in os.listdir(resfile)])

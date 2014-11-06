@@ -12,6 +12,18 @@ import tempfile
 import filecmp
 import fnmatch
 
+def get_result_predicate(srcdir, app):
+  respath = os.path.join(srcdir, app + '.result')
+  if os.path.isfile(respath):
+    resfl = open(respath, 'r')
+    respred = resfl.read()
+    resfl.close()
+    respred = respred.strip()
+    respred = respred.rstrip(";")
+  else:
+    respred = "\"RESULT NOT SPECIFIED\""
+  return respred
+
 def should_update(src, tgt, diff=False):
   if not os.path.isfile(tgt):
     return True
@@ -156,12 +168,12 @@ def insert_profile(txtin, desc, specs, extra=None):
     warning0 = ''
     warning1 = ''
     if not found0:
-      warning0 = "profile %s beginning" % warndesc
+      warning0 = "Profile %s beginning" % warndesc
     if not found1:
       if not found0:
         warning1 = " and ending"
       else:
-        warning1 = "profile %s ending" % warndesc
+        warning1 = "Profile %s ending" % warndesc
     cfg.warn(warning0 + warning1 + " insertion point not found")
     # Return the original rather than a partial profile.
     return txtin
@@ -336,9 +348,9 @@ def copy_sources(app, suf, srcdir, jssrc, apptgtdir, respred, mod):
     if copy_source(app, desc, jspath, normtgtdir, respred=respred, prof=False, mod=False, name=jsname):
       changed = True
 
-    proftgtdir = os.path.join('%s.profile' % subtgtdir, jsdir)
-    if copy_source(app, desc, jspath, proftgtdir, respred=respred, prof=True, mod=False, name=jsname):
-      changed = True
+    #proftgtdir = os.path.join('%s.profile' % subtgtdir, jsdir)
+    #if copy_source(app, desc, jspath, proftgtdir, respred=respred, prof=True, mod=False, name=jsname):
+    #  changed = True
 
     if mod:
       # Create a coarse-grained transaction version of the original.
@@ -346,266 +358,341 @@ def copy_sources(app, suf, srcdir, jssrc, apptgtdir, respred, mod):
       if copy_source(app, moddesc, jspath, modnormtgtdir, respred=respred, prof=False, mod=True, name=jsname):
         changed = True
 
-      modproftgtdir = os.path.join('%s.profile' % modtgtdir, jsdir)
-      if copy_source(app, moddesc, jspath, modproftgtdir, respred=respred, prof=True, mod=True, name=jsname):
-        changed = True
+      #modproftgtdir = os.path.join('%s.profile' % modtgtdir, jsdir)
+      #if copy_source(app, moddesc, jspath, modproftgtdir, respred=respred, prof=True, mod=True, name=jsname):
+      #  changed = True
   return changed
 # /copy_sources
   
-def copy_files(appfiles, tgtdir, wrap=False):
-  
-  # Now copy the files to the target directory, changing the file names
-  # to "app.js" and "app.policy.js".
-  for app, infos in appfiles.items():
-    if infos is None:
-      cfg.err('No info for application: %s' % app)
+def copy_files(app, infos, apppath, wrap=False):
+
+  if not prepare_dir(apppath):
+    # Error printed within |prepare_dir|.
+    return False
+
+  # Optionally, a result file in the target directory can contain
+  # a JavaScript expression that should evaluate to |true| (or some
+  # other value). This value will be returned by |runTest| and
+  # displayed by the JAM log.
+  if wrap:
+    respred = get_result_predicate(apppath, app)
+  else:
+    respred = None
+
+  for info in infos:
+    refsuf = cfg.get_suffix_from_info(info)
+    if refsuf is None:
+      # Error printed within |get_suffix_from_info|.
       continue
 
-    # %%% Special cases
+    srcdir = info['dir']
+    for desc, jssrc in info.items():
+      if desc == 'dir': continue
+      if desc == 'version': continue
+      if desc == 'policy': continue
+      if desc == 'modular.policy': continue
+      if desc == 'info': continue
+    
+      if desc in cfg.COARSE_SOURCE_KEYS:
+        mod = True
+        suf = desc
+      else:
+        mod = False
+        suf = '%s.%s' % (refsuf, desc)
+
+      changed = False
+      if isinstance(jssrc, str):
+        jspath = os.path.join(srcdir, jssrc)
+        assert os.path.isfile(jspath)
+        if copy_variants(app, suf, srcdir, jssrc, apppath, respred, mod):
+          changed = True
+      elif isinstance(jssrc, list):
+        srcsub = os.path.join(srcdir, 'source-%s' % desc)
+        if copy_sources(app, suf, srcsub, jssrc, apppath, respred, mod):
+          changed = True
+
+      if changed:
+        cfg.out('Updated %s.%s' % (app, suf))
+
+    # Collect various policy variations.
+    polchanged = False
+    for desc in ['policy', 'modular.policy']:
+      if desc in info:
+        polsrc = os.path.join(srcdir, info[desc])
+        if desc == 'modular.policy':
+          # The refinement indicator isn't meaningful for the
+          # coarse-grained policy.
+          suf = 'coarse.policy'
+        else:
+          suf = '%s.%s' % (refsuf, desc)
+        if copy_policy(app, suf, polsrc, apppath):
+          polchanged = True
+    if polchanged:
+      cfg.out('Updated policy for %s' % app)
+      
+  return True
+# /copy_files
+
+def update_coarse(apppath, app, wrap):
+
+  appkey = app.split('.', 1)[0]
+
+  if not os.path.isdir(apppath):
+    cfg.err('Unable to find application directory: %s' % apppath)
+    return 
+
+  for srcdir in os.listdir(apppath):
+    if not srcdir.startswith('source-'): continue
+    if srcdir.endswith('.profile'): continue
+    srcdirpath = os.path.join(apppath, srcdir)
+    if not os.path.isdir(srcdirpath): continue
+
+    desc = srcdir[len('source-'):]
+    descparts = desc.split('.')
+    begindesc = descparts[0]
+    if begindesc == 'unprotected':
+      if len(descparts) == 2:
+        basedesc = descparts[1]
+      else:
+        cfg.warn('Unexpected variant: %s/%s' % (app, desc))
+        continue
+    else:
+      basedesc = desc
+    if basedesc not in cfg.COARSE_SOURCE_KEYS: continue
+      
+    tgtdesc = 'coarse.%s' % basedesc
+    tgtdirpath = os.path.join(apppath, 'source-%s' % tgtdesc)
+    appdesc = '%s/%s' % (app, tgtdesc)
+
+    changed = False
+    for filename in os.listdir(srcdirpath):
+      # %%% Potential loophole
+      if filename.endswith('.html'): continue
+        
+      tgtpath = os.path.join(tgtdirpath, filename)
+      srcpath = os.path.join(srcdirpath, filename)
+
+      if os.path.isdir(srcpath):
+        # %%% Recursively copy
+        continue
+      elif not os.path.isfile(srcpath):
+        cfg.warn("Profile source file doesn't exist: %s" % srcpath)
+        continue
+      
+      srcfl = open(srcpath, 'r', errors='ignore')
+      srctxt = srcfl.read()
+      srcfl.close()
+
+      if wrap:
+        ind = '  '
+        # Remove this from the beginning
+        #
+        #   function runTest() {\n
+        #
+        # and this from the end.
+        #
+        #   \n  return " + respred + ";\n}\n
+        srclines = srctxt.split('\n')
+        wrappre = srclines[0]
+        wrappost = '\n'.join(srclines[-3:])
+        srclines = srclines[1:-3]
+        srctxt = '\n'.join(srclines)
+      else:
+        ind = ''
+      # Normalize the number of blank lines.
+      srctxt = ind + srctxt.strip() + "\n"
+
+      # Generate a coarse-grained transaction version. 
+      modtxt = ind + "introspect(JAM.policy.pFull) {\n" + srctxt + "\n" + ind + "}\n"
+
+      if wrap:
+        modtxt = '%s\n%s\n%s' % (wrappre, modtxt, wrappost)
+
+      if has_change(tgtpath, modtxt):
+        if load_dir(tgtdirpath):
+          write_text(tgtpath, modtxt)
+          changed = True
+        
+    if changed:
+      cfg.out('Updated %s' % appdesc)
+    else:
+      if VERBOSE:
+        cfg.out("No change from current text: %s" % appdesc)
+# /update_coarse
+
+def update_profile(apppath, app, wrap):
+
+  appkey = app.split('.', 1)[0]
+
+  if not os.path.isdir(apppath):
+    cfg.err('Unable to find application directory: %s' % apppath)
+    return 
+
+  for srcdir in os.listdir(apppath):
+    if srcdir.endswith('.profile'): continue
+    if not srcdir.startswith('source-'): continue
+    srcdirpath = os.path.join(apppath, srcdir)
+    if not os.path.isdir(srcdirpath): continue
+   
+    desc = srcdir[len('source-'):]
+    enddesc = desc.split('.')[-1]
+    if enddesc not in cfg.PROFILE_SOURCE_KEYS: continue
+      
+    tgtdirpath = srcdirpath + '.profile'
+    appdesc = '%s/%s.profile' % (app, desc)
+    changed = False
+    for filename in os.listdir(srcdirpath):
+        
+      tgtpath = os.path.join(tgtdirpath, filename)
+      srcpath = os.path.join(srcdirpath, filename)
+
+      if os.path.isdir(srcpath):
+        # %%% Recursively copy
+        continue
+      elif not os.path.isfile(srcpath):
+        cfg.warn("Profile source file doesn't exist: %s" % srcpath)
+        continue
+      srcfl = open(srcpath, 'r', errors='ignore')
+      srctxt = srcfl.read()
+      srcfl.close()
+
+      if wrap:
+        ind = '  '
+        # Remove this from the beginning
+        #
+        #   function runTest() {\n
+        #
+        # and this from the end.
+        #
+        #   \n  return " + respred + ";\n}\n
+        srclines = srctxt.split('\n')
+        wrappre = srclines[0]
+        wrappost = '\n'.join(srclines[-3:])
+        srclines = srclines[1:-3]
+        srctxt = '\n'.join(srclines)
+      else:
+        ind = ''
+      # Normalize the number of blank lines.
+      srctxt = ind + srctxt.strip() + "\n"
+
+      profdesc = desc + '.profile'
+
+      # Insert the standard "load" profile.
+      profspec = {
+        'beginafter': None,
+        'endbefore': None,
+        'indent': len(ind)
+      }
+      proftxt = insert_profile(srctxt, 'load', profspec, appdesc)
+
+      if appkey in cfg.PROFILES:
+        profspecs = cfg.PROFILES[appkey]
+        # Need a consistent iteration order.
+        profkeys = list(profspecs.keys())
+        profkeys.sort()
+        for extraprofdesc in profkeys:
+          extraprofspecs = profspecs[extraprofdesc]
+          if desc in extraprofspecs:
+            profspec = extraprofspecs[desc]
+            proftxt = insert_profile(proftxt, extraprofdesc, profspec, appdesc)
+
+      if wrap:
+        proftxt = '%s\n%s\n%s' % (wrappre, proftxt, wrappost)
+
+      if has_change(tgtpath, proftxt):
+        if load_dir(tgtdirpath):
+          write_text(tgtpath, proftxt)
+          changed = True
+        
+    if changed:
+      cfg.out('Updated %s' % appdesc)
+    else:
+      if VERBOSE:
+        cfg.out("No change from current text: %s" % appdesc)
+# /update_profile
+
+def update_expected(app, infos, apppath):
+  for appinfo in infos:
+    refsuf = cfg.get_suffix_from_info(appinfo)
+    if refsuf is None:
+      # Error printed within |get_suffix_from_info|.
+      continue
+    outfile = '%s.%s.out.js' % (app, refsuf)
+    outpath = os.path.join(apppath, outfile)
+
+    if 'out' in appinfo:
+      respath = os.path.join(appinfo['dir'], appinfo['out'])
+      resfl = open(respath, 'r')
+      res = resfl.read()
+      resfl.close()
+      
+      stat = cfg.overwrite_expected(res, outpath)
+      if stat == 'overwritten' or stat == 'created':
+        cfg.out('%s %s' % (outfile, stat))
+    else:
+      cfg.warn("Result not found: " + app)
+# /update_expected
+
+def process_results(resdir, tgtdir, bases, wrap, transfer, exp, coarse, prof, getall):
+  if not os.path.isdir(tgtdir):
+    cfg.err("Target directory not found: %s" % tgtdir)
+    return
+
+  for app in bases:
+    # %%% Special case
     if app.startswith("exfil_test"):
       w = False
     else:
       w = wrap
 
-    if app.startswith('sms2-'):
-      variants = ['', '.big']
-    else:
-      variants = ['']
+    appdir = os.path.join(tgtdir, app)
 
-    for var in variants:
-      appcur = '%s%s' % (app, var)
-      apptgtdir = os.path.join(tgtdir, appcur)
-      if not prepare_dir(apptgtdir):
-        # Error printed within |prepare_dir|.
-        continue
+    if transfer or exp:
+      assert os.path.isdir(resdir), "Results path %s doesn't exist." % resdir
+      infos = cfg.get_result_info(resdir, app, getall)
 
-      # Optionally, a result file in the target directory can contain
-      # a JavaScript expression that should evaluate to |true| (or some
-      # other value). This value will be returned by |runTest| and
-      # displayed by the JAM log.
-      if w:
-        # %%% A little unintuitive to store the expected results in the
-        # %%% destination directory.
-        respath = os.path.join(apptgtdir, app + '.result')
-        if os.path.isfile(respath):
-          resfl = open(respath, 'r')
-          respred = resfl.read()
-          resfl.close()
-          respred = respred.strip()
-          respred = respred.rstrip(";")
-        else:
-          respred = "\"RESULT NOT SPECIFIED\""
-      else:
-        respred = None
+    if transfer and infos is not None:
+      copy_files(app, infos, appdir, w)
 
-      for info in infos:
-        refsuf = cfg.get_suffix_from_info(info)
-        if refsuf is None:
-          # Error printed within |get_suffix_from_info|.
-          continue
+    if exp and infos is not None:
+      update_expected(app, infos, appdir)
 
-        srcdir = info['dir']
-        for desc, jssrc in info.items():
-          if desc == 'dir': continue
-          if desc == 'version': continue
-          if desc == 'policy': continue
-          if desc == 'modular.policy': continue
-          if desc == 'info': continue
-        
-          if desc in cfg.MODULAR_SOURCE_KEYS:
-            mod = True
-            suf = desc
-          else:
-            mod = False
-            suf = '%s.%s' % (refsuf, desc)
+    if coarse:
+      update_coarse(appdir, app, w)
 
-          changed = False
-          if isinstance(jssrc, str):
-            jspath = os.path.join(srcdir, jssrc)
-            assert os.path.isfile(jspath)
-            if copy_variants(appcur, suf, srcdir, jssrc, apptgtdir, respred, mod):
-              changed = True
-          elif isinstance(jssrc, list):
-            srcsub = os.path.join(srcdir, 'source-%s' % desc)
-            if copy_sources(appcur, suf, srcsub, jssrc, apptgtdir, respred, mod):
-              changed = True
+    if prof:
+      update_profile(appdir, app, w)
 
-          if changed:
-            cfg.out('Updated %s.%s' % (appcur, suf))
-
-        # Collect various policy variations.
-        polchanged = False
-        for desc in ['policy', 'modular.policy']:
-          if desc in info:
-            polsrc = os.path.join(srcdir, info[desc])
-            if desc == 'modular.policy':
-              # The refinement indicator isn't meaningful for the
-              # coarse-grained policy.
-              suf = 'coarse.policy'
-            else:
-              suf = '%s.%s' % (refsuf, desc)
-            if copy_policy(appcur, suf, polsrc, apptgtdir):
-              polchanged = True
-        if polchanged:
-          cfg.out('Updated policy for %s' % app)
-      
-  return True
-# /copy_files
-
-def transfer_results(srcdir, tgtdir, bases, wrap):
-  appfiles = cfg.get_results_info(srcdir, bases)
-  copy_files(appfiles, tgtdir, wrap)
-# /transfer_results
-
-def update_profile(tgtdir, app, wrap):
-  if app.startswith('sms2-') and app.endswith('.big'):
-    appkey = app[:-4]
-  else:
-    appkey = app 
-
-  # Do nothing if there are no custom profile actions specified.
-  if appkey not in cfg.PROFILES: return
-
-  appdir = os.path.join(tgtdir, app)
-
-  # Do nothing if the files haven't been previously transferred.
-  if not os.path.isdir(appdir): return 
-
-  for proffile in os.listdir(appdir):
-    if not proffile.endswith('.profile.js'): continue
-    proftgt = os.path.join(appdir, proffile)
-    profinfo = cfg.get_descriptors(proftgt)
-    desc = '.'.join(profinfo[:-1])
-      
-    # Load the non-profile source.
-    srcfile = os.path.join(appdir, app + '.' + desc + '.js')
-    if not os.path.isfile(srcfile):
-      cfg.warn("Profile source file doesn't exist: %s" % srcfile)
-      continue
-    srcfl = open(srcfile, 'r')
-    srctxt = srcfl.read()
-    srcfl.close()
-    if wrap:
-      ind = "  "
-      # Remove this from the beginning
-      #
-      #   function runTest() {\n
-      #
-      # and this from the end.
-      #
-      #   \n  return " + respred + ";\n}\n
-      srclines = srctxt.split('\n')
-      srclines = srclines[1:-2]
-      srctxt = "\n".join(srclines)
-    else:
-      ind = ""
-    # Normalize the number of blank lines.
-    srctxt = srctxt.strip() + "\n"
-
-    profdesc = desc + '.profile'
-
-    # Insert the standard "load" profile.
-    profspec = {
-      'beginafter': None,
-      'endbefore': None,
-      'indent': len(ind)
-    }
-    proftxt = insert_profile(srctxt, 'load', profspec, app + "." + desc)
-
-    profspecs = cfg.PROFILES[appkey]
-    # Need a consistent iteration order.
-    profkeys = list(profspecs.keys())
-    profkeys.sort()
-    for extraprofdesc in profkeys:
-      extraprofspecs = profspecs[extraprofdesc]
-      if desc in extraprofspecs:
-        profspec = extraprofspecs[desc]
-        proftxt = insert_profile(proftxt, extraprofdesc, profspec, app + "." + desc)
-
-    if wrap:
-      proftxt = "function runTest() {\n" + proftxt + "\n  return " + respred + ";\n}\n"
-
-    if has_change(proftgt, proftxt):
-      write_text(proftgt, proftxt)
-      sys.stdout.write(app + "." + profdesc)
-    else:
-      if VERBOSE:
-        cfg.out("No change from current text: %s" % (app + "." + profdesc))
-# /update_profile
-
-def update_profiles(tgtdir, bases, wrap):
-  if not os.path.isdir(tgtdir):
-    cfg.err("Profile target directory not found: %s" % tgtdir)
-    return
-
-  for app in bases:
-    update_profile(tgtdir, app, wrap)
     sms2 = app.startswith("sms2-")
     if sms2:
-      update_profile(tgtdir, app + '.big', wrap)
-# /update_profiles
+      bigapp = '%s.big' % app
+      bigappdir = os.path.join(tgtdir, bigapp)
 
-def update_expected(bases):
-  appfiles = cfg.get_results_info(cfg.RESULTSDIR, bases)
-  dirs = [cfg.MICROBENCHMARK_DIR, cfg.BENCHMARK_DIR]
+      if transfer and infos is not None:
+        copy_files(bigapp, infos, bigappdir, w)
 
-  # %%% Use get_variant_bases here?
-  for from_dir in dirs:
-    paths = cfg.load_sources(from_dir, '.js', '.out.js')
-    
-    for flpath in paths:
-      base = cfg.get_base(flpath)
-      if base not in bases: continue
+      if exp and infos is not None:
+        update_expected(bigapp, infos, bigappdir)
 
-      # Some benchmarks have a modified version with a "-bad"
-      # or "-ok" suffix. These can use the same policy as
-      # the non-modified version.
-      policies = cfg.load_policies(from_dir, base, defwarn=False) 
-          
-      # Run with each policy file separately.
-      for poldesc in policies:
-        # Differentiate the output if policy indexed by a non-numeric key.
-        # For example, the policy file jsqrcode.call.policy will be
-        # indexed by "call", and the output will be stored separately from
-        # the analysis using jsqrcode.get.policy. Alter the .out filename
-        # accordingly.
-        if poldesc != '':
-          exppre = '.' + poldesc
-        else:
-          exppre = ''
-        outbase = base + exppre
-        
-        for appinfo in appfiles[outbase]:
-          refsuf = cfg.get_suffix_from_info(exppre, appinfo)
-          if refsuf is None:
-            # Error printed within |get_suffix_from_info|.
-            continue
+      if coarse:
+        update_coarse(bigappdir, bigapp, w)
 
-          outsuf = '%s.%s.out.js' % (exppre, refsuf)
+      if prof:
+        update_profile(bigappdir, bigapp, w)
 
-          if 'full' in appinfo:
-            outpath = os.path.join(appinfo['dir'], appinfo['full'])
-            outfl = open(outpath, 'r')
-            outp = outfl.read()
-            outfl.close()
-            
-            exppath = cfg.get_exp_path(flpath, outsuf)
-            stat = cfg.overwrite_expected(outp, exppath)
-            if stat == 'overwritten' or stat == 'created':
-              expname = os.path.basename(exppath)
-              cfg.out('%s %s' % (expname, stat))
-          else:
-            cfg.warn("Output not found: " + base)
-# /update_expected
+# /process_results
 
 def main():
-  parser = OptionParser(usage="%prog transferconfig.py")
+  parser = OptionParser(usage="%prog")
   parser.add_option('-f', '--overwrite', action='store_true', default=False, dest='overwrite', help='overwrite existing files')
   parser.add_option('-v', '--verbose', action='store_true', default=False, dest='verbose', help='generate verbose output')
-  parser.add_option('-a', '--app', action='store', default=None, dest='app', help='limit transfer to the given app')
-  parser.add_option('-u', '--updateprof', action='store_true', default=False, dest='updateprof', help='just update previously-transferred profile sources')
-  parser.add_option('-e', '--updateexp', action='store_true', default=False, dest='updateexp', help='just update expected results')
-  parser.add_option('-t', '--nodifftime', action='store_true', default=False, dest='nodifftime', help='update even if source file timestamp is older')
+  parser.add_option('-a', '--app', action='store', default=None, dest='app', help='limit to the given app')
+  parser.add_option('-r', '--updatecoarse', action='store_true', default=False, dest='updatecoarse', help='update coarse sources')
+  parser.add_option('-u', '--updateprof', action='store_true', default=False, dest='updateprof', help='update profile sources')
+  parser.add_option('-e', '--updateexp', action='store_true', default=False, dest='updateexp', help='update expected results')
+  parser.add_option('-t', '--transfer', action='store_true', default=False, dest='transfer', help='transfer results')
+  parser.add_option('-l', '--loadall', action='store_true', default=False, dest='loadall', help='load all results, not just the latest')
+  parser.add_option('-T', '--nodifftime', action='store_true', default=False, dest='nodifftime', help='update even if source file timestamp is older')
   parser.add_option('-c', '--config', action='store', default=os.path.join(os.path.dirname(__file__), 'transferconfig.py'), dest='config', help='configuration.py file')
 
   opts, args = parser.parse_args()
@@ -616,24 +703,21 @@ def main():
   global cfg
   cfg = imp.load_source("cfg", opts.config)
 
-  assert os.path.isdir(cfg.RESULTSDIR), "Source path %s doesn't exist." % cfg.RESULTSDIR
-
   global OVERWRITE, VERBOSE, COMPARE_TIME
   OVERWRITE = opts.overwrite
   VERBOSE = opts.verbose
   COMPARE_TIME = not opts.nodifftime
 
-  for destdir, props in cfg.TARGETDIRS.items():
+  tgtkeys = list(cfg.TARGETDIRS.keys())
+  tgtkeys.sort()
+  for destdir in tgtkeys:
+    props = cfg.TARGETDIRS[destdir]
     wrap = props['wrap']
     bases = props['basenames']
     if opts.app is not None:
       bases = [base for base in bases if fnmatch.fnmatch(base, opts.app)]
-    if opts.updateprof:
-      update_profiles(destdir, bases, wrap)
-    elif opts.updateexp:
-      update_expected(bases)
-    else:
-      transfer_results(cfg.RESULTSDIR, destdir, bases, wrap)
+    resdir = cfg.RESULTSDIR
+    process_results(resdir, destdir, bases, wrap, opts.transfer, opts.updateexp, opts.updatecoarse, opts.updateprof, opts.loadall)
 
 if __name__ == "__main__":
   main()

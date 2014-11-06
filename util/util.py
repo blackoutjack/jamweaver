@@ -294,7 +294,7 @@ def get_info_path(errp):
       infopath = line[endpos:].strip()
   return infopath
 
-def get_result_info(resdir, app):
+def get_result_info(resdir, app, getall=False):
   # Assumes that directories within |resdir| are of the form "app-iter",
   # where "iter" is a label to separate the results of multiple analyses
   # for one application. Only the most recent result for each app is
@@ -309,56 +309,57 @@ def get_result_info(resdir, app):
   infos = []
   appresults = resultdirs[app]
   if len(appresults) > 0:
-    # %%% I want to get the latest results for each precision
-    # %%% configuration, but at present, can't see a way to do that
-    # %%% without lots of file opening and scanning.
-    dirinfo = appresults[-1]
-    # Each element of |appresults| is a triple of directory information
-    # consisting of application, results version, and directory name.
-    # Just extract the last one.
-    dirpath = os.path.join(resdir, dirinfo['dir'])
-    if not os.path.isdir(dirpath):
-      warn("Non-directory encountered in results: %s" % dirpath)
-      return None
+    # By default, only collect the latest version.
+    if not getall:
+      appresults = appresults[-1:]
 
-    appinfo = {}
-    version = dirinfo['version']
-    appinfo['version'] = version
+    for dirinfo in appresults: 
+      # Each element of |appresults| is a triple of directory information
+      # consisting of application, results version, and directory name.
+      # Just extract the last one.
+      dirpath = os.path.join(resdir, dirinfo['dir'])
+      if not os.path.isdir(dirpath):
+        warn("Non-directory encountered in results: %s" % dirpath)
+        return None
 
-    appinfo['dir'] = dirpath
+      appinfo = {}
+      version = dirinfo['version']
+      appinfo['version'] = version
 
-    polfile = 'policy.js'
-    polpath = os.path.join(dirpath, polfile)
-    if os.path.isfile(polpath):
-      # Log the relative path.
-      appinfo['policy'] = polfile
-    modpolfile = 'modular.policy.js'
-    modpolpath = os.path.join(dirpath, modpolfile)
-    if os.path.isfile(modpolpath):
-      appinfo['modular.policy'] = modpolfile
+      appinfo['dir'] = dirpath
 
-    fullfile = '%s.js' % app
-    fullpath = os.path.join(dirpath, fullfile)
-    if os.path.isfile(fullpath):
-      appinfo['full'] = fullfile
-    else:
-      warn('Unable to locate full script file: %s' % fullfile)
+      polfile = 'policy.js'
+      polpath = os.path.join(dirpath, polfile)
+      if os.path.isfile(polpath):
+        # Log the relative path.
+        appinfo['policy'] = polfile
+      modpolfile = 'modular.policy.js'
+      modpolpath = os.path.join(dirpath, modpolfile)
+      if os.path.isfile(modpolpath):
+        appinfo['modular.policy'] = modpolfile
 
-    for key in SOURCE_KEYS:
-      keydir = 'source-%s' % key
-      keypath = os.path.join(dirpath, keydir)
-      if os.path.isdir(keypath):
-        jslist = []
-        find_files_recursive(keypath, '', jslist)
-        appinfo[key] = jslist
+      fullfile = '%s.js' % app
+      fullpath = os.path.join(dirpath, fullfile)
+      if os.path.isfile(fullpath):
+        appinfo['out'] = fullfile
+      else:
+        warn('Unable to locate output script file: %s' % fullfile)
 
-    # Parse the run's information file into a dictionary.
-    infofile = 'info.txt'
-    infopath = os.path.join(dirpath, infofile)
-    if os.path.exists(infopath):
-      appinfo['info'] = infofile
+      for key in RESULT_SOURCE_KEYS:
+        keydir = 'source-%s' % key
+        keypath = os.path.join(dirpath, keydir)
+        if os.path.isdir(keypath):
+          jslist = []
+          find_files_recursive(keypath, '', jslist)
+          appinfo[key] = jslist
 
-    infos.append(appinfo)
+      # Parse the run's information file into a dictionary.
+      infofile = 'info.txt'
+      infopath = os.path.join(dirpath, infofile)
+      if os.path.exists(infopath):
+        appinfo['info'] = infofile
+
+      infos.append(appinfo)
 
   return infos
 # /get_result_info
@@ -692,12 +693,18 @@ def get_ext(filepath):
 # Get the internal dot-separated components of the filepath.
 # E.g. "path/app.jam.more.extra.js" => ['jam', 'more', 'extra'].
 def get_descriptors(filepath):
-  filename = os.path.basename(filepath)
-  fileparts = filename.split('.')
-  desc = []
-  if len(fileparts) > 2:
-    for i in range(1, len(fileparts) - 1):
-      desc.append(fileparts[i])
+  dirpath, filename = os.path.split(filepath)
+  dirname = os.path.basename(dirpath)
+
+  if dirname.startswith('source-'):
+    descname = dirname[len('source-'):]
+    desc = descname.split('.')
+  else:
+    desc = []
+    fileparts = filename.split('.')
+    if len(fileparts) > 2:
+      for i in range(1, len(fileparts) - 1):
+        desc.append(fileparts[i])
   return desc
 
 # Get the first dot-separated component of a filename or filepath.

@@ -3,22 +3,13 @@ import sys
 import string
 
 from config import *
-from util import get_base
-from util import load_sources
-from util import load_policies
-from util import load_seeds
 from util import err
 from util import out
 from util import warn
-from util import sort_dirs
-from util import get_results_info
-from util import get_exp_path
+from util import get_result_info
 from util import get_suffix_from_info
 from util import get_variant_bases
-from util import get_descriptors
 from util import overwrite_expected
-from util import parse_info_file
-from util import validate_output
 from util import symlink
 
 microbases = get_variant_bases(MICROBENCHMARK_DIR)
@@ -116,19 +107,19 @@ imageloaderOriginalSpec = {
 }
 jsqrcodeClosureSpec = {
   'beginafter': 'image$$7.onload = function() {',
-  'endbefore': 'if(qrcode.callback != null)',
+  'endbefore': 'if (qrcode.callback != null)',
   'matchall': True,
   'indent': 6
 }
 jsqrcodeProcessedSpec = {
   'beginafter': 'function v144() {',
-  'endbefore': ['if(v239) {', 'if(v242) {'],
+  'endbefore': ['if (v239) {', 'if (v242) {'],
   'matchall': False,
   'indent': 4
 }
 jsqrcodeCollapsedSpec = {
   'beginafter': 'function v144() {',
-  'endbefore': 'if(qrcode.callback != null) {',
+  'endbefore': 'if (qrcode.callback != null) {',
   'matchall': True,
   'indent': 4
 }
@@ -159,7 +150,7 @@ snoteClosureEditSpec = {
 }
 snoteProcessedEditSpec = {
   'beginafter': 'function handleEditDialogOk() {',
-  'endbefore': '    return\n  }\n  function handleEditDialogCancel() {',
+  'endbefore': '    return;\n  }\n  function handleEditDialogCancel() {',
   'matchall': False,
   'indent': 4
 }
@@ -184,7 +175,7 @@ snoteClosureReadSpec = {
 }
 snoteProcessedReadSpec = {
   'beginafter': 'function handleUnlockDialogOk() {',
-  'endbefore': '    return\n  }\n  function handleUnlockDialogCancel() {',
+  'endbefore': '    return;\n  }\n  function handleUnlockDialogCancel() {',
   'matchall': False,
   'indent': 4
 }
@@ -210,7 +201,7 @@ mwwidgetsClosureEditSpec = {
 }
 mwwidgetsProcessedEditSpec = {
   'beginafter': 'function createEditDialogOkHandler(strServerPath$$5, strNoteId$$43) {\n    function v8() {',
-  'endbefore': '    }\n    return v8\n',
+  'endbefore': '    }\n    return v8;\n',
   'matchall': False,
   'indent': 6
 }
@@ -235,7 +226,7 @@ mwwidgetsClosureReadSpec = {
 }
 mwwidgetsProcessedReadSpec = {
   'beginafter': 'function createUnlockDialogOkHandler(strNoteId$$40) {\n    function v5() {',
-  'endbefore': '      return\n    }\n    return v5\n',
+  'endbefore': '      return;\n    }\n    return v5;\n',
   'matchall': False,
   'indent': 6
 }
@@ -255,13 +246,13 @@ phylojiveOriginalSetupSpec = {
 }
 phylojiveCollapsedSetupSpec = {
   'beginafter': 'function init() {',
-  'endafter': '  "raw valleybottom":[13.6]}}});',
+  'endafter': '"raw valleybottom":[13.6]}}});',
   'matchall': False,
   'indent': 2
 }
 phylojiveClosureSetupSpec = {
   'beginafter': 'function init() {',
-  'endafter': '  "raw valleybottom":[13.6]}}})',
+  'endafter': '"raw valleybottom":[13.6]}}})',
   'matchall': False,
   'indent': 2
 }
@@ -287,7 +278,7 @@ googiespellOriginalSubmitSpec = {
 }
 googiespellProcessedSubmitSpec = {
   'beginafter': 'function v182(ignore) {',
-  'endbefore': '  return\n}\nfunction v181(text',
+  'endbefore': '  return;\n}\nfunction v181(text',
   'matchall': False,
   'indent': 6
 }
@@ -313,13 +304,13 @@ googiespellOriginalParseSpec = {
 }
 googiespellProcessedParseSpec = {
   'beginafter': 'function v183(r_text$$1) {',
-  'endbefore': '  return results\n}\nfunction v182(ignore) {',
+  'endbefore': '  return results;\n}\nfunction v182(ignore) {',
   'matchall': False,
   'indent': 2
 }
 googiespellClosureParseSpec = {
   'beginafter': 'GoogieSpell.prototype.parseResult = function(r_text$$1) {',
-  'endbefore': '  return results\n};\nGoogieSpell.prototype.errorFixed = function() {',
+  'endbefore': '  return results;\n};\nGoogieSpell.prototype.errorFixed = function() {',
   'matchall': False,
   'indent': 2
 }
@@ -338,7 +329,7 @@ sms2codonplotOriginalSpec = {
 }
 sms2codonplotProcessedSpec = {
   'beginafter': 'function codonPlot(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeCodonPlot(',
+  'endbefore': '  return true;\n}\nfunction writeCodonPlot(',
   'matchall': False,
   'indent': 2
 }
@@ -358,7 +349,7 @@ sms2codonusageOriginalSpec = {
 }
 sms2codonusageProcessedSpec = {
   'beginafter': 'function codonUsage(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeCodonTable(',
+  'endbefore': '  return true;\n}\nfunction writeCodonTable(',
   'matchall': False,
   'indent': 2
 }
@@ -378,7 +369,7 @@ sms2cpgislandsOriginalSpec = {
 }
 sms2cpgislandsProcessedSpec = {
   'beginafter': 'function cpgIslands(theDocument) {',
-  'endbefore': '  return true\n}\nfunction cpgIslandRegions(',
+  'endbefore': '  return true;\n}\nfunction cpgIslandRegions(',
   'matchall': False,
   'indent': 2
 }
@@ -398,7 +389,7 @@ sms2dnamwOriginalSpec = {
 }
 sms2dnamwProcessedSpec = {
   'beginafter': 'function dnaMw(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeDnaMw(',
+  'endbefore': '  return true;\n}\nfunction writeDnaMw(',
   'matchall': False,
   'indent': 2
 }
@@ -418,7 +409,7 @@ sms2dnapatternOriginalSpec = {
 }
 sms2dnapatternProcessedSpec = {
   'beginafter': 'function dnaPattern(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeDnaPattern(',
+  'endbefore': '  return true;\n}\nfunction writeDnaPattern(',
   'matchall': False,
   'indent': 2
 }
@@ -438,7 +429,7 @@ sms2dnastatsOriginalSpec = {
 }
 sms2dnastatsClosureSpec = {
   'beginafter': 'function dnaStats(theDocument) {',
-  'endbefore': '  return true\n}\ndocument.onload = ',
+  'endbefore': '  return true;\n}\ndocument.onload = ',
   'matchall': False,
   'indent': 2
 }
@@ -464,7 +455,7 @@ sms2fuzzysearchdnaOriginalSpec = {
 }
 sms2fuzzysearchdnaProcessedSpec = {
   'beginafter': 'function fuzzySearchDna(theDocument) {',
-  'endbefore': '  return true\n}\nfunction _fuzzySearchDna(',
+  'endbefore': '  return true;\n}\nfunction _fuzzySearchDna(',
   'matchall': False,
   'indent': 2
 }
@@ -484,7 +475,7 @@ sms2fuzzysearchproteinOriginalSpec = {
 }
 sms2fuzzysearchproteinProcessedSpec = {
   'beginafter': 'function fuzzySearchProtein(theDocument) {',
-  'endbefore': '  return true\n}\nfunction _fuzzySearchProtein(',
+  'endbefore': '  return true;\n}\nfunction _fuzzySearchProtein(',
   'matchall': False,
   'indent': 2
 }
@@ -504,7 +495,7 @@ sms2identsimOriginalSpec = {
 }
 sms2identsimProcessedSpec = {
   'beginafter': 'function identSim(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeIdentAndSim(',
+  'endbefore': '  return true;\n}\nfunction writeIdentAndSim(',
   'matchall': False,
   'indent': 2
 }
@@ -524,7 +515,7 @@ sms2multirevtransOriginalSpec = {
 }
 sms2multirevtransProcessedSpec = {
   'beginafter': 'function multiRevTrans(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeConsensusSeq(',
+  'endbefore': '  return true;\n}\nfunction writeConsensusSeq(',
   'matchall': False,
   'indent': 2
 }
@@ -544,7 +535,7 @@ sms2mutatefordigestOriginalSpec = {
 }
 sms2mutatefordigestProcessedSpec = {
   'beginafter': 'function mutateForDigest(theDocument) {',
-  'endbefore': '  return true\n}\nfunction layoutRestTrans(',
+  'endbefore': '  return true;\n}\nfunction layoutRestTrans(',
   'matchall': False,
   'indent': 2
 }
@@ -564,7 +555,7 @@ sms2orffindOriginalSpec = {
 }
 sms2orffindProcessedSpec = {
   'beginafter': 'function orfFind(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeOrfs(',
+  'endbefore': '  return true;\n}\nfunction writeOrfs(',
   'matchall': False,
   'indent': 2
 }
@@ -584,7 +575,7 @@ sms2pairwisealigncodonsOriginalSpec = {
 }
 sms2pairwisealigncodonsProcessedSpec = {
   'beginafter': 'function pairwiseAlignCodons(theDocument) {',
-  'endbefore': '  return true\n}\nfunction pairwiseCodon(',
+  'endbefore': '  return true;\n}\nfunction pairwiseCodon(',
   'matchall': False,
   'indent': 2
 }
@@ -604,7 +595,7 @@ sms2pairwisealigndnaOriginalSpec = {
 }
 sms2pairwisealigndnaProcessedSpec = {
   'beginafter': 'function pairwiseAlignDna(theDocument) {',
-  'endbefore': '  return true\n}\nfunction pairwiseDna(',
+  'endbefore': '  return true;\n}\nfunction pairwiseDna(',
   'matchall': False,
   'indent': 2
 }
@@ -624,7 +615,7 @@ sms2pairwisealignproteinOriginalSpec = {
 }
 sms2pairwisealignproteinProcessedSpec = {
   'beginafter': 'function pairwiseAlignProtein(theDocument) {',
-  'endbefore': '  return true\n}\nfunction pairwiseProtein(',
+  'endbefore': '  return true;\n}\nfunction pairwiseProtein(',
   'matchall': False,
   'indent': 2
 }
@@ -644,7 +635,7 @@ sms2pcrprimerstatsOriginalSpec = {
 }
 sms2pcrprimerstatsProcessedSpec = {
   'beginafter': 'function pcrPrimerStats(theDocument) {',
-  'endbefore': '  return true\n}\nfunction _removeNonPrimer(',
+  'endbefore': '  return true;\n}\nfunction _removeNonPrimer(',
   'matchall': False,
   'indent': 2
 }
@@ -664,7 +655,7 @@ sms2pcrproductsOriginalSpec = {
 }
 sms2pcrproductsProcessedSpec = {
   'beginafter': 'function pcrProducts(theDocument) {',
-  'endbefore': '  return true\n}\nfunction findMatches(',
+  'endbefore': '  return true;\n}\nfunction findMatches(',
   'matchall': False,
   'indent': 2
 }
@@ -684,7 +675,7 @@ sms2proteingravyOriginalSpec = {
 }
 sms2proteingravyProcessedSpec = {
   'beginafter': 'function proteinGravy(theDocument) {',
-  'endbefore': '  return true\n}\nfunction getProteinGravy(',
+  'endbefore': '  return true;\n}\nfunction getProteinGravy(',
   'matchall': False,
   'indent': 2
 }
@@ -704,7 +695,7 @@ sms2proteiniepOriginalSpec = {
 }
 sms2proteiniepProcessedSpec = {
   'beginafter': 'function proteinIep(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeProtIep(',
+  'endbefore': '  return true;\n}\nfunction writeProtIep(',
   'matchall': False,
   'indent': 2
 }
@@ -724,7 +715,7 @@ sms2proteinmwOriginalSpec = {
 }
 sms2proteinmwProcessedSpec = {
   'beginafter': 'function proteinMw(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeProtMw(',
+  'endbefore': '  return true;\n}\nfunction writeProtMw(',
   'matchall': False,
   'indent': 2
 }
@@ -744,7 +735,7 @@ sms2proteinpatternOriginalSpec = {
 }
 sms2proteinpatternProcessedSpec = {
   'beginafter': 'function proteinPattern(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeProteinPattern(',
+  'endbefore': '  return true;\n}\nfunction writeProteinPattern(',
   'matchall': False,
   'indent': 2
 }
@@ -770,7 +761,7 @@ sms2proteinstatsProcessedSpec = {
 }
 sms2proteinstatsClosureSpec = {
   'beginafter': 'function proteinStats(theDocument) {',
-  'endbefore': '  return true\n}\ndocument.onload = function() {',
+  'endbefore': '  return true;\n}\ndocument.onload = function() {',
   'matchall': False,
   'indent': 2
 }
@@ -790,7 +781,7 @@ sms2restdigestOriginalSpec = {
 }
 sms2restdigestProcessedSpec = {
   'beginafter': 'function restDigest(theDocument) {',
-  'endbefore': '  return true\n}\nfunction digest(',
+  'endbefore': '  return true;\n}\nfunction digest(',
   'matchall': False,
   'indent': 2
 }
@@ -816,7 +807,7 @@ sms2restsummaryProcessedSpec = {
 }
 sms2restsummaryClosureSpec = {
   'beginafter': 'function restSummary(theDocument) {',
-  'endbefore': '  return true\n}\ndocument.onload = function() {',
+  'endbefore': '  return true;\n}\ndocument.onload = function() {',
   'matchall': False,
   'indent': 2
 }
@@ -836,7 +827,7 @@ sms2revtransOriginalSpec = {
 }
 sms2revtransProcessedSpec = {
   'beginafter': 'function revTrans(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeRevTransSeqNoDegen(',
+  'endbefore': '  return true;\n}\nfunction writeRevTransSeqNoDegen(',
   'matchall': False,
   'indent': 2
 }
@@ -856,7 +847,7 @@ sms2translateOriginalSpec = {
 }
 sms2translateProcessedSpec = {
   'beginafter': 'function translate(theDocument$$1) {',
-  'endbefore': '  return true\n}\nfunction writeTranslation(',
+  'endbefore': '  return true;\n}\nfunction writeTranslation(',
   'matchall': False,
   'indent': 2
 }
@@ -876,7 +867,7 @@ sms2coloralignconsOriginalSpec = {
 }
 sms2coloralignconsProcessedSpec = {
   'beginafter': 'function colorAlignCons(theDocument) {',
-  'endbefore': '  return true\n}\nfunction colorAlign(',
+  'endbefore': '  return true;\n}\nfunction colorAlign(',
   'matchall': False,
   'indent': 2
 }
@@ -896,7 +887,7 @@ sms2coloralignpropOriginalSpec = {
 }
 sms2coloralignpropProcessedSpec = {
   'beginafter': 'function colorAlignProp(theDocument) {',
-  'endbefore': '  return true\n}\nfunction colorAlign(',
+  'endbefore': '  return true;\n}\nfunction colorAlign(',
   'matchall': False,
   'indent': 2
 }
@@ -916,7 +907,7 @@ sms2combinefastaOriginalSpec = {
 }
 sms2combinefastaClosureSpec = {
   'beginafter': 'function combineFasta(theDocument) {',
-  'endbefore': '  return true\n}\ndocument.onload = function() {\n',
+  'endbefore': '  return true;\n}\ndocument.onload = function() {\n',
   'matchall': False,
   'indent': 2
 },
@@ -942,7 +933,7 @@ sms2emblfastaOriginalSpec = {
 }
 sms2emblfastaProcessedSpec = {
   'beginafter': 'function emblFasta(theDocument) {',
-  'endbefore': '  return true\n}\nfunction emblToFasta(',
+  'endbefore': '  return true;\n}\nfunction emblToFasta(',
   'matchall': False,
   'indent': 2
 }
@@ -962,7 +953,7 @@ sms2emblfeatOriginalSpec = {
 }
 sms2emblfeatProcessedSpec = {
   'beginafter': 'function emblFeat(theDocument) {',
-  'endbefore': '  return true\n}\nfunction emblFeatExtract(',
+  'endbefore': '  return true;\n}\nfunction emblFeatExtract(',
   'matchall': False,
   'indent': 2
 }
@@ -982,7 +973,7 @@ sms2embltransOriginalSpec = {
 }
 sms2embltransProcessedSpec = {
   'beginafter': 'function emblTrans(theDocument) {',
-  'endbefore': '  return true\n}\nfunction emblTransExtract(',
+  'endbefore': '  return true;\n}\nfunction emblTransExtract(',
   'matchall': False,
   'indent': 2
 }
@@ -1002,7 +993,7 @@ sms2filterdnaOriginalSpec = {
 }
 sms2filterdnaClosureSpec = {
   'beginafter': 'function filterDna(theDocument) {',
-  'endbefore': '  return true\n}\ndocument.onload = function() {\n',
+  'endbefore': '  return true;\n}\ndocument.onload = function() {\n',
   'matchall': False,
   'indent': 2
 }
@@ -1028,7 +1019,7 @@ sms2filterproteinOriginalSpec = {
 }
 sms2filterproteinClosureSpec = {
   'beginafter': 'function filterProtein(theDocument) {',
-  'endbefore': '  return true\n}\ndocument.onload = function() {\n',
+  'endbefore': '  return true;\n}\ndocument.onload = function() {\n',
   'matchall': False,
   'indent': 2
 }
@@ -1054,7 +1045,7 @@ sms2genbankfastaOriginalSpec = {
 }
 sms2genbankfastaProcessedSpec = {
   'beginafter': 'function genbankFasta(theDocument) {',
-  'endbefore': '  return true\n}\nfunction genbankToFasta(',
+  'endbefore': '  return true;\n}\nfunction genbankToFasta(',
   'matchall': False,
   'indent': 2
 }
@@ -1074,7 +1065,7 @@ sms2genbankfeatOriginalSpec = {
 }
 sms2genbankfeatProcessedSpec = {
   'beginafter': 'function genbankFeat(theDocument) {',
-  'endbefore': '  return true\n}\nfunction genBankFeatExtract(',
+  'endbefore': '  return true;\n}\nfunction genBankFeatExtract(',
   'matchall': False,
   'indent': 2
 }
@@ -1094,7 +1085,7 @@ sms2genbanktransOriginalSpec = {
 }
 sms2genbanktransProcessedSpec = {
   'beginafter': 'function genbankTrans(theDocument) {',
-  'endbefore': '  return true\n}\nfunction genBankTransExtract(',
+  'endbefore': '  return true;\n}\nfunction genBankTransExtract(',
   'matchall': False,
   'indent': 2
 }
@@ -1114,7 +1105,7 @@ sms2groupdnaOriginalSpec = {
 }
 sms2groupdnaClosureSpec = {
   'beginafter': 'function groupDna(theDocument) {',
-  'endbefore': '  return true\n}\ndocument.onload = function() {\n',
+  'endbefore': '  return true;\n}\ndocument.onload = function() {\n',
   'matchall': False,
   'indent': 2
 }
@@ -1140,7 +1131,7 @@ sms2groupproteinOriginalSpec = {
 }
 sms2groupproteinClosureSpec = {
   'beginafter': 'function groupProtein(theDocument) {',
-  'endbefore': '  return true\n}\ndocument.onload = function() {\n',
+  'endbefore': '  return true;\n}\ndocument.onload = function() {\n',
   'matchall': False,
   'indent': 2
 }
@@ -1166,7 +1157,7 @@ sms2onetothreeOriginalSpec = {
 }
 sms2onetothreeProcessedSpec = {
   'beginafter': 'function oneToThree(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeOneToThree(',
+  'endbefore': '  return true;\n}\nfunction writeOneToThree(',
   'matchall': False,
   'indent': 2
 }
@@ -1186,7 +1177,7 @@ sms2primermapOriginalSpec = {
 }
 sms2primermapProcessedSpec = {
   'beginafter': 'function primerMap(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writePrimerSites(',
+  'endbefore': '  return true;\n}\nfunction writePrimerSites(',
   'matchall': False,
   'indent': 2
 }
@@ -1206,7 +1197,7 @@ sms2rangeextractdnaOriginalSpec = {
 }
 sms2rangeextractdnaProcessedSpec = {
   'beginafter': 'function rangeExtract(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeSequenceRanges(',
+  'endbefore': '  return true;\n}\nfunction writeSequenceRanges(',
   'matchall': False,
   'indent': 2
 }
@@ -1226,7 +1217,7 @@ sms2rangeextractproteinOriginalSpec = {
 }
 sms2rangeextractproteinProcessedSpec = {
   'beginafter': 'function rangeExtract(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeSequenceRanges(',
+  'endbefore': '  return true;\n}\nfunction writeSequenceRanges(',
   'matchall': False,
   'indent': 2
 }
@@ -1246,7 +1237,7 @@ sms2restmapOriginalSpec = {
 }
 sms2restmapProcessedSpec = {
   'beginafter': 'function restMap(theDocument) {',
-  'endbefore': '  return true\n}\nfunction layoutRestTrans(',
+  'endbefore': '  return true;\n}\nfunction layoutRestTrans(',
   'matchall': False,
   'indent': 2
 }
@@ -1266,7 +1257,7 @@ sms2revcompOriginalSpec = {
 }
 sms2revcompClosureSpec = {
   'beginafter': 'function revComp(theDocument) {',
-  'endbefore': '  return true\n}\ndocument.onload = function() {\n',
+  'endbefore': '  return true;\n}\ndocument.onload = function() {\n',
   'matchall': False,
   'indent': 2
 }
@@ -1292,7 +1283,7 @@ sms2splitcodonsOriginalSpec = {
 }
 sms2splitcodonsProcessedSpec = {
   'beginafter': 'function splitCodons(theDocument) {',
-  'endbefore': '  return true\n}\nfunction getBasesBasedOnCodonPosition(',
+  'endbefore': '  return true;\n}\nfunction getBasesBasedOnCodonPosition(',
   'matchall': False,
   'indent': 2
 }
@@ -1312,7 +1303,7 @@ sms2splitfastaOriginalSpec = {
 }
 sms2splitfastaClosureSpec = {
   'beginafter': 'function splitFasta(theDocument) {',
-  'endbefore': '  return true\n}\ndocument.onload = function() {\n',
+  'endbefore': '  return true;\n}\ndocument.onload = function() {\n',
   'matchall': False,
   'indent': 2
 }
@@ -1338,7 +1329,7 @@ sms2threetooneOriginalSpec = {
 }
 sms2threetooneProcessedSpec = {
   'beginafter': 'function threeToOne(theDocument) {',
-  'endbefore': '  return true\n}\nfunction writeThreeToOne(',
+  'endbefore': '  return true;\n}\nfunction writeThreeToOne(',
   'matchall': False,
   'indent': 2
 }
@@ -1358,7 +1349,7 @@ sms2transmapOriginalSpec = {
 }
 sms2transmapProcessedSpec = {
   'beginafter': 'function transMap(theDocument) {',
-  'endbefore': '  return true\n}\nfunction layoutTranslation(',
+  'endbefore': '  return true;\n}\nfunction layoutTranslation(',
   'matchall': False,
   'indent': 2
 }
@@ -1378,7 +1369,7 @@ sms2windowextractdnaOriginalSpec = {
 }
 sms2windowextractdnaProcessedSpec = {
   'beginafter': 'function windowExtract(theDocument) {',
-  'endbefore': '  return true\n}\nfunction rangeExtract(',
+  'endbefore': '  return true;\n}\nfunction rangeExtract(',
   'matchall': False,
   'indent': 2
 }
@@ -1398,7 +1389,7 @@ sms2windowextractproteinOriginalSpec = {
 }
 sms2windowextractproteinProcessedSpec = {
   'beginafter': 'function windowExtract(theDocument) {',
-  'endbefore': '  return true\n}\nfunction rangeExtract(',
+  'endbefore': '  return true;\n}\nfunction rangeExtract(',
   'matchall': False,
   'indent': 2
 }
@@ -1412,20 +1403,20 @@ sms2windowextractproteinOptimizedSpec = {
 
 def appStd(appname, action='', closure='Processed', collapsed='Processed'):
   return {
-    'unprotected.original': globals()[appname + 'Original' + action + 'Spec'],
-    'coarse.original': globals()[appname + 'Original' + action + 'Spec'],
+    'input': globals()[appname + 'Original' + action + 'Spec'],
+    'coarse.input': globals()[appname + 'Original' + action + 'Spec'],
     'unprotected.closure': globals()[appname + closure + action + 'Spec'],
     'coarse.closure': globals()[appname + closure + action + 'Spec'],
-    'unprotected.preprocessed': globals()[appname + 'Processed' + action + 'Spec'],
-    'coarse.preprocessed': globals()[appname + 'Processed' + action + 'Spec'],
-    'refine0.instrumented': globals()[appname + 'Processed' + action + 'Spec'],
-    'refine0.indirection': globals()[appname + 'Processed' + action + 'Spec'],
-    'refine0.collapsed': globals()[appname + collapsed + action + 'Spec'],
-    'refine0.optimized': globals()[appname + 'Optimized' + action + 'Spec'],
-    'refine3.instrumented': globals()[appname + 'Processed' + action + 'Spec'],
-    'refine3.indirection': globals()[appname + 'Processed' + action + 'Spec'],
-    'refine3.collapsed': globals()[appname + collapsed + action + 'Spec'],
-    'refine3.optimized': globals()[appname + 'Optimized' + action + 'Spec'],
+    'unprotected.normalized': globals()[appname + 'Processed' + action + 'Spec'],
+    'coarse.normalized': globals()[appname + 'Processed' + action + 'Spec'],
+    'semantic0.instrumented': globals()[appname + 'Processed' + action + 'Spec'],
+    'semantic0.indirection': globals()[appname + 'Processed' + action + 'Spec'],
+    'semantic0.collapsed': globals()[appname + collapsed + action + 'Spec'],
+    'semantic0.optimized': globals()[appname + 'Optimized' + action + 'Spec'],
+    'semantic3.instrumented': globals()[appname + 'Processed' + action + 'Spec'],
+    'semantic3.indirection': globals()[appname + 'Processed' + action + 'Spec'],
+    'semantic3.collapsed': globals()[appname + collapsed + action + 'Spec'],
+    'semantic3.optimized': globals()[appname + 'Optimized' + action + 'Spec'],
     'syntax.instrumented': globals()[appname + 'Processed' + action + 'Spec'],
     'syntax.indirection': globals()[appname + 'Processed' + action + 'Spec'],
     'syntax.collapsed': globals()[appname + collapsed + action + 'Spec'],
@@ -1446,10 +1437,7 @@ PROFILES = {
   'imageloader': {
     'fetch': appStd('imageloader', closure='Closure'),
   },
-  'jsqrcode-get': {
-    'decode': appStd('jsqrcode', closure='Closure', collapsed='Collapsed'),
-  },
-  'jsqrcode-call': {
+  'jsqrcode': {
     'decode': appStd('jsqrcode', closure='Closure', collapsed='Collapsed'),
   },
   'snote': {
@@ -1467,157 +1455,55 @@ PROFILES = {
     'submit': appStd('googiespell', action='Submit', closure='Closure'),
     'parse': appStd('googiespell', action='Parse', closure='Closure'),
   },
-  'sms2-codon-plot-call': sms2Std('codonplot'),
-  'sms2-codon-plot-get': sms2Std('codonplot'),
-  'sms2-codon-plot-newcall': sms2Std('codonplot'),
-  'sms2-codon-usage-call': sms2Std('codonusage'),
-  'sms2-codon-usage-get': sms2Std('codonusage'),
-  'sms2-codon-usage-newcall': sms2Std('codonusage'),
-  'sms2-cpg-islands-call': sms2Std('cpgislands'),
-  'sms2-cpg-islands-get': sms2Std('cpgislands'),
-  'sms2-cpg-islands-newcall': sms2Std('cpgislands'),
-  'sms2-dna-mw-call': sms2Std('dnamw'),
-  'sms2-dna-mw-get': sms2Std('dnamw'),
-  'sms2-dna-mw-newcall': sms2Std('dnamw'),
-  'sms2-dna-pattern-call': sms2Std('dnapattern'),
-  'sms2-dna-pattern-get': sms2Std('dnapattern'),
-  'sms2-dna-pattern-newcall': sms2Std('dnapattern'),
-  'sms2-dna-stats-call': sms2Std('dnastats', closure='Closure'),
-  'sms2-dna-stats-get': sms2Std('dnastats', closure='Closure'),
-  'sms2-dna-stats-newcall': sms2Std('dnastats', closure='Closure'),
-  'sms2-fuzzy-search-dna-call': sms2Std('fuzzysearchdna'),
-  'sms2-fuzzy-search-dna-get': sms2Std('fuzzysearchdna'),
-  'sms2-fuzzy-search-dna-newcall': sms2Std('fuzzysearchdna'),
-  'sms2-fuzzy-search-protein-call': sms2Std('fuzzysearchprotein'),
-  'sms2-fuzzy-search-protein-get': sms2Std('fuzzysearchprotein'),
-  'sms2-fuzzy-search-protein-newcall': sms2Std('fuzzysearchprotein'),
-  'sms2-ident-sim-call': sms2Std('identsim'),
-  'sms2-ident-sim-get': sms2Std('identsim'),
-  'sms2-ident-sim-newcall': sms2Std('identsim'),
-  'sms2-multi-rev-trans-call': sms2Std('multirevtrans'),
-  'sms2-multi-rev-trans-get': sms2Std('multirevtrans'),
-  'sms2-multi-rev-trans-newcall': sms2Std('multirevtrans'),
-  'sms2-mutate-for-digest-call': sms2Std('mutatefordigest'),
-  'sms2-mutate-for-digest-get': sms2Std('mutatefordigest'),
-  'sms2-mutate-for-digest-newcall': sms2Std('mutatefordigest'),
-  'sms2-orf-find-call': sms2Std('orffind'),
-  'sms2-orf-find-get': sms2Std('orffind'),
-  'sms2-orf-find-newcall': sms2Std('orffind'),
-  'sms2-pairwise-align-codons-call': sms2Std('pairwisealigncodons'),
-  'sms2-pairwise-align-codons-get': sms2Std('pairwisealigncodons'),
-  'sms2-pairwise-align-codons-newcall': sms2Std('pairwisealigncodons'),
-  'sms2-pairwise-align-dna-call': sms2Std('pairwisealigndna'),
-  'sms2-pairwise-align-dna-get': sms2Std('pairwisealigndna'),
-  'sms2-pairwise-align-dna-newcall': sms2Std('pairwisealigndna'),
-  'sms2-pairwise-align-protein-call': sms2Std('pairwisealignprotein'),
-  'sms2-pairwise-align-protein-get': sms2Std('pairwisealignprotein'),
-  'sms2-pairwise-align-protein-newcall': sms2Std('pairwisealignprotein'),
-  'sms2-pcr-primer-stats-call': sms2Std('pcrprimerstats'),
-  'sms2-pcr-primer-stats-get': sms2Std('pcrprimerstats'),
-  'sms2-pcr-primer-stats-newcall': sms2Std('pcrprimerstats'),
-  'sms2-pcr-products-call': sms2Std('pcrproducts'),
-  'sms2-pcr-products-get': sms2Std('pcrproducts'),
-  'sms2-pcr-products-newcall': sms2Std('pcrproducts'),
-  'sms2-protein-gravy-call': sms2Std('proteingravy'),
-  'sms2-protein-gravy-get': sms2Std('proteingravy'),
-  'sms2-protein-gravy-newcall': sms2Std('proteingravy'),
-  'sms2-protein-iep-call': sms2Std('proteiniep'),
-  'sms2-protein-iep-get': sms2Std('proteiniep'),
-  'sms2-protein-iep-newcall': sms2Std('proteiniep'),
-  'sms2-protein-mw-call': sms2Std('proteinmw'),
-  'sms2-protein-mw-get': sms2Std('proteinmw'),
-  'sms2-protein-mw-newcall': sms2Std('proteinmw'),
-  'sms2-protein-pattern-call': sms2Std('proteinpattern'),
-  'sms2-protein-pattern-get': sms2Std('proteinpattern'),
-  'sms2-protein-pattern-newcall': sms2Std('proteinpattern'),
-  'sms2-protein-stats-call': sms2Std('proteinstats', closure='Closure'),
-  'sms2-protein-stats-get': sms2Std('proteinstats', closure='Closure'),
-  'sms2-protein-stats-newcall': sms2Std('proteinstats', closure='Closure'),
-  'sms2-rest-digest-call': sms2Std('restdigest'),
-  'sms2-rest-digest-get': sms2Std('restdigest'),
-  'sms2-rest-digest-newcall': sms2Std('restdigest'),
-  'sms2-rest-summary-call': sms2Std('restsummary', closure='Closure'),
-  'sms2-rest-summary-get': sms2Std('restsummary', closure='Closure'),
-  'sms2-rest-summary-newcall': sms2Std('restsummary', closure='Closure'),
-  'sms2-rev-trans-call': sms2Std('revtrans'),
-  'sms2-rev-trans-get': sms2Std('revtrans'),
-  'sms2-rev-trans-newcall': sms2Std('revtrans'),
-  'sms2-translate-call': sms2Std('translate'),
-  'sms2-translate-get': sms2Std('translate'),
-  'sms2-translate-newcall': sms2Std('translate'),
-  'sms2-color-align-cons-call': sms2Std('coloraligncons'),
-  'sms2-color-align-cons-get': sms2Std('coloraligncons'),
-  'sms2-color-align-cons-newcall': sms2Std('coloraligncons'),
-  'sms2-color-align-prop-call': sms2Std('coloralignprop'),
-  'sms2-color-align-prop-get': sms2Std('coloralignprop'),
-  'sms2-color-align-prop-newcall': sms2Std('coloralignprop'),
-  'sms2-combine-fasta-call': sms2Std('combinefasta', closure='Closure'),
-  'sms2-combine-fasta-get': sms2Std('combinefasta', closure='Closure'),
-  'sms2-combine-fasta-newcall': sms2Std('combinefasta', closure='Closure'),
-  'sms2-embl-fasta-call': sms2Std('emblfasta'),
-  'sms2-embl-fasta-get': sms2Std('emblfasta'),
-  'sms2-embl-fasta-newcall': sms2Std('emblfasta'),
-  'sms2-embl-feat-call': sms2Std('emblfeat'),
-  'sms2-embl-feat-get': sms2Std('emblfeat'),
-  'sms2-embl-feat-newcall': sms2Std('emblfeat'),
-  'sms2-embl-trans-call': sms2Std('embltrans'),
-  'sms2-embl-trans-get': sms2Std('embltrans'),
-  'sms2-embl-trans-newcall': sms2Std('embltrans'),
-  'sms2-filter-dna-call': sms2Std('filterdna', closure='Closure'),
-  'sms2-filter-dna-get': sms2Std('filterdna', closure='Closure'),
-  'sms2-filter-dna-newcall': sms2Std('filterdna', closure='Closure'),
-  'sms2-filter-protein-call': sms2Std('filterprotein', closure='Closure'),
-  'sms2-filter-protein-get': sms2Std('filterprotein', closure='Closure'),
-  'sms2-filter-protein-newcall': sms2Std('filterprotein', closure='Closure'),
-  'sms2-genbank-fasta-call': sms2Std('genbankfasta'),
-  'sms2-genbank-fasta-get': sms2Std('genbankfasta'),
-  'sms2-genbank-fasta-newcall': sms2Std('genbankfasta'),
-  'sms2-genbank-feat-call': sms2Std('genbankfeat'),
-  'sms2-genbank-feat-get': sms2Std('genbankfeat'),
-  'sms2-genbank-feat-newcall': sms2Std('genbankfeat'),
-  'sms2-genbank-trans-call': sms2Std('genbanktrans'),
-  'sms2-genbank-trans-get': sms2Std('genbanktrans'),
-  'sms2-genbank-trans-newcall': sms2Std('genbanktrans'),
-  'sms2-group-dna-call': sms2Std('groupdna', closure='Closure'),
-  'sms2-group-dna-get': sms2Std('groupdna', closure='Closure'),
-  'sms2-group-dna-newcall': sms2Std('groupdna', closure='Closure'),
-  'sms2-group-protein-call': sms2Std('groupprotein', closure='Closure'),
-  'sms2-group-protein-get': sms2Std('groupprotein', closure='Closure'),
-  'sms2-group-protein-newcall': sms2Std('groupprotein', closure='Closure'),
-  'sms2-one-to-three-call': sms2Std('onetothree'),
-  'sms2-one-to-three-get': sms2Std('onetothree'),
-  'sms2-one-to-three-newcall': sms2Std('onetothree'),
-  'sms2-primer-map-call': sms2Std('primermap'),
-  'sms2-primer-map-get': sms2Std('primermap'),
-  'sms2-primer-map-newcall': sms2Std('primermap'),
-  'sms2-range-extract-dna-call': sms2Std('rangeextractdna'),
-  'sms2-range-extract-dna-get': sms2Std('rangeextractdna'),
-  'sms2-range-extract-dna-newcall': sms2Std('rangeextractdna'),
-  'sms2-range-extract-protein-call': sms2Std('rangeextractprotein'),
-  'sms2-range-extract-protein-get': sms2Std('rangeextractprotein'),
-  'sms2-range-extract-protein-newcall': sms2Std('rangeextractprotein'),
-  'sms2-rest-map-call': sms2Std('restmap'),
-  'sms2-rest-map-get': sms2Std('restmap'),
-  'sms2-rest-map-newcall': sms2Std('restmap'),
-  'sms2-rev-comp-call': sms2Std('revcomp', closure='Closure'),
-  'sms2-rev-comp-get': sms2Std('revcomp', closure='Closure'),
-  'sms2-rev-comp-newcall': sms2Std('revcomp', closure='Closure'),
-  'sms2-split-codons-call': sms2Std('splitcodons'),
-  'sms2-split-codons-get': sms2Std('splitcodons'),
-  'sms2-split-codons-newcall': sms2Std('splitcodons'),
-  'sms2-split-fasta-call': sms2Std('splitfasta', closure='Closure'),
-  'sms2-split-fasta-get': sms2Std('splitfasta', closure='Closure'),
-  'sms2-split-fasta-newcall': sms2Std('splitfasta', closure='Closure'),
-  'sms2-three-to-one-call': sms2Std('threetoone'),
-  'sms2-three-to-one-get': sms2Std('threetoone'),
-  'sms2-three-to-one-newcall': sms2Std('threetoone'),
-  'sms2-trans-map-call': sms2Std('transmap'),
-  'sms2-trans-map-get': sms2Std('transmap'),
-  'sms2-trans-map-newcall': sms2Std('transmap'),
-  'sms2-window-extract-dna-call': sms2Std('windowextractdna'),
-  'sms2-window-extract-dna-get': sms2Std('windowextractdna'),
-  'sms2-window-extract-dna-newcall': sms2Std('windowextractdna'),
-  'sms2-window-extract-protein-call': sms2Std('windowextractprotein'),
-  'sms2-window-extract-protein-get': sms2Std('windowextractprotein'),
-  'sms2-window-extract-protein-newcall': sms2Std('windowextractprotein'),
+  'sms2-codon-plot': sms2Std('codonplot'),
+  'sms2-codon-usage': sms2Std('codonusage'),
+  'sms2-cpg-islands': sms2Std('cpgislands'),
+  'sms2-dna-mw': sms2Std('dnamw'),
+  'sms2-dna-pattern': sms2Std('dnapattern'),
+  'sms2-dna-stats': sms2Std('dnastats', closure='Closure'),
+  'sms2-fuzzy-search-dna': sms2Std('fuzzysearchdna'),
+  'sms2-fuzzy-search-protein': sms2Std('fuzzysearchprotein'),
+  'sms2-ident-sim': sms2Std('identsim'),
+  'sms2-multi-rev-trans': sms2Std('multirevtrans'),
+  'sms2-mutate-for-digest': sms2Std('mutatefordigest'),
+  'sms2-orf-find': sms2Std('orffind'),
+  'sms2-pairwise-align-codons': sms2Std('pairwisealigncodons'),
+  'sms2-pairwise-align-dna': sms2Std('pairwisealigndna'),
+  'sms2-pairwise-align-protein': sms2Std('pairwisealignprotein'),
+  'sms2-pcr-primer-stats': sms2Std('pcrprimerstats'),
+  'sms2-pcr-products': sms2Std('pcrproducts'),
+  'sms2-protein-gravy': sms2Std('proteingravy'),
+  'sms2-protein-iep': sms2Std('proteiniep'),
+  'sms2-protein-mw': sms2Std('proteinmw'),
+  'sms2-protein-pattern': sms2Std('proteinpattern'),
+  'sms2-protein-stats': sms2Std('proteinstats', closure='Closure'),
+  'sms2-rest-digest': sms2Std('restdigest'),
+  'sms2-rest-summary': sms2Std('restsummary', closure='Closure'),
+  'sms2-rev-trans': sms2Std('revtrans'),
+  'sms2-translate': sms2Std('translate'),
+  'sms2-color-align-cons': sms2Std('coloraligncons'),
+  'sms2-color-align-prop': sms2Std('coloralignprop'),
+  'sms2-combine-fasta': sms2Std('combinefasta', closure='Closure'),
+  'sms2-embl-fasta': sms2Std('emblfasta'),
+  'sms2-embl-feat': sms2Std('emblfeat'),
+  'sms2-embl-trans': sms2Std('embltrans'),
+  'sms2-filter-dna': sms2Std('filterdna', closure='Closure'),
+  'sms2-filter-protein': sms2Std('filterprotein', closure='Closure'),
+  'sms2-genbank-fasta': sms2Std('genbankfasta'),
+  'sms2-genbank-feat': sms2Std('genbankfeat'),
+  'sms2-genbank-trans': sms2Std('genbanktrans'),
+  'sms2-group-dna': sms2Std('groupdna', closure='Closure'),
+  'sms2-group-protein': sms2Std('groupprotein', closure='Closure'),
+  'sms2-one-to-three': sms2Std('onetothree'),
+  'sms2-primer-map': sms2Std('primermap'),
+  'sms2-range-extract-dna': sms2Std('rangeextractdna'),
+  'sms2-range-extract-protein': sms2Std('rangeextractprotein'),
+  'sms2-rest-map': sms2Std('restmap'),
+  'sms2-rev-comp': sms2Std('revcomp', closure='Closure'),
+  'sms2-split-codons': sms2Std('splitcodons'),
+  'sms2-split-fasta': sms2Std('splitfasta', closure='Closure'),
+  'sms2-three-to-one': sms2Std('threetoone'),
+  'sms2-trans-map': sms2Std('transmap'),
+  'sms2-window-extract-dna': sms2Std('windowextractdna'),
+  'sms2-window-extract-protein': sms2Std('windowextractprotein'),
 }

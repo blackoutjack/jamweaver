@@ -9,6 +9,8 @@ from util import out
 from util import warn
 from util import sort_dirs
 from util import get_variant_bases
+from util import get_lines
+from util import get_file_info
 
 # Include the "init" time in the "load" time, or report separately.
 INCLUDE_INIT = True
@@ -20,7 +22,7 @@ APPBASES = get_variant_bases(BENCHMARK_DIR)
 
 #VARIANTS = ['original', 'formtransed', 'transformed']
 #VARIANT_DISPLAY = ['unprotected', 'without indirect', 'with indirect']
-VARIANTS = ['original', 'original.modular', 'collapsed']
+VARIANTS = ['input', 'coarse.input', 'semantic0.collapsed']
 VARIANT_DISPLAY = ['unprotected', 'coarse-grained', 'fine-grained']
 RESULTS_SOURCE = os.path.join(PERFDIR, 'times');
 #TEST_DIR = 'jamscript/tests/apps/'
@@ -33,12 +35,14 @@ STACK_MARKER = "#"
 TIME_SECTION_NAME = "Time elapsed"
 ERROR_MARKER = "JavaScript error: "
 JUNK_MARKERS = [
+  '(process:',
+  '(firefox:',
   "++DOCSHELL",
   "++DOMWINDOW",
   "WARNING: ",
   "JavaScript strict warning: ",
   "###!!! ASSERTION: ",
-  "LoadPlugin() ",
+  "LoadPlugin",
   "--DOMWINDOW",
   "--DOCSHELL",
   "pldhash: ",

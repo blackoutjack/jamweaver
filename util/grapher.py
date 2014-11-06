@@ -1,20 +1,17 @@
 import sys
 import os
 import shutil
-from numpy import array
 
 import operator
 import math
-import numpy as np
 import matplotlib.pyplot as plt
 from perc_box_plot import percentile_box_plot as perc_box
 
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
-from matplotlib import rc
-import matplotlib
-from decimal import *
+from matplotlib.ticker import FormatStrFormatter
 
 from optparse import OptionParser
+
+from util import out
 
 plt.rcParams['pdf.fonttype'] = 42
 
@@ -115,21 +112,21 @@ def wovenOverheadByOriginal(stats, variants, display, log=True):
 
   gm = geomean(overhead2)
   gmload = geomean(loadoverhead2)
-  print "GEOMETRIC MEAN (other, %s / %s): %.2f" % (disp2, disp0, gm)
-  print "GEOMETRIC MEAN (load, %s / %s): %.2f" % (disp2, disp0, gmload)
+  out("GEOMETRIC MEAN (other, %s / %s): %.2f" % (disp2, disp0, gm))
+  out("GEOMETRIC MEAN (load, %s / %s): %.2f" % (disp2, disp0, gmload))
 
   overhead2.extend(loadoverhead2)
   gmboth2 = geomean(overhead2)
-  print "GEOMETRIC MEAN (all, %s / %s): %.2f" % (disp2, disp0, gmboth2)
+  out("GEOMETRIC MEAN (all, %s / %s): %.2f" % (disp2, disp0, gmboth2))
 
   gm1 = geomean(overhead1)
   gmload1 = geomean(loadoverhead1)
-  print "GEOMETRIC MEAN (other, %s / %s): %.2f" % (disp1, disp0, gm1)
-  print "GEOMETRIC MEAN (load, %s / %s): %.2f" % (disp1, disp0, gmload1)
+  out("GEOMETRIC MEAN (other, %s / %s): %.2f" % (disp1, disp0, gm1))
+  out("GEOMETRIC MEAN (load, %s / %s): %.2f" % (disp1, disp0, gmload1))
 
   overhead1.extend(loadoverhead1)
   gmboth1 = geomean(overhead1)
-  print "GEOMETRIC MEAN (all, %s / %s): %.2f" % (disp1, disp0, gmboth1)
+  out("GEOMETRIC MEAN (all, %s / %s): %.2f" % (disp1, disp0, gmboth1))
 
 #/wovenOverheadByOriginal
 
@@ -214,7 +211,7 @@ def modularVsWovenOverheadByOriginal(stats, variants, display, log=True):
 
   assert len(loadoriginalTime) == len(loadoverheadRatio), "Invalid load time statistics"
   assert len(originalTime) == len(overheadRatio), "Invalid action time statistics"
-  assert len(loadoriginalTime) > 0 or len(originalTime) > 0, "No data for modular vs. woven graph"
+  assert len(loadoriginalTime) > 0 or len(originalTime) > 0, "No data for coarse-grained vs. fine-grained graph"
 
   if len(loadoriginalTime) > 0:
     plt.scatter(loadoriginalTime, loadoverheadRatio, marker='o', color='green', facecolors='none')
@@ -244,14 +241,14 @@ def modularVsWovenOverheadByOriginal(stats, variants, display, log=True):
 
   if len(loadoriginalTime) > 0:
     gmload = geomean(loadoverheadRatio)
-    print "GEOMETRIC MEAN (load, %s / %s): %.2f" % (disp2, disp1, gmload)
+    out("GEOMETRIC MEAN (load, %s / %s): %.2f" % (disp2, disp1, gmload))
   if len(originalTime) > 0:
     gm = geomean(overheadRatio)
-    print "GEOMETRIC MEAN (other, %s / %s): %.2f" % (disp2, disp1, gm)
+    out("GEOMETRIC MEAN (other, %s / %s): %.2f" % (disp2, disp1, gm))
 
   overheadRatio.extend(loadoverheadRatio)
   gmboth = geomean(overheadRatio)
-  print "GEOMETRIC MEAN (all, %s / %s): %.2f" % (disp2, disp1, gmboth)
+  out("GEOMETRIC MEAN (all, %s / %s): %.2f" % (disp2, disp1, gmboth))
 
 #/modularVsWovenOverheadByOriginal
 
@@ -278,9 +275,9 @@ def modularVsWovenOverheadByOriginalOld(stats):
   ymax = 0.0
 
   for times in stats:
-    orig = times['original']
-    woven = times['collapsed']
-    modular = times['original.modular']
+    orig = times['input']
+    woven = times['semantic0.collapsed']
+    modular = times['coarse.input']
 
     originalTime.append(orig)
     if orig < xmin: xmin = orig
@@ -377,9 +374,9 @@ def modularVsWovenOverhead(stats, log=True, threshold=100.0, absolute=True):
   ymax = 0.0
 
   for times in stats:
-    orig = times['original']
-    woven = times['collapsed']
-    modular = times['original.modular']
+    orig = times['input']
+    woven = times['semantic0.collapsed']
+    modular = times['coarse.input']
 
     # Skip actions that humans can't distinguish.
     #if woven < threshold and modular < threshold and orig < threshold:
@@ -431,8 +428,8 @@ def modularVsWovenOverhead(stats, log=True, threshold=100.0, absolute=True):
     wogm = geomeanPercent(wovenOverhead)
     mogm = geomeanPercent(modularOverhead)
 
-  print "GEOMETRIC MEAN (WOVEN): %.2f" % wogm
-  print "GEOMETRIC MEAN (MODULAR): %.2f" % mogm
+  out("GEOMETRIC MEAN (WOVEN): %.2f" % wogm)
+  out("GEOMETRIC MEAN (MODULAR): %.2f" % mogm)
   
   if absolute:
     plt.xlabel('exec. time of coarse-grained transactions / unprotected')

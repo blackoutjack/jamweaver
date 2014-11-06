@@ -74,8 +74,7 @@ LARGE_BENCHMARKS = [
 ]
 
 # Keys for source code output produced by JAM analysis.
-SOURCE_KEYS = [
-  'original',
+RESULT_SOURCE_KEYS = [
   'closure',
   'normalized',
   'instrumented',
@@ -84,11 +83,22 @@ SOURCE_KEYS = [
   'optimized',
 ]
 
-# Sources for which a modular (coarse-grained) version should be made.
-MODULAR_SOURCE_KEYS = [
-  'original',
+# Source keys for which a profile variant should be created.
+PROFILE_SOURCE_KEYS = [
+  'input',
+  'closure',
   'normalized',
-  'closure'
+  'instrumented',
+  'indirection',
+  'collapsed',
+  'optimized',
+]
+
+# Source keys for which a coarse-grained variant should be created.
+COARSE_SOURCE_KEYS = [
+  'input',
+  'normalized',
+  'closure',
 ]
 
 # Configure files that are symlinked in woven test case directories. 

@@ -114,7 +114,7 @@ usage: java edu.wisc.cs.jam.JAM SRCFILE+ ... [--appsuffix VAL] [--bddformat FMTI
 
 The util/ directory contains scripts for running a series of test suites
 contained in the jamtests repository (which can be downloaded from
-https://github.org/blackoutjack/jamtests). Test cases typically include
+https://github.com/blackoutjack/jamtests). Test cases typically include
 a .out.js file containing the expected output, which is compared by the
 framework against the actual output. Running the microbenchmarks is done
 with the following command. The microbenchmark suite typically takes

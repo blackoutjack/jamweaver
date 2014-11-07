@@ -27,23 +27,20 @@ V8DIR = os.path.join(JAMPKG,'v8')
 JSDIR = os.path.join(JAMPKG,'js-1.8.5')
 JSONDIR = os.path.join(JAMPKG,'libjson')
 WALIDIR = os.path.join(JAMPKG,'wali')
-TESTDIR = os.path.join(JAMPKG, 'tests')
 UTILDIR = os.path.join(JAMPKG, 'util')
 PERFDIR = os.path.join(JAMPKG, 'perf')
 UNPACKDIR = os.path.join(JAMPKG, 'unpacked')
-BENCHMARK_DIR = os.path.join(TESTDIR, 'benchmarks')
-MICROBENCHMARK_DIR = os.path.join(TESTDIR, 'micro-benchmarks')
-WEBSITE_DIR = os.path.join(TESTDIR, 'websites')
-WEBSITE_FILE = os.path.join(WEBSITE_DIR, 'sites.txt')
-INTERPRETER_TEST_DIR = os.path.join(TESTDIR, 'interpreter')
 UNPACK_SCRIPT = os.path.join(UTILDIR, 'unpack.py')
 REPACK_SCRIPT = os.path.join(UTILDIR, 'repack.py')
-DEFAULT_POLICY = os.path.join(MICROBENCHMARK_DIR, 'simple.policy')
-DEFAULT_POLICIES = {
-  MICROBENCHMARK_DIR: os.path.join(MICROBENCHMARK_DIR, 'simple.policy'),
-  BENCHMARK_DIR: os.path.join(MICROBENCHMARK_DIR, 'exfil_test.call.policy'),
-  WEBSITE_DIR: os.path.join(MICROBENCHMARK_DIR, 'exfil_test.call.policy'),
-}
+
+TESTDIR = os.path.join(JAMSCRIPT_DIR, 'tests', 'browser')
+BENCHMARK_DIR = os.path.join(TESTDIR, 'bench')
+MICROBENCHMARK_DIR = os.path.join(TESTDIR, 'micro')
+WEBSITE_DIR = os.path.join(TESTDIR, 'sites')
+WEBSITE_FILE = os.path.join(WEBSITE_DIR, 'sites.txt')
+INTERPRETER_TEST_DIR = os.path.join(TESTDIR, 'interpreter')
+
+DEFAULT_POLICY = os.path.join(BENCHMARK_DIR, 'default.policy')
 
 JAMSCRIPT_DOCDIR = os.path.join(JAMSCRIPT_DIR, 'doc')
 JSTESTDIR = os.path.join(JAMSCRIPT_DIR, 'tests', 'browser')
@@ -65,9 +62,9 @@ JAMUTILCOMMAND = os.getenv('JAMUTILCOMMAND', 'java -jar ' + JAMUTILJAR).split(' 
 
 # Benchmark applications that will blow up interprocedural analysis.
 LARGE_BENCHMARKS = [
+  'googlemaps',
   'phylojive',
   'octane',
-  'googlemaps',
   'octane-mandreel',
   'octane-pdf',
   'octane-typescript',

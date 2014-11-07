@@ -17,7 +17,7 @@ from util import validate_value
 from util import load_policies
 from util import load_policy
 from util import load_seeds
-from util import load_sources
+from util import load_app_sources
 from util import evaluate_file
 from util import get_base
 from util import get_suffix
@@ -105,21 +105,8 @@ class RunResult():
   # /RunResult.__init__
 # /RunResult
 
-def load_testcases(from_dir, defwarn=True):
-  cases = []
-  paths = load_sources(from_dir, '.js', '.out.js')
-  for flpath in paths:
-    base = get_base(flpath)
-
-    # Find any applicable policy files.
-    policies = load_policies(from_dir, base, defwarn=defwarn) 
-
-    seedfile = load_seeds(from_dir, base)
-
-    specs = (flpath, policies, seedfile)
-    cases.append(specs)
-
-  return cases
+def load_testcases(topdir, defwarn=True):
+  return load_app_sources(topdir, defwarn=defwarn)
 # /load_testcases
 
 def process_info(infopath, exppath, overwrite):
@@ -233,7 +220,7 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     infopath = get_info_path(errp)
     if infopath is None: continue
 
-    infoexpsuf = '%s.info.out.txt' % refsuf
+    infoexpsuf = '%s.info.txt' % refsuf
     infoexppath = os.path.join(WEBSITE_DIR, appname + infoexpsuf)
     result.info_ok = process_info(infopath, infoexppath, overwrite)
 
@@ -295,11 +282,16 @@ def run_websites(debug=False, overwrite=False, refine=None, synonly=False):
 def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False):
   results = RunResults('microbenchmarks', overwrite)
 
-  for inps in load_testcases(MICROBENCHMARK_DIR, defwarn=False):
-    srcfl = inps[0]
+  cases = load_testcases(MICROBENCHMARK_DIR, defwarn=False)
+  apps = list(cases.keys())
+  apps.sort()
+  for app in apps:
+    inps = cases[app]
+    srcfls = inps[0]
     poldict = inps[1]
     seeds = inps[2]
-    base = get_base(srcfl)
+    apppath = inps[3]
+    base = get_base(app)
 
     # Run with each policy file separately.
     for poldesc, polfile in poldict.items():
@@ -316,9 +308,6 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
       if poldesc != '':
         opts.append('--appsuffix')
         opts.append(poldesc)
-        exppre = '.' + poldesc
-      else:
-        exppre = ''
 
       # If the user provided a refinement limit (-p), use that for all
       # test cases. Otherwise, use some special logic.
@@ -346,26 +335,26 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
         opts.append('-z')
 
       # Print the name of the file being analyzed.
-      jsname = os.path.basename(srcfl)
-      out(jsname)
+      out('Analyzing %s' % app)
 
       # Use the union of all policy files for a particular test.
-      outp, errp = run_jam(srcfl, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
+      outp, errp = run_jam(srcfls, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
       
       # Error case, message printed in |run_jam|.
       if outp is None: continue
 
       refsuf = get_suffix(synonly, ref)
 
-      expsuf = '%s.%s.out.js' % (exppre, refsuf)
-      exppath = get_exp_path(srcfl, expsuf)
+      expfile = '%s.%s.out.js' % (app, refsuf)
+      exppath = os.path.join(apppath, expfile)
+        
       result.js_ok = process_result(outp, exppath, overwrite)
 
       infopath = get_info_path(errp)
       if infopath is None: continue
 
-      infoexpsuf = '%s.%s.info.out.txt' % (exppre, refsuf)
-      infoexppath = get_exp_path(srcfl, infoexpsuf)
+      infoexpfile = '%s.%s.info.txt' % (app, refsuf)
+      infoexppath = os.path.join(apppath, infoexpfile)
       result.info_ok = process_info(infopath, infoexppath, overwrite)
 
       sys.stderr.write('\n')
@@ -378,10 +367,15 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
   if refine is None:
     refine = 0
 
-  for inps in load_testcases(BENCHMARK_DIR):
-    srcfl = inps[0]
+  cases = load_testcases(BENCHMARK_DIR, defwarn=True)
+  apps = list(cases.keys())
+  apps.sort()
+  for app in apps:
+    inps = cases[app]
+    srcfls = inps[0]
     poldict = inps[1]
     seeds = inps[2]
+    apppath = inps[3]
 
     # Run with each policy file separately.
     for poldesc, polfile in poldict.items():
@@ -398,11 +392,8 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
       if poldesc != '':
         opts.append('--appsuffix')
         opts.append(poldesc)
-        exppre = '.' + poldesc
-      else:
-        exppre = ''
 
-      base = get_base(srcfl)
+      base = get_base(app)
       if base in LARGE_BENCHMARKS:
         # Forgo interprocedural analysis for these benchmarks.
         opts.append('-P')
@@ -411,24 +402,23 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
         opts.append('-z')
 
       # Print the name of the file being analyzed.
-      jsname = os.path.basename(srcfl)
-      out(jsname)
-      outp, errp = run_jam(srcfl, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
+      out('Analyzing %s' % app)
+      outp, errp = run_jam(srcfls, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
       
       # Error case, message printed in |run_jam|.
       if outp is None: continue
 
       refsuf = get_suffix(synonly, refine)
 
-      expsuf = '%s.%s.out.js' % (exppre, refsuf)
-      exppath = get_exp_path(srcfl, expsuf)
+      expfile = '%s.%s.out.js' % (app, refsuf)
+      exppath = os.path.join(apppath, expfile)
       result.js_ok = process_result(outp, exppath, overwrite)
 
       infopath = get_info_path(errp)
       if infopath is None: continue
 
-      infoexpsuf = '%s.%s.info.out.txt' % (exppre, refsuf)
-      infoexppath = get_exp_path(srcfl, infoexpsuf)
+      infoexpfile = '%s.%s.info.txt' % (app, refsuf)
+      infoexppath = os.path.join(apppath, infoexpfile)
       result.info_ok = process_info(infopath, infoexppath, overwrite)
 
       sys.stderr.write('\n')

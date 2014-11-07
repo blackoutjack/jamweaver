@@ -3,7 +3,6 @@ import sys
 
 from config import *
 from util import get_base
-from util import load_sources
 from util import err
 from util import out
 from util import warn

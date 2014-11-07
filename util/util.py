@@ -425,25 +425,57 @@ def parse_info_file(infofile):
         warn('Invalid info file line: %s' % infoline)
   return info
 
-def load_sources(from_dir, srcsuf='.js', excludesuf='.out.js'):
-  allfls = os.listdir(from_dir)
+def load_app_source(apppath, appname, defwarn=False):
+  if (os.path.isdir(apppath)):
+    subpath = os.path.join(apppath, 'source-input')
+    if not os.path.isdir(subpath):
+      return None
+
+    srcs = load_sources(subpath, '.js', '.out.js')
+    # %%% Not very nice, but still dealing with legacy junk.
+    appbase = get_base(appname)
+    pols = load_policies(apppath, appbase, defwarn=defwarn)
+    seeds = load_seeds(apppath, appname)
+    return (srcs, pols, seeds, apppath)
+  else:
+    # Non-directories are assumed to be utility files.
+    return None
+
+def load_app_sources(topdir, defwarn=True):
+  # Throughout, sort the files so tests are run in a consistent order.
+  allapps = os.listdir(topdir)
+  allapps.sort()
+  appsrcs = {}
+  for appname in allapps:
+    apppath = os.path.join(topdir, appname)
+    appsrc = load_app_source(apppath, appname, defwarn=defwarn)
+    if appsrc is not None:
+      appsrcs[appname] = appsrc
+  return appsrcs
+
+def load_sources(topdir, srcsuf='.js', excludesuf='.out.js'):
+  allsubs = os.listdir(topdir)
   # Sort the files so that tests are run in a consistent order.
-  allfls.sort()
+  allsubs.sort()
   srcpaths = []
-  for flname in allfls:
+  for subname in allsubs:
+    subpath = os.path.join(topdir, subname)
+    if (os.path.isdir(subpath)):
+      continue
+    
     # Skip files that aren't suffixed with |srcsuf|.
-    if srcsuf is not None and not flname.endswith(srcsuf):
+    if srcsuf is not None and not subname.endswith(srcsuf):
       continue
     # Skip files ending with |excludesuf|.
-    if excludesuf is not None and flname.endswith(excludesuf):
+    if excludesuf is not None and subname.endswith(excludesuf):
       continue
-    srcpath = os.path.join(from_dir, flname)
+    srcpath = os.path.join(topdir, subname)
     srcpaths.append(srcpath)
 
   return srcpaths
 
-def load_seeds(from_dir, base_name):
-  seedfile = os.path.join(from_dir, base_name + ".seeds")
+def load_seeds(topdir, base):
+  seedfile = os.path.join(topdir, base + ".seeds")
   if os.path.isfile(seedfile):
     return seedfile
   return None
@@ -464,9 +496,8 @@ def load_policy(polpath):
 
 # Return a default policy dict object.
 def load_default_policy(dirkey=None):
-  if dirkey is not None and dirkey in DEFAULT_POLICIES:
-    polpath = DEFAULT_POLICIES[dirkey]
-  else:
+  polpath = os.path.join(dirkey, 'default.policy')
+  if not os.path.isfile(polpath):
     polpath = DEFAULT_POLICY
   return load_policy(polpath)
 # /load_default_policy
@@ -504,14 +535,15 @@ def load_policies(fromdir, basename, polsuf='.policy', defwarn=True):
           warn('Using the default policy for %s' % basename)
         # Return this directly so we don't get into an infinite loop
         # in case the default policy file can't be found.
-        return load_default_policy(fromdir)
+        pardir = os.path.dirname(fromdir)
+        return load_default_policy(pardir)
       else:
         curbase = curbase[:maxidx]
 
   return ret
 # /load_policies
 
-def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=True, moreopts=[]):
+def run_jam(jspaths, policies, refine=0, debug=False, perf=True, seeds=None, lib=True, moreopts=[]):
 
   if perf:
     cmd = ['/usr/bin/time', '-f', 'real:%Es user:%Us sys:%Ss maxrss:%MKB']
@@ -572,12 +604,14 @@ def run_jam(jspath, policies, refine=0, debug=False, perf=True, seeds=None, lib=
     cmd.append('-d')
     cmd.append(seeds)
 
-  cmd.append(jspath)
+  for jspath in jspaths:
+    cmd.append(jspath)
+
   cmd.append('-Y')
-  cmd.extend(policies)
+  cmd.append(','.join(policies))
 
   # Display the command that's being invoked.
-  sys.stdout.write(" ".join(cmd))
+  sys.stdout.write(' '.join(cmd))
   sys.stdout.write('\n')
   sys.stdout.flush()
 
@@ -773,18 +807,11 @@ def get_relative_path(url, usedomain=False, referer=None):
 # /get_relative_path
 
 def get_variant_bases(src):
-  bases = []
   if os.path.isdir(src):
-    apps = load_sources(src)
-    for app in apps:
-      base = get_base(app)
-      pols = load_policies(src, base, defwarn=False)
-      for poldesc, pol in pols.items():
-        if poldesc != '':
-          bases.append(base + '.' + poldesc)
-        else:
-          bases.append(base)
+    srclist = load_app_sources(src)
+    return list(srclist.keys())
   elif os.path.isfile(src):
+    bases = []
     lines = get_lines(src, comment='#')
     for line in lines:
       dirpath = os.path.dirname(src)

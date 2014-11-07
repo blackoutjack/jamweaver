@@ -1,2 +1,0 @@
-0,-1: jam#invoke(#HTMLDocument#prototype#createElement) && jam#arg(0) === "script"
-0,-1: jam#invoke(#HTMLDocument#prototype#write) && jam#arg(0) !== #undefined

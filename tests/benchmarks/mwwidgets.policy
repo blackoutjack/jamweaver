@@ -1,8 +1,0 @@
-0,-1: jam#set(`x,"textContent") && `x.className === "destructive-read read-only"
-0,-1: jam#set(`x,"innerHTML")
-0,-1: jam#get(`x,"textContent") && `x.className === "write-only non-editable"
-0,-1: jam#get(`x,"innerHTML") 
-0,1: jam#get(`x,"textContent") && `x.className === "destructive-read read-only"
-1,-1: jam#get(`x,"textContent") && `x.className === "destructive-read read-only"
-0,2: jam#set(`x,"textContent") && `x.className === "write-only non-editable"
-2,-1: jam#set(`x,"textContent") && `x.className === "write-only non-editable"

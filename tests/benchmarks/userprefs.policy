@@ -1,2 +1,0 @@
-0,-1: jam#get(`x,"appendChild") && `x instanceof #HTMLElement
-0,-1: jam#get(`x,"eval") && `x instanceof #Window

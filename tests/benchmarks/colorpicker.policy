@@ -1,4 +1,0 @@
-0,-1: jam#set(`x,"src") && `x instanceof #HTMLElement
-0,-1: jam#set(`x,"location") && `x instanceof #Window
-0,-1: jam#get(`x,"cookie") && `x instanceof #HTMLDocument
-# innerHTML is legitimately used

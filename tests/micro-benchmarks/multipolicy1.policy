@@ -1,4 +1,0 @@
-0,-1: jam#set(`x,"src") && `x instanceof #HTMLElement && `x.src !== "plaintext-test.png"
-0,-1: jam#set(`x,"innerHTML")
-0,-1: jam#set(`x,"cookie") && `x instanceof #HTMLDocument
-0,-1: jam#get(`x,"write") && `x instanceof #HTMLDocument

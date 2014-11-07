@@ -1,5 +1,0 @@
-0,1: jam#invoke(#HTMLDocument#prototype#getElementById)
-0,1: jam#invoke(#HTMLDocument#prototype#getElementsByTagName)
-#0,1: jam#get(`x,"getElementById") && `x instanceof #HTMLDocument
-#0,1: jam#get(`x,"getElementsByTagName") && `x instanceof #HTMLDocument
-1,-1: jam#set(#document,"cookie")

@@ -157,6 +157,8 @@ class AppStats:
       desc = 'coarse.input'
     elif desc == 'collapsed':
       desc = 'semantic0.collapsed'
+    elif desc == 'transformed':
+      desc = 'semantic0.collapsed'
     # %%% May want to match A.B to B.A
     if desc not in self.variants:
       self.variants[desc] = SourceVariant(self, descparts)

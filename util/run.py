@@ -207,6 +207,7 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
 
     out("Analyzing %s" % appname)
     outp, errp = run_jam(srclist, [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
+    sys.stdout.write(errp);
     
     # Error case, message printed in |run_jam|.
     if outp is None: continue
@@ -339,6 +340,7 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
 
       # Use the union of all policy files for a particular test.
       outp, errp = run_jam(srcfls, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
+      sys.stdout.write(errp);
       
       # Error case, message printed in |run_jam|.
       if outp is None: continue
@@ -404,6 +406,7 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
       # Print the name of the file being analyzed.
       out('Analyzing %s' % app)
       outp, errp = run_jam(srcfls, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
+      sys.stdout.write(errp);
       
       # Error case, message printed in |run_jam|.
       if outp is None: continue

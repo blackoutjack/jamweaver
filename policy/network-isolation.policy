@@ -22,9 +22,8 @@
 # which isn't a problem.
 0,-1: jam#invoke(#Window#prototype#open) && jam#arg(0) !== #undefined
 0,-1: jam#invoke(#Window#prototype#openDialog) && jam#arg(0) !== #undefined
-# It's hard to imagine what use the |postMessage| function could have
-# that doesn't leak information, so just forbid its use.
-0,-1: jam#get(`x,"postMessage") && `x instanceof #Window
+# |window.postMessage| throws an exception if only 1 argument is given.
+0,-1: jam#invoke(#Window#prototype#postMessage) && jam#arglen() > 1
 # Testing in Firefox 17.0.3esr indicates that an exception is thrown if
 # the first argument is unspecified or if it doesn't start with "ws://".
 0,-1: jam#invoke(#WebSocket) && jam#regextest(/^ws:\/\//i,jam#arg(0))

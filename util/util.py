@@ -432,6 +432,8 @@ def load_app_source(apppath, appname, defwarn=False):
       return None
 
     srcs = load_sources(subpath, '.js', '.out.js')
+    if len(srcs) == 0: return None
+
     # %%% Not very nice, but still dealing with legacy junk.
     appbase = get_base(appname)
     pols = load_policies(apppath, appbase, defwarn=defwarn)
@@ -447,6 +449,7 @@ def load_app_sources(topdir, defwarn=True):
   allapps.sort()
   appsrcs = {}
   for appname in allapps:
+    #if not appname.startswith('sms2-') and appname != 'jsqrcode': continue
     apppath = os.path.join(topdir, appname)
     appsrc = load_app_source(apppath, appname, defwarn=defwarn)
     if appsrc is not None:
@@ -808,7 +811,7 @@ def get_relative_path(url, usedomain=False, referer=None):
 
 def get_variant_bases(src):
   if os.path.isdir(src):
-    srclist = load_app_sources(src)
+    srclist = load_app_sources(src, defwarn=False)
     return list(srclist.keys())
   elif os.path.isfile(src):
     bases = []
@@ -826,10 +829,11 @@ def get_variant_bases(src):
           bases.append(base + '.' + poldesc)
         else:
           bases.append(base)
+    return bases
   else:
     warn('Unable to load variants: %s' % src)
+    return []
 
-  return bases
 # /get_variant_bases
 
 def get_ast(filename):

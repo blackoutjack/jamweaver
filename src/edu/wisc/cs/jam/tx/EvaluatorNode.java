@@ -514,7 +514,7 @@ public class EvaluatorNode {
       sb.append(loc);
       sb.append(")");
     } else {
-      throw new UnsupportedOperationException();  
+      throw new UnsupportedOperationException("Unable to parse native: " + fn.toCode());  
     }
   }
 

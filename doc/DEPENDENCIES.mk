@@ -9,7 +9,6 @@ all:
 	@echo -n "It's recommend you run make individually for each of the "
 	@echo "following dependencies that you need."
 	@echo "\tyices (requires accepting a terms of service agreement)"
-	@echo "\tboost"
 	@echo "\tbuddy"
 	@echo "\tclosure"
 	@echo "\txsb"
@@ -22,20 +21,6 @@ all:
 # %%% Make boost (eventually all of these) externally linkable
 # %%% so that JAM can reuse already installed versions.
 everything: yices wali buddy closure xsb spidermonkey javabdd commons gperftools
-
-# A sufficient boost version is now available via apt-get in Ubuntu.
-boost:
-	mkdir -p packages
-	# Get and install boost. WALi priority queues need boost 1.49
-	# or higher, which isn't offered as a apt package.
-	wget http://downloads.sourceforge.net/project/boost/boost/1.49.0/boost_1_49_0.tar.bz2
-	tar -xjf boost_1_49_0.tar.bz2
-	mv boost_1_49_0.tar.bz2 packages/
-	mv boost_1_49_0 boost
-	@echo "One more step. Run the following."
-	@echo "cd $(JAMPKG)/boost"
-	@echo "sudo ./bootstrap.sh"
-	@echo "sudo ./b2"
 
 buddy:
 	# Create the required libbdd.so (we need shared rather than static).
@@ -107,7 +92,7 @@ gperftools:
 
 # Install this if you have the development package.
 wali:
-	if [ ! -d "$(JAMPKG)/boost" ]; then echo "Please build boost first."; exit 1; fi;
+	#if [ ! -d "$(JAMPKG)/boost" ]; then echo "Please build boost first."; exit 1; fi;
 	# The following uses SSH, requiring a public key setup.
 	git clone git@github.com:WaliDev/WALi-OpenNWA.git wali
 	# This is to fix a conflict in defines.
@@ -169,5 +154,20 @@ wala: commons-io
 # Utility for extracting JS from HTML.
 jsunpack:
 	svn co http://jsunpack-n.googlecode.com/svn/trunk $(JAMPKG)/util/jsunpack
+
+# A sufficient boost version is now available via apt-get in Ubuntu.
+boost:
+	mkdir -p packages
+	# Get and install boost. WALi priority queues need boost 1.49
+	# or higher, which isn't offered as a apt package.
+	wget http://downloads.sourceforge.net/project/boost/boost/1.49.0/boost_1_49_0.tar.bz2
+	tar -xjf boost_1_49_0.tar.bz2
+	mv boost_1_49_0.tar.bz2 packages/
+	mv boost_1_49_0 boost
+	@echo "One more step. Run the following."
+	@echo "cd $(JAMPKG)/boost"
+	@echo "sudo ./bootstrap.sh"
+	@echo "sudo ./b2"
+
 
 

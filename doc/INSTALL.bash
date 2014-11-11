@@ -1,6 +1,6 @@
 #
 # This mostly-automatic script should be run on a fresh install of
-# Ubuntu Server 10.04 amd64. It is recommended that you first set the
+# Ubuntu Server 14.04 amd64. It is recommended that you first set the
 # JAMPKG environment variable (defaulting to $PWD/jam), and alter the
 # SVNUSERNAME variable found below.
 #

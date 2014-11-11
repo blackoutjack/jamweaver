@@ -459,11 +459,11 @@ public class JSIndirectionTransform extends JSTransform {
   //
   protected void indirectPropertyWrite(NodeTraversal t, Node n, Node parent, Node ispect) {
     // %%% Should support compound assignment too!
-    assert n.isAssign();
+    assert n.isAssign() || ExpUtil.isUnOp(n);
 
-    Node lhs = n.getFirstChild();
+    Node lhs = ExpUtil.getAssignLHS(n);
     assert ExpUtil.isAccessor(lhs) || lhs.isName();
-    Node rhs = n.getChildAtIndex(1);
+    Node rhs = ExpUtil.getAssignRHS(n);
 
     Node obj = null;
     Node prop = null;
@@ -567,7 +567,7 @@ public class JSIndirectionTransform extends JSTransform {
 
   protected boolean shouldIndirectAssign(Node n) {
     // %%% Should support compound assignment too!
-    assert n.isAssign();
+    assert n.isAssign() || ExpUtil.isUnOp(n);
     Node lhs = n.getFirstChild();
     if (!ExpUtil.isAccessor(lhs)) return false;
 
@@ -644,6 +644,7 @@ public class JSIndirectionTransform extends JSTransform {
         }
         if (ptypes != null && ptypes.contains(JSPredicateType.READ)) {
           indirectPropertyRead(t, n, parent, ispect);
+          propertyReadTransformCnt++;
         }
         // Unfortunately we have to transform calls to the read function.
         // If the following condition is not true, the callsite will be
@@ -659,10 +660,20 @@ public class JSIndirectionTransform extends JSTransform {
       } else if (ExpUtil.isAssignment(n)) {
         // %%% This is an assumption based on the initial
         // %%% pass with JSStatementTransform.
-        assert n.isAssign() : "Non-standard assign statement within a transaction: " + sm.codeFromNode(n);
+        assert n.isAssign() || ExpUtil.isUnOp(n) : "Non-standard assign statement within a transaction: " + sm.codeFromNode(n);
         // %%% Currently we don't handle assignments to global/with props.
         Node lhs = ExpUtil.getAssignLHS(n);
         if (ExpUtil.isAccessor(lhs)) {
+          if (ExpUtil.isUnOp(n) && ptypes != null && ptypes.contains(JSPredicateType.READ)) {
+            // We have to replace the unary operator with an equivalent
+            // assignment before rewriting.
+            // %%% Ugly.
+            Node newn = new Node(JSExp.ASSIGN, ExpUtil.getAssignLHS(n), ExpUtil.getAssignRHS(n));
+            parent.replaceChild(n, newn);
+            n = newn;
+            indirectPropertyRead(t, n, parent, ispect);
+            propertyReadTransformCnt++;
+          }
           if (ptypes != null && ptypes.contains(JSPredicateType.WRITE)) {
             indirectPropertyWrite(t, n, parent, ispect);
             sm.reportCodeChange();
@@ -742,7 +753,7 @@ public class JSIndirectionTransform extends JSTransform {
           sm.reportCodeChange();
           callTransformCnt++;
         }
-      } else if (n.isAssign()) {
+      } else if (ExpUtil.isAssignment(n)) {
         boolean doTransform = shouldIndirectAssign(n);
         if (doTransform) {
           Node tx = ExpUtil.isWithinTransaction(n);

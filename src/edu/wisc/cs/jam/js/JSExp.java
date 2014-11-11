@@ -362,6 +362,7 @@ public class JSExp extends Exp {
     }
 
     if (isAssignment()) {
+      // Works for INC/DEC also.
       return getChild(0).clone();
     }
 
@@ -393,6 +394,18 @@ public class JSExp extends Exp {
     }
 
     if (isAssignment()) {
+      if (is(INC) || is(DEC)) {
+        Node sub = node.getFirstChild().cloneTree();
+        Node one = Node.newNumber(1);
+        Node op = null;
+        if (is(INC)) {
+          op = new Node(ADD, sub, one);
+        } else {
+          op = new Node(SUB, sub, one);
+        }
+        return create(sm, op);
+      }
+      
       // %%% Perhaps construct the effective RHS.
       return getChild(1).clone();
     }

@@ -121,7 +121,6 @@ public class ExpUtil {
     JSExp.GETELEM,
   };
   public static final int[] ASSIGN_TYPES = {
-    // %%% Need to add INC/DEC to this?
     JSExp.ASSIGN,
     JSExp.ASSIGN_BITOR,
     JSExp.ASSIGN_BITXOR,
@@ -133,7 +132,9 @@ public class ExpUtil {
     JSExp.ASSIGN_SUB,
     JSExp.ASSIGN_MUL,
     JSExp.ASSIGN_DIV,
-    JSExp.ASSIGN_MOD
+    JSExp.ASSIGN_MOD,
+    JSExp.INC,
+    JSExp.DEC,
   };
   
   public static final int[] BLOCK_TYPES = {
@@ -537,6 +538,7 @@ public class ExpUtil {
     }
 
     if (isAssignment(n)) {
+      // Works for INC/DEC also.
       return n.getFirstChild();
     }
       
@@ -564,6 +566,18 @@ public class ExpUtil {
 
     if (isAssignment(n)) {
       // %%% Perhaps construct the effective RHS.
+      int t = n.getType();
+      if (t == JSExp.INC || t == JSExp.DEC) {
+        Node sub = n.getFirstChild().cloneTree();
+        Node one = Node.newNumber(1);
+        Node op = null;
+        if (t == JSExp.INC) {
+          op = new Node(JSExp.ADD, sub, one);
+        } else {
+          op = new Node(JSExp.SUB, sub, one);
+        }
+        return op;
+      }
       return n.getChildAtIndex(1);
     }
       
@@ -717,9 +731,6 @@ public class ExpUtil {
     if (exp == null) return false;
     if (exp.isName() && exp.getString().equals(name)) {
       Node parent = exp.getParent();
-      if (isUnOp(parent)) {
-        return true;
-      }
       if (isAssignment(parent) && exp == getAssignLHS(parent)) {
         return true;
       }

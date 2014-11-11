@@ -9,6 +9,7 @@ import com.google.javascript.jscomp.NodeTraversal;
 import com.google.javascript.jscomp.NodeTraversal.Callback;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.Scope;
+import com.google.javascript.jscomp.Scope.Var;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -136,7 +137,6 @@ public class JSStatementTransform extends JSTransform {
 
       Node rhs = n.getChildAtIndex(1);
       if (ExpUtil.isAssignment(rhs)) return false;
-      if (ExpUtil.isUnOp(rhs)) return false;
       return isSimpleExpression(t, rhs, n);
     }
 
@@ -379,7 +379,29 @@ public class JSStatementTransform extends JSTransform {
       // %%% The |blocks| flag probably doesn't make a difference, but
       // %%% for the sake of being conservative.
       if (ExpUtil.containsInvoke(exp, true)) {
-        return true;
+        Scope s = t.getScope();
+        String name = n.getString();
+
+        // If the variable is declared locally in a function, and the
+        // scope doesn't contain any other functions, the reference
+        // can't be altered.
+        boolean vulnerable = true;
+        if (s.isLocal() && s.isDeclared(name, false)) {
+          Iterator<Var> vit = s.getVars();
+          while (vit.hasNext()) {
+            Var v = vit.next();
+            Node f = v.getParentNode();
+            if (f != null && f.isFunction()) {
+              // The scope contains a function, so we can't be sure
+              // (without some hard-core analysis).
+              // %%% Test this.
+              return true;
+            }
+          }
+          // Fall through.
+        } else {
+          return true;
+        }
       }
       // Or any mention of the LHS on the RHS.
       if (ExpUtil.mayDirectlyModifyName(exp, n.getString())) {
@@ -884,6 +906,10 @@ public class JSStatementTransform extends JSTransform {
       if (ExpUtil.isPostfixUnOp(n) && (parent.isReturn()
           || parent.isThrow())) {
         // This case (obscure as it might be) cannot be transformed.
+        return false;
+      }
+      // The very simple case is desirable to keep around.
+      if (parent.isExprResult()) {
         return false;
       }
 

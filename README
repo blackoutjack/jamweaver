@@ -1,4 +1,4 @@
-##### About #####
+##### about #####
 
 This repository contains the files constituting the JavaScript Model-
 Checker, a.k.a. JAM. This project is being built and maintained by Rich
@@ -16,9 +16,9 @@ https://github.com/blackoutjack/jamweaver
 ##### Getting started #####
 
 As of yet, the dependencies and build scripts are specific to the Ubuntu
-Linux platform. The system has been developed on Ubuntu 12.04 with Linux
-kernel 3.2.0-65-generic, though other versions of this OS will likely
-work fine.
+Linux platform. The system has been developed on Ubuntu 14.04 with Linux
+kernel 3.13.0-39-generic, though other versions of this OS will likely
+work (once dependencies are installed).
 
 For dependency installation, review INSTALL.bash and DEPENDENCIES.mk in
 the doc/ directory. INSTALL.bash handles environmental setup (installing

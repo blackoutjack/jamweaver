@@ -407,7 +407,7 @@ def compare_info(actinfo, expinfo):
     elif key not in expinfo:
       disparities[key] = 'additional'
     elif actinfo[key] != expinfo[key]:
-      disparities[key] = 'wrong'
+      disparities[key] = 'differ'
   return disparities 
 
 def parse_info_file(infofile):

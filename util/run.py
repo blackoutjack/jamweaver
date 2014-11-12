@@ -26,6 +26,7 @@ from util import overwrite_expected
 from util import get_lines
 from util import get_info_path
 from util import parse_info_file
+from util import process_info
 from util import compare_info
 
 # A collection of RunResult objects that can print a summary.
@@ -109,44 +110,6 @@ def load_testcases(topdir, defwarn=True):
   return load_app_sources(topdir, defwarn=defwarn)
 # /load_testcases
 
-def process_info(infopath, exppath, overwrite):
-  ok = False
-  stat = None
-
-  actinfo = parse_info_file(infopath)
-  expinfo = parse_info_file(exppath)
-  if len(expinfo) > 0:
-    diff = compare_info(actinfo, expinfo)
-    if len(diff) == 0:
-      ok = True
-      stat = 'match'
-    else:
-      for k, m in diff.items():
-        out('info:%s %s' % (k, m))
-        stat = 'wrong'
-  else:
-    stat = 'missing'
-
-  if overwrite:
-    # The meaning of |ok| is sort of flipped when we're overwriting.
-    if ok:
-      ok = False
-    else:
-      infofl = open(infopath, 'r')
-      infoout = infofl.read()
-      infofl.close()
-      stat = overwrite_expected(infoout, exppath)
-      if stat == 'overwritten' or stat == 'created':
-        ok = True
-      else:
-        ok = False
-
-  expname = os.path.basename(exppath)
-  out('%s %s' % (expname, stat))
-
-  return ok
-# /process_info
-
 def process_result(outp, exppath, overwrite):
   ok = False
   if overwrite:
@@ -207,7 +170,6 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
 
     out("Analyzing %s" % appname)
     outp, errp = run_jam(srclist, [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
-    sys.stderr.write(errp);
     
     # Error case, message printed in |run_jam|.
     if outp is None: continue
@@ -335,12 +297,10 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
       if synonly:
         opts.append('-z')
 
-      # Print the name of the file being analyzed.
-      out('Analyzing %s' % app)
 
       # Use the union of all policy files for a particular test.
+      out('Analyzing %s' % app)
       outp, errp = run_jam(srcfls, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
-      sys.stderr.write(errp);
       
       # Error case, message printed in |run_jam|.
       if outp is None: continue
@@ -353,7 +313,9 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
       result.js_ok = process_result(outp, exppath, overwrite)
 
       infopath = get_info_path(errp)
-      if infopath is None: continue
+      if infopath is None:
+        err('Could not determine info path: %s\n' % appname)
+        continue
 
       infoexpfile = '%s.%s.info.txt' % (app, refsuf)
       infoexppath = os.path.join(apppath, infoexpfile)
@@ -372,8 +334,8 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
   cases = load_testcases(BENCHMARK_DIR, defwarn=True)
   apps = list(cases.keys())
   apps.sort()
-  for app in apps:
-    inps = cases[app]
+  for appname in apps:
+    inps = cases[appname]
     srcfls = inps[0]
     poldict = inps[1]
     seeds = inps[2]
@@ -395,7 +357,7 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
         opts.append('--appsuffix')
         opts.append(poldesc)
 
-      base = get_base(app)
+      base = get_base(appname)
       if base in LARGE_BENCHMARKS:
         # Forgo interprocedural analysis for these benchmarks.
         opts.append('-P')
@@ -403,24 +365,25 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
       if synonly:
         opts.append('-z')
 
-      # Print the name of the file being analyzed.
-      out('Analyzing %s' % app)
+      out('Analyzing %s' % appname)
       outp, errp = run_jam(srcfls, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
-      sys.stderr.write(errp);
       
       # Error case, message printed in |run_jam|.
       if outp is None: continue
 
       refsuf = get_suffix(synonly, refine)
 
-      expfile = '%s.%s.out.js' % (app, refsuf)
+      expfile = '%s.%s.out.js' % (appname, refsuf)
       exppath = os.path.join(apppath, expfile)
       result.js_ok = process_result(outp, exppath, overwrite)
 
       infopath = get_info_path(errp)
-      if infopath is None: continue
+      if infopath is None:
+        err('Could not determine info path: %s\n' % appname)
+        err('ERRP: %s' % errp)
+        continue
 
-      infoexpfile = '%s.%s.info.txt' % (app, refsuf)
+      infoexpfile = '%s.%s.info.txt' % (appname, refsuf)
       infoexppath = os.path.join(apppath, infoexpfile)
       result.info_ok = process_info(infopath, infoexppath, overwrite)
 

@@ -6,6 +6,7 @@ from config import *
 from util import err
 from util import out
 from util import warn
+from util import process_info
 from util import get_result_info
 from util import get_suffix_from_info
 from util import get_variant_bases

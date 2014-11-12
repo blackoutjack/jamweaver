@@ -540,14 +540,12 @@ def update_profile(apppath, app, wrap):
         cfg.out("No change from current text: %s" % appdesc)
 # /update_profile
 
-def update_expected(app, infos, apppath):
+def update_expected(app, infos, tgtpath):
   for appinfo in infos:
     refsuf = cfg.get_suffix_from_info(appinfo)
     if refsuf is None:
       # Error printed within |get_suffix_from_info|.
       continue
-    outfile = '%s.%s.out.js' % (app, refsuf)
-    outpath = os.path.join(apppath, outfile)
 
     if 'out' in appinfo:
       respath = os.path.join(appinfo['dir'], appinfo['out'])
@@ -555,11 +553,24 @@ def update_expected(app, infos, apppath):
       res = resfl.read()
       resfl.close()
       
+      outfile = '%s.%s.out.js' % (app, refsuf)
+      outpath = os.path.join(tgtpath, outfile)
+
       stat = cfg.overwrite_expected(res, outpath)
       if stat == 'overwritten' or stat == 'created':
         cfg.out('%s %s' % (outfile, stat))
-    else:
+    elif VERBOSE:
       cfg.warn("Result not found: " + app)
+    
+    if 'info' in appinfo:
+      infopath = os.path.join(appinfo['dir'], appinfo['info'])
+      
+      infooutfile = '%s.%s.info.txt' % (app, refsuf)
+      infooutpath = os.path.join(tgtpath, infooutfile)
+
+      cfg.process_info(infopath, infooutpath, True, quiet=True)
+    elif VERBOSE:
+      cfg.warn("Info not found: " + app)
 # /update_expected
 
 def process_results(resdir, tgtdir, bases, wrap, transfer, exp, coarse, prof, getall):
@@ -591,23 +602,6 @@ def process_results(resdir, tgtdir, bases, wrap, transfer, exp, coarse, prof, ge
 
     if prof:
       update_profile(appdir, app, w)
-
-    sms2 = app.startswith("sms2-")
-    if sms2:
-      bigapp = '%s.big' % app
-      bigappdir = os.path.join(tgtdir, bigapp)
-
-      if transfer and infos is not None:
-        copy_files(bigapp, infos, bigappdir, w)
-
-      if exp and infos is not None:
-        update_expected(bigapp, infos, bigappdir)
-
-      if coarse:
-        update_coarse(bigappdir, bigapp, w)
-
-      if prof:
-        update_profile(bigappdir, bigapp, w)
 
 # /process_results
 

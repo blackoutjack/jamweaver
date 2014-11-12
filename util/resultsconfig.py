@@ -13,7 +13,8 @@ from util import get_file_info
 
 # Include the "init" time in the "load" time, or report separately.
 INCLUDE_INIT = True
-# Load times for SMS2 apps aren't very interesting.
+# Use to determine impact of SMS2 load times. Make sure this is False
+# when calculating final results!
 SUPPRESS_SMS2_LOAD = False
 
 SOURCEDIR = OUTDIR

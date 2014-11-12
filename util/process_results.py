@@ -123,6 +123,7 @@ def parse_results(lines):
   curActionDesc = None
   curAction = None
   curSection = None
+  curBig = False
 
   stats = {}
 
@@ -182,6 +183,15 @@ def parse_results(lines):
       appinfo, stackInfo = parse_stack(stack)
       # Generate or retrieve the AppStats object.
       appname = appinfo['app']
+
+      # Parse the body HTML to determine whether it's a "big" test case.
+      # %%% Yikes!
+      if curActionDesc == 'init' and appname.startswith(cfg.SMS2PREFIX):
+        if ln.find('.big.body.html') > -1 or appname.endswith('.big'):
+          curBig = True
+        else:
+          curBig = False
+
       appkey = appname
       if appkey.startswith(cfg.SMS2PREFIX):
         if appkey.endswith('.big') or appkey.endswith('-big'):
@@ -204,8 +214,9 @@ def parse_results(lines):
 
       curVariant = curAppStats.getVariant(descparts)
       # The app/variant info is assumed to come right after the action.
-      if appname.startswith(cfg.SMS2PREFIX) and appname.endswith('.big') and curActionDesc == "compute":
-        curActionDesc = "bigcompute"
+      if appname.startswith(cfg.SMS2PREFIX) and curActionDesc == "compute":
+        if curBig:
+          curActionDesc = "bigcompute"
         
       curAction = curVariant.getAction(curActionDesc, stackInfo)
 
@@ -521,7 +532,6 @@ def generate_graphs(stats):
   for app in apps:
     if app in cfg.DISABLED:
       continue
-    #if app.startswith(cfg.SMS2PREFIX) and not app.endswith('.big'): continue
     stat = stats[app]
     actdescs = load_actions(stat)
     for actdesc in actdescs:

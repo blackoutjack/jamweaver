@@ -482,7 +482,8 @@ public class JSIndirectionTransform extends JSTransform {
     Node proxName = Node.newString(Token.STRING, "set");
     Node libAcc = new Node(Token.GETPROP, libName, proxName);
 
-    rhs.detachFromParent();
+    // The parent will be null if |n| is an INC/DEC.
+    if (rhs.getParent() != null) rhs.detachFromParent();
     Node proxCall = new Node(Token.CALL, libAcc, obj, prop, rhs);
 
     // Pass the introspector to |set|.
@@ -514,6 +515,8 @@ public class JSIndirectionTransform extends JSTransform {
       // This case is expected. 
     } else if (tgt.isName()) {
       // This case is expected. 
+    } else if (tgt.isThis()) {
+      // This case is expected. 
     } else {
       Dbg.warn("Unexpected call target case: " + sm.codeFromNode(tgt));      
     }
@@ -537,10 +540,10 @@ public class JSIndirectionTransform extends JSTransform {
       }
     } else if (ExpUtil.isAccessor(tgt)) {
       rec = tgt.getFirstChild();
-    } else if (tgt.isName()) {
+    } else if (tgt.isName() || tgt.isThis()) {
       rec = null;
     } else {
-      Dbg.warn("Unexpected call target case: " + sm.codeFromNode(tgt));      
+      Dbg.warn("Unexpected call receiver case: " + sm.codeFromNode(tgt));      
     }
 
     return rec;
@@ -568,12 +571,27 @@ public class JSIndirectionTransform extends JSTransform {
   protected boolean shouldIndirectAssign(Node n) {
     // %%% Should support compound assignment too!
     assert n.isAssign() || ExpUtil.isUnOp(n);
-    Node lhs = n.getFirstChild();
+    Node lhs = ExpUtil.getAssignLHS(n);
     if (!ExpUtil.isAccessor(lhs)) return false;
+
+    // Assignment of certain values can't trigger any scripts.
+    Node rhs = ExpUtil.getAssignRHS(n);
+    if (ExpUtil.returnsNumber(sm, rhs)) {
+      return false;
+    } else if (ExpUtil.returnsBoolean(rhs)) {
+      return false;
+    } else if (rhs.isName()) {
+      String valname = rhs.getString();
+      String valtype = sm.getType(valname);
+      if (valtype != null && (valtype.equals("Number") || valtype.equals("Boolean"))) {
+        return false;
+      }
+    }
 
     Node obj = lhs.getFirstChild();
     Node prop = lhs.getChildAtIndex(1);
 
+    // %%% This assumes the policy property is non-numeric.
     boolean doTransform = false;
     if (prop.isString()) {
       // This covers both the case of property access and string
@@ -586,7 +604,7 @@ public class JSIndirectionTransform extends JSTransform {
       // This is the general element access case.
       String propName = prop.getString();
       String propType = sm.getType(propName);
-      if (propType == null || propType.equals("String")) {
+      if (propType == null || propType.equals("String") || propType.equals("Object")) {
         doTransform = true;
       }
     } else if (prop.isNumber()) {

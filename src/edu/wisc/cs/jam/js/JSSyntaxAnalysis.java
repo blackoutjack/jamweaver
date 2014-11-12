@@ -494,6 +494,14 @@ public class JSSyntaxAnalysis {
                 if (propname.equals(prop)) {
                   return false;
                 }
+              } else if (propexp.isName()) {
+                String propnm = propexp.getString();
+                String proptp = sm.getType(propnm);
+                // %%% This assumes the policy predicate specifies
+                // %%% a (non-numeric) string property.
+                if (proptp == null || proptp.equals("String") || proptp.equals("Object")) {
+                  return false;
+                }
               } else {
                 // We can't statically determine the property.
                 return false;

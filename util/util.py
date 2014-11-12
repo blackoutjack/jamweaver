@@ -227,6 +227,10 @@ def warn(txt):
   sys.stderr.write("WARNING: %s\n" % txt)
   sys.stderr.flush()
 
+def nl():
+  sys.stderr.write("\n")
+  sys.stderr.flush()
+
 def env_error(varname):
   err(varname + "is not a valid directory: " + eval(varname))
 
@@ -303,7 +307,6 @@ def get_result_info(resdir, app, getall=False):
   resultdirs = sort_dirs([app], resultdirs)
 
   if app not in resultdirs:
-    warn('No results found for %s' % app)
     return None
   
   infos = []
@@ -381,21 +384,6 @@ def find_files_recursive(toppath, relpath, outlist):
       outlist.append(rel)
 # /find_files_recursive
 
-def get_results_info(resdir, bases):
-  # Map the application name to a triple consisting of the output
-  # version, source file and policy file. If a more recent analysis of
-  # the app is encountered, it will replace the older one.
-  appfiles = {}
-
-  bases.sort()
-  for app in bases:
-    infos = get_result_info(resdir, app)
-    if infos is None or len(infos) > 0:
-      appfiles[app] = infos
-
-  return appfiles
-# /get_results_info
-
 def compare_info(actinfo, expinfo):
   keys = list(actinfo.keys())
   keys.extend(expinfo.keys())
@@ -409,6 +397,48 @@ def compare_info(actinfo, expinfo):
     elif actinfo[key] != expinfo[key]:
       disparities[key] = 'differ'
   return disparities 
+
+def process_info(infopath, exppath, overwrite, quiet=False):
+  ok = False
+  stat = None
+
+  actinfo = parse_info_file(infopath)
+  expinfo = parse_info_file(exppath)
+  if len(expinfo) > 0:
+    diff = compare_info(actinfo, expinfo)
+    if len(diff) == 0:
+      ok = True
+      stat = 'match'
+    else:
+      for k, m in diff.items():
+        stat = 'wrong'
+        if quiet:
+          break
+        else:
+          out('info:%s %s' % (k, m))
+  else:
+    stat = 'missing'
+
+  if overwrite:
+    # The meaning of |ok| is sort of flipped when we're overwriting.
+    if ok:
+      ok = False
+    else:
+      infofl = open(infopath, 'r')
+      infoout = infofl.read()
+      infofl.close()
+      stat = overwrite_expected(infoout, exppath)
+      if stat == 'overwritten' or stat == 'created':
+        ok = True
+      else:
+        ok = False
+
+  expname = os.path.basename(exppath)
+  if not quiet or stat == 'overwritten' or stat == 'created':
+    out('%s %s' % (expname, stat))
+
+  return ok
+# /process_info
 
 def parse_info_file(infofile):
   info = {}
@@ -443,13 +473,17 @@ def load_app_source(apppath, appname, defwarn=False):
     # Non-directories are assumed to be utility files.
     return None
 
+SKIP = True
 def load_app_sources(topdir, defwarn=True):
   # Throughout, sort the files so tests are run in a consistent order.
   allapps = os.listdir(topdir)
   allapps.sort()
   appsrcs = {}
   for appname in allapps:
-    #if not appname.startswith('sms2-') and appname != 'jsqrcode': continue
+    #global SKIP
+    #if appname == 'throw3': SKIP = False
+    #if SKIP: continue
+
     apppath = os.path.join(topdir, appname)
     appsrc = load_app_source(apppath, appname, defwarn=defwarn)
     if appsrc is not None:
@@ -618,12 +652,25 @@ def run_jam(jspaths, policies, refine=0, debug=False, perf=True, seeds=None, lib
   sys.stdout.write('\n')
   sys.stdout.flush()
 
-  # Let the user see the debugging output, demonstrating progress.
-  jam = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
+  # Output to stderr in realtime, but also save to a file.
+  tmp = tempfile.NamedTemporaryFile('w', delete=False)
+  tmpname = tmp.name
+  tmp.close()
 
-  outp, errp = jam.communicate()
+  # Let the user see the debugging output, demonstrating progress.
+  tee = subprocess.Popen(['tee', tmpname], stdin=PIPE, bufsize=0)
+  jam = subprocess.Popen(cmd, stdout=PIPE, stderr=tee.stdin, bufsize=0)
+
+  outp = jam.communicate()[0]
+
+  # Get the stderr text.
+  tee.communicate();
+  tmp = open(tmpname, 'r')
+  errp = tmp.read()
+  tmp.close()
+  os.unlink(tmpname)
+
   outp = outp.decode(sys.stdout.encoding)
-  errp = errp.decode(sys.stderr.encoding)
   code = jam.returncode
   if code != 0:
     err('JAM process returned non-zero error code: %d' % code)

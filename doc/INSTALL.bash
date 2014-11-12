@@ -12,7 +12,7 @@
 #
 
 # Set the following environment variables in your login script.
-export JAMPKG=${JAMPKG-$PWD/jam}
+export JAMPKG=${JAMPKG-$PWD}
  
 
 # Install some baseline apps.
@@ -24,12 +24,11 @@ sudo apt-get -y install zip
 sudo apt-get -y install scons
 sudo apt-get -y install screen
 sudo apt-get -y install openssh-server
-
-# Boost build dependencies
 sudo apt-get -y install g++
 sudo apt-get -y install python-dev
 sudo apt-get -y install zlib1g-dev
 sudo apt-get -y install bzlib2-dev
+sudo apt-get -y install make
 
 # Kaluza build dependencies
 sudo apt-get -y install openjdk-7-jdk
@@ -47,7 +46,7 @@ sudo apt-get -y install libgmp3-dev
 sudo ln -s /usr/lib/libgmp.so.3 /usr/lib/libgmp.so.10
 sudo apt-get -y install libnewmat10-dev
 sudo apt-get -y install libunwind8-dev
-sudo apt-get install libboost1.55-dev
+sudo apt-get -y install libboost1.55-dev
 
 
 # Some apps that I thought at one point were necessary, but don't seem
@@ -65,21 +64,13 @@ sudo apt-get install libboost1.55-dev
 sudo update-alternatives --config javac
 sudo update-alternatives --config java
 
-# Get the JAM release binaries.
-JAMPARENT=${JAMPKG%/*}
-cd $JAMPARENT
-git clone git@github.com:blackoutjack/jamweave.git $JAMPKG
-cd $JAMPKG
-
 # Set up some environment variables and aliases.
 cat >> ~/.bashrc.local <<EOF
 export EDITOR=vim
 export JAMPKG=$JAMPKG
-export BOOST_HOME=\$JAMPKG/boost
-export BOOST_LIB=\$JAMPKG/boost/stage/lib
 export YICES_VERSION=1.0.40
 
-export LD_LIBRARY_PATH=\$JAMPKG/lib:\$JAMPKG/wali/lib64:\$JAMPKG/libjson:\$JAMPKG/yices-\$YICES_VERSION/lib:\$JAMPKG/js-1.8.5/js/src/dist/lib:\$JAMPKG/wali/AddOns/Domains/ThirdParty/buddy-2.4/src/.libs:\$JAMPKG/JavaBDD:\$JAMPKG/v8/out/native/lib.target:\$BOOST_LIB:\$JAMPKG/gperftools-2.1/.libs
+export LD_LIBRARY_PATH=\$JAMPKG/lib:\$JAMPKG/wali/lib64:\$JAMPKG/libjson:\$JAMPKG/yices-\$YICES_VERSION/lib:\$JAMPKG/js-1.8.5/js/src/dist/lib:\$JAMPKG/wali/AddOns/Domains/ThirdParty/buddy-2.4/src/.libs:\$JAMPKG/JavaBDD:\$JAMPKG/v8/out/native/lib.target:\$JAMPKG/gperftools-2.1/.libs
 export PATH=\$PATH:\$JAMPKG/XSB/bin:\$JAMPKG/yices-\$YICES_VERSION/bin:\$JAMPKG/v8/out/native:/usr/lib/jvm/java-7-openjdk/bin
 
 alias jam="java -Xms256m -Xmx4096m -jar \$JAMPKG/bin/jam.jar"

@@ -387,16 +387,19 @@ public class JSStatementTransform extends JSTransform {
         // can't be altered.
         boolean vulnerable = true;
         if (s.isLocal() && s.isDeclared(name, false)) {
-          Iterator<Var> vit = s.getVars();
-          while (vit.hasNext()) {
-            Var v = vit.next();
-            Node f = v.getParentNode();
-            if (f != null && f.isFunction()) {
-              // The scope contains a function, so we can't be sure
-              // (without some hard-core analysis).
-              // %%% Test this.
-              return true;
-            }
+          Node rn = s.getRootNode();
+          if (rn.getType() != JSExp.FUNCTION) {
+            // This shouldn't happen.
+            Dbg.warn("Non-function, non-global variable scope: " + name);
+            return true;
+          }
+          Node rb = rn.getLastChild();
+          assert rb.isBlock() || rb.isEmpty();
+          if (rb.getChildCount() > 0 && rb.getChildAtIndex(0).getType() == JSExp.FUNCTION) {
+            // The scope contains a function, so we can't be sure
+            // (without some hard-core analysis).
+            // %%% Test this.
+            return true;
           }
           // Fall through.
         } else {

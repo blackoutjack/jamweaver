@@ -9,6 +9,7 @@ all:
 	@echo -n "It's recommend you run make individually for each of the "
 	@echo "following dependencies that you need."
 	@echo "\tyices (requires accepting a terms of service agreement)"
+	@echo "\twali"
 	@echo "\tbuddy"
 	@echo "\tclosure"
 	@echo "\txsb"
@@ -39,7 +40,7 @@ yices:
 
 closure:
 	# Check out and build Closure compiler from Google. 
-	git clone git@github.com:google/closure-compiler.git closure
+	git clone https://github.com/google/closure-compiler.git closure
 	# Get the revision that was developed against.
 	cd closure && git checkout $(CLOSURECOMMIT)
 	# Apply JAM-specific patches.
@@ -94,9 +95,7 @@ gperftools:
 wali:
 	#if [ ! -d "$(JAMPKG)/boost" ]; then echo "Please build boost first."; exit 1; fi;
 	# The following uses SSH, requiring a public key setup.
-	git clone git@github.com:WaliDev/WALi-OpenNWA.git wali
-	# This is to fix a conflict in defines.
-	sed -i "s/'BOOST_NO_DEFAULTED_FUNCTIONS'/#'BOOST_NO_DEFAULTED_FUNCTIONS'/" wali/SConstruct
+	git clone https://github.com/WaliDev/WALi-OpenNWA.git wali
 	scons -C wali
 	scons -C wali addons
 
@@ -147,7 +146,7 @@ commons-io:
 # Currently unused
 wala: commons-io
 	# Retrieve IBM Wala source code and build with Maven.
-	git clone git@github.com:wala/WALA.git wala
+	git clone https://github.com/wala/WALA.git wala
 	cd wala; \
 	mvn clean verify -DskipTests=true -q
 

@@ -44,7 +44,6 @@ sudo apt-get install maven
 
 # Runtime dependencies
 sudo apt-get -y install libgmp3-dev
-sudo ln -s /usr/lib/libgmp.so.3 /usr/lib/libgmp.so.10
 sudo apt-get -y install libnewmat10-dev
 sudo apt-get -y install libunwind8-dev
 sudo apt-get -y install libboost1.55-dev
@@ -86,16 +85,6 @@ source ~/.bashrc
 # Put the downloaded tarballs here for future reference.
 cd $JAMPKG
 mkdir packages
-
-# Check out and build WALi/OpenNWA.
-# The necessary binaries are actually part of the jam-release repository now.
-#cd $JAMPKG
-#svn co -r1939 svn+ssh://$SVNUSERNAME@velveeta.cs.wisc.edu/p/wpis/people/students/kidd/svnwali/trunk wali
-# Update the files that need modifications for JAM.
-#./wali-mod/distribute.bash
-#cd wali
-#scons
-#scons addons
 
 # To install all third-party dependencies, run the following.
 # cd $JAMPKG

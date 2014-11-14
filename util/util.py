@@ -473,7 +473,7 @@ def load_app_source(apppath, appname, defwarn=False):
     # Non-directories are assumed to be utility files.
     return None
 
-SKIP = True
+SKIP = False
 def load_app_sources(topdir, defwarn=True):
   # Throughout, sort the files so tests are run in a consistent order.
   allapps = os.listdir(topdir)
@@ -481,7 +481,7 @@ def load_app_sources(topdir, defwarn=True):
   appsrcs = {}
   for appname in allapps:
     #global SKIP
-    #if appname == 'throw3': SKIP = False
+    #if not appname.startswith('sms2-'): continue
     #if SKIP: continue
 
     apppath = os.path.join(topdir, appname)

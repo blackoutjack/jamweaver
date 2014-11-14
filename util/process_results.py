@@ -575,6 +575,9 @@ def generate_graphs(stats):
       time0 = float(times[cfg.VARIANTS[0]])
       time1 = float(times[cfg.VARIANTS[1]])
       time2 = float(times[cfg.VARIANTS[2]])
+      disp0 = cfg.VARIANT_DISPLAY[0].upper()
+      disp1 = cfg.VARIANT_DISPLAY[1].upper()
+      disp2 = cfg.VARIANT_DISPLAY[2].upper()
       if time2 > time1 and time0 > 100.0:
         cfg.warn("LONG-DURATION OUTLIER: %s/%s/%.2f/%.2f/%.2f" % (app, actdesc, time0, time1, time2))
 
@@ -583,16 +586,16 @@ def generate_graphs(stats):
 
       # Check for cases where secure code is faster than unprotected.
       if actdesc != 'init' and time2 / time0 <= 0.90:
-        cfg.warn("WOVEN UNDERLIER: %s/%s %.2f" % (app, actdesc, time2 / time0))
+        cfg.warn("%s UNDERLIER: %s/%s %.2f" % (disp2, app, actdesc, time2 / time0))
 
       if actdesc != 'init' and time1 / time0 < 0.90:
-        cfg.warn("MODULAR UNDERLIER: %s/%s %.2f" % (app, actdesc, time1 / time0))
+        cfg.warn("%s UNDERLIER: %s/%s %.2f" % (disp1, app, actdesc, time1 / time0))
 
       if time2 / time1 > 1.5:
-        cfg.warn("LARGE TRANSFORMED/MODULAR RATIO: %s/%s/%.2f/%.2f" % (app, actdesc, time2 / time1, time0))
+        cfg.warn("LARGE %s/%s RATIO: %s/%s/%.2f/%.2f" % (disp2, disp1, app, actdesc, time2 / time1, time0))
 
       if actdesc != 'init' and actdesc != 'load' and time2 / time0 > 5:
-        cfg.warn("LARGE TRANSFORMED/ORIGINAL RATIO: %s/%s/%.2f" % (app, actdesc, time2 / time0))
+        cfg.warn("LARGE %s/%s RATIO: %s/%s/%.2f" % (disp2, disp0, app, actdesc, time2 / time0))
 
       timelist.append(times)
 

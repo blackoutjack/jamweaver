@@ -14,13 +14,13 @@ from util import overwrite_expected
 from util import symlink
 
 microbases = get_variant_bases(MICROBENCHMARK_DIR)
-microtgt = os.path.join(JSTESTDIR, 'micro')
+microtgt = os.path.join(TESTDIR, 'micro')
 
 benchbases = get_variant_bases(BENCHMARK_DIR)
-benchtgt = os.path.join(JSTESTDIR, 'bench')
+benchtgt = os.path.join(TESTDIR, 'bench')
 
 webbases = get_variant_bases(WEBSITE_FILE)
-webtgt = os.path.join(JSTESTDIR, 'sites')
+webtgt = os.path.join(TESTDIR, 'sites')
 
 RESULTSDIR = OUTDIR
 

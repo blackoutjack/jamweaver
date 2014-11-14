@@ -16,6 +16,7 @@ export JAMPKG=${JAMPKG-$PWD}
  
 
 # Install some baseline apps.
+sudo apt-get -y install git
 sudo apt-get -y install vim
 sudo apt-get -y install emacs23-nox
 sudo apt-get -y install lynx
@@ -27,7 +28,7 @@ sudo apt-get -y install openssh-server
 sudo apt-get -y install g++
 sudo apt-get -y install python-dev
 sudo apt-get -y install zlib1g-dev
-sudo apt-get -y install bzlib2-dev
+sudo apt-get -y install libbz2-dev
 sudo apt-get -y install make
 
 # Kaluza build dependencies

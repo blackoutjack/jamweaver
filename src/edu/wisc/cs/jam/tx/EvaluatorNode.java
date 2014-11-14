@@ -13,6 +13,7 @@ import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
 
 import edu.wisc.cs.jam.js.JSExp;
+import edu.wisc.cs.jam.js.ExpUtil;
 import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPredicateType;
 
 import edu.wisc.cs.jam.env.NativeUtil;
@@ -306,13 +307,23 @@ public class EvaluatorNode {
     String op = null;
     boolean isInfix = true;
     if (type == JSPredicateType.SHEQ) {
-      op = "JAM.identical";
-      isInfix = false;
+      if (ExpUtil.isPrimitive(rhs) || ExpUtil.isPrimitive(lhs)) {
+        op = " === ";
+        isInfix = true;
+      } else {
+        op = "JAM.identical";
+        isInfix = false;
+      }
     } else if (type == JSPredicateType.EQ) {
       op = " == ";
     } else if (type == JSPredicateType.SHNE) {
-      op = "!JAM.identical";
-      isInfix = false;
+      if (ExpUtil.isPrimitive(rhs) || ExpUtil.isPrimitive(lhs)) {
+        op = " !== ";
+        isInfix = true;
+      } else {
+        op = "!JAM.identical";
+        isInfix = false;
+      }
     } else if (type == JSPredicateType.NE) {
       op = " != ";
     } else if (type == JSPredicateType.GT) {
@@ -509,7 +520,10 @@ public class EvaluatorNode {
 
     Exp fn = exp.getChild(1);
     String loc = null;
-    if ((loc = parseNativeLocation(fn)) != null) {
+    if ((loc = parseWild(fn, "node.value")) != null) {
+      // |loc| gets the value unified with the wildcard.
+      sb.append("true");
+    } else if ((loc = parseNativeLocation(fn)) != null) {
       sb.append("JAM.identical(node.value,");
       sb.append(loc);
       sb.append(")");

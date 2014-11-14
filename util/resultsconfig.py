@@ -26,7 +26,7 @@ VARIANTS = ['input', 'coarse.input', 'semantic0.collapsed']
 VARIANT_DISPLAY = ['unprotected', 'coarse-grained', 'fine-grained']
 RESULTS_SOURCE = os.path.join(PERFDIR, 'times');
 #TEST_DIR = 'jamscript/tests/apps/'
-TEST_DIR = 'jamscript/tests/browser/bench/'
+TEST_DIR = 'jamscript/bench/'
 PROFILE_MARKER = "<<<<< Profile: "
 PROFILE_MARKER_TAIL = " >>>>>"
 SECTION_MARKER = "===== "

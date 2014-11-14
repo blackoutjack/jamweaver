@@ -607,12 +607,14 @@ public class JSIndirectionTransform extends JSTransform {
       if (propType == null || propType.equals("String") || propType.equals("Object")) {
         doTransform = true;
       }
-    } else if (prop.isNumber()) {
+    } else if (ExpUtil.returnsNumber(sm, prop)) {
+      doTransform = false;
+    } else if (ExpUtil.returnsBoolean(prop)) {
       doTransform = false;
     } else if (prop.isThis()) {
       doTransform = true;
     } else {
-      Dbg.warn("Unexpected property transformation case: " + prop);
+      Dbg.warn("Unexpected property transformation case: " + prop + " / " + sm.codeFromNode(prop));
       doTransform = true;
     }
 

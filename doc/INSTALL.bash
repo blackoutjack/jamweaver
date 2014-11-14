@@ -16,48 +16,13 @@ export JAMPKG=${JAMPKG-$PWD}
  
 
 # Install some baseline apps.
-sudo apt-get -y install git
-sudo apt-get -y install vim
-sudo apt-get -y install emacs23-nox
-sudo apt-get -y install lynx
-sudo apt-get -y install unzip
-sudo apt-get -y install zip
-sudo apt-get -y install scons
-sudo apt-get -y install screen
-sudo apt-get -y install openssh-server
-sudo apt-get -y install g++
-sudo apt-get -y install python-dev
-sudo apt-get -y install zlib1g-dev
-sudo apt-get -y install libbz2-dev
-sudo apt-get -y install make
+sudo apt-get -y install git vim emacs23-nox lynx unzip zip scons screen openssh-server g++ python-dev zlib1g-dev libbz2-dev make
 
-# Kaluza build dependencies
-sudo apt-get -y install openjdk-7-jdk
-sudo apt-get -y install ant
-sudo apt-get -y install ocaml-nox
-
-# WALi build dependencies
-sudo apt-get -y install curl
-
-# WALA build dependencies
-sudo apt-get install maven
+# Closure/WALi/WALA build dependencies
+sudo apt-get -y install openjdk-7-jdk ant ocaml-nox curl maven
 
 # Runtime dependencies
-sudo apt-get -y install libgmp3-dev
-sudo apt-get -y install libnewmat10-dev
-sudo apt-get -y install libunwind8-dev
-sudo apt-get -y install libboost1.55-dev
-
-
-# Some apps that I thought at one point were necessary, but don't seem
-# to be any more.
-#sudo apt-get install ia32-libs
-#sudo apt-get install libcurl4-dev
-#sudo apt-get install libxml2-dev
-#sudo apt-get install libpcre-dev
-#sudo apt-get install makedepend
-#sudo apt-get install tofrodos
-#sudo apt-get install g++-multilib
+sudo apt-get -y install libgmp3-dev libnewmat10-dev libunwind8-dev libboost-all-dev
 
 # Choose version 7 of Java; you will be presented with a list of
 # options; choose openjdk 7.

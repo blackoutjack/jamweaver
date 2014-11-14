@@ -10,7 +10,6 @@ all:
 	@echo "following dependencies that you need."
 	@echo "\tyices (requires accepting a terms of service agreement)"
 	@echo "\twali"
-	@echo "\tbuddy"
 	@echo "\tclosure"
 	@echo "\txsb"
 	@echo "\tspidermonkey"
@@ -22,11 +21,7 @@ all:
 # steps needed, and the script outputs directions for these.
 # %%% Make boost (eventually all of these) externally linkable
 # %%% so that JAM can reuse already installed versions.
-everything: yices wali buddy closure xsb spidermonkey javabdd commons gperftools
-
-buddy:
-	# Create the required libbdd.so (we need shared rather than static).
-	cd $(JAMPKG)/wali/AddOns/Domains/ThirdParty/buddy-2.4 && ./configure && make
+everything: yices wali closure xsb spidermonkey javabdd commons gperftools
 
 yices:
 	mkdir -p packages
@@ -168,6 +163,11 @@ boost:
 	@echo "cd $(JAMPKG)/boost"
 	@echo "sudo ./bootstrap.sh"
 	@echo "sudo ./b2"
+
+# The buddy package is now built as part of the wali target.
+buddy:
+	# Create the required libbdd.so (we need shared rather than static).
+	cd $(JAMPKG)/wali/AddOns/Domains/ThirdParty/buddy-2.4 && ./configure && make
 
 
 

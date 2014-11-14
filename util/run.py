@@ -314,7 +314,7 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
 
       infopath = get_info_path(errp)
       if infopath is None:
-        err('Could not determine info path: %s\n' % appname)
+        err('Could not determine info path: %s\n' % app)
         continue
 
       infoexpfile = '%s.%s.info.txt' % (app, refsuf)

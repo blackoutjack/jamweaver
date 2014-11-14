@@ -14,26 +14,21 @@ from util import overwrite_expected
 from util import symlink
 
 microbases = get_variant_bases(MICROBENCHMARK_DIR)
-microtgt = os.path.join(TESTDIR, 'micro')
-
 benchbases = get_variant_bases(BENCHMARK_DIR)
-benchtgt = os.path.join(TESTDIR, 'bench')
-
 webbases = get_variant_bases(WEBSITE_FILE)
-webtgt = os.path.join(TESTDIR, 'sites')
 
 RESULTSDIR = OUTDIR
 
 TARGETDIRS = {
-  benchtgt: {
+  BENCHMARK_DIR: {
     'basenames': benchbases,
     'wrap': False,
   },
-  microtgt: {
+  MICROBENCHMARK_DIR: {
     'basenames': microbases,
     'wrap': True,
   },
-  webtgt: {
+  WEBSITE_DIR: {
     'basenames': webbases,
     'wrap': False,
   }

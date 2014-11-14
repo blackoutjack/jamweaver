@@ -14,6 +14,7 @@ PYTHON_VERSION = sys.version_info
 
 JAMPKG = os.getenv('JAMPKG')
 JAMSCRIPT_DIR = os.path.join(JAMPKG, 'jamscript')
+TESTS_DIR = os.path.join(JAMPKG, 'tests')
 
 SRCDIR = os.path.join(JAMPKG,'src')
 LIBDIR = os.path.join(JAMPKG,'lib')
@@ -33,12 +34,11 @@ UNPACKDIR = os.path.join(JAMPKG, 'unpacked')
 UNPACK_SCRIPT = os.path.join(UTILDIR, 'unpack.py')
 REPACK_SCRIPT = os.path.join(UTILDIR, 'repack.py')
 
-TESTDIR = os.path.join(JAMPKG, 'tests')
-BENCHMARK_DIR = os.path.join(TESTDIR, 'bench')
-MICROBENCHMARK_DIR = os.path.join(TESTDIR, 'micro')
-WEBSITE_DIR = os.path.join(TESTDIR, 'sites')
+BENCHMARK_DIR = os.path.join(TESTS_DIR, 'bench')
+MICROBENCHMARK_DIR = os.path.join(TESTS_DIR, 'micro')
+WEBSITE_DIR = os.path.join(TESTS_DIR, 'sites')
 WEBSITE_FILE = os.path.join(WEBSITE_DIR, 'sites.txt')
-INTERPRETER_TEST_DIR = os.path.join(TESTDIR, 'interpreter')
+INTERPRETER_TEST_DIR = os.path.join(TESTS_DIR, 'interpreter')
 
 DEFAULT_POLICY = os.path.join(BENCHMARK_DIR, 'default.policy')
 
@@ -47,7 +47,7 @@ JSLIBDIR = os.path.join(JAMSCRIPT_DIR, 'txjs')
 JAMSCRIPT_LIB = os.path.join(JSLIBDIR, 'libTx.js')
 JAMSCRIPT_DBGLIB = os.path.join(JSLIBDIR, 'libTxDbg.js')
 JAMSCRIPT_TESTDIR = os.path.join(JAMSCRIPT_DIR, 'tests', 'js')
-SMS2DIR = os.path.join(TESTDIR, 'bench', 'sms2')
+SMS2DIR = os.path.join(TESTS_DIR, 'bench', 'sms2')
 JAMSCRIPT_BUILDDIR = os.path.join(JAMSCRIPT_DIR, 'mozilla-esr17', 'obj-release', 'browser')
 JS_COMMAND = os.path.join(JAMSCRIPT_BUILDDIR, 'dist', 'bin', 'js')
 
@@ -100,9 +100,9 @@ COARSE_SOURCE_KEYS = [
 # Configure files that are symlinked in woven test case directories. 
 SYMLINK_FILES = [
   (JAMSCRIPT_LIB, None),
-  (os.path.join(TESTDIR, 'test.php'), None),
-  (os.path.join(TESTDIR, 'testindex.php'), 'index.php'),
-  (os.path.join(TESTDIR, 'auto.js'), None),
+  (os.path.join(TESTS_DIR, 'test.php'), None),
+  (os.path.join(TESTS_DIR, 'testindex.php'), 'index.php'),
+  (os.path.join(TESTS_DIR, 'auto.js'), None),
 ]
 
 # Operating system specific configuration

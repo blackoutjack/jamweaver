@@ -29,7 +29,8 @@ $JAMPKG directory: ``make -C $JAMPKG -f doc/DEPENDENCIES.mk [target]''.)
 
 Once the environment and dependencies are in place, you can build the
 system by invoking ``make'' (within $JAMPKG). See doc/RUNNING for
-running the included tests, and doc/POLICIES for formulating policies.
+running tests included in the jamtests repository, and doc/POLICIES for
+formulating policies.
 
 The JAM analysis creates JavaScript files instrumented with transaction
 blocks; to run these programs, you'll need to build a specially modified
@@ -39,10 +40,15 @@ the following address.
 
 https://github.com/blackoutjack/jamscript
 
-There is also a suite of pre-woven applications (the output of the
-weaver) that can be obtained from here.
+There is also a suite of applications (the input and output of the
+weaver) that can be obtained here:
 
 https://github.com/blackoutjack/jamtests
+
+For a default configuration, clone the jamscript and jamtests
+repositories, respectively, into jamscript/ and tests/ subdirectories
+of the jamweaver repository. To adjust to a different setup, alter the
+JAMSCRIPT_DIR and TESTS_DIR variables in util/config.py.
 
 ##### Files #####
 
@@ -53,9 +59,6 @@ doc/: Documentation for installing and running JAM.
   DEPENDENCIES.mk: a script to install third-party dependencies
   RUNNING: instructions for invoking JAM
   POLICIES: description of policy structure and language
-
-tests/: Contains various targeted test cases and benchmark
-  applications for JAM, including expected results.
 
 util/: Scripts, mostly for generating, collecting and analyzing results
   and performance statistics. See doc/RUNNING for details.

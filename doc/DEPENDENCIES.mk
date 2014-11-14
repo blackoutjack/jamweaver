@@ -16,6 +16,7 @@ all:
 	@echo "\tspidermonkey"
 	@echo "\tjavabdd"
 	@echo "\tcommons"
+	@echo "\tgperftools"
 
 # Boost is installed at the end only because there are a couple manual
 # steps needed, and the script outputs directions for these.

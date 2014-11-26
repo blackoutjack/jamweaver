@@ -275,7 +275,7 @@ public class JAM {
     }
     FileUtil.writeToMain("checks:" + cm.getCheckCount() + "\n", JAMConfig.INFO_FILENAME, true);
 
-    sm.postprocess(getControlAutomaton(), getCheckManager());
+    sm.postprocess(getCheckManager());
 
     String output = sm.toString();
     if (!Opts.noOut) {

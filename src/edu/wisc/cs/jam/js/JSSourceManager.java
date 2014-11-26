@@ -1,6 +1,7 @@
 package edu.wisc.cs.jam.js;
 
 import com.google.javascript.jscomp.CallGraph;
+import com.google.javascript.jscomp.CallGraph.Callsite;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
@@ -31,6 +32,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.logging.Level;
+import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -56,6 +58,7 @@ import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.html.HTMLSource;
+import edu.wisc.cs.jam.env.NativeUtil;
 
 public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
@@ -68,6 +71,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   protected TypeFacts typeFacts;
   protected List<SourceFile> externList;
   protected Set<String> temporaries;
+  protected ControlAutomaton caut;
 
   protected boolean needsCallGraphUpdate;
   protected boolean needsCodeUpdate;
@@ -175,6 +179,11 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
       generateCallGraph();
     assert callGraph != null;
     return callGraph;
+  }
+
+  @Override
+  public void setControlAutomaton(ControlAutomaton c) {
+    caut = c;
   }
 
   // Create a new Closure compiler object with the provided options.
@@ -517,6 +526,38 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     }
   } // end preprocess
 
+  public List<String> getPossibleCallTargets(Exp e) {
+    CallGraph cg = getCallGraph();
+    Collection<Callsite> concalls = caut.getConservativeCalls();
+    Collection<Callsite> excalls = caut.getExternCalls();
+
+    List<Exp> calls = new ArrayList<Exp>();
+    e.findType(JSExp.CALL, calls, false);
+    List<String> ret = new ArrayList<String>();
+    for (Exp c : calls) {
+      Node cn = ((JSExp)c).getNode();
+      Callsite cs = cg.getCallsiteForAstNode(cn);
+      if (concalls.contains(cs)) {
+        // |null| should be interpreted as "anything."
+        return null;
+      }
+      if (excalls.contains(cs)) {
+        Collection<Node> extgts = cs.getPossibleExternTargets();
+        for (Node extgt : extgts) {
+          String s = codeFromNode(extgt);
+          String nl = NativeUtil.getNativeLocationFromExpression(s);
+          if (nl == null) {
+            Dbg.warn("Unknown native expression: " + s);
+            return null;
+          }
+          ret.add(nl);
+        }
+      }
+    }
+    //Dbg.dbg("EXP: " + e.toCode() + " TARGETS: " + ret);
+    return ret;
+  }
+
   @Override
   public String getType(String name) {
     if (typeFacts == null) return null;
@@ -606,10 +647,10 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   // Optimize code via Closure. Should only be called at the end of the
   // analysis since it will foul up various assumptions that JAM needs.
   @Override
-  public void postprocess(ControlAutomaton c, CheckManager cm) {
+  public void postprocess(CheckManager cm) {
     // Perform the transformation to isolate higher-order scripts. 
     // %%% Remove the need for ControlAutomaton.
-    Transform it = new JSIndirectionTransform(c, cm);
+    Transform it = new JSIndirectionTransform(caut, cm);
     it.run(this);
     // Save the transformed output.
     saveSources("indirection");

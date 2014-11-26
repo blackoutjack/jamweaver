@@ -64,6 +64,7 @@ public class JavaScript implements Language {
     } else {
       caut = new JSInterproceduralControlStructure(sm, cm);
     }
+    sm.setControlAutomaton(caut);
     return caut;
   }
 

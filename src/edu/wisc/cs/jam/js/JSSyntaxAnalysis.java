@@ -32,12 +32,22 @@ public class JSSyntaxAnalysis {
     pl = new JSPolicyLanguage();
   }
 
-  protected boolean definitelyNoInvoke(Exp exp) {
+  protected boolean definitelyNoInvoke(Exp exp, String tgt) {
     // Don't descend into blocks for control statements.
     if (ExpUtil.isStatementBlock(exp))
       return false;
-    if (ExpUtil.containsInvoke(exp, false))
+    if (ExpUtil.containsInvoke(exp, false)) {
+      /*
+      // %%% Not sound currently.
+      if (tgt != null) {
+        List<String> tgts = sm.getPossibleCallTargets(exp);
+        if (tgts != null) {
+          return !tgts.contains(tgt);
+        }
+      }
+      */
       return false;
+    }
     // %%% Are there other node types of interest?
     return true;
   }
@@ -92,7 +102,7 @@ public class JSSyntaxAnalysis {
         && polexp.getChild(0).getString().equals("jam#arg")) {
 
       // There must be a CALL/NEW for the arg predicate to be true.
-      if (definitelyNoInvoke(progexp)) {
+      if (definitelyNoInvoke(progexp, null)) {
         // No values are possible so return an empty list. 
         return ret;
       }
@@ -119,7 +129,7 @@ public class JSSyntaxAnalysis {
         && polexp.getChild(0).getString().equals("jam#arglen")) {
 
       // There must be a CALL/NEW for the arg predicate to be true.
-      if (definitelyNoInvoke(progexp)) {
+      if (definitelyNoInvoke(progexp, null)) {
         // No values are possible so return an empty list. 
         return ret;
       }
@@ -536,6 +546,20 @@ public class JSSyntaxAnalysis {
     return false;
   }
 
+  protected String getPolicyCallTarget(Exp conj) {
+    assert conj.isCall();
+    assert conj.getChildCount() == 2;
+    Exp arg = conj.getChild(1);
+    String tgt = null;
+    if (arg.isName()) {
+      tgt = arg.getString();
+      // %%% Use PolicyLanguage.
+      if (tgt.startsWith("`"))
+        tgt = null;
+    }
+    return tgt;
+  }
+
   protected String getAccessProperty(Exp conj) {
     assert conj.isCall();
     String cname = conj.getChild(0).getString();
@@ -577,7 +601,9 @@ public class JSSyntaxAnalysis {
 
       if (pred.isEventPredicate()) {
         if (pt == JSPredicateType.INVOKE) {
-          if (definitelyNoInvoke(progexp))
+          Exp conj = conjs.get(0);
+          String tgt = getPolicyCallTarget(conj);
+          if (definitelyNoInvoke(progexp, tgt))
             return Boolean.FALSE;
         } else if (pt == JSPredicateType.CONSTRUCT) {
           if (definitelyNoConstruct(progexp))

@@ -759,7 +759,6 @@ public class ExpUtil {
     return false;
   }
 
-
   public static boolean containsName(Node n, String name) {
     if (n == null) return false;
     if (n.isName() && n.getString().equals(name)) return true;

@@ -271,6 +271,13 @@ public class NativeUtil {
     }
   }
 
+  public static String getNativeLocationFromExpression(String exp) {
+    if (closureTranslation.containsKey(exp)) {
+      exp = closureTranslation.get(exp);
+    }
+    return nativeExpressionToLocation.get(exp);
+  }
+
   protected static boolean isPrimitiveLocation(String loc) {
     return PRIMITIVES.contains(loc);
   }

@@ -22,4 +22,11 @@ public class ClosureUtil {
   public static Double getNumberValue(Node n) {
     return NodeUtil.getNumberValue(n);
   }
+
+  public static ControlFlowGraph<Node> getCFG(Compiler c, Node externs, Node root) {
+    // ControlFlowAnalysis is package-private.
+    ControlFlowAnalysis cfa = new ControlFlowAnalysis(c, false, false);
+    cfa.process(externs, root);
+    return cfa.getCfg();
+  }
 }

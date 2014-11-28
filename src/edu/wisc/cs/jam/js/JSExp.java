@@ -202,7 +202,8 @@ public class JSExp extends Exp {
   protected static JSExp create(SourceManager src, Node n, Exp parent) {
     if (nodeMap.containsKey(n)) {
       JSExp exp = nodeMap.get(n);
-      assert exp.parent == null || exp.parent == parent;
+      // %%% Disable this while in transition from Node to Exp.
+      //assert exp.parent == null || exp.parent == parent : "Mismatched parent of " + n + ": " + exp.parent + " / " + parent;
       exp.parent = parent;
       return exp;
     }
@@ -390,7 +391,7 @@ public class JSExp extends Exp {
   public Exp cloneAssignRHS() {
     // Unwrap the expression.
     if (is(EXPR_RESULT)) {
-      return getChild(1).cloneAssignRHS();
+      return getChild(0).cloneAssignRHS();
     }
 
     if (isAssignment()) {
@@ -727,6 +728,12 @@ public class JSExp extends Exp {
   @Override
   public SourceManager getSourceManager() {
     return sm;
+  }
+
+  @Override
+  public String getSourceFileName() {
+    if (node == null) return null;
+    return node.getSourceFileName();
   }
 
   @Override

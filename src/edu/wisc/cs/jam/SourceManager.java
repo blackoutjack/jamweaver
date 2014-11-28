@@ -1,15 +1,13 @@
 package edu.wisc.cs.jam;
 
-import com.google.javascript.jscomp.CallGraph;
-import com.google.javascript.jscomp.Compiler;
-import com.google.javascript.jscomp.CompilerPass;
-import com.google.javascript.jscomp.CompilerOptions;
+import com.google.javascript.jscomp.ControlFlowGraph;
 import com.google.javascript.jscomp.NodeTraversal.Callback;
+import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.rhino.Node;
 
-import com.google.javascript.jscomp.JAMControlFlowGraph;
-
 import java.util.List;
+
+import edu.wisc.cs.jam.CallGraph.Function;
 
 public interface SourceManager {
   public abstract void saveSources(String dirname);
@@ -29,12 +27,9 @@ public interface SourceManager {
 
   // %%% Remove/modify
   public abstract Exp expFromCode(String code);
-  public abstract Node nodeFromCode(String code);
   public abstract String codeFromNode(Node n);
-  public abstract Node getRootNode();
-  public abstract Node getExterns();
-
-  // Do away with this once obsolete.
-  public Compiler getCompiler();
-
+  public abstract Exp getRoot();
+  public abstract Exp getExterns();
+  public abstract void traverse(Exp root, Callback cb);
+  public abstract ControlFlowGraph<Node> getCFG(Function f);
 }

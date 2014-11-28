@@ -38,7 +38,7 @@ public class NativeIdentifier implements Utility {
   }
 
   public String identify(String phrase) {
-    Exp s = JSExp.create(sm, sm.nodeFromCode(phrase));
+    Exp s = sm.expFromCode(phrase);
     ExpSymbol ss = new ExpSymbol(s);
 
     // Use the XSB semantics to interpret JavaScript snippets and get

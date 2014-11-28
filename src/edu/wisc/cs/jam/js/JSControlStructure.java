@@ -13,9 +13,6 @@ import com.google.javascript.jscomp.NodeTraversal;
 import com.google.javascript.jscomp.NodeTraversal.Callback;
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
-import com.google.javascript.jscomp.CallGraph;
-import com.google.javascript.jscomp.CallGraph.Function;
-import com.google.javascript.jscomp.CallGraph.Callsite;
 import com.google.javascript.jscomp.CompilerPass;
 import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
@@ -36,6 +33,8 @@ import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.ReturnSymbol;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.Dbg;
+import edu.wisc.cs.jam.CallGraph.Callsite;
+import edu.wisc.cs.jam.CallGraph.Function;
 
 import edu.wisc.cs.jam.xsb.XSBInterface;
 
@@ -94,16 +93,48 @@ public class JSControlStructure extends ControlStructure {
     }
   }
 
+  protected void buildIntraproceduralEdges(JAMControlFlowGraph cfg) {
+
+    // Create the CFG for the top-level function first.
+    cfg.addFunction(mainFunction);
+    // Store the final destination state in the program body.
+    // %%% This relies on getStates returning a list of states
+    // %%% organized by order added.
+    lastMainState = getStates().get(getStateCount() - 1);
+
+    // Now process the internals of each user-defined function in turn.
+    for (Function curFunc : allFunctions) {
+      // Add intra-procedural CFG edges to the automaton.
+      cfg.addFunction(curFunc);
+    }
+
+    // Acquire the informational maps built up by the CFG.
+    stateMap = cfg.getStateMap();
+    functionReturnMap = cfg.getFunctionReturnMap();
+    functionEntryMap = cfg.getFunctionEntryMap();
+    logSize("intraprocedural");
+
+    /*
+    // Create this here, for no particular reason.
+    State externSource = new State();
+    // %%% Might want a special symbol for this, but it's messing up
+    // %%% the sentinel system currently.
+    //ExpSymbol externSymbol = new ExternEntrySymbol(sm);
+    ExpSymbol externSymbol = new ExpSymbol(JSExp.createEmpty(sm));
+    State externDest = new State();
+    externCall = makeEdge(externSymbol, externSource, externDest);
+    addEdge(externCall);
+    */
+  }
+
   // Build the control-flow graph.
   protected void load() {
     loadCallGraph();
 
     FileUtil.writeToMain("allFunctions:" + allFunctions.size() + "\nallCallsites:" + allCallsites.size() + "\n", JAMConfig.INFO_FILENAME, true);
 
-    Node root = sm.getRootNode();
-    Node externs = sm.getExterns();
     JAMControlFlowGraph cfg =
-      new JAMControlFlowGraph(this, sm, externs, root);
+      new JAMControlFlowGraph(this, sm);
 
     buildIntraproceduralEdges(cfg);
 

@@ -49,7 +49,7 @@ public class ForkCheckManager implements CheckManager, Callback {
 
   @Override
   public void loadExistingChecks() {
-    Node root = sm.getRootNode();
+    Node root = ((JSExp)sm.getRoot()).getNode();
     sm.traverse(root, cm);
   }
 

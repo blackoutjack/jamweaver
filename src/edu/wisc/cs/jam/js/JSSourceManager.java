@@ -1,7 +1,5 @@
 package edu.wisc.cs.jam.js;
 
-import com.google.javascript.jscomp.CallGraph;
-import com.google.javascript.jscomp.CallGraph.Callsite;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
@@ -20,6 +18,7 @@ import com.google.javascript.jscomp.DefaultPassConfig;
 import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.SourceFile;
 import com.google.javascript.jscomp.JSModule;
+import com.google.javascript.jscomp.ControlFlowGraph;
 import com.google.javascript.rhino.Node;
 
 import com.google.common.collect.HashMultimap;
@@ -57,6 +56,9 @@ import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.Exp;
+import edu.wisc.cs.jam.CallGraph;
+import edu.wisc.cs.jam.CallGraph.Function;
+import edu.wisc.cs.jam.CallGraph.Callsite;
 import edu.wisc.cs.jam.html.HTMLSource;
 import edu.wisc.cs.jam.env.NativeUtil;
 
@@ -114,13 +116,13 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
       if (src.isWrapped()) {
         // Remove the wrapper for event handlers.
-        Node n = nodeFromCode(contents);
-        if (n.isFunction()) {
-          n = n.getLastChild();
-          assert n.isBlock();
-          contents = codeFromNode(n);
+        Exp e = expFromCode(contents);
+        if (e.isFunction()) {
+          e = e.getLastChild();
+          assert e.isBlock();
+          contents = e.toCode();
         } else {
-          Dbg.warn("Non-function wrapper for wrapped code: " + n);
+          Dbg.warn("Non-function wrapper for wrapped code: " + e);
         }
       }
 
@@ -154,8 +156,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   }
 
   // Get the compiler if it needs to be used directly.
-  @Override
-  public Compiler getCompiler() {
+  protected Compiler getCompiler() {
     if (compiler == null) {
       boolean success = runPass(null, null, JAM.Opts.debug, false);
       if (!success) {
@@ -179,6 +180,11 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
       generateCallGraph();
     assert callGraph != null;
     return callGraph;
+  }
+
+  protected void generateCallGraph() {
+    callGraph = new JSCallGraph(getCompiler(), this);
+    needsCallGraphUpdate = false;
   }
 
   @Override
@@ -353,12 +359,12 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     // Mark this now to avoid possibility of an infinite loop.
     needsCodeUpdate = false;
     // For each user script root node, find the script.
-    Node root = getRootNode();
+    Exp root = getRoot();
     for (int i=0; i<root.getChildCount(); i++) {
-      Node rootnode = root.getChildAtIndex(i);
+      Exp rootnode = root.getChild(i);
       String rootpath = rootnode.getSourceFileName();
       if (rootpath == null) {
-        Dbg.warn("No path for node: " + rootnode + " / " + codeFromNode(rootnode));
+        Dbg.warn("No path for node: " + rootnode);
         continue;
       }
       JSSource src = null;
@@ -370,7 +376,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
         }
       }
       assert src != null : "Unable to identify source file for path: " + rootpath;
-      String code = codeFromNode(rootnode);
+      String code = rootnode.toCode();
       src.updateContents(code);
     }
   }
@@ -405,22 +411,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     return JSExp.create(this, body);
   }
 
-  @Override
-  public Node nodeFromCode(String code) {
-    CompilerInput input = new CompilerInput(SourceFile.fromCode("synthetic", code));
-
-    Node script = input.getAstRoot(getCompiler());
-    assert script != null : "Unable to parse node from code: " + code;
-
-    Node body = script.getFirstChild();
-    assert body != null : "Empty script returned when parsing code: " + code;
-
-    // Unwrap from the SCRIPT tag.
-    return body.detachFromParent();
-  }
-
-  @Override
-  public Node getRootNode() {
+  protected Node getRootNode() {
     if (JAM.Opts.noExterns) {
       return getCompiler().getRoot();
     } else {
@@ -431,16 +422,29 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   }
 
   @Override
-  public Node getExterns() {
-    // The compiler's root consists of the externs first and the script
-    // second. We want the script only.
-    return getCompiler().getRoot().getFirstChild();
+  public Exp getRoot() {
+    Node rootNode = getRootNode();
+    return JSExp.create(this, rootNode);
   }
 
-  protected void generateCallGraph() {
-    callGraph = new CallGraph(getCompiler());
-    callGraph.process(getExterns(), getRootNode());
-    needsCallGraphUpdate = false;
+  protected Node getExternNodes() {
+    if (JAM.Opts.noExterns) {
+      return null;
+    } else {
+      // The compiler's root consists of the externs first and the script
+      // second. We want the script only.
+      return getCompiler().getRoot().getFirstChild();
+    }
+  }
+
+  @Override
+  public Exp getExterns() {
+    Node externNodes = getExternNodes();
+    if (externNodes == null) {
+      return JSExp.createEmpty(this);
+    } else {
+      return JSExp.create(this, externNodes);
+    }
   }
 
   // Normalize/flatten code and remove anonymous functions.
@@ -535,16 +539,15 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     e.findType(JSExp.CALL, calls, false);
     List<String> ret = new ArrayList<String>();
     for (Exp c : calls) {
-      Node cn = ((JSExp)c).getNode();
-      Callsite cs = cg.getCallsiteForAstNode(cn);
+      Callsite cs = cg.getCallsiteForExp(c);
       if (concalls.contains(cs)) {
         // |null| should be interpreted as "anything."
         return null;
       }
       if (excalls.contains(cs)) {
-        Collection<Node> extgts = cs.getPossibleExternTargets();
-        for (Node extgt : extgts) {
-          String s = codeFromNode(extgt);
+        Set<Exp> extgts = cs.getPossibleExternTargets();
+        for (Exp extgt : extgts) {
+          String s = extgt.toCode();
           String nl = NativeUtil.getNativeLocationFromExpression(s);
           if (nl == null) {
             Dbg.warn("Unknown native expression: " + s);
@@ -592,9 +595,23 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     }
   }
 
-  public int getNodeCount() {
+  // Get the CFG for the given function.
+  @Override
+  public ControlFlowGraph<Node> getCFG(Function f) {
+    Node root = ((JSExp)f.getExp()).getNode();
+    Node externs = ((JSExp)getExterns()).getNode();
+    return ClosureUtil.getCFG(getCompiler(), externs, root);
+  }
+
+  @Override
+  public void traverse(Exp root, Callback cb) {
+    Node rootNode = ((JSExp)root).getNode();
+    NodeTraversal.traverse(getCompiler(), rootNode, cb);
+  }
+
+  protected int getNodeCount() {
     NodeCounter counter = new NodeCounter();
-    NodeTraversal.traverse(getCompiler(), getRootNode(), counter);
+    traverse(getRoot(), counter);
     return counter.getCount();
   }
 

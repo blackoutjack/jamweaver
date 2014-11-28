@@ -481,7 +481,7 @@ def load_app_sources(topdir, defwarn=True):
   appsrcs = {}
   for appname in allapps:
     #global SKIP
-    #if not appname.startswith('sms2-'): continue
+    #if not appname.startswith('sms2-') and appname != 'jsqrcode': continue
     #if SKIP: continue
 
     apppath = os.path.join(topdir, appname)
@@ -722,7 +722,7 @@ def run_unpacker(url, debug=False, saveall=False):
   unpacker = subprocess.Popen(cmd, stdout=PIPE, stderr=STDOUT)
   outp, errp = unpacker.communicate()
   outp = outp.decode(sys.stdout.encoding)
-  errp = errp.decode(sys.stderr.encoding)
+  #errp = errp.decode(sys.stderr.encoding)
   code = unpacker.returncode
   if code != 0:
     out(outp)

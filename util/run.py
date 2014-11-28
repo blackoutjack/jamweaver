@@ -169,7 +169,7 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
       exppre = ''
 
     out("Analyzing %s" % appname)
-    outp, errp = run_jam(srclist, [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
+    outp, errp = run_jam([srclist], [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
     
     # Error case, message printed in |run_jam|.
     if outp is None: continue

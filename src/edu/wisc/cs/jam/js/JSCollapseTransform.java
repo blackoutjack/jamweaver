@@ -14,11 +14,6 @@ import com.google.javascript.jscomp.NodeTraversal;
 import com.google.javascript.jscomp.NodeTraversal.Callback;
 import com.google.javascript.jscomp.NodeTraversal.AbstractScopedCallback;
 import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
-import com.google.javascript.jscomp.CallGraph;
-import com.google.javascript.jscomp.CallGraph.Function;
-import com.google.javascript.jscomp.CallGraph.Callsite;
-import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.Scope;
 import com.google.javascript.jscomp.Scope.Var;
 
@@ -31,6 +26,7 @@ import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.SourceManager;
+import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.JAM;
 
@@ -49,19 +45,18 @@ public class JSCollapseTransform extends JSTransform {
   @Override
   public void run(SourceManager src) {
     sm = src;
-    Node root = sm.getRootNode();
-    Compiler comp = sm.getCompiler();
+    Exp root = sm.getRoot();
 
     // This should be done after the JSCallTransform.
     Collector collect = new Collector();
-    NodeTraversal.traverse(comp, root, collect);
+    sm.traverse(root, collect);
 
     boolean doCollapse = true;
     int collCnt = 0;
     while (doCollapse) {
       Dbg.out("Starting collapse pass " + collCnt, 3);
       Collapser coll = new Collapser(collect.getInfo());
-      NodeTraversal.traverse(comp, root, coll);
+      sm.traverse(root, coll);
       doCollapse = coll.madeChange();
       collCnt++;
     }

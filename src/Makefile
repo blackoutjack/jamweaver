@@ -41,12 +41,12 @@ HTMLDIR=$(MAINDIR)/html
 COMDIR=com/google/javascript/jscomp
 
 # Java classes in the edu.wisc.cs.jam package
-MAINBASE=JAM JAMAnalysis BackwardAnalysis BranchSymbol Clause CartesianAutomaton ControlAutomaton ControlStructure CounterExample DataState EvaluationAutomaton FileUtil FocusAutomaton FunctionEntrySymbol JAMConfig ExpSymbol OptionParser Options Policy PolicyLanguage PolicyPath Predicate PredicateLearner PredicateSymbol PredicateType PredicateValue ProgramModel Relation RelationDomain ReturnSymbol Semantics SourceManager Source StringUtil DataTransition SeedPredicates CleverCache RelationAutomaton Dbg DisjointAutomaton IncrementalAnalysis CheckManager RuntimeCheck Transform Exp Language #BooleanAutomaton MultiAnalysis ForkCheckManager ForkCheck
+MAINBASE=JAM JAMAnalysis BackwardAnalysis BranchSymbol Clause CartesianAutomaton ControlAutomaton ControlStructure CounterExample DataState EvaluationAutomaton FileUtil FocusAutomaton FunctionEntrySymbol JAMConfig ExpSymbol OptionParser Options Policy PolicyLanguage PolicyPath Predicate PredicateLearner PredicateSymbol PredicateType PredicateValue ProgramModel Relation RelationDomain ReturnSymbol Semantics SourceManager Source StringUtil DataTransition SeedPredicates CleverCache RelationAutomaton Dbg DisjointAutomaton IncrementalAnalysis CheckManager RuntimeCheck Transform CallGraph Exp Language #BooleanAutomaton MultiAnalysis ForkCheckManager ForkCheck
 MAINSRC=$(MAINBASE:%=$(MAINDIR)/%.java)
 MAINCLS=$(MAINSRC:%.java=%.class)
 
 # Java classes in the edu.wisc.cs.jam.js package.
-JSBASE=JavaScript JSSourceManager JSSource JSSemantics JSTransform JSStatementTransform JSIndirectionTransform JSCollapseTransform JSControlStructure JSInterproceduralControlStructure JSExp JSPredicateLearner JSPolicyLanguage FunctionFacts ExpUtil TypeFacts JSSyntaxAnalysis
+JSBASE=JavaScript JSSourceManager JSSource JSSemantics JSTransform JSStatementTransform JSIndirectionTransform JSCollapseTransform JSControlStructure JSInterproceduralControlStructure JSExp JSPredicateLearner JSPolicyLanguage FunctionFacts ExpUtil TypeFacts JSCallGraph JSSyntaxAnalysis
 JSSRC=$(JSBASE:%=$(JSDIR)/%.java)
 JSCLS=$(JSSRC:.java=.class)
 

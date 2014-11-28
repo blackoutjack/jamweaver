@@ -11,19 +11,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Collection;
 
-import com.google.javascript.jscomp.NodeTraversal;
-import com.google.javascript.jscomp.NodeTraversal.Callback;
-import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
-import com.google.javascript.jscomp.CallGraph;
-import com.google.javascript.jscomp.CallGraph.Function;
-import com.google.javascript.jscomp.CallGraph.Callsite;
-import com.google.javascript.jscomp.CompilerOptions;
-import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
-import com.google.common.collect.HashMultimap;
-
-import com.google.javascript.jscomp.JAMControlFlowGraph;
-
 import edu.wisc.cs.automaton.Automaton;
 import edu.wisc.cs.automaton.Automaton.Edge;
 import edu.wisc.cs.automaton.State;
@@ -33,6 +20,8 @@ import edu.wisc.cs.jam.xsb.XSBInterface;
 import edu.wisc.cs.jam.js.JSExp;
 import edu.wisc.cs.jam.js.ExpUtil;
 import edu.wisc.cs.jam.env.NativeUtil;
+import edu.wisc.cs.jam.CallGraph.Function;
+import edu.wisc.cs.jam.CallGraph.Callsite;
 
 // ControlStructure is a ControlAutomaton that has the ability to build
 // itself. This is separated out from ControlAutomaton so that other
@@ -45,7 +34,7 @@ public abstract class ControlStructure extends ControlAutomaton {
   protected CheckManager cm;
   
   // Maps a program statement to the control flow state that it lead to
-  protected Map<Node,State> stateMap;
+  protected Map<Exp,State> stateMap;
 
   // Maps a function to its entry state
   protected Map<Function,State> functionEntryMap;
@@ -108,14 +97,14 @@ public abstract class ControlStructure extends ControlAutomaton {
   protected boolean getPossibleUserTargets(Callsite curSite, Set<Function> targets) {
     boolean hasUserTarget = false;
 
-    Node callNode = curSite.getAstNode();
+    Exp callNode = curSite.getExp();
 
     // String to represent the callsite.
     // %%% Correctness relies on the unique naming facilities of
     // %%% Closure. We should identify the specific callsite
     // %%% with source position, but nothing currently
     // %%% handles such a thing in the XSB semantics.
-    String callId = getCode(callNode.getChildAtIndex(0));
+    String callId = callNode.getChild(0).toCode();
     Set<String> callTargs = callTargets.get(callId);
     if (callTargs == null) {
       callTargs = new LinkedHashSet<String>();
@@ -143,17 +132,17 @@ public abstract class ControlStructure extends ControlAutomaton {
     return hasUserTarget;
   }
 
-  protected boolean getPossibleExternTargets(Callsite curSite) {
-    boolean hasExternTarget = false;
+  protected boolean loadPossibleExternTargets(Callsite curSite) {
+    boolean targetsExtern = false;
 
-    Node callNode = curSite.getAstNode();
+    Exp callExp = curSite.getExp();
 
     // String to represent the callsite.
     // %%% Correctness relies on the unique naming facilities of
     // %%% Closure. We should identify the specific callsite
     // %%% with source position, but nothing currently
     // %%% handles such a thing in the XSB semantics.
-    String callId = getCode(callNode.getChildAtIndex(0));
+    String callId = callExp.getChild(0).toCode();
     Set<String> callTargs = callTargets.get(callId);
     if (callTargs == null) {
       callTargs = new LinkedHashSet<String>();
@@ -161,15 +150,15 @@ public abstract class ControlStructure extends ControlAutomaton {
     }
 
     if (curSite.hasUnknownTarget()) {
-      hasExternTarget = true;
+      targetsExtern = true;
     } else {
       // %%% This is not really sound.
-      Collection<Node> externTargets = curSite.getPossibleExternTargets();
+      Set<Exp> externTargets = curSite.getPossibleExternTargets();
       if (externTargets.size() > 0) {
         externCalls.add(curSite);
-        hasExternTarget = true;
-        for (Node ext : externTargets) {
-          String expr = getCode(ext);
+        targetsExtern = true;
+        for (Exp ext : externTargets) {
+          String expr = ext.toCode();
           // Translate Closure natives to form matching the semantics.
           String maybeExpr = NativeUtil.closureTranslation.get(expr);
           if (maybeExpr != null) {
@@ -198,7 +187,7 @@ public abstract class ControlStructure extends ControlAutomaton {
       }
     }
 
-    return hasExternTarget;
+    return targetsExtern;
   }
 
   // Gets all of the call targets for a given callsite or |null| if
@@ -206,7 +195,7 @@ public abstract class ControlStructure extends ControlAutomaton {
   protected Set<Function> getAllPossibleTargets(Callsite site) {
     Set<Function> targets = new LinkedHashSet<Function>();
     getPossibleUserTargets(site, targets);
-    getPossibleExternTargets(site);
+    loadPossibleExternTargets(site);
     return targets;
   }
 
@@ -266,40 +255,6 @@ public abstract class ControlStructure extends ControlAutomaton {
     return externCalls;
   }
 
-  protected void buildIntraproceduralEdges(JAMControlFlowGraph cfg) {
-
-    // Create the CFG for the top-level function first.
-    cfg.addFunction(mainFunction);
-    // Store the final destination state in the program body.
-    // %%% This relies on getStates returning a list of states
-    // %%% organized by order added.
-    lastMainState = getStates().get(getStateCount() - 1);
-
-    // Now process the internals of each user-defined function in turn.
-    for (Function curFunc : allFunctions) {
-      // Add intra-procedural CFG edges to the automaton.
-      cfg.addFunction(curFunc);
-    }
-
-    // Acquire the informational maps built up by the CFG.
-    stateMap = cfg.getStateMap();
-    functionReturnMap = cfg.getFunctionReturnMap();
-    functionEntryMap = cfg.getFunctionEntryMap();
-    logSize("intraprocedural");
-
-    /*
-    // Create this here, for no particular reason.
-    State externSource = new State();
-    // %%% Might want a special symbol for this, but it's messing up
-    // %%% the sentinel system currently.
-    //ExpSymbol externSymbol = new ExternEntrySymbol(sm);
-    ExpSymbol externSymbol = new ExpSymbol(JSExp.createEmpty(sm));
-    State externDest = new State();
-    externCall = makeEdge(externSymbol, externSource, externDest);
-    addEdge(externCall);
-    */
-  }
-
   protected void outputCallTargets() {
     StringBuilder sb = new StringBuilder();
     for (String key : callTargets.keySet()) {
@@ -320,32 +275,22 @@ public abstract class ControlStructure extends ControlAutomaton {
     CallGraph cg = sm.getCallGraph();
     allCallsites = cg.getAllCallsites();
     mainFunction = cg.getMainFunction();
-    // We copy in this funny way because modifications to the collection
-    // returned here will change the actual CallGraph!
-    Collection<Function> allFunctionsOrig = cg.getAllFunctions();
-    allFunctions = new LinkedHashSet<Function>(allFunctionsOrig);
+    allFunctions = cg.getAllFunctions();
     // For most operations that use "all functions", we want to skip
     // the top-level function since it can't be called directly.
     allFunctions.remove(mainFunction);
-    /*
-    for (Function f : allFunctionsOrig) {
-      // Anonymous functions, at this point, are all getters/setters.
-      // %%% Need to figure out how to properly handle these.
-      if (f.getName() == null)
-        allFunctions.remove(f);
-    }
-    */
   }
 
   public void processCallEdges() {
     for (Callsite cs : allCallsites) {
-      Node curSiteNode = cs.getAstNode();
-      Node curSiteStmt = ExpUtil.getEnclosingStatement(curSiteNode);
+      Exp curSiteNode = cs.getExp();
+      Exp curSiteStmt = ExpUtil.getEnclosingStatement(curSiteNode);
+      // %%% Use Exp all the way.
       State callSource = stateMap.get(curSiteStmt);
       if (callSource == null) {
-        Dbg.warn("Callsite on line " + curSiteNode.getLineno()
+        Dbg.warn("Callsite on line " + ((JSExp)curSiteNode).getNode().getLineno()
           + " is unreachable (source state doesn't exist): "
-          + getCode(curSiteNode));
+          + curSiteNode.toCode());
         continue;
       }
       // Mark the outgoing edge as havoc since we're assuming any
@@ -368,10 +313,6 @@ public abstract class ControlStructure extends ControlAutomaton {
 
   public boolean isExceptionEdge(Edge e) {
     return exceptionEdges.contains(e);
-  }
-
-  protected String getCode(Node n) {
-    return sm.codeFromNode(n);
   }
 
   // Dump the current size of the automaton.

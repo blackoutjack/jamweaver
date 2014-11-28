@@ -11,9 +11,6 @@ import com.google.javascript.jscomp.NodeTraversal;
 import com.google.javascript.jscomp.NodeTraversal.Callback;
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
-import com.google.javascript.jscomp.CallGraph;
-import com.google.javascript.jscomp.CallGraph.Function;
-import com.google.javascript.jscomp.CallGraph.Callsite;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.Scope;
 
@@ -28,6 +25,8 @@ import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.PredicateType;
 import edu.wisc.cs.jam.Dbg;
+import edu.wisc.cs.jam.CallGraph.Callsite;
+import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.JAM;
 
 import edu.wisc.cs.jam.tx.TxUtil;
@@ -238,34 +237,31 @@ public class JSIndirectionTransform extends JSTransform {
     // check containment.
     conservativeCalls = new HashSet<String>();
     for (Callsite cs : caut.getConservativeCalls()) {
-      Node callNode = cs.getAstNode();
-      Node tgtNode = callNode.getFirstChild();
+      Exp callNode = cs.getExp();
+      Exp tgtNode = callNode.getChild(0);
       // Higher-order scripts need at least 1 argument to do anything.
       if (callNode.getChildCount() > 1) {
-        String nodecode = sm.codeFromNode(tgtNode);
+        String nodecode = tgtNode.toCode();
         conservativeCalls.add(nodecode);
       }
     }
 
     dynamicCalls = new HashSet<String>();
     for (Callsite cs : caut.getExternCalls()) {
-      for (Node ex : cs.getPossibleExternTargets()) {
-        String s = sm.codeFromNode(ex);
+      for (Exp ex : cs.getPossibleExternTargets()) {
+        String s = ex.toCode();
         if (dynamicExterns.contains(s)) {
-          Node callNode = cs.getAstNode();
-          Node tgtNode = callNode.getFirstChild();
+          Exp callNode = cs.getExp();
+          Exp tgtNode = callNode.getChild(0);
           if (callNode.getChildCount() > 1) {
-            String nodecode = sm.codeFromNode(tgtNode);
+            String nodecode = tgtNode.toCode();
             dynamicCalls.add(nodecode);
           }
         }
       }
     }
 
-    Compiler comp = sm.getCompiler();
-    Node root = sm.getRootNode();
-
-    NodeTraversal.traverse(comp, root, new Indirector());
+    sm.traverse(sm.getRoot(), new Indirector());
 
     Dbg.out("Callsites transformed: " + callTransformCnt, 1);
     Dbg.out("Property writes transformed: " + propertyWriteTransformCnt, 1);
@@ -788,9 +784,9 @@ public class JSIndirectionTransform extends JSTransform {
       } else if (ExpUtil.isTransaction(n)) {
         if (txNodesToIndirect.contains(n)) {
           TxIndirector txi = new TxIndirector(n);
-          Compiler comp = sm.getCompiler();
           // Traverse the transaction block and indirect as needed.
-          NodeTraversal.traverse(comp, n, txi);
+          Exp e = JSExp.create(sm, n);
+          sm.traverse(e, txi);
         }
       }
     }

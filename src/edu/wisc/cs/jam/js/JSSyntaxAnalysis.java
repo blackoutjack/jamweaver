@@ -66,7 +66,7 @@ public class JSSyntaxAnalysis {
     if (callargs > idx) {
       return callexp.getChild(idx + 1);
     }
-    return JSExp.create(sm, sm.nodeFromCode("#undefined"));
+    return sm.expFromCode("#undefined");
   }
 
   protected boolean canBeStrictlyEqual(Exp op0, Exp op1) {

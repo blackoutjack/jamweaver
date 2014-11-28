@@ -1,13 +1,10 @@
 
 package edu.wisc.cs.jam.js;
 
-import com.google.javascript.jscomp.CallGraph;
-import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.Scope;
 import com.google.javascript.jscomp.Scope.Var;
 import com.google.javascript.jscomp.NodeTraversal;
 import com.google.javascript.jscomp.NodeTraversal.Callback;
-import com.google.javascript.jscomp.CallGraph.Function;
 
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
@@ -24,6 +21,8 @@ import java.util.Iterator;
 import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.Exp;
+import edu.wisc.cs.jam.CallGraph;
+import edu.wisc.cs.jam.CallGraph.Function;
 
 // Gathers prolog facts about all of the functions in the source file
 public class FunctionFacts {
@@ -66,11 +65,9 @@ public class FunctionFacts {
       */
       assert allFunctions != null;
 
-      Node root = sm.getRootNode();
-      Compiler comp = sm.getCompiler();
-
-      NodeTraversal.traverse(comp, root, new CallTargetVisitor());
-      NodeTraversal.traverse(comp, root, new ScopeGatherer());
+      Exp root = sm.getRoot();
+      sm.traverse(root, new CallTargetVisitor());
+      sm.traverse(root, new ScopeGatherer());
 
       functionPredicates = gatherFunctionPredicates();
     }
@@ -196,7 +193,8 @@ public class FunctionFacts {
       } else {
         Node n = s.getRootNode();
         if (n.isFunction()) {
-          Function f = cg.getFunctionForAstNode(n);
+          Exp e = JSExp.create(sm, n);
+          Function f = cg.getFunctionForExp(e);
           assert f != null;
           ret += "'##" + f.getName() + "'";
         } else {
@@ -213,7 +211,8 @@ public class FunctionFacts {
     Scope parent = scopeChainMap.get(func).get(0);
     Node n = parent.getRootNode();
     if (n.isFunction()) {
-      Function f = cg.getFunctionForAstNode(n);
+      Exp e = JSExp.create(sm, n);
+      Function f = cg.getFunctionForExp(e);
       assert f != null;
       return f.getName();
     }
@@ -264,7 +263,7 @@ public class FunctionFacts {
       String funcname = curFunc.getName();
       // Getters/setters are not given names.
       if (funcname == null) continue;
-      Node astnode = curFunc.getAstNode();
+      Node astnode = ((JSExp)curFunc.getExp()).getNode();
 
       // Construct the list of formals represented as a string
       // understandable by the Datalog semantics
@@ -522,14 +521,15 @@ public class FunctionFacts {
           chain.add(parentScope);
         }
 
-        Function f = cg.getFunctionForAstNode(n);
+        Exp e = JSExp.create(sm, n);
+        Function f = cg.getFunctionForExp(e);
         scopeChainMap.put(f, chain);
       }
 
       Node containing = t.getScopeRoot();
-      if (!containing.equals(cg.getMainFunction().getAstNode())) {
-        Function containingFunction = cg.getFunctionForAstNode(containing);
-        assert containingFunction != null;
+      Exp contexp = JSExp.create(sm, containing);
+      Function containingFunction = cg.getFunctionForExp(contexp);
+      if (containingFunction != null && !containingFunction.isMain()) {
         if (!scopeMap.keySet().contains(containingFunction)) {
           scopeMap.put(containingFunction, t.getScope());
         }

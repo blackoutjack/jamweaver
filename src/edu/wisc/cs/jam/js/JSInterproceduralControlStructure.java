@@ -12,10 +12,6 @@ import com.google.javascript.jscomp.NodeTraversal;
 import com.google.javascript.jscomp.NodeTraversal.Callback;
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
-import com.google.javascript.jscomp.CallGraph;
-import com.google.javascript.jscomp.CallGraph.Function;
-import com.google.javascript.jscomp.CallGraph.Callsite;
-import com.google.javascript.jscomp.Compiler;
 
 import com.google.javascript.jscomp.JAMControlFlowGraph;
 
@@ -33,6 +29,8 @@ import edu.wisc.cs.jam.BranchSymbol;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.Exp;
+import edu.wisc.cs.jam.CallGraph.Callsite;
+import edu.wisc.cs.jam.CallGraph.Function;
 
 public class JSInterproceduralControlStructure extends JSControlStructure implements Callback {
 
@@ -147,7 +145,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
     ret.addAll(f.getCallsitesPossiblyTargetingFunction());
 
     for (Callsite curSite : allCallsites) {
-      Set<Function> targets = callTargetMap.get(getCode(curSite.getAstNode().getChildAtIndex(0)));
+      Set<Function> targets = callTargetMap.get(curSite.getExp().getChild(0).toCode());
       if(targets == null) continue;
 
       for (Function curFunc : targets) {
@@ -163,7 +161,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
   }
 
   public void dumpCallsite(Callsite cs) {
-    Node cn = cs.getAstNode();
+    Node cn = ((JSExp)cs.getExp()).getNode();
     StringBuilder sb = new StringBuilder();
     sb.append("Callsite: ");
     sb.append(getCode(cn));
@@ -197,22 +195,23 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
       //dumpCallsite(curSite);
 
       // Avoid repeated method calls by collecting some objects here.
-      Node curSiteNode = curSite.getAstNode();
-      Node curSiteStmt = ExpUtil.getEnclosingStatement(curSiteNode);
-      String curSiteCode = getCode(curSiteNode);
+      Exp curSiteExp = curSite.getExp();
+      Node curSiteNode = ((JSExp)curSiteExp).getNode();
+      Exp curSiteStmt = ExpUtil.getEnclosingStatement(curSiteExp);
+      String curSiteCode = curSiteExp.toCode();
 
       // There may be multiple potential targets, so we have to add 
       // edges for all of them.
       Set<Function> targets = new LinkedHashSet<Function>();
       boolean hasUserTargets = getPossibleUserTargets(curSite, targets);
-      boolean hasExternTargets = getPossibleExternTargets(curSite);
+      boolean hasExternTargets = curSite.hasExternTarget();
 
       // No transformation is needed for definite extern calls.
       if (!hasUserTargets) continue;
       
       if (!hasExternTargets && targets.size() == 0) {
         // This may occur for calls on non-functions (exceptions).
-        Dbg.warn("No possible targets found for call: " + getCode(curSiteNode));
+        Dbg.warn("No possible targets found for call: " + curSiteCode);
         continue;
       }
 
@@ -221,7 +220,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
       // There should only be one out-edge currently.
       List<Edge> oes = getOutEdges(callStmtSource);
       if (oes.size() == 0) {
-        Dbg.warn("No edge for call-site (expected if exception is guaranteed): " + getCode(curSiteNode));
+        Dbg.warn("No edge for call-site (expected if exception is guaranteed): " + curSiteCode);
         continue;
       }
 
@@ -249,7 +248,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
         if (callStmtSource == null) {
           Dbg.warn("Callsite on line " + curSiteNode.getLineno()
             + " is unreachable (source state doesn't exist): "
-            + getCode(curSiteNode));
+            + curSiteCode);
           continue;
         }
 
@@ -259,10 +258,9 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
 
         // Generate a symbol consisting only of the callsite (and not
         // the containing statement).
-        Exp callExp = JSExp.create(sm, curSiteNode);
         // %%% I'd like to have the call syntax on the edge, but then
         // %%% it's not easy to skip addl. queries for the node.
-        //ExpSymbol callSymbol = new ExpSymbol(callExp);
+        //ExpSymbol callSymbol = new ExpSymbol(curSiteExp);
         ExpSymbol callSymbol = new ExpSymbol(JSExp.createEmpty(sm));
 
         for (Function curFunc : targets) {
@@ -297,7 +295,6 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
         stateMap.put(curSiteStmt, retState);
       }
     }
-    outputCallTargets();
     return callStateMap;
   }
 
@@ -366,11 +363,11 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
       for (Callsite curSite : callingSites) {
         // If we haven't processed the node containing this call,
         // we have a problem.
-        Node callNode = curSite.getAstNode();
-        Node stmt = ExpUtil.getEnclosingStatement(callNode);
+        Exp callExp = curSite.getExp();
+        Exp stmt = ExpUtil.getEnclosingStatement(callExp);
         State callDest = stateMap.get(stmt);
         if (callDest == null) {
-          Dbg.warn("Cannot find callsite state: " + callNode);
+          Dbg.warn("Cannot find callsite state: " + callExp);
           continue;
         }
 
@@ -415,15 +412,18 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
     FileUtil.writeToMain("allFunctions:" + allFunctions.size() + "\nallCallsites:" + allCallsites.size() + "\n", JAMConfig.INFO_FILENAME, true);
 
     // Collect event handler information.
-    Node root = sm.getRootNode();
-    Compiler comp = sm.getCompiler();
-    NodeTraversal.traverse(comp, root, this);
+    sm.traverse(sm.getRoot(), this);
 
-    Node externs = sm.getExterns();
     JAMControlFlowGraph cfg =
-      new JAMControlFlowGraph(this, sm, externs, root);
+      new JAMControlFlowGraph(this, sm);
 
     buildIntraproceduralEdges(cfg);
+
+    // Populate |externCalls| and |conservativeCalls|.
+    for (Callsite cs : allCallsites) {
+      getAllPossibleTargets(cs);
+    }
+    outputCallTargets();
     buildInterproceduralEdges();
 
     // CheckManager may be null if we're just preprocessing and exiting.
@@ -431,6 +431,10 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
       // Load existing checks.
       cm.loadExistingChecks();
     }
+  }
+
+  protected String getCode(Node n) {
+    return sm.codeFromNode(n);
   }
 
 }

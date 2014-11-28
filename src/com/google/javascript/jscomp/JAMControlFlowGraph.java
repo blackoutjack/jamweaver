@@ -1,11 +1,9 @@
 
 package com.google.javascript.jscomp;
 
-import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.ControlFlowGraph;
 import com.google.javascript.jscomp.ControlFlowGraph.Branch;
 import com.google.javascript.jscomp.ControlFlowAnalysis;
-import com.google.javascript.jscomp.CallGraph.Function;
 import com.google.javascript.jscomp.graph.DiGraph.DiGraphNode;
 import com.google.javascript.jscomp.graph.DiGraph.DiGraphEdge;
 import com.google.javascript.rhino.Node;
@@ -31,34 +29,27 @@ import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
 
 import edu.wisc.cs.jam.js.JSExp;
+import edu.wisc.cs.jam.CallGraph.Function;
 
 // Provide an interface to package-protected Closure classes.
 public class JAMControlFlowGraph {
   private ControlStructure caut;
-  //private ControlFlowGraph<Node> cfg;
   private SourceManager sm;
 
-  private Map<Node,State> stateMap;
+  private Map<Exp,State> stateMap;
   private Map<Function,State> functionEntryMap;
   private Map<Function,State> functionReturnMap;
 
-  private Node externs;
-
-  public JAMControlFlowGraph(ControlStructure c, SourceManager src, Node externs, Node root) {
+  public JAMControlFlowGraph(ControlStructure c, SourceManager src) {
     caut = c;
     sm = src;
-    this.externs = externs;
 
-    stateMap = new HashMap<Node,State>();
+    stateMap = new HashMap<Exp,State>();
     functionEntryMap = new HashMap<Function,State>();
     functionReturnMap = new HashMap<Function,State>();
-
-    //ControlFlowAnalysis cfa = new ControlFlowAnalysis(sm.getCompiler(), true, false);
-    //cfa.process(externs, root);
-    //cfg = cfa.getCfg();
   }
 
-  public Map<Node,State> getStateMap() {
+  public Map<Exp,State> getStateMap() {
     // Don't copy, given the friendly relationship with ControlStructure.
     return stateMap;
   }
@@ -73,7 +64,7 @@ public class JAMControlFlowGraph {
     return functionReturnMap;
   }
 
-  protected State loadDestinationState(Function f, Node destNode) {
+  protected State loadDestinationState(Function f, Exp destNode) {
     // Create a state for the destination node
     State destState = stateMap.get(destNode);
     if (destState == null) {
@@ -151,12 +142,13 @@ public class JAMControlFlowGraph {
       // block. See flickr.js. It should not be a SCRIPT though.
       // %%% What happens to the LABEL node?
       String fname = f.getName();
-      assert !destNode.isScript() || fname.equals("{main}")
+      Exp destExp = JSExp.create(sm, destNode);
+      assert !destExp.isScript() || fname.equals("{main}")
         : "Script node found at function entry: " + f.getName()
-        + " / " + destNode + " / " + sm.codeFromNode(destNode);
+        + " / " + destExp + " / " + destExp.toCode();
 
       // The normal case where we have more statements to process
-      State destState = loadDestinationState(f, destNode);
+      State destState = loadDestinationState(f, destExp);
       processStatement(f, entryState, sym, destState);
       worklist.add(dest);
     }
@@ -167,22 +159,12 @@ public class JAMControlFlowGraph {
   // @return the entry node to this function
   public void addFunction(Function f) {
     // Get the CFG for this function.
-    Node root = f.getAstNode();
-    ControlFlowAnalysis cfa = new ControlFlowAnalysis(sm.getCompiler(), false, false);
-    cfa.process(externs, root);
-    ControlFlowGraph<Node> cfg = cfa.getCfg();
+    ControlFlowGraph<Node> cfg = sm.getCFG(f);
 
+    Node root = ((JSExp)f.getExp()).getNode();
     DiGraphNode<Node,Branch> entryNode = cfg.getDirectedGraphNode(root); 
 
     assert entryNode != null : "Null entry node for function " + f.getName();
-    /*
-    if (entryNode == null) {
-      needToRevert
-      ControlFlowAnalysis cfa = new ControlFlowAnalysis(sm.getCompiler(), true, false);
-      cfa.process(externs, fnode);
-      cfg = cfa.getCfg();
-    }
-    */
 
     // Keep track of this subtree's processing state with a worklist.
     Worklist worklist = new Worklist();
@@ -208,21 +190,23 @@ public class JAMControlFlowGraph {
       Node source = curNode.getValue();
       assert source != null : "Source node is null: " + curNode;
 
-      State srcState = stateMap.get(source);
+      Exp exp = null;
+      ExpSymbol sym = null;
+      if (source.isScript() || source.isBlock()) {
+        // Use empty nodes to represent blocks.
+        exp = JSExp.create(sm, source);
+        sym = new ExpSymbol(JSExp.createEmpty(sm));
+      } else {
+        exp = JSExp.create(sm, source);
+        sym = new ExpSymbol(exp);
+      }
+
+      State srcState = stateMap.get(exp);
       // Assuming all nodes are reachable from the entry, this
       // assertion should hold.
       assert srcState != null : "Source state is null: " + source;
 
       List<DiGraphEdge<Node,Branch>> oes = curNode.getOutEdges();
-
-      Exp s = null;
-      if (source.isScript() || source.isBlock()) {
-        // Use empty nodes to represent blocks.
-        s = JSExp.createEmpty(sm);
-      } else {
-        s = JSExp.create(sm, source);
-      }
-      ExpSymbol sym = new ExpSymbol(s);
 
       if (source.isThrow() && oes.size() == 0) {
         // This is the case when a throw statement ends a function.
@@ -263,24 +247,25 @@ public class JAMControlFlowGraph {
 
           // Create a state for the destination node
           Node dest = eDest.getValue();
-          destState = stateMap.get(dest);
+          Exp deste = JSExp.create(sm, dest);
+          destState = stateMap.get(deste);
           if (destState == null) {
             destState = new State();
-            stateMap.put(dest, destState);
+            stateMap.put(deste, destState);
           }
         }
 
         // If this edge has a condition on it...
         if (curEdge.getValue().isConditional()) {
-          assert s.isControl();
+          assert exp.isControl();
 
           // Then we need to add an additional edge to the NWA that
           // reflects the assumption.
           boolean branch = curEdge.getValue() == Branch.ON_TRUE;
           State midState = new State();
           
-          Exp cond = s.getCondition();
-          assert cond != null : "Branch without a condition: " + s.toString();
+          Exp cond = exp.getCondition();
+          assert cond != null : "Branch without a condition: " + exp.toString();
 
           // Add an edge from the condition to the branch and from
           // the branch to the destination.

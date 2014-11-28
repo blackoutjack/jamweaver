@@ -27,13 +27,13 @@ public class ASTPrint implements Utility {
   }
 
   public void run() {
-    Node src = null;
+    Exp src = null;
     SourceManager sm = new JSSourceManager();
     JAM.Opts.noExterns = true;
     if (options.expr) {
       sm.addSource(new JSSource("/dev/null", false));
       // Interpret the argument as a JavaScript snippet.
-      src = sm.nodeFromCode(options.source);
+      src = sm.expFromCode(options.source);
     } else {
       // Interpret the argument as a filename containing JavaScript.
 
@@ -43,14 +43,11 @@ public class ASTPrint implements Utility {
         return;
       }
       sm.addSource(new JSSource(options.source, false));
-      src = sm.getRootNode();
-      // Remove the boilerplate stuff.
-      src = src.getChildAtIndex(src.getChildCount() - 1).getFirstChild();
+      src = sm.getRoot();
     }
 
     if (options.condensed) {
-      Exp s = JSExp.create(sm, src);
-      ExpSymbol ss = new ExpSymbol(s);
+      ExpSymbol ss = new ExpSymbol(src);
       System.out.println(ss.toAST());
     } else {
       System.out.println(src.toStringTree());

@@ -1,8 +1,5 @@
 package edu.wisc.cs.jam.xsb;
 
-import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
-
 import java.io.File;
 import java.io.IOException;
 

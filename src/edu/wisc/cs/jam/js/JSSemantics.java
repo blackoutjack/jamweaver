@@ -1,9 +1,6 @@
 
 package edu.wisc.cs.jam.js;
 
-import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
-
 import java.io.IOException;
 import java.io.File;
 import java.util.List;
@@ -338,8 +335,7 @@ public class JSSemantics implements Semantics {
     // String. The primary reason was to maintain the exact syntax of
     // a predicate specified in the policy file when weaving that
     // predicate in a runtime check.
-    Node n = sm.nodeFromCode(cond);
-    Exp s = JSExp.create(sm, n);
+    Exp s = sm.expFromCode(cond);
     String ast = s.toQueryAST();
 
     Clause pos = getConditionTestClause(ast, true);
@@ -353,8 +349,7 @@ public class JSSemantics implements Semantics {
     // Save the AST nodes for each of the values for later use.
     ret.getPositive().setStatement(s);
     PredicateValue negpv = ret.getNegative();
-    Node negn = sm.nodeFromCode(negpv.getCondition());
-    Exp negs = JSExp.create(sm, negn);
+    Exp negs = sm.expFromCode(negpv.getCondition());
     negpv.setStatement(negs);
 
     return ret;
@@ -497,21 +492,20 @@ public class JSSemantics implements Semantics {
   // object literal.
   protected Clause getObjectLiteralSentinel(ExpSymbol sym) {
     Exp s = sym.getExp();
-    Node n = ((JSExp)s).getNode();
 
-    Node lhs = ExpUtil.getAssignLHS(n);
+    Exp lhs = s.cloneAssignLHS();
     if (lhs == null) return null;
 
     // %%% extend this to assignments to object properties
     if (!lhs.isName()) return null;
     String varname = lhs.getString();
 
-    Node rhs = ExpUtil.getAssignRHS(n);
-    if (rhs == null || !rhs.isObjectLit()) return null;
+    Exp rhs = s.cloneAssignRHS();
+    if (rhs == null || !rhs.is(JSExp.OBJECTLIT)) return null;
 
     List<String> props = new ArrayList<String>();
     for (int i=0; i<rhs.getChildCount(); i++) {
-      Node memb = rhs.getChildAtIndex(i);
+      Exp memb = rhs.getChild(i);
       if (memb.isString()) {
         String prop = memb.getString();
         props.add(prop);
@@ -533,48 +527,43 @@ public class JSSemantics implements Semantics {
     return clause;
   }
 
-  protected Clause makeNameValueSentinel(Node n) {
-    assert n.isName();
-    String varname = n.getString();
+  protected Clause makeNameValueSentinel(Exp s) {
+    assert s.isName();
+    String varname = s.getString();
     String c = "valuesent(%H,%L,'\"" + varname + "\"','%T')";
     return new Clause(c);
   }
 
-  protected Clause getPreValueSentinel(Node n) {
+  protected Clause getPreValueSentinel(Exp s) {
 
-    if (n == null) return null;
+    if (s == null) return null;
 
     // The internals of control blocks will be processed elsewhere.
     // Just pull out the condition here.
-    if (ExpUtil.isControl(n)) {
-      n = ExpUtil.getCondition(n);
-      if (n == null) return null;
+    if (ExpUtil.isControl(s)) {
+      s = ExpUtil.getCondition(s);
+      if (s == null) return null;
     }
 
     // There doesn't seem to be any reason to learn the value of
     // an identifier that's about be overwritten as an assignment lhs.
     // For compound assignments, we are interested in the lhs.
-    if (n.isAssign() || ExpUtil.isVarInitializer(n)) {
+    if (s.isAssign() || ExpUtil.isVarInitializer(s)) {
       // %%% Really want to get all the RHS values for an initializer.
-      n = ExpUtil.getAssignRHS(n);
-      if (n == null) return null;
+      s = s.cloneAssignRHS();
+      if (s == null) return null;
     }
     // Non-initializer variable declarations are worthless.
-    if (n.isVar()) {
-      return null;
-    }
-    
-    // Function nodes have a lot of useless facts that won't help.
-    if (n.isFunction()) {
+    if (s.isDeclaration()) {
       return null;
     }
 
-    if (ExpUtil.isAccessor(n)) {
-      Node objNode = n.getFirstChild(); 
+    if (s.isAccessor()) {
+      Exp objNode = s.getChild(0); 
       if (objNode.isName()) {
         String obj = objNode.getString();
 
-        Node propNode = n.getChildAtIndex(1);
+        Exp propNode = s.getChild(1);
         if (propNode.isString()) {
           String prop = propNode.getString();
 
@@ -588,14 +577,14 @@ public class JSSemantics implements Semantics {
       // the accessor's children.
     }
 
-    if (n.isName()) {
-      return makeNameValueSentinel(n);
+    if (s.isName()) {
+      return makeNameValueSentinel(s);
     }
 
     // Recursively descend into the node's children.
     List<Clause> clauses = new ArrayList<Clause>();
-    for (int i=0; i<n.getChildCount(); i++) {
-      Node child = n.getChildAtIndex(i);
+    for (int i=0; i<s.getChildCount(); i++) {
+      Exp child = s.getChild(i);
       Clause c = getPreValueSentinel(child);
       if (c != null) clauses.add(c);
     }
@@ -609,29 +598,27 @@ public class JSSemantics implements Semantics {
   // of an assignment.
   protected Clause getPreValueSentinel(ExpSymbol sym) {
     Exp s = sym.getExp();
-    Node n = ((JSExp)s).getNode();
-    return getPreValueSentinel(n);
+    return getPreValueSentinel(s);
   }
 
   // Get the value of a function being invoked or the right-hand side
   // of an assignment.
   protected Clause getPostValueSentinel(ExpSymbol sym) {
     Exp s = sym.getExp();
-    Node n = ((JSExp)s).getNode();
-    if (n.isExprResult()) {
-      n = n.getFirstChild();
+    if (s.is(JSExp.EXPR_RESULT)) {
+      s = s.getFirstChild();
     }
 
     // For non-initializer VAR nodes, it should be clear with a sentinel
     // that the post-value is |undefined|.
-    if (n.isVar() && !ExpUtil.isVarInitializer(n))
+    if (s.is(JSExp.VAR) && !ExpUtil.isVarInitializer(s))
       return null;
 
-    Node lhs = ExpUtil.getAssignLHS(n);
+    Exp lhs = s.cloneAssignLHS();
     if (lhs == null) return null;
 
     // Avoid NONE sentinel values.
-    Node rhs = ExpUtil.getAssignRHS(n);
+    Exp rhs = s.cloneAssignRHS();
     if (rhs != null && rhs.isCall() && !sym.isPostCall()) {
       return null;
     }
@@ -640,12 +627,12 @@ public class JSSemantics implements Semantics {
     if (lhs.isName()) {
       clause = makeNameValueSentinel(lhs);
     } else if (ExpUtil.isAccessor(lhs)) {
-      Node objNode = lhs.getFirstChild(); 
+      Exp objNode = lhs.getFirstChild(); 
       if (!objNode.isName()) {
         return null;
       }
       String obj = objNode.getString();
-      Node propNode = lhs.getChildAtIndex(1);
+      Exp propNode = lhs.getChild(1);
       if (!propNode.isString()) {
         return null;
       }
@@ -664,10 +651,9 @@ public class JSSemantics implements Semantics {
     if (!sym.isPostCall()) return null;
 
     Exp s = sym.getExp();
-    Node n = ((JSExp)s).getNode();
 
     // We only care about a return value if it's assigned to something.
-    Node rhs = ExpUtil.getAssignRHS(n);
+    Exp rhs = s.cloneAssignRHS();
     if (rhs == null) return null;
 
     // This should just be a sanity check.
@@ -689,40 +675,39 @@ public class JSSemantics implements Semantics {
   // This creates a sentinel that allows us to make such a predicate.
   protected Clause getConstructorSentinel(ExpSymbol sym) {
     Exp s = sym.getExp();
-    Node n = ((JSExp)s).getNode();
 
     // Avoid data that bubbles up from within big blocks of code 
     // (such info will be processed if reached recursively).
-    if (n.isFunction()) return null;
-    if (ExpUtil.isControl(n)) return null;
+    if (s.isFunction()) return null;
+    if (ExpUtil.isControl(s)) return null;
 
     // Unwrap an EXPR_RESULT node.
-    if (n != null && n.isExprResult()) n = n.getFirstChild();
+    if (s.is(JSExp.EXPR_RESULT)) s = s.getFirstChild();
 
     String objname = null;
 
     // See if an object property is being assigned to.
     if (objname == null) {
-      Node lhs = ExpUtil.getAssignLHS(n);
+      Exp lhs = s.cloneAssignLHS();
 
       // If we have a .-accessor, then we get the constructor of the base
       // and print it.
       if (ExpUtil.isAccessor(lhs)) {
-        Node obj = lhs.getFirstChild();
+        Exp obj = lhs.getFirstChild();
         if (obj.isName()) {
           // Get the base variable name.
-          objname = sm.codeFromNode(obj);
+          objname = obj.toCode();
         }
       }
     }
 
     // See if the statement is a member invocation.
-    if (objname == null && n.isCall()) {
-      Node memberexp = n.getFirstChild();
+    if (objname == null && s.isCall()) {
+      Exp memberexp = s.getFirstChild();
       if (ExpUtil.isAccessor(memberexp)) {
-        Node obj = memberexp.getFirstChild();
+        Exp obj = memberexp.getFirstChild();
         if (obj.isName()) {
-          objname = sm.codeFromNode(obj);
+          objname = obj.toCode();
         }
       }
     }

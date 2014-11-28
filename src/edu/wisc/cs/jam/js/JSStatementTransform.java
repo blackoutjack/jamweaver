@@ -4,10 +4,8 @@ package edu.wisc.cs.jam.js;
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Node.AncestorIterable;
 import com.google.javascript.rhino.Token;
-import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.NodeTraversal;
 import com.google.javascript.jscomp.NodeTraversal.Callback;
-import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.Scope;
 import com.google.javascript.jscomp.Scope.Var;
 import java.util.Iterator;
@@ -20,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.lang.Iterable;
 
 import edu.wisc.cs.jam.SourceManager;
+import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
 
 public class JSStatementTransform extends JSTransform {
@@ -32,46 +31,45 @@ public class JSStatementTransform extends JSTransform {
 
   @Override
   public void run(SourceManager src) {
-    Node root = src.getRootNode();
+    Exp root = src.getRoot();
 
-    Compiler comp = src.getCompiler();
     // Add explicit return statements.
     ReturnExplicit re = new ReturnExplicit(src);
     Dbg.out("Starting pass RETURN", 4); 
-    NodeTraversal.traverse(comp, root, re);
+    src.traverse(root, re);
 
     // Name anonymous functions.
     DeanonymizeFunction df = new DeanonymizeFunction(src);
     Dbg.out("Starting pass DEANONYMIZE", 4); 
-    NodeTraversal.traverse(comp, root, df);
+    src.traverse(root, df);
 
     // Conduct function definition rearrangement.
     FunctionElevate fe = new FunctionElevate(src);
     Dbg.out("Starting pass ELEVATE", 4); 
-    NodeTraversal.traverse(comp, root, fe);
+    src.traverse(root, fe);
 
     boolean changed = true;
     StatementSplit ss = new StatementSplit(src);
     while (changed) {
       Dbg.out("Starting pass STATEMENT", 4); 
-      NodeTraversal.traverse(comp, root, ss);
+      src.traverse(root, ss);
       changed = ss.madeChange();
       ss.flagChange(false);
     }
 
     SplitSetsAndCalls ssc = new SplitSetsAndCalls(src);
     Dbg.out("Starting pass SPLIT", 4); 
-    NodeTraversal.traverse(comp, root, ssc);
+    src.traverse(root, ssc);
 
     // Break up large array literals.
     ArrayLiteralConverter alc = new ArrayLiteralConverter(src);
     Dbg.out("Starting pass ARRAY", 4); 
-    NodeTraversal.traverse(comp, root, alc);
+    src.traverse(root, alc);
 
     // Break up large string literals.
     StringConverter sc = new StringConverter(src);
     Dbg.out("Starting pass STRING", 4); 
-    NodeTraversal.traverse(comp, root, sc);
+    src.traverse(root, sc);
   }
 
   public Set<String> getCollapsableTemporaries() {

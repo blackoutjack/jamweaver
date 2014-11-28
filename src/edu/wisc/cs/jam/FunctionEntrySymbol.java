@@ -1,7 +1,7 @@
 
 package edu.wisc.cs.jam;
 
-import com.google.javascript.jscomp.CallGraph.Function;
+import edu.wisc.cs.jam.CallGraph.Function;
 
 import edu.wisc.cs.jam.js.JSExp;
 

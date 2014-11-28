@@ -36,6 +36,7 @@ public abstract class Exp {
 
   // Child-access methods.
   public int getChildCount() {
+    if (children == null) return 0;
     return children.size();
   }
   public List<Exp> getChildren() {
@@ -124,10 +125,11 @@ public abstract class Exp {
   public abstract void findType(int t, List<Exp> out, boolean blocks);
 
   // Utility methods.
-  public abstract SourceManager getSourceManager(); // %%% Might should just be a SourceFile
   public abstract String toAST();
   public abstract String toQueryAST();
   public abstract String toNormalizedAST(Set<String> polnames);
   public abstract String toCode();
 
+  public abstract String getSourceFileName();
+  public abstract SourceManager getSourceManager();
 }

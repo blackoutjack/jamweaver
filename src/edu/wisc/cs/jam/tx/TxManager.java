@@ -13,7 +13,6 @@ import java.util.LinkedHashSet;
 import edu.wisc.cs.automaton.State;
 
 import com.google.javascript.rhino.Node;
-import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.NodeTraversal;
 import com.google.javascript.jscomp.NodeTraversal.Callback;
 
@@ -91,9 +90,7 @@ public class TxManager implements CheckManager, Callback {
 
   @Override
   public void loadExistingChecks() {
-    Node root = sm.getRootNode();
-    Compiler comp = sm.getCompiler();
-    NodeTraversal.traverse(comp, root, this);
+    sm.traverse(sm.getRoot(), this);
   }
 
   protected List<RuntimeCheck> getOriginalChecks(Exp s) {
@@ -482,8 +479,7 @@ public class TxManager implements CheckManager, Callback {
     appendIntrospectorMap(sb, null);
     appendPolicyClosing(sb);
 
-    Node node = sm.nodeFromCode(sb.toString());
-    return JSExp.create(sm, node);
+    return sm.expFromCode(sb.toString());
   }
 
   // Output the policy object, complete with all requisite introspectors
@@ -518,8 +514,7 @@ public class TxManager implements CheckManager, Callback {
     appendWovenFlag(sb, true);
     appendPolicyClosing(sb);
 
-    Node node = sm.nodeFromCode(sb.toString());
-    return JSExp.create(sm, node);
+    return sm.expFromCode(sb.toString());
   }
 
   public Set<PredicateType> getPredicateTypes(String ispectId) {

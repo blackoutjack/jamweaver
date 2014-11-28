@@ -15,8 +15,6 @@ import com.google.javascript.rhino.Node;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerInput;
 import com.google.javascript.jscomp.Compiler.CodeBuilder;
-import com.google.javascript.jscomp.CallGraph.Function;
-import com.google.javascript.jscomp.CallGraph;
 
 import com.google.javascript.jscomp.ClosureUtil;
 
@@ -25,6 +23,9 @@ import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.Dbg;
+import edu.wisc.cs.jam.CallGraph;
+import edu.wisc.cs.jam.CallGraph.Function;
+import edu.wisc.cs.jam.CallGraph.Callsite;
 
 import com.google.javascript.jscomp.ClosureUtil;
 
@@ -853,9 +854,26 @@ public class ExpUtil {
 
   public static void dumpCallGraph(CallGraph cg) {
     Dbg.dbg("===== CALL GRAPH =====");
-    Collection<Function> allFuncs = cg.getAllFunctions();
-    for (Function f : allFuncs) {
-      dumpAST(f.getAstNode(), 0);
-    }
+    for (Callsite cs : cg.getAllCallsites()) {
+      StringBuilder sb = new StringBuilder();
+      sb.append(cs.getExp().toCode());
+      sb.append(" -> ");
+      if (cs.hasUnknownTarget()) {
+        sb.append("[ALL]");
+      } else {
+        boolean first = true;
+        for (Function f : cs.getPossibleTargets()) {
+          if (first) { first = false; } else { sb.append(","); }
+          sb.append(f.getName());
+        }
+        if (cs.hasExternTarget()) {
+          for (Exp e : cs.getPossibleExternTargets()) {
+            if (first) { first = false; } else { sb.append(","); }
+            sb.append(e.toCode());
+          }
+        }
+      }
+      Dbg.dbg(sb.toString());
+    } 
   }
 }

@@ -1,7 +1,6 @@
 
 package edu.wisc.cs.jam.js;
 
-import com.google.javascript.jscomp.CallGraph;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.CompilerPass;
 import com.google.javascript.jscomp.Scope;
@@ -9,7 +8,6 @@ import com.google.javascript.jscomp.Scope.Var;
 import com.google.javascript.jscomp.SymbolTable;
 import com.google.javascript.jscomp.NodeTraversal;
 import com.google.javascript.jscomp.NodeTraversal.Callback;
-import com.google.javascript.jscomp.CallGraph.Function;
 
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;

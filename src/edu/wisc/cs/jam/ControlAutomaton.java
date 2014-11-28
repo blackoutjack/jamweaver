@@ -2,7 +2,7 @@ package edu.wisc.cs.jam;
 
 import java.util.Collection;
 
-import com.google.javascript.jscomp.CallGraph.Callsite;
+import edu.wisc.cs.jam.CallGraph.Callsite;
 
 import edu.wisc.cs.automaton.Automaton;
 import edu.wisc.cs.automaton.Automaton.Edge;

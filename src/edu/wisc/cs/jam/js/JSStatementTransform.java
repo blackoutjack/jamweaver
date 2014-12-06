@@ -1,32 +1,28 @@
 
 package edu.wisc.cs.jam.js;
 
-import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Node.AncestorIterable;
-import com.google.javascript.rhino.Token;
-import com.google.javascript.jscomp.NodeTraversal;
-import com.google.javascript.jscomp.NodeTraversal.Callback;
-import com.google.javascript.jscomp.Scope;
-import com.google.javascript.jscomp.Scope.Var;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.lang.Iterable;
 
 import edu.wisc.cs.jam.SourceManager;
+import edu.wisc.cs.jam.Traversal;
+import edu.wisc.cs.jam.Traversal.Traverser;
+import edu.wisc.cs.jam.Scope;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
+
+import edu.wisc.cs.jam.js.JSExp;
 
 public class JSStatementTransform extends JSTransform {
   
   protected boolean DEBUG = false;
 
-  protected Set<Node> tmpDefs;
-  protected Set<Node> tmpUses;
+  protected Set<Exp> tmpDefs;
+  protected Set<Exp> tmpUses;
   protected Set<String> simpleTmpDefs;
 
   @Override
@@ -80,12 +76,12 @@ public class JSStatementTransform extends JSTransform {
     
     public StatementSplit(SourceManager src) {
       super(src);
-      tmpDefs = new HashSet<Node>();
-      tmpUses = new HashSet<Node>();
+      tmpDefs = new HashSet<Exp>();
+      tmpUses = new HashSet<Exp>();
       simpleTmpDefs = new HashSet<String>();
     }
 
-    protected boolean isVerySimple(Node n) {
+    protected boolean isVerySimple(Exp n) {
       int childCnt = n.getChildCount();
 
       if (childCnt == 0) {
@@ -99,46 +95,46 @@ public class JSStatementTransform extends JSTransform {
       return false;
     }
 
-    protected boolean isSimpleCall(NodeTraversal t, Node n, Node parent) {
+    protected boolean isSimpleCall(Traversal t, Exp n, Exp parent) {
       assert n.isCall();
-      Node tgt = n.getFirstChild();
-      if (tgt.isGetProp() || tgt.isGetElem()) {
+      Exp tgt = n.getFirstChild();
+      if (tgt.isAccessor()) {
         if (!isSimpleExpression(t, tgt, n)) return false;
       } else if (!isVerySimple(tgt)) {
         return false;
       }
       int childCnt = n.getChildCount();
       for (int i=1; i<childCnt; i++) {
-        Node arg = n.getChildAtIndex(i);
+        Exp arg = n.getChild(i);
         if (!isVerySimple(arg)) return false;
       }
       return true;
     }
 
-    protected boolean isSimpleNew(NodeTraversal t, Node n, Node parent) {
-      assert n.isNew();
+    protected boolean isSimpleNew(Traversal t, Exp n, Exp parent) {
+      assert n.is(JSExp.NEW);
       int childCnt = n.getChildCount();
       for (int i=0; i<childCnt; i++) {
-        Node c = n.getChildAtIndex(i);
+        Exp c = n.getChild(i);
         if (!isVerySimple(c)) return false;
       }
       return true;
     }
 
-    protected boolean isSimpleAssign(NodeTraversal t, Node n, Node parent) {
-      Node lhs = n.getFirstChild();
-      if (lhs.isGetProp() || lhs.isGetElem()) {
+    protected boolean isSimpleAssign(Traversal t, Exp n, Exp parent) {
+      Exp lhs = n.getFirstChild();
+      if (lhs.isAccessor()) {
         if (!isSimpleExpression(t, lhs, n)) return false;
       } else if (!isVerySimple(lhs)) {
         return false;
       }
 
-      Node rhs = n.getChildAtIndex(1);
-      if (ExpUtil.isAssignment(rhs)) return false;
+      Exp rhs = n.getChild(1);
+      if (rhs.isAssignment()) return false;
       return isSimpleExpression(t, rhs, n);
     }
 
-    protected boolean isSimpleExpression(NodeTraversal t, Node n, Node parent) {
+    protected boolean isSimpleExpression(Traversal t, Exp n, Exp parent) {
       if (n == null) {
         assert parent.isReturn();
         return true;
@@ -146,152 +142,154 @@ public class JSStatementTransform extends JSTransform {
       int childCnt = n.getChildCount();
       int typ = n.getType();
       switch (typ) {
-        case Token.NAME:
+        case JSExp.NAME:
           if (childCnt == 0) return true;
-          Node child = n.getFirstChild();
+          Exp child = n.getFirstChild();
           if (isVerySimple(child)) return true;
-          if (ExpUtil.isAssignment(child)) return false;
+          if (child.isAssignment()) return false;
           return isSimpleExpression(t, child, n);
-        case Token.ASSIGN:
+        case JSExp.ASSIGN:
           return isSimpleAssign(t, n, parent);
-        case Token.CALL:
+        case JSExp.CALL:
           return isSimpleCall(t, n, parent);
-        case Token.NEW:
+        case JSExp.NEW:
           return isSimpleNew(t, n, parent);
-        case Token.BITOR:
-        case Token.BITXOR:
-        case Token.BITAND:
-        case Token.EQ:
-        case Token.NE:
-        case Token.LT:
-        case Token.LE:
-        case Token.GT:
-        case Token.GE:
-        case Token.LSH:
-        case Token.RSH:
-        case Token.URSH:
-        case Token.ADD:
-        case Token.SUB:
-        case Token.MUL:
-        case Token.DIV:
-        case Token.MOD:
-        case Token.SHEQ:
-        case Token.SHNE:
-        case Token.IN:
-        case Token.INSTANCEOF:
+        case JSExp.BITOR:
+        case JSExp.BITXOR:
+        case JSExp.BITAND:
+        case JSExp.EQ:
+        case JSExp.NE:
+        case JSExp.LT:
+        case JSExp.LE:
+        case JSExp.GT:
+        case JSExp.GE:
+        case JSExp.LSH:
+        case JSExp.RSH:
+        case JSExp.URSH:
+        case JSExp.ADD:
+        case JSExp.SUB:
+        case JSExp.MUL:
+        case JSExp.DIV:
+        case JSExp.MOD:
+        case JSExp.SHEQ:
+        case JSExp.SHNE:
+        case JSExp.IN:
+        case JSExp.INSTANCEOF:
           if (!isVerySimple(n.getFirstChild())) return false;
-          if (!isVerySimple(n.getChildAtIndex(1))) return false;
+          if (!isVerySimple(n.getChild(1))) return false;
           return true;
-        case Token.NOT:
-        case Token.BITNOT:
-        case Token.POS:
-        case Token.NEG:
-        case Token.TYPEOF:
-        case Token.VOID:
+        case JSExp.NOT:
+        case JSExp.BITNOT:
+        case JSExp.POS:
+        case JSExp.NEG:
+        case JSExp.TYPEOF:
+        case JSExp.VOID:
           return isVerySimple(n.getFirstChild());
-        case Token.DELPROP:
-          Node acc = n.getFirstChild();
+        case JSExp.DELPROP:
+          Exp acc = n.getFirstChild();
           if (isVerySimple(acc)) return true;
-          assert ExpUtil.isAccessor(acc);
+          assert acc.isAccessor();
           if (!isVerySimple(acc.getFirstChild())) return false;
-          if (!isVerySimple(acc.getChildAtIndex(1))) return false;
+          if (!isVerySimple(acc.getChild(1))) return false;
           return true;
-        case Token.GETPROP:
+        case JSExp.GETPROP:
           if (!isVerySimple(n.getFirstChild())) return false;
-          assert isVerySimple(n.getChildAtIndex(1)) : "GETPROP node with complex property: " + n;
+          assert isVerySimple(n.getChild(1)) : "GETPROP node with complex property: " + n;
           return false;
-        case Token.GETELEM:
+        case JSExp.GETELEM:
           if (!isVerySimple(n.getFirstChild())) return false;
-          if (!isVerySimple(n.getChildAtIndex(1))) return false;
+          if (!isVerySimple(n.getChild(1))) return false;
           return true;
-        case Token.NUMBER:
-        case Token.STRING:
-        case Token.NULL:
-        case Token.THIS:
-        case Token.FALSE:
-        case Token.TRUE:
-        case Token.REGEXP:
+        case JSExp.NUMBER:
+        case JSExp.STRING:
+        case JSExp.NULL:
+        case JSExp.THIS:
+        case JSExp.FALSE:
+        case JSExp.TRUE:
+        case JSExp.REGEXP:
           return true;
-        case Token.ARRAYLIT:
+        case JSExp.ARRAYLIT:
           for (int i=0; i<childCnt; i++) {
-            Node elt = n.getChildAtIndex(i);
+            Exp elt = n.getChild(i);
             if (!isVerySimple(elt)) return false;
           }
           return true;
-        case Token.OBJECTLIT:
+        case JSExp.OBJECTLIT:
           for (int i=0; i<childCnt; i++) {
-            Node memb = n.getChildAtIndex(i);
+            Exp memb = n.getChild(i);
             // This applies to getter and setter definitions also.
-            assert memb.getChildCount() == 1 : "Object literal member without 1 child: " + sm.codeFromNode(memb);
-            Node val = memb.getFirstChild();
+            assert memb.getChildCount() == 1 : "Object literal member without 1 child: " + memb.toCode();
+            Exp val = memb.getFirstChild();
             if (!isVerySimple(val)) return false;
           } 
           return true;
-        case Token.COMMA:
-        case Token.ASSIGN_BITOR:
-        case Token.ASSIGN_BITXOR:
-        case Token.ASSIGN_BITAND:
-        case Token.ASSIGN_LSH:
-        case Token.ASSIGN_RSH:
-        case Token.ASSIGN_URSH:
-        case Token.ASSIGN_ADD:
-        case Token.ASSIGN_SUB:
-        case Token.ASSIGN_MUL:
-        case Token.ASSIGN_DIV:
-        case Token.ASSIGN_MOD:
-        case Token.HOOK:
-        case Token.INC:
-        case Token.DEC:
+        case JSExp.COMMA:
+        case JSExp.ASSIGN_BITOR:
+        case JSExp.ASSIGN_BITXOR:
+        case JSExp.ASSIGN_BITAND:
+        case JSExp.ASSIGN_LSH:
+        case JSExp.ASSIGN_RSH:
+        case JSExp.ASSIGN_URSH:
+        case JSExp.ASSIGN_ADD:
+        case JSExp.ASSIGN_SUB:
+        case JSExp.ASSIGN_MUL:
+        case JSExp.ASSIGN_DIV:
+        case JSExp.ASSIGN_MOD:
+        case JSExp.HOOK:
+        case JSExp.PREINC:
+        case JSExp.PREDEC:
+        case JSExp.POSTINC:
+        case JSExp.POSTDEC:
           return false;
-        case Token.OR:
-        case Token.AND:
+        case JSExp.OR:
+        case JSExp.AND:
           if (!isVerySimple(n.getFirstChild())) return false;
-          if (!isVerySimple(n.getChildAtIndex(1))) return false;
+          if (!isVerySimple(n.getChild(1))) return false;
           return true;
-        case Token.BREAK:
-        case Token.CONTINUE:
+        case JSExp.BREAK:
+        case JSExp.CONTINUE:
           return true;
-        case Token.EMPTY:
+        case JSExp.EMPTY:
           return true;
-        case Token.LABEL:
-        case Token.LABEL_NAME:
+        case JSExp.LABEL:
+        case JSExp.LABEL_NAME:
           return true;
-        case Token.TRANSACTION:
+        case JSExp.TRANSACTION:
           Dbg.warn("TRANSACTION expression encountered: " + n);
           return true;
-        case Token.CAST:
+        case JSExp.CAST:
           Dbg.warn("CAST expression encountered: " + n);
           return true;
 
-        case Token.FUNCTION:
-        case Token.EXPR_RESULT:
-        case Token.VAR:
-        case Token.THROW:
-        case Token.RETURN:
-        case Token.CONST:
-        case Token.PARAM_LIST:
-        case Token.IF:
-        case Token.TRY:
-        case Token.CATCH:
-        case Token.SWITCH:
-        case Token.CASE:
-        case Token.DEFAULT_CASE:
-        case Token.WHILE:
-        case Token.DO:
-        case Token.FOR:
-        case Token.BLOCK:
-        case Token.GETTER_DEF:
-        case Token.SETTER_DEF:
-        case Token.STRING_KEY:
-        case Token.WITH:
-        case Token.DEBUGGER:
+        case JSExp.FUNCTION:
+        case JSExp.EXPR_RESULT:
+        case JSExp.VAR:
+        case JSExp.THROW:
+        case JSExp.RETURN:
+        case JSExp.CONST:
+        case JSExp.PARAM_LIST:
+        case JSExp.IF:
+        case JSExp.TRY:
+        case JSExp.CATCH:
+        case JSExp.SWITCH:
+        case JSExp.CASE:
+        case JSExp.DEFAULT_CASE:
+        case JSExp.WHILE:
+        case JSExp.DO:
+        case JSExp.FOR:
+        case JSExp.BLOCK:
+        case JSExp.GETTER_DEF:
+        case JSExp.SETTER_DEF:
+        case JSExp.STRING_KEY:
+        case JSExp.WITH:
+        case JSExp.DEBUGGER:
         default:
-          throw new UnsupportedOperationException("Unexpected " + Token.name(typ) + " child of parent: " + parent);
+          throw new UnsupportedOperationException("Unexpected child of parent: " + parent);
       }
     }
 
     @Override
-    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal t, Exp n, Exp parent) {
       // %%% Avoid alot of extra work descending into expressions.
       return true;
     }
@@ -299,33 +297,34 @@ public class JSStatementTransform extends JSTransform {
     // Generate an if/then/else node with vacuous (but present) children.
     // The children should be replaced before the statement is inserted
     // into the source code.
-    protected Node createConditionalNode(boolean withElse) {
-      Node cond = new Node(Token.FALSE);
-      Node thenClause = new Node(Token.NULL);
-      Node stmt = null;
+    protected Exp createConditionalNode(boolean withElse) {
+      Exp cond = new JSExp(sm, JSExp.FALSE);
+      Exp thenClause = new JSExp(sm, JSExp.NULL);
+      Exp stmt = null;
       if (withElse) {
-        Node elseClause = new Node(Token.NULL);
-        stmt = new Node(Token.IF, cond, thenClause, elseClause);
+        Exp elseClause = new JSExp(sm, JSExp.NULL);
+        stmt = new JSExp(JSExp.IF, cond, thenClause, elseClause);
       } else {
-        stmt = new Node(Token.IF, cond, thenClause);
+        stmt = new JSExp(JSExp.IF, cond, thenClause);
       }
       return stmt;
     }
 
-    protected boolean transformGeneric(NodeTraversal t, Node n, Node parent) {
+    protected boolean transformGeneric(Traversal t, Exp n, Exp parent) {
       if (n.isFunction()) {
         // Lift function expressions to function statements.
         // They've all been deanonymized, so the name can be used rather
         // than a temp. variable.
         return transformFunctionExpression(t, n, parent);
       } else {
-        Node tmpName = createNameNode(t.getScope());
-        Node tmpRef = tmpName.cloneTree();
+        Exp tmpName = createNameNode(sm, t.getScope());
+        Exp tmpRef = tmpName.clone();
         parent.replaceChild(n, tmpRef);
         tmpName.addChildToBack(n);
-        Node tmpInit = new Node(Token.VAR, tmpName);
-        Node stmt = ExpUtil.getEnclosingStatement(parent);
-        Node stmtParent = stmt.getParent();
+        Exp tmpInit = new JSExp(JSExp.VAR, tmpName);
+        Exp stmt = ExpUtil.getEnclosingStatement(parent);
+        assert stmt != null : "Null parent: " + parent + " / " + n;
+        Exp stmtParent = stmt.getParent();
         stmtParent.addChildBefore(tmpInit, stmt);
 
         String id = tmpName.getString();
@@ -348,29 +347,28 @@ public class JSStatementTransform extends JSTransform {
       }
     }
 
-    protected boolean transformFunctionExpression(NodeTraversal t, Node n, Node parent) {
+    protected boolean transformFunctionExpression(Traversal t, Exp n, Exp parent) {
       assert n.isFunction();
-      Node fnName = n.getFirstChild().cloneTree();
+      Exp fnName = n.getFirstChild().clone();
       assert fnName.isName();
       parent.replaceChild(n, fnName);
-      Node stmt = ExpUtil.getEnclosingStatement(parent);
-      Node stmtParent = stmt.getParent();
+      Exp stmt = ExpUtil.getEnclosingStatement(parent);
+      Exp stmtParent = stmt.getParent();
       stmtParent.addChildBefore(n, stmt);
       return true;
     }
 
-    protected boolean isAncestor(Node n, Node ancestor) {
-      AncestorIterable ancestors = n.getAncestors();
-      Iterator<Node> nit = ancestors.iterator();
-      while (nit.hasNext()) {
-        Node a = nit.next();
+    protected boolean isAncestor(Exp n, Exp ancestor) {
+      Exp a = n.getParent();
+      while (a != null) {
         if (a == ancestor)
           return true;
+        a = a.getParent();
       }
       return false;
     }
 
-    protected boolean isModifiableWithinExpression(NodeTraversal t, Node n, Node exp) {
+    protected boolean isModifiableWithinExpression(Traversal t, Exp n, Exp exp) {
       assert n.isName();
 
       // Conservatively assume that any call may alter the reference.
@@ -385,15 +383,15 @@ public class JSStatementTransform extends JSTransform {
         // can't be altered.
         boolean vulnerable = true;
         if (s.isLocal() && s.isDeclared(name, false)) {
-          Node rn = s.getRootNode();
+          Exp rn = s.getRootExp();
           if (rn.getType() != JSExp.FUNCTION) {
             // This shouldn't happen.
             Dbg.warn("Non-function, non-global variable scope: " + name);
             return true;
           }
-          Node rb = rn.getLastChild();
-          assert rb.isBlock() || rb.isEmpty();
-          if (rb.getChildCount() > 0 && rb.getChildAtIndex(0).getType() == JSExp.FUNCTION) {
+          Exp rb = rn.getLastChild();
+          assert rb.isBlock() || rb.is(JSExp.EMPTY);
+          if (rb.getChildCount() > 0 && rb.getChild(0).getType() == JSExp.FUNCTION) {
             // The scope contains a function, so we can't be sure
             // (without some hard-core analysis).
             // %%% Test this.
@@ -414,14 +412,14 @@ public class JSStatementTransform extends JSTransform {
       return false;
     }
 
-    protected boolean transformAssignLHS(NodeTraversal t, Node lhs, Node n) {
-      assert ExpUtil.isAssignment(n);
+    protected boolean transformAssignLHS(Traversal t, Exp lhs, Exp n) {
+      assert n.isAssignment();
       boolean chng = false;
-      if (ExpUtil.isAccessor(lhs)) {
-        Node obj = lhs.getFirstChild();
+      if (lhs.isAccessor()) {
+        Exp obj = lhs.getFirstChild();
         if (isVerySimple(obj)) {
           if (obj.isName() && !tmpUses.contains(obj)) {
-            Node rhs = ExpUtil.getAssignRHS(n);
+            Exp rhs = ExpUtil.getAssignRHS(n);
             if (isModifiableWithinExpression(t, obj, rhs)) {
               if (transformGeneric(t, obj, lhs)) chng = true;
             }
@@ -429,10 +427,10 @@ public class JSStatementTransform extends JSTransform {
         } else {
           if (transformGeneric(t, obj, lhs)) chng = true;
         }
-        Node prop = lhs.getChildAtIndex(1);
+        Exp prop = lhs.getChild(1);
         if (isVerySimple(prop)) {
           if (prop.isName() && !tmpUses.contains(prop)) {
-            Node rhs = ExpUtil.getAssignRHS(n);
+            Exp rhs = ExpUtil.getAssignRHS(n);
             if (isModifiableWithinExpression(t, prop, rhs)) {
               if (transformGeneric(t, prop, lhs)) chng = true;
             }
@@ -447,15 +445,15 @@ public class JSStatementTransform extends JSTransform {
     }
 
     // This is for regular ASSIGN nodes only.
-    protected boolean transformAssign(NodeTraversal t, Node n, Node parent) {
+    protected boolean transformAssign(Traversal t, Exp n, Exp parent) {
       assert n.isAssign();
       boolean chng = false;
-      Node lhs = n.getFirstChild();
+      Exp lhs = n.getFirstChild();
       if (transformAssignLHS(t, lhs, n)) chng = true;
 
       // Defer changing the RHS until the LHS is all done.
       if (!chng) {
-        Node rhs = n.getChildAtIndex(1);
+        Exp rhs = n.getChild(1);
         if (!isSimpleExpression(t, rhs, n)) {
           if (transform(t, rhs, n)) chng = true;
         }
@@ -464,17 +462,17 @@ public class JSStatementTransform extends JSTransform {
       return chng;
     }
 
-    protected boolean transformCall(NodeTraversal t, Node n, Node parent) {
+    protected boolean transformCall(Traversal t, Exp n, Exp parent) {
       boolean chng = false;
-      Node tgt = n.getFirstChild();
-      if (ExpUtil.isAccessor(tgt)) {
+      Exp tgt = n.getFirstChild();
+      if (tgt.isAccessor()) {
         if (transformBinary(t, tgt, n)) chng = true;
       } else if (!isVerySimple(tgt)) {
         if (transformGeneric(t, tgt, n)) chng = true;
       }
       int childCnt = n.getChildCount();
       for (int i=1; i<childCnt; i++) {
-        Node arg = n.getChildAtIndex(i);
+        Exp arg = n.getChild(i);
         if (!isVerySimple(arg)) {
           if (transformGeneric(t, arg, n)) chng = true;
         }
@@ -482,13 +480,13 @@ public class JSStatementTransform extends JSTransform {
       return chng;
     }
 
-    protected boolean transformCompound(NodeTraversal t, Node n, Node parent) {
+    protected boolean transformCompound(Traversal t, Exp n, Exp parent) {
       // For constructor calls, accessors don't needs to be kept
       // intact because there will be a fresh |this| object.
       boolean chng = false;
       int childCnt = n.getChildCount();
       for (int i=0; i<childCnt; i++) {
-        Node c = n.getChildAtIndex(i);
+        Exp c = n.getChild(i);
         if (!isVerySimple(c)) {
           if (transformGeneric(t, c, n)) chng = true;
         }
@@ -496,8 +494,8 @@ public class JSStatementTransform extends JSTransform {
       return chng;
     }
 
-    protected void extractEtter(NodeTraversal t, Node stmt, Node defObj, Node etter) {
-      Node fn = etter.getFirstChild();
+    protected void extractEtter(Traversal t, Exp stmt, Exp defObj, Exp etter) {
+      Exp fn = etter.getFirstChild();
       assert fn.isFunction();
 
       // Detach the nodes.
@@ -505,32 +503,32 @@ public class JSStatementTransform extends JSTransform {
       fn.detachFromParent();
 
       // Create a name for the function.
-      Node newName = createNameNode(t.getScope());
+      Exp newName = createNameNode(sm, t.getScope());
 
       // Replace the current (empty) name with the generated one.
-      fn.replaceChild(fn.getChildAtIndex(0), newName);
+      fn.replaceChild(fn.getChild(0), newName);
       tmpDefs.add(newName);
 
       // Insert the new function declaration.
       stmt.getParent().addChildBefore(fn, stmt);
 
-      Node defKey = Node.newString(Token.STRING_KEY, etter.isGetterDef() ? "get" : "set");
-      Node defVal = newName.cloneTree();
+      Exp defKey = JSExp.createStringKey(sm, etter.is(JSExp.GETTER_DEF) ? "get" : "set");
+      Exp defVal = newName.clone();
       tmpUses.add(defVal);
       defKey.addChildToBack(defVal);
       defObj.addChildToBack(defKey);
     }
 
-    protected void extractEtters(NodeTraversal t, String propName, Node getter, Node setter, Node parent, Node assn) {
+    protected void extractEtters(Traversal t, String propName, Exp getter, Exp setter, Exp parent, Exp assn) {
       assert getter != null || setter != null;
-      assert parent.isObjectLit();
+      assert parent.is(JSExp.OBJECTLIT);
 
       // Note the statement in front of which we'll put the new function
       // declaration.
-      Node stmt = ExpUtil.getEnclosingStatement(parent);
+      Exp stmt = ExpUtil.getEnclosingStatement(parent);
 
       // This is the property declaration object.
-      Node defObj = new Node(Token.OBJECTLIT);
+      Exp defObj = new JSExp(sm, JSExp.OBJECTLIT);
       
       if (getter != null) {
         extractEtter(t, stmt, defObj, getter);
@@ -543,64 +541,64 @@ public class JSStatementTransform extends JSTransform {
       // Create |Object.defineProperty(objName, 'prop', {'get': fn})|.
 
       // This is the left-hand side of the assignment.
-      Node objName = assn.cloneTree();
+      Exp objName = assn.clone();
 
-      Node prop = Node.newString(propName);
+      Exp prop = JSExp.createString(sm, propName);
 
-      Node objObject = Node.newString(Token.NAME, "Object");
-      Node defProp = Node.newString("defineProperty");
-      Node defMeth = new Node(Token.GETPROP, objObject, defProp);
-      Node callExpr = new Node(Token.CALL, defMeth, objName, prop, defObj);
-      Node callStmt = new Node(Token.EXPR_RESULT, callExpr);
+      Exp objObject = JSExp.createName(sm, "Object");
+      Exp defProp = JSExp.createString(sm, "defineProperty");
+      Exp defMeth = new JSExp(JSExp.GETPROP, objObject, defProp);
+      Exp callExpr = new JSExp(JSExp.CALL, defMeth, objName, prop, defObj);
+      Exp callStmt = new JSExp(JSExp.EXPR_RESULT, callExpr);
       stmt.getParent().addChildAfter(callStmt, stmt);
     }
 
-    protected boolean transformEtters(NodeTraversal t, Node n, Node parent, Map<String,Node> getters, Map<String,Node> setters) {
+    protected boolean transformEtters(Traversal t, Exp n, Exp parent, Map<String,Exp> getters, Map<String,Exp> setters) {
       boolean chng = false;
-      Node stmt = ExpUtil.getEnclosingStatement(n);
-      for (Map.Entry<String,Node> entry : getters.entrySet()) {
+      Exp stmt = ExpUtil.getEnclosingStatement(n);
+      for (Map.Entry<String,Exp> entry : getters.entrySet()) {
         String propName = entry.getKey();
-        Node getter = entry.getValue();
-        Node setter = null;
+        Exp getter = entry.getValue();
+        Exp setter = null;
         if (setters.containsKey(propName)) {
           setter = setters.get(propName);
           setters.remove(propName);
         }
         // Can only process this if the object literal is assigned to
         // a name.
-        Node lhs = ExpUtil.getAssignLHS(stmt);
+        Exp lhs = ExpUtil.getAssignLHS(stmt);
         if (lhs != null) {
-          Node rhs = ExpUtil.getAssignRHS(stmt);
-          if (rhs == n) {
+          Exp rhs = stmt.cloneAssignRHS();
+          if (rhs.getOriginal() == n) {
             extractEtters(t, propName, getter, setter, n, lhs);
             chng = true;
           } else {
             Dbg.warn("Object literal embedded in compound expression: " + n);
           }
-        } else if (parent.isExprResult()) {
+        } else if (parent.is(JSExp.EXPR_RESULT)) {
           // This would be strange, but this is in case there's an
           // object literal as a floating expression. Print a warning
           // and don't flag more.
           Dbg.warn("Floating object literal with getter " + (setter == null ? ":" : " and setter:") + parent);
         }
       }
-      for (Map.Entry<String,Node> entry : setters.entrySet()) {
+      for (Map.Entry<String,Exp> entry : setters.entrySet()) {
         String propName = entry.getKey();
-        Node setter = entry.getValue();
+        Exp setter = entry.getValue();
         assert !getters.containsKey(propName);
 
         // Can only process this if the object literal is assigned to
         // a name.
-        Node lhs = ExpUtil.getAssignLHS(stmt);
+        Exp lhs = ExpUtil.getAssignLHS(stmt);
         if (lhs != null) {
-          Node rhs = ExpUtil.getAssignRHS(stmt);
-          if (rhs == n) {
+          Exp rhs = stmt.cloneAssignRHS();
+          if (rhs.getOriginal() == n) {
             extractEtters(t, propName, null, setter, n, lhs);
             chng = true;
           } else {
             Dbg.warn("Object literal embedded in compound expression: " + n);
           }
-        } else if (n.getParent().isExprResult()) {
+        } else if (n.getParent().is(JSExp.EXPR_RESULT)) {
           // This would be strange, but this is in case there's an
           // object literal as a floating expression. Print a warning
           // and don't flag more.
@@ -610,22 +608,22 @@ public class JSStatementTransform extends JSTransform {
       return chng;
     }
 
-    protected boolean transformObjectLit(NodeTraversal t, Node n, Node parent) {
+    protected boolean transformObjectLit(Traversal t, Exp n, Exp parent) {
       boolean chng = false;
-      Map<String,Node> getters = new LinkedHashMap<String,Node>();
-      Map<String,Node> setters = new LinkedHashMap<String,Node>();
+      Map<String,Exp> getters = new LinkedHashMap<String,Exp>();
+      Map<String,Exp> setters = new LinkedHashMap<String,Exp>();
       int childCnt = n.getChildCount();
       for (int i=0; i<childCnt; i++) {
-        Node memb = n.getChildAtIndex(i);
-        if (memb.isGetterDef()) {
+        Exp memb = n.getChild(i);
+        if (memb.is(JSExp.GETTER_DEF)) {
           getters.put(memb.getString(), memb);
           continue;
-        } else if (memb.isSetterDef()) {
+        } else if (memb.is(JSExp.SETTER_DEF)) {
           setters.put(memb.getString(), memb);
           continue;
         }
         assert memb.getChildCount() == 1;
-        Node val = memb.getFirstChild();
+        Exp val = memb.getFirstChild();
         if (!isVerySimple(val)) {
           if (transformGeneric(t, val, memb)) chng = true;
         }
@@ -634,37 +632,37 @@ public class JSStatementTransform extends JSTransform {
       return chng;
     }
 
-    protected Node expandLogicalFirst(NodeTraversal t, Node n, Node parent) {
-      Node op0 = n.getFirstChild().detachFromParent();
+    protected Exp expandLogicalFirst(Traversal t, Exp n, Exp parent) {
+      Exp op0 = n.getFirstChild().detachFromParent();
       
       // Create a temporary variable to hold the value that the
       // first operand evaluates to.
-      Node tmp = createNameNode(t.getScope());
+      Exp tmp = createNameNode(sm, t.getScope());
 
       // Create a var initializer for the new variable, and assign it
       // the value of the first operand.
-      Node tmpInit = tmp.cloneTree();
+      Exp tmpInit = tmp.clone();
       tmpDefs.add(tmpInit);
-      Node op0Assign = new Node(Token.VAR, tmpInit);
+      Exp op0Assign = new JSExp(JSExp.VAR, tmpInit);
       op0Assign.getFirstChild().addChildToBack(op0);
 
       // And insert it into the program prior to the enclosing statement.
-      Node enclosing = ExpUtil.getEnclosingStatement(n);
+      Exp enclosing = ExpUtil.getEnclosingStatement(n);
       enclosing.getParent().addChildBefore(op0Assign, enclosing);
 
       return tmp;
     }
 
-    protected void insertLogicalConditional(NodeTraversal t, Node n, Node parent, Node cond, Node thenBlock) {
+    protected void insertLogicalConditional(Traversal t, Exp n, Exp parent, Exp cond, Exp thenBlock) {
       // Generate a new if/then framework node.
-      Node stmt = createConditionalNode(false);
+      Exp stmt = createConditionalNode(false);
 
       // Fill in the new conditional.
       stmt.replaceChild(stmt.getFirstChild(), cond);
-      stmt.replaceChild(stmt.getChildAtIndex(1), thenBlock);
+      stmt.replaceChild(stmt.getChild(1), thenBlock);
 
       // Insert the new if/then/else statement.
-      Node enclosing = ExpUtil.getEnclosingStatement(n);
+      Exp enclosing = ExpUtil.getEnclosingStatement(n);
       enclosing.getParent().addChildBefore(stmt, enclosing);
     }
 
@@ -677,25 +675,25 @@ public class JSStatementTransform extends JSTransform {
     //   tmp = z;
     // }
     // var x = tmp;
-    protected void expandAndValue(NodeTraversal t, Node n, Node parent) {
+    protected void expandAndValue(Traversal t, Exp n, Exp parent) {
       // Extract the first operand into a temporary.
-      Node cond = expandLogicalFirst(t, n, parent);
+      Exp cond = expandLogicalFirst(t, n, parent);
 
       // Get the second operand (which is now the first).
-      Node op1 = n.getChildAtIndex(0).detachFromParent();
+      Exp op1 = n.getChild(0).detachFromParent();
 
       // The value of the first operand determines the control flow.
       // That is, the second operand is only evaluated if the first
       // one is true.
-      Node tmpRef = cond.cloneTree();
+      Exp tmpRef = cond.clone();
 
       // Create an assignment statement capturing the value of the
       // second operand to be placed within the conditional block.
-      Node tmpOp1 = cond.cloneTree();
-      Node op1Assign = new Node(Token.ASSIGN, tmpOp1, op1);
+      Exp tmpOp1 = cond.clone();
+      Exp op1Assign = new JSExp(JSExp.ASSIGN, tmpOp1, op1);
       tmpUses.add(tmpOp1);
-      op1Assign = new Node(Token.EXPR_RESULT, op1Assign);
-      Node thenBlock = new Node(Token.BLOCK, op1Assign);
+      op1Assign = new JSExp(JSExp.EXPR_RESULT, op1Assign);
+      Exp thenBlock = new JSExp(JSExp.BLOCK, op1Assign);
 
       // Create and insert the conditional before the statement.
       insertLogicalConditional(t, n, parent, cond, thenBlock);
@@ -715,22 +713,22 @@ public class JSStatementTransform extends JSTransform {
     // if (x) {
     //   g();
     // }
-    protected void expandAndSimple(NodeTraversal t, Node n, Node parent) {
-      Node enclosing = ExpUtil.getEnclosingStatement(n);
+    protected void expandAndSimple(Traversal t, Exp n, Exp parent) {
+      Exp enclosing = ExpUtil.getEnclosingStatement(n);
 
       // Extract the two operands.
-      Node op1 = n.getChildAtIndex(1).detachFromParent();
-      Node op0 = n.getFirstChild().detachFromParent();
+      Exp op1 = n.getChild(1).detachFromParent();
+      Exp op0 = n.getFirstChild().detachFromParent();
 
       // The value of the first operand determines the control flow.
       // That is, the second operand is only evaluated if the first
       // one is true.
-      Node cond = op0;
+      Exp cond = op0;
 
       // Create an assignment statement capturing the value of the
       // second operand to be placed within the conditional block.
-      Node op1Stmt = new Node(Token.EXPR_RESULT, op1);
-      Node thenBlock = new Node(Token.BLOCK, op1Stmt);
+      Exp op1Stmt = new JSExp(JSExp.EXPR_RESULT, op1);
+      Exp thenBlock = new JSExp(JSExp.BLOCK, op1Stmt);
 
       // Create and insert a conditional before the original statement.
       insertLogicalConditional(t, n, parent, cond, thenBlock);
@@ -747,17 +745,17 @@ public class JSStatementTransform extends JSTransform {
     // if (tmp) {
     //   g();
     // }
-    protected void expandAnd(NodeTraversal t, Node n, Node parent) {
+    protected void expandAnd(Traversal t, Exp n, Exp parent) {
       // Extract the first operand into a temporary.
-      Node cond = expandLogicalFirst(t, n, parent);
+      Exp cond = expandLogicalFirst(t, n, parent);
 
       // Get the second operand (which is now the first).
-      Node op1 = n.getChildAtIndex(0).detachFromParent();
+      Exp op1 = n.getChild(0).detachFromParent();
 
       // Create an assignment statement capturing the value of the
       // second operand to be placed within the conditional block.
-      Node op1Stmt = new Node(Token.EXPR_RESULT, op1);
-      Node thenBlock = new Node(Token.BLOCK, op1Stmt);
+      Exp op1Stmt = new JSExp(JSExp.EXPR_RESULT, op1);
+      Exp thenBlock = new JSExp(JSExp.BLOCK, op1Stmt);
 
       // Create and insert a conditional before the original statement.
       insertLogicalConditional(t, n, parent, cond, thenBlock);
@@ -776,26 +774,26 @@ public class JSStatementTransform extends JSTransform {
     //   tmp = z;
     // }
     // var x = tmp;
-    protected void expandOrValue(NodeTraversal t, Node n, Node parent) {
+    protected void expandOrValue(Traversal t, Exp n, Exp parent) {
       // Extract the first operand into a temporary.
-      Node cond = expandLogicalFirst(t, n, parent);
+      Exp cond = expandLogicalFirst(t, n, parent);
 
       // Get the second operand (which is now the first).
-      Node op1 = n.getChildAtIndex(0).detachFromParent();
+      Exp op1 = n.getChild(0).detachFromParent();
 
       // The value of the first operand determines the control flow.
       // That is, the second operand is only evaluated if the first
       // one is false.
-      Node tmpRef = cond.cloneTree();
-      Node notCond = new Node(Token.NOT, cond);
+      Exp tmpRef = cond.clone();
+      Exp notCond = new JSExp(JSExp.NOT, cond);
 
       // Create an assignment statement capturing the value of the
       // second operand to be placed within the conditional block.
-      Node tmpOp1 = cond.cloneTree();
-      Node op1Assign = new Node(Token.ASSIGN, tmpOp1, op1);
+      Exp tmpOp1 = cond.clone();
+      Exp op1Assign = new JSExp(JSExp.ASSIGN, tmpOp1, op1);
       tmpUses.add(tmpOp1);
-      op1Assign = new Node(Token.EXPR_RESULT, op1Assign);
-      Node thenBlock = new Node(Token.BLOCK, op1Assign);
+      op1Assign = new JSExp(JSExp.EXPR_RESULT, op1Assign);
+      Exp thenBlock = new JSExp(JSExp.BLOCK, op1Assign);
 
       // Create and insert a conditional before the original statement.
       insertLogicalConditional(t, n, parent, notCond, thenBlock);
@@ -815,21 +813,21 @@ public class JSStatementTransform extends JSTransform {
     // if (!x) {
     //   g();
     // }
-    protected void expandOrSimple(NodeTraversal t, Node n, Node parent) {
-      Node enclosing = ExpUtil.getEnclosingStatement(n);
+    protected void expandOrSimple(Traversal t, Exp n, Exp parent) {
+      Exp enclosing = ExpUtil.getEnclosingStatement(n);
 
       // Extract the two operands.
-      Node op1 = n.getChildAtIndex(1).detachFromParent();
-      Node op0 = n.getFirstChild().detachFromParent();
+      Exp op1 = n.getChild(1).detachFromParent();
+      Exp op0 = n.getFirstChild().detachFromParent();
 
       // The value of the first operand determines the control flow.
       // That is, the second operand is only evaluated if the first
       // one is false.
-      Node notCond = new Node(Token.NOT, op0);
+      Exp notCond = new JSExp(JSExp.NOT, op0);
 
       // Wrap the second operand to be placed within the conditional.
-      Node op1Stmt = new Node(Token.EXPR_RESULT, op1);
-      Node thenBlock = new Node(Token.BLOCK, op1Stmt);
+      Exp op1Stmt = new JSExp(JSExp.EXPR_RESULT, op1);
+      Exp thenBlock = new JSExp(JSExp.BLOCK, op1Stmt);
 
       // Create and insert a conditional before the original statement.
       insertLogicalConditional(t, n, parent, notCond, thenBlock);
@@ -846,18 +844,18 @@ public class JSStatementTransform extends JSTransform {
     // if (!tmp) {
     //   g();
     // }
-    protected void expandOr(NodeTraversal t, Node n, Node parent) {
+    protected void expandOr(Traversal t, Exp n, Exp parent) {
       // Extract the first operand into a temporary.
-      Node cond = expandLogicalFirst(t, n, parent);
-      Node notCond = new Node(Token.NOT, cond);
+      Exp cond = expandLogicalFirst(t, n, parent);
+      Exp notCond = new JSExp(JSExp.NOT, cond);
 
       // Get the second operand (which is now the first).
-      Node op1 = n.getChildAtIndex(0).detachFromParent();
+      Exp op1 = n.getChild(0).detachFromParent();
 
       // Create an assignment statement capturing the value of the
       // second operand to be placed within the conditional block.
-      Node op1Stmt = new Node(Token.EXPR_RESULT, op1);
-      Node thenBlock = new Node(Token.BLOCK, op1Stmt);
+      Exp op1Stmt = new JSExp(JSExp.EXPR_RESULT, op1);
+      Exp thenBlock = new JSExp(JSExp.BLOCK, op1Stmt);
 
       // Create and insert a conditional before the original statement.
       insertLogicalConditional(t, n, parent, notCond, thenBlock);
@@ -867,8 +865,8 @@ public class JSStatementTransform extends JSTransform {
       parent.getParent().removeChild(parent);
     }
 
-    protected boolean transformAnd(NodeTraversal t, Node n, Node parent) {
-      if (parent.isExprResult()) {
+    protected boolean transformAnd(Traversal t, Exp n, Exp parent) {
+      if (parent.is(JSExp.EXPR_RESULT)) {
         if (n.getFirstChild().isName()) {
           expandAndSimple(t, n, parent);
         } else {
@@ -880,8 +878,8 @@ public class JSStatementTransform extends JSTransform {
       return true;
     }
 
-    protected boolean transformOr(NodeTraversal t, Node n, Node parent) {
-      if (parent.isExprResult()) {
+    protected boolean transformOr(Traversal t, Exp n, Exp parent) {
+      if (parent.is(JSExp.EXPR_RESULT)) {
         if (n.getFirstChild().isName()) {
           expandOrSimple(t, n, parent);
         } else {
@@ -893,50 +891,52 @@ public class JSStatementTransform extends JSTransform {
       return true;
     }
 
-    protected boolean transformComma(NodeTraversal t, Node n, Node parent) {
-      Node c1 = n.getChildAtIndex(1).detachFromParent();
-      Node c0 = n.getChildAtIndex(0).detachFromParent();
-      Node wrapper = new Node(Token.EXPR_RESULT, c0);
-      Node stmt = ExpUtil.getEnclosingStatement(n);
+    protected boolean transformComma(Traversal t, Exp n, Exp parent) {
+      Exp c1 = n.getChild(1).detachFromParent();
+      Exp c0 = n.getChild(0).detachFromParent();
+      Exp wrapper = new JSExp(JSExp.EXPR_RESULT, c0);
+      Exp stmt = ExpUtil.getEnclosingStatement(n);
       stmt.getParent().addChildBefore(wrapper, stmt);
       parent.replaceChild(n, c1);
       return true;
     }
 
-    protected boolean transformIncDec(NodeTraversal t, Node n, Node parent) {
+    protected boolean transformIncDec(Traversal t, Exp n, Exp parent) {
       if (ExpUtil.isPostfixUnOp(n) && (parent.isReturn()
           || parent.isThrow())) {
         // This case (obscure as it might be) cannot be transformed.
         return false;
       }
       // The very simple case is desirable to keep around.
-      if (parent.isExprResult()) {
+      if (parent.is(JSExp.EXPR_RESULT)) {
         return false;
       }
 
       int newOp = -1;
       switch (n.getType()) {
-        case Token.INC:
-          newOp = Token.ADD;
+        case JSExp.PREINC:
+        case JSExp.POSTINC:
+          newOp = JSExp.ADD;
           break;
-        case Token.DEC:
-          newOp = Token.SUB; 
+        case JSExp.PREDEC:
+        case JSExp.POSTDEC:
+          newOp = JSExp.SUB; 
           break;
         default:
           assert false : "Unexpected unary operator: " + n;
       }
 
-      Node ref = n.getFirstChild().detachFromParent();
-      Node refCopy = ref.cloneTree();
-      Node newRhs = new Node(newOp, refCopy, Node.newNumber(1));
-      Node assign = new Node(Token.ASSIGN, ref, newRhs);
+      Exp ref = n.getFirstChild().detachFromParent();
+      Exp refCopy = ref.clone();
+      Exp newRhs = new JSExp(newOp, refCopy, JSExp.createNumber(sm, 1));
+      Exp assign = new JSExp(JSExp.ASSIGN, ref, newRhs);
 
-      if (ExpUtil.isPostfixUnOp(n) && !parent.isExprResult()) {
-        Node refSub = ref.cloneTree();
+      if (ExpUtil.isPostfixUnOp(n) && !parent.is(JSExp.EXPR_RESULT)) {
+        Exp refSub = ref.clone();
         parent.replaceChild(n, refSub);
-        Node exRes = new Node(Token.EXPR_RESULT, assign);
-        Node stmt = ExpUtil.getEnclosingStatement(parent);
-        Node stmtParent = stmt.getParent();
+        Exp exRes = new JSExp(JSExp.EXPR_RESULT, assign);
+        Exp stmt = ExpUtil.getEnclosingStatement(parent);
+        Exp stmtParent = stmt.getParent();
         stmtParent.addChildAfter(exRes, stmt);
       } else {
         parent.replaceChild(n, assign);
@@ -944,107 +944,106 @@ public class JSStatementTransform extends JSTransform {
       return true;
     }
 
-    protected boolean transformCompoundAssign(NodeTraversal t, Node n, Node parent) {
+    protected boolean transformCompoundAssign(Traversal t, Exp n, Exp parent) {
       boolean chng = false;
-      Node lhs = ExpUtil.getAssignLHS(n);
+      Exp lhs = ExpUtil.getAssignLHS(n);
       if (transformAssignLHS(t, lhs, n)) chng = true;
 
       if (!chng) {
-        Node lhsCopy = lhs.cloneTree();
-        Node rhs = ExpUtil.getAssignRHS(n);
+        Exp lhsCopy = lhs.clone();
+        Exp rhs = n.cloneAssignRHS();
         lhs.detachFromParent();
-        rhs.detachFromParent();
         int newOp = -1;
         switch (n.getType()) {
-          case Token.ASSIGN_BITOR:
-            newOp = Token.BITOR;
+          case JSExp.ASSIGN_BITOR:
+            newOp = JSExp.BITOR;
             break;
-          case Token.ASSIGN_BITXOR:
-            newOp = Token.BITXOR;
+          case JSExp.ASSIGN_BITXOR:
+            newOp = JSExp.BITXOR;
             break;
-          case Token.ASSIGN_BITAND:
-            newOp = Token.BITAND;
+          case JSExp.ASSIGN_BITAND:
+            newOp = JSExp.BITAND;
             break;
-          case Token.ASSIGN_LSH:
-            newOp = Token.LSH;
+          case JSExp.ASSIGN_LSH:
+            newOp = JSExp.LSH;
             break;
-          case Token.ASSIGN_RSH:
-            newOp = Token.RSH;
+          case JSExp.ASSIGN_RSH:
+            newOp = JSExp.RSH;
             break;
-          case Token.ASSIGN_URSH:
-            newOp = Token.URSH;
+          case JSExp.ASSIGN_URSH:
+            newOp = JSExp.URSH;
             break;
-          case Token.ASSIGN_ADD:
-            newOp = Token.ADD;
+          case JSExp.ASSIGN_ADD:
+            newOp = JSExp.ADD;
             break;
-          case Token.ASSIGN_SUB:
-            newOp = Token.SUB;
+          case JSExp.ASSIGN_SUB:
+            newOp = JSExp.SUB;
             break;
-          case Token.ASSIGN_MUL:
-            newOp = Token.MUL;
+          case JSExp.ASSIGN_MUL:
+            newOp = JSExp.MUL;
             break;
-          case Token.ASSIGN_DIV:
-            newOp = Token.DIV;
+          case JSExp.ASSIGN_DIV:
+            newOp = JSExp.DIV;
             break;
-          case Token.ASSIGN_MOD:
-            newOp = Token.MOD;
+          case JSExp.ASSIGN_MOD:
+            newOp = JSExp.MOD;
             break;
           default:
             assert false : "Unknown assignment operator: " + n;      
         }
-        Node newRhs = new Node(newOp, lhsCopy, rhs);
-        Node assign = new Node(Token.ASSIGN, lhs, newRhs);
+        Exp newRhs = new JSExp(newOp, lhsCopy, rhs);
+        Exp assign = new JSExp(JSExp.ASSIGN, lhs, newRhs);
         parent.replaceChild(n, assign);
         chng = true;
       }
       return chng;
     }
 
-    protected boolean transformHook(NodeTraversal t, Node n, Node parent) {
+    protected boolean transformHook(Traversal t, Exp n, Exp parent) {
       // Create a temporary variable to hold the value that the
       // conditional evaluates to.
-      Node tmpRef = createNameNode(t.getScope());
-      Node tmpDef = tmpRef.cloneTree();
+      Exp tmpRef = createNameNode(sm, t.getScope());
+      Exp tmpDef = tmpRef.clone();
 
       // Create a var initializer for the new variable.
-      Node tmpDecl = new Node(Token.VAR, tmpDef);
+      Exp tmpDecl = new JSExp(JSExp.VAR, tmpDef);
       tmpDefs.add(tmpDef);
       // And insert it into the program prior to the enclosing statement.
-      Node enclosing = ExpUtil.getEnclosingStatement(n);
+      Exp enclosing = ExpUtil.getEnclosingStatement(n);
       enclosing.getParent().addChildBefore(tmpDecl, enclosing);
 
       // Generate a new if/then/else framework node.
-      Node stmt = createConditionalNode(true);
+      Exp stmt = createConditionalNode(true);
 
       // Get the statement to evaluate if the condition is false.
-      Node elseStmt = n.getChildAtIndex(2).detachFromParent();
+      Exp elseStmt = n.getChild(2).detachFromParent();
       // Get the statement to evaluate if the condition is true.
-      Node thenStmt = n.getChildAtIndex(1).detachFromParent();
+      Exp thenStmt = n.getChild(1).detachFromParent();
       // Isolate the condition.
-      Node cond = n.getChildAtIndex(0).detachFromParent();
+      Exp cond = n.getChild(0).detachFromParent();
 
       // Create an assignment statement capturing the value of the
       // then branch.
-      Node tmpThen = tmpRef.cloneTree();
-      Node thenAssn = new Node(Token.ASSIGN, tmpThen, thenStmt);
-      Node thenAssign = new Node(Token.EXPR_RESULT, thenAssn);
+      Exp tmpThen = tmpRef.clone();
+      Exp thenAssn = new JSExp(JSExp.ASSIGN, tmpThen, thenStmt);
+      Exp thenAssign = new JSExp(JSExp.EXPR_RESULT, thenAssn);
       tmpUses.add(tmpThen);
 
       // Create an assignment statement capturing the value of the
       // else branch.
-      Node tmpElse = tmpRef.cloneTree();
-      Node elseAssn = new Node(Token.ASSIGN, tmpElse, elseStmt);
-      Node elseAssign = new Node(Token.EXPR_RESULT, elseAssn);
+      Exp tmpElse = tmpRef.clone();
+      Exp elseAssn = new JSExp(JSExp.ASSIGN, tmpElse, elseStmt);
+      Exp elseAssign = new JSExp(JSExp.EXPR_RESULT, elseAssn);
       tmpUses.add(tmpElse);
 
       // Wrap the then and else expressions in a block.
-      Node elseBlock = new Node(Token.BLOCK, elseAssign);
-      Node thenBlock = new Node(Token.BLOCK, thenAssign);
+      Exp elseBlock = new JSExp(JSExp.BLOCK, elseAssign);
+      Exp thenBlock = new JSExp(JSExp.BLOCK, thenAssign);
 
       // Fill in the new conditional.
       stmt.replaceChild(stmt.getFirstChild(), cond);
-      stmt.replaceChild(stmt.getChildAtIndex(1), thenBlock);
-      stmt.replaceChild(stmt.getChildAtIndex(2), elseBlock);
+      stmt.replaceChild(stmt.getChild(1), thenBlock);
+      stmt.replaceChild(stmt.getChild(2), elseBlock);
 
       // Replace the original ternary conditional with the result value.
       parent.replaceChild(n, tmpRef);
@@ -1055,10 +1054,10 @@ public class JSStatementTransform extends JSTransform {
       return true;
     }
 
-    protected boolean transformBinary(NodeTraversal t, Node n, Node parent) {
+    protected boolean transformBinary(Traversal t, Exp n, Exp parent) {
       boolean chng = false;
-      Node left = n.getFirstChild();
-      Node right = n.getChildAtIndex(1);
+      Exp left = n.getFirstChild();
+      Exp right = n.getChild(1);
 
       if (isVerySimple(left)) {
         if (left.isName() && !tmpUses.contains(left)
@@ -1076,111 +1075,113 @@ public class JSStatementTransform extends JSTransform {
       return chng;
     }
 
-    protected boolean transform(NodeTraversal t, Node n, Node parent) {
+    protected boolean transform(Traversal t, Exp n, Exp parent) {
       boolean chng = false;
       int childCnt = n.getChildCount();
       int typ = n.getType();
       switch (typ) {
-        case Token.NAME:
+        case JSExp.NAME:
           assert childCnt > 0;
-          Node val = n.getFirstChild();
+          Exp val = n.getFirstChild();
           assert !isVerySimple(val);
           return transform(t, val, n);
-        case Token.ASSIGN:
+        case JSExp.ASSIGN:
           return transformAssign(t, n, parent);
-        case Token.CALL:
+        case JSExp.CALL:
           return transformCall(t, n, parent);
-        case Token.NEW:
+        case JSExp.NEW:
           return transformCompound(t, n, parent);
-        case Token.BITOR:
-        case Token.BITXOR:
-        case Token.BITAND:
-        case Token.EQ:
-        case Token.NE:
-        case Token.LT:
-        case Token.LE:
-        case Token.GT:
-        case Token.GE:
-        case Token.LSH:
-        case Token.RSH:
-        case Token.URSH:
-        case Token.ADD:
-        case Token.SUB:
-        case Token.MUL:
-        case Token.DIV:
-        case Token.MOD:
-        case Token.SHEQ:
-        case Token.SHNE:
-        case Token.IN:
-        case Token.INSTANCEOF:
+        case JSExp.BITOR:
+        case JSExp.BITXOR:
+        case JSExp.BITAND:
+        case JSExp.EQ:
+        case JSExp.NE:
+        case JSExp.LT:
+        case JSExp.LE:
+        case JSExp.GT:
+        case JSExp.GE:
+        case JSExp.LSH:
+        case JSExp.RSH:
+        case JSExp.URSH:
+        case JSExp.ADD:
+        case JSExp.SUB:
+        case JSExp.MUL:
+        case JSExp.DIV:
+        case JSExp.MOD:
+        case JSExp.SHEQ:
+        case JSExp.SHNE:
+        case JSExp.IN:
+        case JSExp.INSTANCEOF:
           return transformBinary(t, n, parent);
-        case Token.NOT:
-        case Token.BITNOT:
-        case Token.POS:
-        case Token.NEG:
-        case Token.TYPEOF:
-        case Token.VOID:
-          Node c = n.getFirstChild();
+        case JSExp.NOT:
+        case JSExp.BITNOT:
+        case JSExp.POS:
+        case JSExp.NEG:
+        case JSExp.TYPEOF:
+        case JSExp.VOID:
+          Exp c = n.getFirstChild();
           assert !isVerySimple(c);
           return transformGeneric(t, c, n);
-        case Token.DELPROP:
+        case JSExp.DELPROP:
           parent = n;
           n = n.getFirstChild();
           // Fall through.
-        case Token.GETPROP:
-        case Token.GETELEM:
+        case JSExp.GETPROP:
+        case JSExp.GETELEM:
           assert ExpUtil.isAccessor(n);
           return transformBinary(t, n, parent);
-        case Token.ARRAYLIT:
+        case JSExp.ARRAYLIT:
           return transformCompound(t, n, parent);
-        case Token.OBJECTLIT:
+        case JSExp.OBJECTLIT:
           return transformObjectLit(t, n, parent);
-        case Token.ASSIGN_BITOR:
-        case Token.ASSIGN_BITXOR:
-        case Token.ASSIGN_BITAND:
-        case Token.ASSIGN_LSH:
-        case Token.ASSIGN_RSH:
-        case Token.ASSIGN_URSH:
-        case Token.ASSIGN_ADD:
-        case Token.ASSIGN_SUB:
-        case Token.ASSIGN_MUL:
-        case Token.ASSIGN_DIV:
-        case Token.ASSIGN_MOD:
+        case JSExp.ASSIGN_BITOR:
+        case JSExp.ASSIGN_BITXOR:
+        case JSExp.ASSIGN_BITAND:
+        case JSExp.ASSIGN_LSH:
+        case JSExp.ASSIGN_RSH:
+        case JSExp.ASSIGN_URSH:
+        case JSExp.ASSIGN_ADD:
+        case JSExp.ASSIGN_SUB:
+        case JSExp.ASSIGN_MUL:
+        case JSExp.ASSIGN_DIV:
+        case JSExp.ASSIGN_MOD:
           return transformCompoundAssign(t, n, parent);
-        case Token.INC:
-        case Token.DEC:
+        case JSExp.PREINC:
+        case JSExp.PREDEC:
+        case JSExp.POSTINC:
+        case JSExp.POSTDEC:
           return transformIncDec(t, n, parent);
-        case Token.COMMA:
+        case JSExp.COMMA:
           return transformComma(t, n, parent);
-        case Token.HOOK:
+        case JSExp.HOOK:
           return transformHook(t, n, parent);
-        case Token.OR:
+        case JSExp.OR:
           return transformOr(t, n, parent);
-        case Token.AND:
+        case JSExp.AND:
           return transformAnd(t, n, parent);
         default:
-          throw new UnsupportedOperationException("Unexpected " + Token.name(typ) + " node to transform: " + n);
+          throw new UnsupportedOperationException("Unexpected node type to transform: " + n);
       }
     }
 
-    protected boolean transformWhile(NodeTraversal t, Node n, Node parent) {
-      assert n.isWhile() || n.isDo();
+    protected boolean transformWhile(Traversal t, Exp n, Exp parent) {
+      assert n.is(JSExp.WHILE) || n.is(JSExp.DO);
 
       // Insert the condition prior to the loop and at the end of the
       // loop's block.
-      Node cond = ExpUtil.getCondition(n);
+      Exp cond = ExpUtil.getCondition(n);
       // If the condition is a simple reference or literal, just leave it.
       if (isVerySimple(cond)) return false;
 
       // Create a temporary variable to hold the value that the
       // conditional evaluates to.
-      Node tmp = createNameNode(t.getScope());
+      Exp tmp = createNameNode(sm, t.getScope());
 
       // Create a var initializer for the new variable.
-      Node tmpInit = tmp.cloneTree();
+      Exp tmpInit = tmp.clone();
       tmpDefs.add(tmpInit);
-      tmpInit.addChildToBack(cond.cloneTree());
-      tmpInit = new Node(Token.VAR, tmpInit);
+      tmpInit.addChildToBack(cond.clone());
+      tmpInit = new JSExp(JSExp.VAR, tmpInit);
 
       // Replace the condition with the new name.
       n.replaceChild(cond, tmp);
@@ -1188,15 +1189,15 @@ public class JSStatementTransform extends JSTransform {
 
       // Finally, create an update statement and insert it at the
       // end of the block.
-      Node tmpLeft = tmp.cloneTree();
-      Node tmpAssn = new Node(Token.ASSIGN, tmpLeft, cond);
+      Exp tmpLeft = tmp.clone();
+      Exp tmpAssn = new JSExp(JSExp.ASSIGN, tmpLeft, cond);
       tmpUses.add(tmpLeft);
-      tmpAssn = new Node(Token.EXPR_RESULT, tmpAssn);
-      Node block = null;
-      if (n.isWhile()) {
+      tmpAssn = new JSExp(JSExp.EXPR_RESULT, tmpAssn);
+      Exp block = null;
+      if (n.is(JSExp.WHILE)) {
         block = n.getLastChild();
       } else {
-        assert n.isDo();
+        assert n.is(JSExp.DO);
         block = n.getFirstChild();
       }
       assert block.isBlock();
@@ -1204,7 +1205,7 @@ public class JSStatementTransform extends JSTransform {
 
       // Insert the initializer prior to the control statement.
       // It must also go prior to a potential label.
-      if (parent.getType() == Token.LABEL) {
+      if (parent.getType() == JSExp.LABEL) {
         n = parent;
         parent = parent.getParent();
       }
@@ -1213,23 +1214,23 @@ public class JSStatementTransform extends JSTransform {
       return true;
     }
 
-    protected boolean transformWith(NodeTraversal t, Node n, Node parent) {
-      assert n.isWith();
+    protected boolean transformWith(Traversal t, Exp n, Exp parent) {
+      assert n.is(JSExp.WITH);
 
       boolean changed = false;
 
-      Node obj = n.getFirstChild();
+      Exp obj = n.getFirstChild();
 
       if (!isVerySimple(obj)) {
         // Create a temporary variable to hold the object value that
         // the expression evaluates to.
-        Node tmp = createNameNode(t.getScope());
+        Exp tmp = createNameNode(sm, t.getScope());
 
         // Create a var initializer for the new variable.
-        Node tmpInit = tmp.cloneTree();
+        Exp tmpInit = tmp.clone();
         tmpDefs.add(tmpInit);
-        tmpInit.addChildToBack(obj.cloneTree());
-        tmpInit = new Node(Token.VAR, tmpInit);
+        tmpInit.addChildToBack(obj.clone());
+        tmpInit = new JSExp(JSExp.VAR, tmpInit);
 
         // Replace the object expression with the new name.
         n.replaceChild(obj, tmp);
@@ -1237,9 +1238,9 @@ public class JSStatementTransform extends JSTransform {
           
         // Insert the initializer prior to the WITH statement.
         // It must also go prior to a potential label.
-        Node stmt = n;
-        Node stmtParent = parent;
-        if (stmtParent.getType() == Token.LABEL) {
+        Exp stmt = n;
+        Exp stmtParent = parent;
+        if (stmtParent.getType() == JSExp.LABEL) {
           stmt = stmtParent;
           stmtParent = stmtParent.getParent();
         }
@@ -1280,72 +1281,72 @@ public class JSStatementTransform extends JSTransform {
       return changed;
     }
 
-    protected boolean isBlockEscape(Node n) {
+    protected boolean isBlockEscape(Exp n) {
       if (n == null) return false;
       if (n.isReturn()) return true;
       if (n.isThrow()) return true;
-      if (n.isContinue()) return true;
-      if (n.isBreak()) return true;
+      if (n.is(JSExp.CONTINUE)) return true;
+      if (n.is(JSExp.BREAK)) return true;
       return false;
     }
 
-    protected List<Node> getControlBlocks(Node ctrl) {
+    protected List<Exp> getControlBlocks(Exp ctrl) {
       assert ExpUtil.isControl(ctrl);
-      List<Node> ret = new ArrayList<Node>();
-      if (ctrl.isIf()) {
+      List<Exp> ret = new ArrayList<Exp>();
+      if (ctrl.is(JSExp.IF)) {
         int childCnt = ctrl.getChildCount();
         // %%% Correct for if-elif-else?
         for (int i=1; i<childCnt; i++) {
-          ret.add(ctrl.getChildAtIndex(i));
+          ret.add(ctrl.getChild(i));
         }
-      } else if (ctrl.isWhile()) {
+      } else if (ctrl.is(JSExp.WHILE)) {
         ret.add(ctrl.getLastChild());
-      } else if (ctrl.isDo()) {
+      } else if (ctrl.is(JSExp.DO)) {
         ret.add(ctrl.getFirstChild());
-      } else if (ctrl.isSwitch()) {
+      } else if (ctrl.is(JSExp.SWITCH)) {
         int childCnt = ctrl.getChildCount();
         // %%% Correct to skip first child?
         for (int i=1; i<childCnt; i++) {
-          Node c = ctrl.getChildAtIndex(i);
-          Node block = null;
-          if (c.isCase()) {
-            block = c.getChildAtIndex(1);
+          Exp c = ctrl.getChild(i);
+          Exp block = null;
+          if (c.is(JSExp.CASE)) {
+            block = c.getChild(1);
           } else {
-            assert c.isDefaultCase();
+            assert c.is(JSExp.DEFAULT_CASE);
             block = c.getFirstChild();
           }
           int blockChildCnt = block.getChildCount();
           if (blockChildCnt > 0 && block.getFirstChild().isBlock()) {
             // Case blocks may be wrapped, and break statements occupy a
             // second sub-block.
-            assert blockChildCnt == 1 || (blockChildCnt == 2 && block.getChildAtIndex(1).isBreak())
-              : "Unknown sub-block format for case statement: " + sm.codeFromNode(c);
+            assert blockChildCnt == 1 || (blockChildCnt == 2 && block.getChild(1).is(JSExp.BREAK))
+              : "Unknown sub-block format for case statement: " + c.toCode();
             block = block.getFirstChild();
           }
           assert block.isBlock();
           ret.add(block);
         }
-      } else if (ctrl.isTry()) {
+      } else if (ctrl.is(JSExp.TRY)) {
         int childCnt = ctrl.getChildCount();
         assert childCnt > 0;
         ret.add(ctrl.getFirstChild());
         // Catch block may be found but be null.
         if (childCnt > 1) {
-          Node catches = ctrl.getChildAtIndex(1);
+          Exp catches = ctrl.getChild(1);
           if (catches != null) {
             assert catches.isBlock() : "Unexpected TRY child: " + ctrl + " / " + catches;
             int catchCnt = catches.getChildCount();
             for (int i=0; i<catchCnt; i++) {
-              Node catchNode = catches.getChildAtIndex(i);
-              assert catchNode.isCatch();
+              Exp catchNode = catches.getChild(i);
+              assert catchNode.is(JSExp.CATCH);
               assert catchNode.getChildCount() == 2;
-              Node catchBlock = catchNode.getChildAtIndex(1);
+              Exp catchBlock = catchNode.getChild(1);
               assert catchBlock.isBlock();
               ret.add(catchBlock);
             }
           }
           if (childCnt > 2) {
-            Node finallyBlock = ctrl.getChildAtIndex(2);
+            Exp finallyBlock = ctrl.getChild(2);
             assert finallyBlock.isBlock();
             ret.add(finallyBlock);
           }
@@ -1354,7 +1355,7 @@ public class JSStatementTransform extends JSTransform {
         ret.add(ctrl.getLastChild());
       } else if (ExpUtil.isForIn(ctrl)) {
         ret.add(ctrl.getLastChild());
-      } else if (ctrl.isWith()) {
+      } else if (ctrl.is(JSExp.WITH)) {
         ret.add(ctrl.getLastChild());
       } else {
         Dbg.warn("Unhandled control block: " + ctrl);
@@ -1362,23 +1363,23 @@ public class JSStatementTransform extends JSTransform {
       return ret;
     }
 
-    protected boolean prepareContinueStatements(NodeTraversal t, Node incr, Node cond, Node ctrl, String label, boolean nested) {
+    protected boolean prepareContinueStatements(Traversal t, Exp incr, Exp cond, Exp ctrl, String label, boolean nested) {
       boolean ret = false;
       assert ExpUtil.isControl(ctrl);
-      List<Node> blocks = getControlBlocks(ctrl);
+      List<Exp> blocks = getControlBlocks(ctrl);
 
       // Loop backwards since we may insert children.
-      for (Node block : blocks) {
+      for (Exp block : blocks) {
         int childCnt = block.getChildCount();
         for (int i=childCnt-1; i>=0; i--) {
-          Node n = block.getChildAtIndex(i);
-          if (n.isContinue()) {
+          Exp n = block.getChild(i);
+          if (n.is(JSExp.CONTINUE)) {
             boolean doInsert = true;
             if (nested) {
               doInsert = false;
               // Check that the right label is found.
               if (label != null && n.getChildCount() > 0) {
-                Node lbl = n.getFirstChild();
+                Exp lbl = n.getFirstChild();
                 if (lbl.getString().equals(label)) {
                   doInsert = true;
                 }
@@ -1386,11 +1387,11 @@ public class JSStatementTransform extends JSTransform {
             }
             if (doInsert) {
               if (incr != null) {
-                Node incrCopy = incr.cloneTree();
+                Exp incrCopy = incr.clone();
                 block.addChildBefore(incrCopy, n);
               }
               if (cond != null) {
-                Node condCopy = cond.cloneTree();
+                Exp condCopy = cond.clone();
                 block.addChildBefore(condCopy, n);
               }
               ret = true;
@@ -1411,11 +1412,11 @@ public class JSStatementTransform extends JSTransform {
       return ret;
     }
 
-    protected boolean transformStandardFor(NodeTraversal t, Node n, Node parent) {
+    protected boolean transformStandardFor(Traversal t, Exp n, Exp parent) {
       assert ExpUtil.isStandardFor(n);
 
       // Extract the loop iterator and insert it at the end of block.
-      Node incr = n.getChildAtIndex(2);
+      Exp incr = n.getChild(2);
       boolean complexIncr = !isVerySimple(incr);
       //complexIncr = false; // %%% Disabling this
 
@@ -1423,7 +1424,7 @@ public class JSStatementTransform extends JSTransform {
       // loop's block. This should place it after the incrementor,
       // which maintains semantics.
       // If the condition is a simple reference, just leave it.
-      Node cond = ExpUtil.getCondition(n);
+      Exp cond = ExpUtil.getCondition(n);
       boolean complexCond = !isVerySimple(cond);
       //complexCond = false; // %%% Disabling this
 
@@ -1433,22 +1434,22 @@ public class JSStatementTransform extends JSTransform {
 
       if (complexIncr) {
         // Remove the incrementor from the loop construct.
-        n.replaceChild(incr, new Node(Token.EMPTY));
+        n.replaceChild(incr, new JSExp(sm, JSExp.EMPTY));
 
         // Wrap the incrementor.
-        incr = new Node(Token.EXPR_RESULT, incr);
+        incr = new JSExp(JSExp.EXPR_RESULT, incr);
       }
 
       if (complexCond) {
         // Create a temporary variable to hold the value that the
         // conditional evaluates to.
-        Node tmp = createNameNode(t.getScope());
+        Exp tmp = createNameNode(sm, t.getScope());
 
         // Create a var initializer for the new variable.
-        Node tmpInit = tmp.cloneTree();
+        Exp tmpInit = tmp.clone();
         tmpDefs.add(tmpInit);
-        tmpInit = new Node(Token.VAR, tmpInit);
-        tmpInit.getFirstChild().addChildToBack(cond.cloneTree());
+        tmpInit = new JSExp(JSExp.VAR, tmpInit);
+        tmpInit.getFirstChild().addChildToBack(cond.clone());
 
         // Replace the condition with the new name.
         n.replaceChild(cond, tmp);
@@ -1456,9 +1457,9 @@ public class JSStatementTransform extends JSTransform {
 
         // Insert the initializer prior to the control statement.
         // It must also go prior to a potential label.
-        Node insertPoint = n;
-        Node insertParent = parent;
-        if (parent.isLabel()) {
+        Exp insertPoint = n;
+        Exp insertParent = parent;
+        if (parent.is(JSExp.LABEL)) {
           insertPoint = parent;
           insertParent = insertParent.getParent();
           // This is needed to process |continue| statements.
@@ -1468,10 +1469,10 @@ public class JSStatementTransform extends JSTransform {
 
         // Finally, create an update statement and insert it at the
         // end of the block.
-        Node tmpLeft = tmp.cloneTree();
-        cond = new Node(Token.ASSIGN, tmpLeft, cond);
+        Exp tmpLeft = tmp.clone();
+        cond = new JSExp(JSExp.ASSIGN, tmpLeft, cond);
         tmpUses.add(tmpLeft);
-        cond = new Node(Token.EXPR_RESULT, cond);
+        cond = new JSExp(JSExp.EXPR_RESULT, cond);
       }
 
       // The increment statement must be inserted immediately prior to
@@ -1480,9 +1481,9 @@ public class JSStatementTransform extends JSTransform {
 
       // If the last statement in the block breaks out of the loop,
       // don't insert anything after it.
-      Node block = n.getLastChild();
+      Exp block = n.getLastChild();
       assert block.isBlock();
-      if (!isBlockEscape(block.getLastChild())) {
+      if (block.getChildCount() == 0 || !isBlockEscape(block.getLastChild())) {
         // Insert the incrementor statement it at the end of the block.
         if (complexIncr)
           block.addChildToBack(incr);
@@ -1494,69 +1495,69 @@ public class JSStatementTransform extends JSTransform {
       return true;
     }
 
-    protected boolean transformForIn(NodeTraversal t, Node n, Node parent) {
-      Node var = n.getFirstChild();
-      assert isVerySimple(var) : "Unknown for-in variable format: " + var + " / " + sm.codeFromNode(var);
-      Node obj = n.getChildAtIndex(1);
+    protected boolean transformForIn(Traversal t, Exp n, Exp parent) {
+      Exp var = n.getFirstChild();
+      assert isVerySimple(var) : "Unknown for-in variable format: " + var + " / " + var.toCode();
+      Exp obj = n.getChild(1);
       if (isVerySimple(obj)) return false;
       return transformGeneric(t, obj, n);
     }
 
-    protected boolean transformIf(NodeTraversal t, Node n, Node parent) {
-      assert n.isIf();
-      Node cond = ExpUtil.getCondition(n);
+    protected boolean transformIf(Traversal t, Exp n, Exp parent) {
+      assert n.is(JSExp.IF);
+      Exp cond = ExpUtil.getCondition(n);
       if (isVerySimple(cond)) return false;
       return transformGeneric(t, cond, n);
     }
 
-    protected boolean transformSwitch(NodeTraversal t, Node n, Node parent) {
-      assert n.isSwitch();
-      Node exp = n.getFirstChild();
+    protected boolean transformSwitch(Traversal t, Exp n, Exp parent) {
+      assert n.is(JSExp.SWITCH);
+      Exp exp = n.getFirstChild();
       if (isVerySimple(exp)) return false;
       return transformGeneric(t, exp, n);
     }
 
-    protected boolean transformControl(NodeTraversal t, Node n, Node parent) {
+    protected boolean transformControl(Traversal t, Exp n, Exp parent) {
       int typ = n.getType();
       switch (typ) {
-        case Token.FOR:
+        case JSExp.FOR:
           if (ExpUtil.isStandardFor(n)) {
             return transformStandardFor(t, n, parent);
           } else {
             assert ExpUtil.isForIn(n) : "Unknown type of FOR block: " + n;
             return transformForIn(t, n, parent);
           }
-        case Token.IF:
+        case JSExp.IF:
           return transformIf(t, n, parent);
-        case Token.SWITCH:
+        case JSExp.SWITCH:
           return transformSwitch(t, n, parent);
-        case Token.WHILE:
-        case Token.DO:
+        case JSExp.WHILE:
+        case JSExp.DO:
           return transformWhile(t, n, parent);
-        case Token.WITH:
+        case JSExp.WITH:
           return transformWith(t, n, parent);
-        case Token.CASE:
-        case Token.DEFAULT_CASE:
-        case Token.TRY:
-        case Token.CATCH:
+        case JSExp.CASE:
+        case JSExp.DEFAULT_CASE:
+        case JSExp.TRY:
+        case JSExp.CATCH:
           return false;
         default:
-          throw new UnsupportedOperationException("Unexpected " + Token.name(typ) + " control node: " + n);
+          throw new UnsupportedOperationException("Unexpected control node: " + n);
       }
     }
 
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
+    public void visit(Traversal t, Exp n, Exp parent) {
       int typ = n.getType();
-      if (typ == Token.EXPR_RESULT || typ == Token.VAR
-          || typ == Token.CONST || typ == Token.THROW
-          || typ == Token.RETURN) {
-        Node e = n.getFirstChild();
-        if (!isSimpleExpression(t, e, n)) {
-          //Dbg.dbg("BEFORE: " + sm.codeFromNode(n));
-          if (transform(t, e, n)) {
-            //Dbg.dbg("AFTER: " + sm.codeFromNode(n));
-            flagChange(true);
+      if (typ == JSExp.EXPR_RESULT || typ == JSExp.VAR
+          || typ == JSExp.CONST || typ == JSExp.THROW
+          || typ == JSExp.RETURN) {
+        if (n.getChildCount() > 0) {
+          Exp e = n.getFirstChild();
+          if (!isSimpleExpression(t, e, n)) {
+            if (transform(t, e, n)) {
+              flagChange(true);
+            }
           }
         }
       } else if (ExpUtil.isControl(n)) {

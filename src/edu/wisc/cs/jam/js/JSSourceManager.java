@@ -8,7 +8,6 @@ import com.google.javascript.jscomp.DependencyOptions;
 import com.google.javascript.jscomp.AnonymousFunctionNamingPolicy;
 import com.google.javascript.jscomp.VariableRenamingPolicy;
 import com.google.javascript.jscomp.NodeTraversal;
-import com.google.javascript.jscomp.NodeTraversal.Callback;
 import com.google.javascript.jscomp.CompilerInput;
 import com.google.javascript.jscomp.Result;
 import com.google.javascript.jscomp.JSError;
@@ -50,6 +49,8 @@ import com.google.javascript.jscomp.ClosureUtil;
 import edu.wisc.cs.jam.Source;
 import edu.wisc.cs.jam.JAM;
 import edu.wisc.cs.jam.Transform;
+import edu.wisc.cs.jam.Traversal;
+import edu.wisc.cs.jam.Traversal.Traverser;
 import edu.wisc.cs.jam.ControlAutomaton;
 import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.JAMConfig;
@@ -75,6 +76,9 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   protected Set<String> temporaries;
   protected ControlAutomaton caut;
 
+  protected Exp root;
+  protected Exp externs;
+
   protected boolean needsCallGraphUpdate;
   protected boolean needsCodeUpdate;
 
@@ -83,7 +87,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     sourceSet = new HashSet<String>();
     htmlFiles = new ArrayList<HTMLSource>();
     boolean useExterns = !JAM.Opts.noExterns;
-    needsCodeUpdate = true;
+    needsCodeUpdate = false;
     needsCallGraphUpdate = true;
     try {
       if (useExterns) {
@@ -359,14 +363,15 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     // Mark this now to avoid possibility of an infinite loop.
     needsCodeUpdate = false;
     // For each user script root node, find the script.
-    Exp root = getRoot();
-    for (int i=0; i<root.getChildCount(); i++) {
-      Exp rootnode = root.getChild(i);
-      String rootpath = rootnode.getSourceFileName();
+    Exp r = getRoot();
+    for (int i=0; i<r.getChildCount(); i++) {
+      Exp srcroot = r.getChild(i);
+      String rootpath = srcroot.getSourceFileName();
       if (rootpath == null) {
-        Dbg.warn("No path for node: " + rootnode);
+        Dbg.warn("No path for node: " + srcroot);
         continue;
       }
+      // %%% Store a pointer to JSSource in Exp to remove this loop.
       JSSource src = null;
       for (JSSource maybesrc : sourceFiles) {
         String maybepath = maybesrc.getPath();
@@ -376,7 +381,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
         }
       }
       assert src != null : "Unable to identify source file for path: " + rootpath;
-      String code = rootnode.toCode();
+      String code = srcroot.toCode();
       src.updateContents(code);
     }
   }
@@ -411,40 +416,29 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     return JSExp.create(this, body);
   }
 
-  protected Node getRootNode() {
+  public void generate() {
+    JSExp.jettisonNodes();
+    Compiler c = getCompiler();
+    Node rootNode = c.getRoot();
     if (JAM.Opts.noExterns) {
-      return getCompiler().getRoot();
+      externs = JSExp.createEmpty(this);
+      root = JSExp.create(this, rootNode);
     } else {
       // The compiler's root consists of the externs first and the user
       // scripts second. We want the user scripts only.
-      return getCompiler().getRoot().getChildAtIndex(1);
+      externs = JSExp.create(this, rootNode.getFirstChild());
+      root = JSExp.create(this, rootNode.getChildAtIndex(1));
     }
   }
 
   @Override
   public Exp getRoot() {
-    Node rootNode = getRootNode();
-    return JSExp.create(this, rootNode);
-  }
-
-  protected Node getExternNodes() {
-    if (JAM.Opts.noExterns) {
-      return null;
-    } else {
-      // The compiler's root consists of the externs first and the script
-      // second. We want the script only.
-      return getCompiler().getRoot().getFirstChild();
-    }
+    return root;
   }
 
   @Override
   public Exp getExterns() {
-    Node externNodes = getExternNodes();
-    if (externNodes == null) {
-      return JSExp.createEmpty(this);
-    } else {
-      return JSExp.create(this, externNodes);
-    }
+    return externs;
   }
 
   // Normalize/flatten code and remove anonymous functions.
@@ -500,6 +494,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     options.setRemoveClosureAsserts(false);
 
     runPass(options, null, JAM.Opts.debug, false);
+    generate();
 
     // Output the Closure-processed source.
     saveSources("closure");
@@ -579,14 +574,14 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     typeFacts.setType(name, typ);
   }
 
-  protected class NodeCounter implements Callback {
+  protected class NodeCounter implements Traverser {
     int count = 0;
 
-    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal t, Exp e, Exp parent) {
       return true; 
     }
 
-    public void visit(NodeTraversal t, Node n, Node parent) {
+    public void visit(Traversal t, Exp e, Exp parent) {
       ++count;
     }
 
@@ -604,9 +599,8 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   }
 
   @Override
-  public void traverse(Exp root, Callback cb) {
-    Node rootNode = ((JSExp)root).getNode();
-    NodeTraversal.traverse(getCompiler(), rootNode, cb);
+  public void traverse(Exp root, Traverser t) {
+    Traversal.traverse(root, t);
   }
 
   protected int getNodeCount() {
@@ -639,6 +633,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
     // Suppress debug information because it's overly verbose.
     boolean success = runPass(options, null, false, false);
+    generate();
     if (!success) {
       Dbg.err("Type inference pass failed.");
     }
@@ -741,6 +736,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
     PassConfig cfg = new DefaultPassConfig(options);
     boolean success = runPass(options, cfg, JAM.Opts.debug, true);
+    generate();
     if (!success) {
       Dbg.err("Optimization pass failed.");
     }

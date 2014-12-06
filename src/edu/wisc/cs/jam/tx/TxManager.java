@@ -12,11 +12,9 @@ import java.util.LinkedHashSet;
 
 import edu.wisc.cs.automaton.State;
 
-import com.google.javascript.rhino.Node;
-import com.google.javascript.jscomp.NodeTraversal;
-import com.google.javascript.jscomp.NodeTraversal.Callback;
-
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.Traversal;
+import edu.wisc.cs.jam.Traversal.Traverser;
 import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Semantics;
@@ -38,7 +36,7 @@ import edu.wisc.cs.jam.js.JSExp;
 // objects defined in the edu.wisc.cs.jam.tx package. It also
 // synchronizes the application and removal of transactional
 // instrumentation from the the SourceManager.
-public class TxManager implements CheckManager, Callback {
+public class TxManager implements CheckManager, Traverser {
   // Various aspects of the analysis that we may need a handle for.
   private SourceManager sm;
   private Policy policy;
@@ -222,7 +220,7 @@ public class TxManager implements CheckManager, Callback {
       List<Policy.Edge> edges = new ArrayList<Policy.Edge>();
       edges.add(edge);
       Introspector ispect = introspectorMap.get(edges);
-      tx = new Transaction(sm, ispect, ((JSExp)loc).getNode());
+      tx = new Transaction(sm, ispect, loc);
       tx.apply();
       activeTransactions.put(loc, tx);
     }
@@ -289,15 +287,14 @@ public class TxManager implements CheckManager, Callback {
   }
 
   @Override
-  public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+  public boolean shouldTraverse(Traversal t, Exp e, Exp parent) {
     return true;
   }
 
   // Traverse the entire AST and make note of a transactions that
   // existed prior to the current analysis.
   @Override
-  public void visit(NodeTraversal t, Node n, Node parent) {
-    Exp s = JSExp.create(sm, n);
+  public void visit(Traversal t, Exp s, Exp parent) {
     // We're only interested in statements representing pre-existing
     // instrumentation.
     if (!s.isTransaction()) return;
@@ -342,12 +339,8 @@ public class TxManager implements CheckManager, Callback {
     // in the |statements| list.
     Exp block = s.getLastChild();
     List<Exp> children = block.getChildren();
-    List<Node> childNodes = new ArrayList<Node>();
-    for (Exp c : children) {
-      childNodes.add(((JSExp)c).getNode());
-    }
 
-    Transaction tx = new Transaction(sm, introspect, childNodes);
+    Transaction tx = new Transaction(sm, introspect, children);
     tx.setOriginal();
 
     // Create some number of |TransactionCheck|s here.

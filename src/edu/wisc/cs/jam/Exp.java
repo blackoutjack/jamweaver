@@ -15,6 +15,7 @@ public abstract class Exp {
   public abstract boolean isStatement();
   public abstract boolean isControl();
   public abstract Exp clone();
+  public abstract Exp getOriginal();
 
   public int getExpSize() {
     // %%% Perhaps store this and only recalculate on change.
@@ -48,16 +49,54 @@ public abstract class Exp {
   public Exp getChild(int i) {
     return children.get(i);
   }
+  public Exp getChildBefore(Exp c) {
+    int i = children.indexOf(c);
+    assert i > -1;
+    if (i > 0) {
+      return children.get(i - 1);
+    }
+    return null;
+  }
+  public Exp getChildAfter(Exp c) {
+    int i = children.indexOf(c);
+    assert i > -1;
+    if (getChildCount() > i + 1) {
+      return children.get(i + 1);
+    }
+    return null;
+  }
   public Exp getLastChild() {
     return children.get(children.size() - 1);
   }
   public Exp getParent() {
     return parent;
   }
+  public Exp getNext() {
+    if (parent == null) return null;
+    return parent.getChildAfter(this);
+  }
 
+  public int getIndexOfChild(Exp c) {
+    return children.indexOf(c);
+  }
+
+  public void addChildBefore(Exp newChild, Exp c) {
+    int i = children.indexOf(c);
+    assert i > -1;
+    children.add(i, newChild);
+    newChild.parent = this;
+  }
+  public void addChildAfter(Exp newChild, Exp c) {
+    int i = children.indexOf(c);
+    assert i > -1;
+    children.add(i + 1, newChild);
+    newChild.parent = this;
+  }
   public Exp detachFromParent() {
     assert parent != null;
-    parent.removeChild(this);
+    assert parent.children.contains(this);
+    parent.children.remove(this);
+    this.parent = null;
     return this;
   }
   public void removeChild(Exp child) {
@@ -74,6 +113,10 @@ public abstract class Exp {
 
     newChild.parent = this;
     child.parent = null;
+  }
+  public void addChildToFront(Exp newChild) {
+    children.add(0, newChild);
+    newChild.parent = this;
   }
   public void addChildToBack(Exp newChild) {
     children.add(newChild);
@@ -118,6 +161,7 @@ public abstract class Exp {
   public abstract boolean containsType(int t);
   public abstract boolean isInGlobalScope();
   public abstract String getString();
+  public abstract double getDouble();
   public abstract Exp getCondition();
   public abstract void findNames(Set<String> out);
   public abstract void findType(int t, List<Exp> out);
@@ -131,5 +175,7 @@ public abstract class Exp {
   public abstract String toCode();
 
   public abstract String getSourceFileName();
+  public abstract int getSourceLine();
+  public abstract int getSourceChar();
   public abstract SourceManager getSourceManager();
 }

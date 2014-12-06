@@ -1,15 +1,11 @@
 
 package edu.wisc.cs.jam.js;
 
-import com.google.javascript.jscomp.NodeTraversal;
-import com.google.javascript.jscomp.NodeTraversal.Callback;
-import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
-import com.google.javascript.jscomp.CompilerPass;
-import com.google.javascript.jscomp.Scope;
-
 import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Dbg;
+import edu.wisc.cs.jam.Scope;
+import edu.wisc.cs.jam.Traversal;
+import edu.wisc.cs.jam.Traversal.Traverser;
 import edu.wisc.cs.jam.Transform;
 import edu.wisc.cs.jam.Exp;
 
@@ -36,16 +32,16 @@ public class JSTransform implements Transform {
     Dbg.warn("Base JSTransform does nothing when run");
   }
 
-  protected Node createNameNode(Scope s) {
+  protected Exp createNameNode(SourceManager sm, Scope s) {
     // Ensure that the generated name is unique.
     String name = null;
     while (s.isDeclared(name = newVariableName(), true)) {}
     // Create the new node.
-    Node n = Node.newString(Token.NAME, name);
-    return n;
+    Exp e = JSExp.createName(sm, name);
+    return e;
   }
 
-  public class DeanonymizeFunction implements Callback {
+  public class DeanonymizeFunction implements Traverser {
     SourceManager sm;
 
     public DeanonymizeFunction(SourceManager src) {
@@ -54,29 +50,29 @@ public class JSTransform implements Transform {
     }
 
     // Give an anonymous function a name.
-    protected void deanonymize(NodeTraversal t, Node fn, Node parent) {
+    protected void deanonymize(Traversal t, Exp fn, Exp parent) {
       // Create a name for the function.
-      Node newName = createNameNode(t.getScope());
+      Exp newName = createNameNode(sm, t.getScope());
 
       // Replace the current (empty) name with the generated one.
-      fn.replaceChild(fn.getChildAtIndex(0), newName);
+      fn.replaceChild(fn.getChild(0), newName);
     }
 
     @Override
-    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal t, Exp e, Exp parent) {
       return true;
     }
 
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (ExpUtil.isAnonymousFunction(n)) {
-        deanonymize(t, n, parent);
+    public void visit(Traversal t, Exp e, Exp parent) {
+      if (ExpUtil.isAnonymousFunction(e)) {
+        deanonymize(t, e, parent);
         sm.reportCodeChange();
       }
     }
   }
 
-  public class FunctionElevate implements Callback {
+  public class FunctionElevate implements Traverser {
 
     SourceManager sm;
 
@@ -116,48 +112,48 @@ public class JSTransform implements Transform {
      * In either case, the calling context correctly determines the
      * value of free variables within the function after flattening.
      */
-    protected void elevateFunction(NodeTraversal t, Node n, Node parent) {
-      assert !ExpUtil.isAnonymousFunction(n) : "Encountered unconverted anonymous function";
+    protected void elevateFunction(Traversal t, Exp e, Exp parent) {
+      assert !ExpUtil.isAnonymousFunction(e) : "Encountered unconverted anonymous function";
 
       if (!ExpUtil.isStatementBlock(parent)) {
-        Node stmt = ExpUtil.getEnclosingStatement(parent);
-        Node topBlock = stmt.getParent();
+        Exp stmt = ExpUtil.getEnclosingStatement(parent);
+        Exp topBlock = stmt.getParent();
         assert ExpUtil.isStatementBlock(topBlock);
         
-        Node nextUp = topBlock.getParent();
+        Exp nextUp = topBlock.getParent();
         while (!topBlock.isScript() && !nextUp.isFunction()) {
-          //Dbg.dbg("ELEVATE: " + n.getFirstChild() + " / " + n + " / " + parent + " / " + stmt + " / " + topBlock + " / " + blockParent);
+          //Dbg.dbg("ELEVATE: " + e.getFirstChild() + " / " + e + " / " + parent + " / " + stmt + " / " + topBlock + " / " + blockParent);
           if (ExpUtil.isStatementBlock(nextUp)) {
             topBlock = nextUp;
           }
           nextUp = nextUp.getParent();
         }
         
-        Node fn = n.getFirstChild();
+        Exp fn = e.getFirstChild();
         assert fn.isName() : "Function with non-NAME name: " + fn;
-        Node fname = fn.cloneTree();
-        parent.replaceChild(n, fname);
+        Exp fname = fn.clone();
+        parent.replaceChild(e, fname);
 
-        topBlock.addChildToFront(n);
+        topBlock.addChildToFront(e);
       }
     }
 
     @Override
-    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal t, Exp e, Exp parent) {
       return true;
     }
 
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
+    public void visit(Traversal t, Exp e, Exp parent) {
       
-      if (n.isFunction() && !parent.isGetterDef() && !parent.isSetterDef()) {
-        elevateFunction(t, n, parent);
+      if (e.isFunction() && !parent.is(JSExp.GETTER_DEF) && !parent.is(JSExp.SETTER_DEF)) {
+        elevateFunction(t, e, parent);
       }
     }
   }
 
   // Add explicit returns to functions without them.
-  public class ReturnExplicit implements Callback {
+  public class ReturnExplicit implements Traverser {
     protected SourceManager sm;
 
     public ReturnExplicit(SourceManager src) {
@@ -166,33 +162,32 @@ public class JSTransform implements Transform {
     }
 
     @Override
-    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal t, Exp e, Exp parent) {
       return true;
     }
 
-    protected void addReturn(NodeTraversal t, Node n, Node parent) {
+    protected void addReturn(Traversal t, Exp e, Exp parent) {
       assert parent.isFunction();
-      assert n.isBlock();
-      Exp blockexp = JSExp.load(sm, n);
-      Exp ret = JSExp.create(sm, new Node(Token.RETURN));
-      blockexp.addChildToBack(ret);
+      assert e.is(JSExp.BLOCK);
+      Exp ret = new JSExp(sm, JSExp.RETURN);
+      e.addChildToBack(ret);
     }
     
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (n.isFunction()) {
-        Node body = n.getLastChild();
-        assert body.isBlock();
+    public void visit(Traversal t, Exp e, Exp parent) {
+      if (e.isFunction()) {
+        Exp body = e.getLastChild();
+        assert body.is(JSExp.BLOCK);
         boolean needsReturn = false;
         if (body.getChildCount() == 0) needsReturn = true;
         if (!needsReturn) {
-          Node last = body.getLastChild();
+          Exp last = body.getLastChild();
           if (!last.isReturn() && !last.isThrow()) {
             needsReturn = true;
           }
         }
         if (needsReturn) {
-          addReturn(t, body, n);
+          addReturn(t, body, e);
           sm.reportCodeChange();
         }
       }
@@ -201,7 +196,7 @@ public class JSTransform implements Transform {
   }
 
   // Break up string literals that are too large for XSB.
-  public class ArrayLiteralConverter implements Callback {
+  public class ArrayLiteralConverter implements Traverser {
     public static final int MAX_ENTRIES = 500;
 
     SourceManager sm;
@@ -211,7 +206,7 @@ public class JSTransform implements Transform {
     }
 
     @Override
-    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal t, Exp e, Exp parent) {
       return true;
     }
 
@@ -222,58 +217,58 @@ public class JSTransform implements Transform {
      *   var v1 = [eMAX,...,eNm1];
      *   a = v0.concat(v1);
      */
-    protected void convertArrayLiteral(NodeTraversal t, Node n, Node parent) {
-      assert n.isArrayLit();
-      int entryCnt = n.getChildCount();
+    protected void convertArrayLiteral(Traversal t, Exp e, Exp parent) {
+      assert e.is(JSExp.ARRAYLIT);
+      int entryCnt = e.getChildCount();
       if (entryCnt > MAX_ENTRIES) {
-        Node part0 = new Node(Token.ARRAYLIT);
+        Exp part0 = new JSExp(sm, JSExp.ARRAYLIT);
         for (int i=0; i<MAX_ENTRIES; i++) {
-          part0.addChildToBack(n.getFirstChild().detachFromParent());
+          part0.addChildToBack(e.getFirstChild().detachFromParent());
         }
 
         // Generate a new variable to hold the first part.
-        Node tmp0 = createNameNode(t.getScope());
+        Exp tmp0 = createNameNode(sm, t.getScope());
         // Create a reference to use in place of the original array.
-        Node tmpUse0 = tmp0.cloneTree();
+        Exp tmpUse0 = tmp0.clone();
         // Create a var initializer for the new variable.
-        Node tmpInit0 = new Node(Token.VAR, tmp0);
+        Exp tmpInit0 = new JSExp(JSExp.VAR, tmp0);
         // And set it as the initialization value.
         tmpInit0.getFirstChild().addChildToBack(part0);
 
-        Node tmp1 = createNameNode(t.getScope());
-        Node tmpUse1 = tmp1.cloneTree();
-        Node tmpInit1 = new Node(Token.VAR, tmp1);
+        Exp tmp1 = createNameNode(sm, t.getScope());
+        Exp tmpUse1 = tmp1.clone();
+        Exp tmpInit1 = new JSExp(JSExp.VAR, tmp1);
 
         // Create the concat node.
-        Node concatAcc = new Node(Token.GETPROP, tmpUse0, Node.newString("concat"));
-        Node concatCall = new Node(Token.CALL, concatAcc, tmpUse1);
+        Exp concatAcc = new JSExp(JSExp.GETPROP, tmpUse0, JSExp.createString(sm, "concat"));
+        Exp concatCall = new JSExp(JSExp.CALL, concatAcc, tmpUse1);
         
-        Node stmt = ExpUtil.getEnclosingStatement(n);
+        Exp stmt = ExpUtil.getEnclosingStatement(e);
 
         // Replace the original statement with the concatenation.
-        parent.replaceChild(n, concatCall);
+        parent.replaceChild(e, concatCall);
         // Set remainder of the original array to the temp variable.
-        tmpInit1.getFirstChild().addChildToBack(n);
+        tmpInit1.getFirstChild().addChildToBack(e);
         
         stmt.getParent().addChildBefore(tmpInit0, stmt);
         stmt.getParent().addChildBefore(tmpInit1, stmt);
 
         // Recursively break up the array.
-        convertArrayLiteral(t, n, tmpInit1.getFirstChild());
+        convertArrayLiteral(t, e, tmpInit1.getFirstChild());
       }
     }
     
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (n.isArrayLit() && n.getChildCount() > MAX_ENTRIES) {
-        convertArrayLiteral(t, n, parent);
+    public void visit(Traversal t, Exp e, Exp parent) {
+      if (e.is(JSExp.ARRAYLIT) && e.getChildCount() > MAX_ENTRIES) {
+        convertArrayLiteral(t, e, parent);
       }
     }
 
   }
 
   // Break up string literals that are too large for XSB.
-  public class StringConverter implements Callback {
+  public class StringConverter implements Traverser {
     public static final int MAX_LENGTH = 5000;
 
     SourceManager sm;
@@ -283,7 +278,7 @@ public class JSTransform implements Transform {
     }
 
     @Override
-    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal t, Exp e, Exp parent) {
       return true;
     }
 
@@ -293,32 +288,32 @@ public class JSTransform implements Transform {
      *   var v1 = v0 + "...";
      *   var v2 = v1 + "XYZ";
      */
-    protected void convertString(NodeTraversal t, Node n, Node parent) {
-      assert n.isString();
-      String full = n.getString();
+    protected void convertString(Traversal t, Exp e, Exp parent) {
+      assert e.isString();
+      String full = e.getString();
       int len = full.length();
       if (len > MAX_LENGTH) {
         String part0 = full.substring(0, len - MAX_LENGTH);
         String part1 = full.substring(len - MAX_LENGTH, len);
-        Node node0 = Node.newString(part0);
-        Node node1 = Node.newString(part1);
+        Exp node0 = JSExp.createString(sm, part0);
+        Exp node1 = JSExp.createString(sm, part1);
 
         // Generate a new variable.
-        Node tmp = createNameNode(t.getScope());
+        Exp tmp = createNameNode(sm, t.getScope());
         // Create a reference to use in place of the original string.
-        Node tmpUse = tmp.cloneTree();
+        Exp tmpUse = tmp.clone();
         // Create a var initializer for the new variable.
-        Node tmpInit = new Node(Token.VAR, tmp);
+        Exp tmpInit = new JSExp(JSExp.VAR, tmp);
         // Create the concatenation node.
-        Node concat = new Node(Token.ADD, node0, node1);
+        Exp concat = new JSExp(JSExp.ADD, node0, node1);
         // And set it as the initialization value.
         tmpInit.getFirstChild().addChildToBack(concat);
 
-        Node stmt = ExpUtil.getEnclosingStatement(n);
+        Exp stmt = ExpUtil.getEnclosingStatement(e);
         stmt.getParent().addChildBefore(tmpInit, stmt);
 
         // Insert the temporary reference into the original statement.
-        parent.replaceChild(n, tmpUse);
+        parent.replaceChild(e, tmpUse);
 
         // Recursively break up the initial part.
         convertString(t, node0, concat);
@@ -326,10 +321,10 @@ public class JSTransform implements Transform {
     }
     
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (n.isString()) {
-        String s = n.getString();
-        convertString(t, n, parent);
+    public void visit(Traversal t, Exp e, Exp parent) {
+      if (e.isString()) {
+        String s = e.getString();
+        convertString(t, e, parent);
       }
     }
 
@@ -344,7 +339,7 @@ public class JSTransform implements Transform {
   //   var tmp = c.d();
   //   a.b = tmp;
   //
-  public class SplitSetsAndCalls implements Callback {
+  public class SplitSetsAndCalls implements Traverser {
 
     SourceManager sm;
 
@@ -353,29 +348,29 @@ public class JSTransform implements Transform {
     }
 
     @Override
-    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal t, Exp e, Exp parent) {
       return true;
     }
 
-    protected void splitSetCall(NodeTraversal t, Node lhs, Node rhs, Node assn) {
+    protected void splitSetCall(Traversal t, Exp rhs, Exp assn) {
       assert assn.isAssign();
-      Node tmpName = createNameNode(t.getScope());
-      Node tmpRef = tmpName.cloneTree();
+      Exp tmpName = createNameNode(sm, t.getScope());
+      Exp tmpRef = tmpName.clone();
       assn.replaceChild(rhs, tmpRef);
       tmpName.addChildToBack(rhs);
-      Node tmpInit = new Node(Token.VAR, tmpName);
-      Node stmt = ExpUtil.getEnclosingStatement(assn);
-      Node stmtParent = stmt.getParent();
+      Exp tmpInit = new JSExp(JSExp.VAR, tmpName);
+      Exp stmt = ExpUtil.getEnclosingStatement(assn);
+      Exp stmtParent = stmt.getParent();
       stmtParent.addChildBefore(tmpInit, stmt);
     }
     
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (n.isAssign()) {
-        Node lhs = ExpUtil.getAssignLHS(n);
-        Node rhs = ExpUtil.getAssignRHS(n);
-        if (ExpUtil.isAccessor(lhs) && (rhs.isCall() || rhs.isNew())) {
-          splitSetCall(t, lhs, rhs, n);
+    public void visit(Traversal t, Exp e, Exp parent) {
+      if (e.isAssign()) {
+        Exp lhs = e.cloneAssignLHS();
+        Exp rhs = ExpUtil.getAssignRHS(e);
+        if (lhs.isAccessor() && rhs.isInvoke()) {
+          splitSetCall(t, rhs, e);
         }
       }
     }

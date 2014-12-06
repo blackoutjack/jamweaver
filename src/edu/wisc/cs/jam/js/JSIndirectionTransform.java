@@ -7,17 +7,13 @@ import java.util.HashSet;
 import java.util.Collection;
 import java.util.Arrays;
 
-import com.google.javascript.jscomp.NodeTraversal;
-import com.google.javascript.jscomp.NodeTraversal.Callback;
-import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
-import com.google.javascript.jscomp.Compiler;
-import com.google.javascript.jscomp.Scope;
-
 import edu.wisc.cs.automaton.Automaton;
 import edu.wisc.cs.automaton.Automaton.Edge;
 import edu.wisc.cs.automaton.State;
 
+import edu.wisc.cs.jam.Scope;
+import edu.wisc.cs.jam.Traversal;
+import edu.wisc.cs.jam.Traversal.Traverser;
 import edu.wisc.cs.jam.ControlAutomaton;
 import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.FileUtil;
@@ -274,17 +270,17 @@ public class JSIndirectionTransform extends JSTransform {
 
   // Create an array literal holding the call receiver, followed by
   // each of the arguments. The call node is left unchanged.
-  protected Node callArgsToArray(NodeTraversal t, Node n, Node parent) {
-    assert n.isCall() || n.isNew();
+  protected Exp callArgsToArray(Traversal t, Exp n, Exp parent) {
+    assert n.isInvoke();
 
     int childCount = n.getChildCount();
     assert childCount > 0; 
 
-    Node array = new Node(Token.ARRAYLIT);
+    Exp array = new JSExp(sm, JSExp.ARRAYLIT);
 
     for (int i=childCount-1; i>=1; i--) {
-      Node arg = n.getChildAtIndex(i);
-      Node newArg = arg.cloneTree();
+      Exp arg = n.getChild(i);
+      Exp newArg = arg.clone();
       array.addChildToFront(newArg);
     }
     
@@ -307,39 +303,39 @@ public class JSIndirectionTransform extends JSTransform {
   // extracted to a temporary variable and any external expressions
   // remain in the introspect block. See commaCall0.js for an example.
   // Subexpression are recursively protected also. See exfil_test.js.
-  protected void indirectCallsite(NodeTraversal t, Node n, Node parent, Node ispect) {
-    assert n.isCall() || n.isNew();
+  protected void indirectCallsite(Traversal t, Exp n, Exp parent, Exp ispect) {
+    assert n.isInvoke();
     
     // Create |JAM.call()|.
-    Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
-    Node libProp = null;
-    if (n.isNew()) {
-      libProp = Node.newString("new");
+    Exp libName = JSExp.createName(sm, JAMConfig.TRANSACTION_LIBRARY);
+    Exp libProp = null;
+    if (n.is(JSExp.NEW)) {
+      libProp = JSExp.createString(sm, "new");
     } else {
-      libProp = Node.newString("call");
+      libProp = JSExp.createString(sm, "call");
     }
-    Node libTgt = new Node(Token.GETPROP, libName, libProp);
-    Node libCall = new Node(Token.CALL, libTgt);
+    Exp libTgt = new JSExp(JSExp.GETPROP, libName, libProp);
+    Exp libCall = new JSExp(JSExp.CALL, libTgt);
 
-    Node tgt = n.getFirstChild();
-    Node tgtParam = tgt.cloneTree();
+    Exp tgt = n.getFirstChild();
+    Exp tgtParam = tgt.clone();
     libCall.addChildToBack(tgtParam);
     if (n.isCall()) {
       // Also add the receiver for CALL nodes (but not NEW nodes).
       // This might use some special logic to recognize JAM.get targets.
-      Node actualTarget = getCallTarget(n);
+      Exp actualTarget = getCallTarget(n);
       if (ExpUtil.isAccessor(actualTarget)) {
-        Node recParam = getCallReceiver(n).cloneTree();
+        Exp recParam = getCallReceiver(n).clone();
         libCall.addChildToBack(recParam);
       } else {
-        libCall.addChildToBack(new Node(Token.NULL));
+        libCall.addChildToBack(new JSExp(sm, JSExp.NULL));
       }
     }
-    Node args = callArgsToArray(t, n, parent);
+    Exp args = callArgsToArray(t, n, parent);
     libCall.addChildToBack(args);
 
     if (ispect != null) {
-      libCall.addChildToBack(ispect.cloneTree());
+      libCall.addChildToBack(ispect.clone());
     }
 
     // Replace the old call with the constructed library call.
@@ -369,16 +365,16 @@ public class JSIndirectionTransform extends JSTransform {
   // } else {
   //   var r = JAM.call(eval, null, [arg0, ...], ispect);
   // }
-  protected void indirectDirectEvalCall(NodeTraversal t, Node n, Node parent, Node ispect) {
+  protected void indirectDirectEvalCall(Traversal t, Exp n, Exp parent, Exp ispect) {
     int childCount = n.getChildCount();
     assert n.isCall() && childCount > 1;
 
-    Node stmt = ExpUtil.getEnclosingStatement(n);
-    Node stmtParent = stmt.getParent();
+    Exp stmt = ExpUtil.getEnclosingStatement(n);
+    Exp stmtParent = stmt.getParent();
 
-    Node stmtCopy = stmt.cloneTree();
+    Exp stmtCopy = stmt.clone();
     // Dig into the copy and find the node corresponding to |n|.
-    Node nCopy = ExpUtil.findEquivalentSubtree(stmtCopy, n);
+    Exp nCopy = ExpUtil.getCorrespondingSubtree(stmtCopy, stmt, n);
 
     // Create |var r = JAM.call(eval, null, [arg0, ..])|.
     indirectCallsite(t, n, parent, ispect);
@@ -388,61 +384,61 @@ public class JSIndirectionTransform extends JSTransform {
       + JAMConfig.TRANSACTION_LIBRARY + "."
       + JAMConfig.INTROSPECTOR_LIST + "."
       + JAMConfig.COMPREHENSIVE_INTROSPECTOR + ") { ";
-    Node openIntrospect = Node.newString(openStr);
-    Node oldArg = nCopy.getChildAtIndex(1);
-    Node oldArgCopy = oldArg.cloneTree();
-    Node closeIntrospect = Node.newString(" }");
+    Exp openIntrospect = JSExp.createString(sm, openStr);
+    Exp oldArg = nCopy.getChild(1);
+    Exp oldArgCopy = oldArg.clone();
+    Exp closeIntrospect = JSExp.createString(sm, " }");
 
     // Addition/concatenation is left-associative.
-    Node newArgLeft = new Node(Token.ADD, openIntrospect, oldArgCopy);
-    Node newArg = new Node(Token.ADD, newArgLeft, closeIntrospect);
+    Exp newArgLeft = new JSExp(JSExp.ADD, openIntrospect, oldArgCopy);
+    Exp newArg = new JSExp(JSExp.ADD, newArgLeft, closeIntrospect);
     nCopy.replaceChild(oldArg, newArg);
-    Node thenBranch = new Node(Token.BLOCK);
+    Exp thenBranch = new JSExp(sm, JSExp.BLOCK);
     thenBranch.addChildToBack(stmtCopy);
 
     // Create |JAM.isEval(eval)|
-    Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
-    Node libProp = Node.newString("isEval");
-    Node libTgt = new Node(Token.GETPROP, libName, libProp);
-    Node libCall = new Node(Token.CALL, libTgt);
-    Node libArg = nCopy.getChildAtIndex(0).cloneTree();
+    Exp libName = JSExp.createName(sm, JAMConfig.TRANSACTION_LIBRARY);
+    Exp libProp = JSExp.createString(sm, "isEval");
+    Exp libTgt = new JSExp(JSExp.GETPROP, libName, libProp);
+    Exp libCall = new JSExp(JSExp.CALL, libTgt);
+    Exp libArg = nCopy.getChild(0).clone();
     libCall.addChildToBack(libArg);
 
     // Create a new BLOCK containing the indirection call.
-    Node elseBranch = new Node(Token.BLOCK);
+    Exp elseBranch = new JSExp(sm, JSExp.BLOCK);
 
     // Create and insert the IF statement.
-    Node ifNode = new Node(Token.IF, libCall, thenBranch, elseBranch);
+    Exp ifNode = new JSExp(JSExp.IF, libCall, thenBranch, elseBranch);
     stmtParent.addChildAfter(ifNode, stmt);
 
     // Do this last to avoid conflicts with |stmt| having a parent.
     elseBranch.addChildToBack(stmt.detachFromParent());
   }
 
-  protected void indirectPropertyRead(NodeTraversal t, Node n, Node parent, Node ispect) {
+  protected void indirectPropertyRead(Traversal t, Exp n, Exp parent, Exp ispect) {
     assert n.isName() || ExpUtil.isAccessor(n);
 
-    Node obj = null;
-    Node prop = null;
+    Exp obj = null;
+    Exp prop = null;
     if (n.isName()) {
-      obj = new Node(Token.NULL);
-      prop = Node.newString(Token.STRING, n.getString());
+      obj = new JSExp(sm, JSExp.NULL);
+      prop = JSExp.createString(sm, n.getString());
     } else {
       obj = n.getFirstChild();
-      prop = n.getChildAtIndex(1);
+      prop = n.getChild(1);
       obj.detachFromParent();
       prop.detachFromParent();
     }
 
     // Generate the call |JAM.set(obj, prop, val)|.
-    Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
-    Node proxName = Node.newString(Token.STRING, "get");
-    Node libAcc = new Node(Token.GETPROP, libName, proxName);
-    Node proxCall = new Node(Token.CALL, libAcc, obj, prop);
+    Exp libName = JSExp.createName(sm, JAMConfig.TRANSACTION_LIBRARY);
+    Exp proxName = JSExp.createString(sm, "get");
+    Exp libAcc = new JSExp(JSExp.GETPROP, libName, proxName);
+    Exp proxCall = new JSExp(JSExp.CALL, libAcc, obj, prop);
 
     // Pass the introspector to |set|.
     if (ispect != null) {
-      proxCall.addChildToBack(ispect.cloneTree());
+      proxCall.addChildToBack(ispect.clone());
     }
 
     parent.replaceChild(n, proxCall);
@@ -453,126 +449,123 @@ public class JSIndirectionTransform extends JSTransform {
   //   ==> 
   // JAM.set(obj, prop, val);
   //
-  protected void indirectPropertyWrite(NodeTraversal t, Node n, Node parent, Node ispect) {
+  protected void indirectPropertyWrite(Traversal t, Exp n, Exp parent, Exp ispect) {
     // %%% Should support compound assignment too!
     assert n.isAssign() || ExpUtil.isUnOp(n);
 
-    Node lhs = ExpUtil.getAssignLHS(n);
+    Exp lhs = n.cloneAssignLHS();
     assert ExpUtil.isAccessor(lhs) || lhs.isName();
-    Node rhs = ExpUtil.getAssignRHS(n);
+    Exp rhs = n.cloneAssignRHS();
 
-    Node obj = null;
-    Node prop = null;
+    Exp obj = null;
+    Exp prop = null;
     if (lhs.isName()) {
-      obj = new Node(Token.NULL);
-      prop = Node.newString(Token.STRING, lhs.getString());
+      obj = new JSExp(sm, JSExp.NULL);
+      prop = JSExp.createString(sm, lhs.getString());
     } else {
       obj = lhs.getFirstChild();
-      prop = lhs.getChildAtIndex(1);
+      prop = lhs.getChild(1);
       obj.detachFromParent();
       prop.detachFromParent();
     }
 
     // Generate the call |JAM.set(obj, prop, val)|.
-    Node libName = Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY);
-    Node proxName = Node.newString(Token.STRING, "set");
-    Node libAcc = new Node(Token.GETPROP, libName, proxName);
-
-    // The parent will be null if |n| is an INC/DEC.
-    if (rhs.getParent() != null) rhs.detachFromParent();
-    Node proxCall = new Node(Token.CALL, libAcc, obj, prop, rhs);
+    Exp libName = JSExp.createName(sm, JAMConfig.TRANSACTION_LIBRARY);
+    Exp proxName = JSExp.createString(sm, "set");
+    Exp libAcc = new JSExp(JSExp.GETPROP, libName, proxName);
+    Exp proxCall = new JSExp(JSExp.CALL, libAcc, obj, prop, rhs);
 
     // Pass the introspector to |set|.
     if (ispect != null) {
-      proxCall.addChildToBack(ispect.cloneTree());
+      proxCall.addChildToBack(ispect.clone());
     }
 
     parent.replaceChild(n, proxCall);
   }
 
-  protected Node getCallTarget(Node n) {
-    assert n.isCall() || n.isNew();
-    Node tgt = n.getFirstChild();
+  protected Exp getCallTarget(Exp n) {
+    assert n.isInvoke();
+    Exp tgt = n.getFirstChild();
 
     if (tgt.isCall()) {
-      Node subtgt = tgt.getFirstChild();
-      String subs = sm.codeFromNode(subtgt);
+      Exp subtgt = tgt.getFirstChild();
+      String subs = subtgt.toCode();
       if (subs.equals("JAM.get")) {
         // Return the first argument.
-        Node rec = tgt.getChildAtIndex(1).cloneTree();
-        Node prop = tgt.getChildAtIndex(2).cloneTree();
+        Exp rec = tgt.getChild(1).clone();
+        Exp prop = tgt.getChild(2).clone();
         if (prop.isString()) {
-          tgt = new Node(Token.GETPROP, rec, prop);
+          tgt = new JSExp(JSExp.GETPROP, rec, prop);
         } else {
-          tgt = new Node(Token.GETELEM, rec, prop);
+          tgt = new JSExp(JSExp.GETELEM, rec, prop);
         }
       }
-    } else if (ExpUtil.isAccessor(tgt)) {
+    } else if (tgt.isAccessor()) {
       // This case is expected. 
     } else if (tgt.isName()) {
       // This case is expected. 
-    } else if (tgt.isThis()) {
+    } else if (tgt.is(JSExp.THIS)) {
       // This case is expected. 
     } else {
-      Dbg.warn("Unexpected call target case: " + sm.codeFromNode(tgt));      
+      Dbg.warn("Unexpected call target case: " + tgt.toCode());      
     }
 
     return tgt;
   }
 
-  protected Node getCallReceiver(Node n) {
-    if (n.isNew()) return null;
+  protected Exp getCallReceiver(Exp n) {
+    if (n.is(JSExp.NEW)) return null;
     assert n.isCall();
     
-    Node tgt = n.getFirstChild();
+    Exp tgt = n.getFirstChild();
 
-    Node rec = null;
+    Exp rec = null;
     if (tgt.isCall()) {
-      Node subtgt = tgt.getFirstChild();
-      String subs = sm.codeFromNode(subtgt);
+      Exp subtgt = tgt.getFirstChild();
+      String subs = subtgt.toCode();
       if (subs.equals("JAM.get")) {
         // Return the first argument.
-        rec = tgt.getChildAtIndex(1);
+        rec = tgt.getChild(1);
       }
-    } else if (ExpUtil.isAccessor(tgt)) {
+    } else if (tgt.isAccessor()) {
       rec = tgt.getFirstChild();
-    } else if (tgt.isName() || tgt.isThis()) {
+    } else if (tgt.isName() || tgt.is(JSExp.THIS)) {
       rec = null;
     } else {
-      Dbg.warn("Unexpected call receiver case: " + sm.codeFromNode(tgt));      
+      Dbg.warn("Unexpected call receiver case: " + tgt.toCode());      
     }
 
     return rec;
   }
 
-  protected boolean shouldIndirectCall(Node n) {
-    assert n.isCall() || n.isNew();
+  protected boolean shouldIndirectCall(Exp n) {
+    assert n.isInvoke();
     if (n.getChildCount() == 1) {
       // Higher-order scripts need at least 1 argument to do anything.
       return false;
     }
-    Node tgt = getCallTarget(n);
+    Exp tgt = getCallTarget(n);
 
-    String s = sm.codeFromNode(tgt);
+    String s = tgt.toCode();
     return dynamicCalls.contains(s) || conservativeCalls.contains(s);
   }
 
-  protected boolean maybeDirectEvalCall(Node n) {
-    assert n.isCall() || n.isNew();
-    Node tgtNode = n.getFirstChild();
-    String s = sm.codeFromNode(tgtNode);
+  protected boolean maybeDirectEvalCall(Exp n) {
+    assert n.isInvoke();
+    Exp tgtNode = n.getFirstChild();
+    String s = tgtNode.toCode();
     return s.equals("eval");
   }
 
-  protected boolean shouldIndirectAssign(Node n) {
+  protected boolean shouldIndirectAssign(Exp n) {
     // %%% Should support compound assignment too!
     assert n.isAssign() || ExpUtil.isUnOp(n);
-    Node lhs = ExpUtil.getAssignLHS(n);
-    if (!ExpUtil.isAccessor(lhs)) return false;
+    Exp lhs = n.cloneAssignLHS();
+    if (!lhs.isAccessor()) return false;
 
     // Assignment of certain values can't trigger any scripts.
-    Node rhs = ExpUtil.getAssignRHS(n);
-    if (ExpUtil.returnsNumber(sm, rhs)) {
+    Exp rhs = n.cloneAssignRHS();
+    if (ExpUtil.returnsNumber(rhs)) {
       return false;
     } else if (ExpUtil.returnsBoolean(rhs)) {
       return false;
@@ -584,8 +577,8 @@ public class JSIndirectionTransform extends JSTransform {
       }
     }
 
-    Node obj = lhs.getFirstChild();
-    Node prop = lhs.getChildAtIndex(1);
+    Exp obj = lhs.getFirstChild();
+    Exp prop = lhs.getChild(1);
 
     // %%% This assumes the policy property is non-numeric.
     boolean doTransform = false;
@@ -603,14 +596,14 @@ public class JSIndirectionTransform extends JSTransform {
       if (propType == null || propType.equals("String") || propType.equals("Object")) {
         doTransform = true;
       }
-    } else if (ExpUtil.returnsNumber(sm, prop)) {
+    } else if (ExpUtil.returnsNumber(prop)) {
       doTransform = false;
     } else if (ExpUtil.returnsBoolean(prop)) {
       doTransform = false;
-    } else if (prop.isThis()) {
+    } else if (prop.is(JSExp.THIS)) {
       doTransform = true;
     } else {
-      Dbg.warn("Unexpected property transformation case: " + prop + " / " + sm.codeFromNode(prop));
+      Dbg.warn("Unexpected property transformation case: " + prop + " / " + prop.toCode());
       doTransform = true;
     }
 
@@ -619,31 +612,31 @@ public class JSIndirectionTransform extends JSTransform {
     return doTransform;
   }
 
-  public class TxIndirector implements Callback {
-    protected Node tx;
-    protected Node ispect;
-    protected Node txBlock;
+  public class TxIndirector implements Traverser {
+    protected Exp tx;
+    protected Exp ispect;
+    protected Exp txBlock;
     protected Set<PredicateType> ptypes;
-    protected Set<Node> callsWithTransformedTargets;
+    protected Set<Exp> callsWithTransformedTargets;
 
-    public TxIndirector(Node t) {
-      assert ExpUtil.isTransaction(t);
+    public TxIndirector(Exp t) {
+      assert t.isTransaction();
       tx = t;
       ispect = TxUtil.getTxIntrospector(tx);
       txBlock = TxUtil.getTxBlock(tx);
       ptypes = TxUtil.getTxPredicateTypes(cm, tx);
-      callsWithTransformedTargets = new HashSet<Node>();
+      callsWithTransformedTargets = new HashSet<Exp>();
     }
 
     @Override
-    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal t, Exp n, Exp parent) {
       // Don't descend into the introspector.
       if (n == ispect) {
         return false;
       }
       // Or nested introspectors.
       // %%% What if these were part of the original program?
-      if (ExpUtil.isTransaction(parent)) {
+      if (parent != null && parent.isTransaction()) {
         if (n == parent.getFirstChild()) {
           return false;
         }
@@ -652,9 +645,9 @@ public class JSIndirectionTransform extends JSTransform {
     }
     
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (ExpUtil.isAccessor(n)) {
-        if (ExpUtil.isAssignment(parent) && ExpUtil.getAssignLHS(parent) == n) {
+    public void visit(Traversal t, Exp n, Exp parent) {
+      if (n.isAccessor()) {
+        if (parent.isAssignment() && parent.cloneAssignLHS().getOriginal() == n) {
           // This case is handled when visiting the parent.
           return;
         }
@@ -676,15 +669,15 @@ public class JSIndirectionTransform extends JSTransform {
       } else if (ExpUtil.isAssignment(n)) {
         // %%% This is an assumption based on the initial
         // %%% pass with JSStatementTransform.
-        assert n.isAssign() || ExpUtil.isUnOp(n) : "Non-standard assign statement within a transaction: " + sm.codeFromNode(n);
+        assert n.isAssign() || ExpUtil.isUnOp(n) : "Non-standard assign statement within a transaction: " + n.toCode();
         // %%% Currently we don't handle assignments to global/with props.
-        Node lhs = ExpUtil.getAssignLHS(n);
-        if (ExpUtil.isAccessor(lhs)) {
+        Exp lhs = n.cloneAssignLHS();
+        if (lhs.isAccessor()) {
           if (ExpUtil.isUnOp(n) && ptypes != null && ptypes.contains(JSPredicateType.READ)) {
             // We have to replace the unary operator with an equivalent
             // assignment before rewriting.
             // %%% Ugly.
-            Node newn = new Node(JSExp.ASSIGN, ExpUtil.getAssignLHS(n), ExpUtil.getAssignRHS(n));
+            Exp newn = new JSExp(JSExp.ASSIGN, n.cloneAssignLHS(), n.cloneAssignRHS());
             parent.replaceChild(n, newn);
             n = newn;
             indirectPropertyRead(t, n, parent, ispect);
@@ -700,7 +693,7 @@ public class JSIndirectionTransform extends JSTransform {
             propertyWriteTransformCnt++;
           }
         }
-      } else if (n.isCall() || n.isNew()) {
+      } else if (n.isInvoke()) {
         if (maybeDirectEvalCall(n)) {
           indirectDirectEvalCall(t, n, parent, null);
           sm.reportCodeChange();
@@ -724,7 +717,7 @@ public class JSIndirectionTransform extends JSTransform {
         // Move statements outside of the transaction.
         int stmtCnt = txBlock.getChildCount();
         for (int i=0; i<stmtCnt; i++) {
-          Node stmt = txBlock.getChildAtIndex(0).detachFromParent();
+          Exp stmt = txBlock.getChild(0).detachFromParent();
           n.getParent().addChildBefore(stmt, n);
         }
         // Remove the empty transaction.
@@ -734,29 +727,29 @@ public class JSIndirectionTransform extends JSTransform {
     }
   }
 
-  public class Indirector implements Callback {
+  public class Indirector implements Traverser {
 
     // This holds TRANSACTION nodes containing expressions that need to
     // have indirection applies.
-    Set<Node> txNodesToIndirect;
+    Set<Exp> txsToIndirect;
 
     public Indirector() {
-      txNodesToIndirect = new HashSet<Node>();
+      txsToIndirect = new HashSet<Exp>();
     }
 
     @Override
-    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal t, Exp n, Exp parent) {
       return true;
     }
 
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (n.isCall() || n.isNew()) {
+    public void visit(Traversal t, Exp n, Exp parent) {
+      if (n.isInvoke()) {
         // Get any surrounding transaction.
-        Node tx = ExpUtil.isWithinTransaction(n);
+        Exp tx = n.isWithinType(JSExp.TRANSACTION);
         // Wait for the TxIndirector to handle transactions.
         if (tx != null) {
-          txNodesToIndirect.add(tx);
+          txsToIndirect.add(tx);
           return;
         }
 
@@ -772,21 +765,20 @@ public class JSIndirectionTransform extends JSTransform {
       } else if (ExpUtil.isAssignment(n)) {
         boolean doTransform = shouldIndirectAssign(n);
         if (doTransform) {
-          Node tx = ExpUtil.isWithinTransaction(n);
+          Exp tx = n.isWithinType(JSExp.TRANSACTION);
           if (tx != null) {
-            txNodesToIndirect.add(tx);
+            txsToIndirect.add(tx);
             return;
           }
           indirectPropertyWrite(t, n, parent, null);
           sm.reportCodeChange();
           propertyWriteTransformCnt++;
         }
-      } else if (ExpUtil.isTransaction(n)) {
-        if (txNodesToIndirect.contains(n)) {
+      } else if (n.isTransaction()) {
+        if (txsToIndirect.contains(n)) {
           TxIndirector txi = new TxIndirector(n);
           // Traverse the transaction block and indirect as needed.
-          Exp e = JSExp.create(sm, n);
-          sm.traverse(e, txi);
+          sm.traverse(n, txi);
         }
       }
     }

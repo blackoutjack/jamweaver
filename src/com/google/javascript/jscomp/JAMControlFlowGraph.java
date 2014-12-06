@@ -1,9 +1,7 @@
 
 package com.google.javascript.jscomp;
 
-import com.google.javascript.jscomp.ControlFlowGraph;
 import com.google.javascript.jscomp.ControlFlowGraph.Branch;
-import com.google.javascript.jscomp.ControlFlowAnalysis;
 import com.google.javascript.jscomp.graph.DiGraph.DiGraphNode;
 import com.google.javascript.jscomp.graph.DiGraph.DiGraphEdge;
 import com.google.javascript.rhino.Node;
@@ -160,9 +158,7 @@ public class JAMControlFlowGraph {
   public void addFunction(Function f) {
     // Get the CFG for this function.
     ControlFlowGraph<Node> cfg = sm.getCFG(f);
-
-    Node root = ((JSExp)f.getExp()).getNode();
-    DiGraphNode<Node,Branch> entryNode = cfg.getDirectedGraphNode(root); 
+    DiGraphNode<Node,Branch> entryNode = cfg.getEntry(); 
 
     assert entryNode != null : "Null entry node for function " + f.getName();
 

@@ -9,11 +9,6 @@ import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.automaton.State;
 
-import com.google.javascript.rhino.Node;
-
-import edu.wisc.cs.jam.js.JSExp;
-
-
 // This represents a transactional check for a Policy.Edge guarding a
 // source code Node. It doesn't directly translate to source code but
 // coordinates the addition and removal of Evaluators to Transactions.

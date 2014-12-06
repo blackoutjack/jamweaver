@@ -1,13 +1,11 @@
 package edu.wisc.cs.jam.js;
 
-import com.google.javascript.rhino.Node;
-import com.google.javascript.jscomp.NodeTraversal;
-import com.google.javascript.jscomp.NodeTraversal.Callback;
-
 import edu.wisc.cs.jam.SourceManager;
+import edu.wisc.cs.jam.Traversal;
+import edu.wisc.cs.jam.Traversal.Traverser;
+import edu.wisc.cs.jam.Exp;
 
-
-public abstract class IterativeTraversal implements Callback {
+public abstract class IterativeTraversal implements Traverser {
   private boolean changed;
   private boolean more;
   protected SourceManager sm;
@@ -38,7 +36,7 @@ public abstract class IterativeTraversal implements Callback {
   }
 
   @Override
-  public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+  public boolean shouldTraverse(Traversal t, Exp n, Exp parent) {
     return true;
   }
 }

@@ -5,14 +5,16 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 import edu.wisc.cs.automaton.State;
 
-import com.google.javascript.rhino.Node;
-import com.google.javascript.jscomp.CompilerPass;
-import com.google.javascript.jscomp.NodeTraversal;
-import com.google.javascript.jscomp.NodeTraversal.Callback;
-
+import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.Dbg;
+import edu.wisc.cs.jam.Exp;
+import edu.wisc.cs.jam.ExpSymbol;
+import edu.wisc.cs.jam.Traversal;
+import edu.wisc.cs.jam.Traversal.Traverser;
 import edu.wisc.cs.jam.Transform;
 import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.SourceManager;
@@ -21,8 +23,12 @@ import edu.wisc.cs.jam.Policy;
 import edu.wisc.cs.jam.Predicate;
 import edu.wisc.cs.jam.RuntimeCheck;
 import edu.wisc.cs.jam.FileUtil;
+import edu.wisc.cs.jam.PredicateType;
 
-public class ForkCheckManager implements CheckManager, Callback {
+import edu.wisc.cs.jam.js.ExpUtil;
+import edu.wisc.cs.jam.js.JSExp;
+
+public class ForkCheckManager implements CheckManager, Traverser {
 
   // Various aspects of the analysis that we may need a handle for.
   private SourceManager sm;
@@ -32,7 +38,7 @@ public class ForkCheckManager implements CheckManager, Callback {
   // Information about checks that were present in the initial
   // source code provided to the analysis.
   private int originalCheckCount;
-  private Map<Node,List<RuntimeCheck>> originalChecks;
+  private Map<Exp,List<RuntimeCheck>> originalChecks;
 
   // All checks (including those that were in the original
   // source code) that are applied to the analyzed program.
@@ -44,19 +50,19 @@ public class ForkCheckManager implements CheckManager, Callback {
     policy = jam.getPolicy();
 
     activeChecks = new ArrayList<RuntimeCheck>();
-    originalChecks = new HashMap<Node,List<RuntimeCheck>>();
+    originalChecks = new HashMap<Exp,List<RuntimeCheck>>();
   }
 
   @Override
   public void loadExistingChecks() {
-    Node root = ((JSExp)sm.getRoot()).getNode();
-    sm.traverse(root, cm);
+    Exp root = sm.getRoot();
+    sm.traverse(root, this);
   }
 
   // Get a list of checks that were applied to this node already in the
   // original source code.
-  protected List<RuntimeCheck> getOriginalChecks(Node n) {
-    List<RuntimeCheck> ret = originalChecks.get(n);
+  protected List<RuntimeCheck> getOriginalChecks(Exp e) {
+    List<RuntimeCheck> ret = originalChecks.get(e);
     if (ret != null) {
       ret = new ArrayList<RuntimeCheck>(ret);
     }
@@ -93,7 +99,7 @@ public class ForkCheckManager implements CheckManager, Callback {
         return rc;
       }
     }
-    RuntimeCheck ret = new ForkCheck(sm, sym.getNode(), e);
+    RuntimeCheck ret = new ForkCheck(sm, sym.getExp(), e);
     sym.addCheck(ret);
     return ret;
   }
@@ -114,10 +120,9 @@ public class ForkCheckManager implements CheckManager, Callback {
 
   @Override
   public void initChecks(ExpSymbol sym) {
-    Exp s = sym.getExp();
-    Node n = ((JSExp)sym).getNode();
-    if (n == null) return;
-    List<RuntimeCheck> cs = getOriginalChecks(n);
+    Exp e = sym.getExp();
+    if (e == null) return;
+    List<RuntimeCheck> cs = getOriginalChecks(e);
     if (cs == null) return;
     for (RuntimeCheck rc : cs) {
       sym.addCheck(rc);      
@@ -125,28 +130,28 @@ public class ForkCheckManager implements CheckManager, Callback {
   }
 
   @Override
-  public boolean shouldTraverse(NodeTraversal traversal, Node n, Node parent) {
+  public boolean shouldTraverse(Traversal traversal, Exp e, Exp parent) {
     return true;
   }
 
   @Override
-  public void visit(NodeTraversal t, Node n, Node parent) {
+  public void visit(Traversal t, Exp e, Exp parent) {
     // Check this first to avoid recording an EXPR_RESULT and it's
     // child.
-    if (!n.isCall()) return;
+    if (!e.isCall()) return;
     // We're interested in nodes representing pre-existing
     // instrumentation.
-    if (!isInstrumentation(n)) return;
+    if (!isInstrumentation(e)) return;
 
     // Get the policy states corresponding to the integers in the check.
-    int pre = getCheckSource(n);
-    int post = getCheckDestination(n);
+    int pre = getCheckSource(e);
+    int post = getCheckDestination(e);
     State s0 = policy.getState(pre);
     State s1 = policy.getState(post);
 
     // Get the predicate observed by the check. 
     // First create a predicate from the string parameter's text.
-    String predstr = sm.codeFromNode(n.getChildAtIndex(2));
+    String predstr = e.getChild(2).toCode();
     // Strip the quotes.
     predstr = predstr.substring(1, predstr.length() - 1);
     Predicate pred = semantics.getConditionPredicate(predstr);
@@ -160,7 +165,7 @@ public class ForkCheckManager implements CheckManager, Callback {
     pred = pe.getSymbol().getPredicate();
 
     // Get the node that's being guarded.
-    Node loc = getCheckLocation(n);
+    Exp loc = getCheckLocation(e);
 
     // Create the object representation of the check.
     RuntimeCheck c = new ForkCheck(sm, loc, pe);
@@ -180,11 +185,11 @@ public class ForkCheckManager implements CheckManager, Callback {
     Dbg.out("Found existing check: " + c, 3);
   }
 
-  public static Node getCheckLocation(Node check) {
-    if (check.isExprResult()) check = check.getFirstChild();
+  public static Exp getCheckLocation(Exp check) {
+    if (check.is(JSExp.EXPR_RESULT)) check = check.getFirstChild();
     assert isInstrumentation(check) : "Attempting to get the source state of a non-check node.";
 
-    Node loc = ExpUtil.getEnclosingStatement(check);
+    Exp loc = ExpUtil.getEnclosingStatement(check);
     while (isInstrumentation(loc)) {
       loc = loc.getNext();
     }
@@ -196,18 +201,18 @@ public class ForkCheckManager implements CheckManager, Callback {
 
   // Get the state id of the policy transition source. This function
   // assumes that check is actually a runtime check.
-  public static int getCheckSource(Node check) {
-    if (check.isExprResult()) check = check.getFirstChild();
+  public static int getCheckSource(Exp check) {
+    if (check.is(JSExp.EXPR_RESULT)) check = check.getFirstChild();
     assert isInstrumentation(check) : "Attempting to get the source state of a non-check node.";
     
     // The second-to-last argument of checkState is the source state.
-    String arg = sm.codeFromNode(check.getChildAtIndex(ForkCheck.CHECK_ARGUMENT_COUNT - 1));
+    String arg = check.getChild(ForkCheck.CHECK_ARGUMENT_COUNT - 1).toCode();
 
     int sid = -2;
     try {
       sid = Integer.parseInt(arg);
     } catch (NumberFormatException ex) {
-      System.err.println("Invalid source state in call to " + ForkCheck.CHECK_FUNCTION);
+      Dbg.warn("Invalid source state in call to " + ForkCheck.CHECK_FUNCTION);
     }
 
     return sid;
@@ -215,18 +220,18 @@ public class ForkCheckManager implements CheckManager, Callback {
 
   // Get the state id of the policy transition destination. This
   // function assumes that check is actually a runtime check.
-  public static int getCheckDestination(Node check) {
-    if (check.isExprResult()) check = check.getFirstChild();
+  public static int getCheckDestination(Exp check) {
+    if (check.is(JSExp.EXPR_RESULT)) check = check.getFirstChild();
     assert isInstrumentation(check) : "Attempting to get the destination state of a non-check node.";
 
     // The last argument of checkState is the destination state.
-    String arg = sm.codeFromNode(check.getChildAtIndex(ForkCheck.CHECK_ARGUMENT_COUNT));
+    String arg = check.getChild(ForkCheck.CHECK_ARGUMENT_COUNT).toCode();
 
     int sid = -2;
     try {
       sid = Integer.parseInt(arg);
     } catch (NumberFormatException ex) {
-      System.err.println("Invalid destination state in call to " + ForkCheck.CHECK_FUNCTION);
+      Dbg.warn("Invalid destination state in call to " + ForkCheck.CHECK_FUNCTION);
     }
 
     return sid;
@@ -235,27 +240,27 @@ public class ForkCheckManager implements CheckManager, Callback {
   // Determine if the given node is JAM forking instrumentation.
   // %%% How to protect against a malicious insertion of a futile check?
   @Override
-  public boolean isRuntimeCheck(Node n) {
-    return isInstrumentation(n);
+  public boolean isRuntimeCheck(Exp e) {
+    return isInstrumentation(e);
   }
 
-  public static boolean isInstrumentation(Node n) {
-    if (n == null) return false;
-    if (n.isExprResult()) n = n.getFirstChild();
-    if (!n.isCall()) return false;
+  public static boolean isInstrumentation(Exp e) {
+    if (e == null) return false;
+    if (e.is(JSExp.EXPR_RESULT)) e = e.getFirstChild();
+    if (!e.isCall()) return false;
 
-    Node name = n.getFirstChild();
+    Exp name = e.getFirstChild();
     if (!name.isName()) return false;
 
-    String checktext = sm.codeFromNode(name);
+    String checktext = name.toCode();
     if (!checktext.equals(ForkCheck.CHECK_FUNCTION)) {
       return false;
     }
 
     // A CALL node is laid out with target function reference as
     // child 0 and each argument as another child.
-    if (n.getChildCount() != ForkCheck.CHECK_ARGUMENT_COUNT + 1) {
-      System.err.println("Invalid call to " + ForkCheck.CHECK_FUNCTION);
+    if (e.getChildCount() != ForkCheck.CHECK_ARGUMENT_COUNT + 1) {
+      Dbg.warn("Invalid call to " + ForkCheck.CHECK_FUNCTION);
       return false;
     }
 
@@ -265,21 +270,19 @@ public class ForkCheckManager implements CheckManager, Callback {
   // For forking enforcement, the policy evaluation is hard-coded
   // entirely in the browser, so no extra JavaScript is needed.
   @Override
-  public String getPolicyCode() {
+  public Exp getBasePolicyCode() {
     return null;
   }
 
   @Override
-  public String getModularPolicyCode() {
+  public Exp getSpecializedPolicyCode() {
     return null;
   }
 
   @Override
-  public String getUntransformedPolicyCode() {
+  public Set<PredicateType> getPredicateTypes(String check) {
+    // %%% Should return something.
     return null;
   }
-
-  @Override
-  public void transform(SourceManager src, Transform pt) { }
 }
 

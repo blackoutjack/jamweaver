@@ -70,7 +70,7 @@ public class JavaScript implements Language {
 
   @Override
   public SourceManager newSourceManager(List<String> srcPaths) {
-    SourceManager jsman = new JSSourceManager();
+    JSSourceManager jsman = new JSSourceManager();
     // Cull duplicate source files since Closure can't handle them.
     Set<String> sfs = new HashSet<String>();
     for (String srcpath : srcPaths) {
@@ -125,6 +125,8 @@ public class JavaScript implements Language {
     if (JAM.Opts.htmlFile != null) {
       jsman.addSource(new HTMLSource(JAM.Opts.htmlFile));
     }
+
+    jsman.generate();
     return jsman;
   }
 

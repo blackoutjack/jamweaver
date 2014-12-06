@@ -6,33 +6,25 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.LinkedHashSet;
-import java.util.Collection;
 
-import com.google.javascript.jscomp.NodeTraversal;
-import com.google.javascript.jscomp.NodeTraversal.Callback;
-import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
-
-import com.google.javascript.jscomp.JAMControlFlowGraph;
-
-import edu.wisc.cs.automaton.Automaton;
 import edu.wisc.cs.automaton.Automaton.Edge;
 import edu.wisc.cs.automaton.State;
 
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.Traversal;
+import edu.wisc.cs.jam.Traversal.Traverser;
 import edu.wisc.cs.jam.ExpSymbol;
 import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.ReturnSymbol;
-import edu.wisc.cs.jam.BranchSymbol;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.CallGraph.Callsite;
 import edu.wisc.cs.jam.CallGraph.Function;
 
-public class JSInterproceduralControlStructure extends JSControlStructure implements Callback {
+public class JSInterproceduralControlStructure extends JSControlStructure implements Traverser {
 
   // Maps callsite references to functions they might target
   private Map<String,Set<Function>> callTargetMap;
@@ -49,24 +41,24 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
   }
 
   @Override
-  public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+  public boolean shouldTraverse(Traversal t, Exp e, Exp parent) {
     return true;
   }
 
   @Override
-  public void visit(NodeTraversal t, Node n, Node parent) {
+  public void visit(Traversal t, Exp e, Exp parent) {
 
     // Find all the call target assignments that might occur in the
     // program and populate callTargetMap with the results. Only 
     // consider normal assignment, not +=, -=, etc., since those can't
     // result in a function value.
-    if (n.getType() == Token.ASSIGN || ExpUtil.isVarInitializer(n)) {
-      Node lhs = ExpUtil.getAssignLHS(n);
-      Node rhs = ExpUtil.getAssignRHS(n);
+    if (e.isAssign() || ExpUtil.isVarInitializer(e)) {
+      Exp lhs = e.cloneAssignLHS();
+      Exp rhs = e.cloneAssignRHS();
 
       if (rhs.isName()) {
-        String l = getCode(lhs);
-        String r = getCode(rhs);
+        String l = lhs.toCode();
+        String r = rhs.toCode();
 
         Set<Function> targets = getPossibleTargetsOfName(r);
         if (targets.size() > 0) {
@@ -77,24 +69,24 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
           }
           targetsList.addAll(targets);
         }
-      } else if (rhs.getType() == Token.OBJECTLIT) {
+      } else if (rhs.is(JSExp.OBJECTLIT)) {
         for (int i=0; i<rhs.getChildCount(); i++) {
-          Node prop = rhs.getChildAtIndex(i);
-          Node val = prop.getChildAtIndex(0);
+          Exp prop = rhs.getChild(i);
+          Exp val = prop.getChild(0);
 
           if (!val.isName()) continue;
 
-          String l = getCode(prop);
+          String l = prop.toCode();
           // Strip the quotes off of the property name.
           l = l.substring(1, l.length()-1);
-          String r = getCode(val);
+          String r = val.toCode();
 
           List<Function> targets = new ArrayList<Function>(getPossibleTargetsOfName(r));
           if (targets.size() > 0) {
 
             // String of the form obj.prop, where obj is the
             // lhs of the assignment, will identify the call.
-            String objkey = getCode(lhs) + "." + l;
+            String objkey = lhs.toCode() + "." + l;
             Set<Function> targetsList = callTargetMap.get(objkey);
 
             if (targetsList == null) {
@@ -161,14 +153,14 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
   }
 
   public void dumpCallsite(Callsite cs) {
-    Node cn = ((JSExp)cs.getExp()).getNode();
+    Exp ce = cs.getExp();
     StringBuilder sb = new StringBuilder();
     sb.append("Callsite: ");
-    sb.append(getCode(cn));
+    sb.append(ce.toCode());
     sb.append(", position: ");
-    sb.append(cn.getLineno());
+    sb.append(ce.getSourceLine());
     sb.append(":");
-    sb.append(cn.getCharno());
+    sb.append(ce.getSourceChar());
     sb.append(", hasExternTargets: ");
     sb.append(cs.hasExternTarget());
     sb.append(", hasUnknownTargets: ");
@@ -189,14 +181,13 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
     // each target). It's conservative for all these edges to flow back
     // to the original state.
     // %%% For now we rely on the preprocessing to break up callsites.
-    //Map<Node,State> stmtStateMap = new LinkedHashMap<Node,State>();
+    //Map<Exp,State> stmtStateMap = new LinkedHashMap<Exp,State>();
 
     for (Callsite curSite : allCallsites) {
       //dumpCallsite(curSite);
 
       // Avoid repeated method calls by collecting some objects here.
       Exp curSiteExp = curSite.getExp();
-      Node curSiteNode = ((JSExp)curSiteExp).getNode();
       Exp curSiteStmt = ExpUtil.getEnclosingStatement(curSiteExp);
       String curSiteCode = curSiteExp.toCode();
 
@@ -246,7 +237,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
         // It would be nice if Closure removed these nodes altogether, but
         // we can happily omit the call edges while issuing a warning.
         if (callStmtSource == null) {
-          Dbg.warn("Callsite on line " + curSiteNode.getLineno()
+          Dbg.warn("Callsite on line " + curSiteExp.getSourceLine()
             + " is unreachable (source state doesn't exist): "
             + curSiteCode);
           continue;
@@ -283,7 +274,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
         ExpSymbol retSymbol = callStmtSymbol.copy();
         retSymbol.setPostCall(true);
         // Associate this return node with the corresponding call.
-        // Since they share a Node, we may need to use this link to
+        // Since they share an Exp, we may need to use this link to
         // avoid duplicate runtime checks.
         retSymbol.link(callStmtSymbol);
 
@@ -414,10 +405,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
     // Collect event handler information.
     sm.traverse(sm.getRoot(), this);
 
-    JAMControlFlowGraph cfg =
-      new JAMControlFlowGraph(this, sm);
-
-    buildIntraproceduralEdges(cfg);
+    buildIntraproceduralEdges();
 
     // Populate |externCalls| and |conservativeCalls|.
     for (Callsite cs : allCallsites) {
@@ -431,10 +419,6 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
       // Load existing checks.
       cm.loadExistingChecks();
     }
-  }
-
-  protected String getCode(Node n) {
-    return sm.codeFromNode(n);
   }
 
 }

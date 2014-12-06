@@ -1,26 +1,11 @@
 package edu.wisc.cs.jam.js;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.LinkedHashSet;
-import java.util.Collection;
-
-import com.google.javascript.jscomp.NodeTraversal;
-import com.google.javascript.jscomp.NodeTraversal.Callback;
-import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
-import com.google.javascript.jscomp.CompilerPass;
-import com.google.javascript.jscomp.CompilerOptions;
-import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
-import com.google.common.collect.HashMultimap;
 
 import com.google.javascript.jscomp.JAMControlFlowGraph;
 
-import edu.wisc.cs.automaton.Automaton;
 import edu.wisc.cs.automaton.Automaton.Edge;
 import edu.wisc.cs.automaton.State;
 
@@ -93,7 +78,9 @@ public class JSControlStructure extends ControlStructure {
     }
   }
 
-  protected void buildIntraproceduralEdges(JAMControlFlowGraph cfg) {
+  protected void buildIntraproceduralEdges() {
+
+    JAMControlFlowGraph cfg = new JAMControlFlowGraph(this, sm);
 
     // Create the CFG for the top-level function first.
     cfg.addFunction(mainFunction);
@@ -125,6 +112,8 @@ public class JSControlStructure extends ControlStructure {
     externCall = makeEdge(externSymbol, externSource, externDest);
     addEdge(externCall);
     */
+
+    JSExp.jettisonNodes();
   }
 
   // Build the control-flow graph.
@@ -133,10 +122,7 @@ public class JSControlStructure extends ControlStructure {
 
     FileUtil.writeToMain("allFunctions:" + allFunctions.size() + "\nallCallsites:" + allCallsites.size() + "\n", JAMConfig.INFO_FILENAME, true);
 
-    JAMControlFlowGraph cfg =
-      new JAMControlFlowGraph(this, sm);
-
-    buildIntraproceduralEdges(cfg);
+    buildIntraproceduralEdges();
 
     // Populate |externCalls| and |conservativeCalls|.
     for (Callsite cs : allCallsites) {
@@ -155,24 +141,6 @@ public class JSControlStructure extends ControlStructure {
       // Load existing checks.
       cm.loadExistingChecks();
     }
-  }
-
-  protected CompilerOptions initCompilerOptions() {
-    CompilerOptions opts = new CompilerOptions();
-    opts.customPasses = HashMultimap.create();
-    opts.setSummaryDetailLevel(1);
-    opts.prettyPrint = true;
-
-    // MIT-LL's integrated demo script requires this setting since
-    // it uses trailing commas in object literals.
-    opts.setLanguageIn(LanguageMode.ECMASCRIPT5);
-    opts.setGenerateExports(false);
-    opts.setPreferLineBreakAtEndOfFile(false);
-    opts.setTrustedStrings(true);
-
-    opts.setInferTypes(true);
-
-    return opts;
   }
 
 }

@@ -6,6 +6,8 @@ import edu.wisc.cs.automaton.State;
 import java.util.List;
 import java.util.ArrayList;
 
+import edu.wisc.cs.jam.PredicateValue;
+import edu.wisc.cs.jam.PredicateSymbol;
 import edu.wisc.cs.jam.RuntimeCheck;
 import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Policy;
@@ -23,8 +25,8 @@ public class ForkCheck extends RuntimeCheck {
   // The constructed conditional node which serves as the check.
   private Exp checkExp;
 
-  public ForkCheck(SourceManager sm, Node n, Policy.Edge edge) {
-    super(sm, n, edge);
+  public ForkCheck(SourceManager sm, Exp e, Policy.Edge edge) {
+    super(sm, e, edge);
     build();
   }
 

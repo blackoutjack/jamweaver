@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.WeakHashMap;
 
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
+import com.google.javascript.rhino.InputId;
 
 import edu.wisc.cs.jam.xsb.XSBInterface;
 
@@ -20,9 +22,38 @@ public class JSExp extends Exp {
   protected SourceManager sm;
   protected Node node;
 
+  protected String str;
+  protected double num;
+
+  // %%% This should be a temporary hack.
+  protected Exp clonedFrom;
+
+  protected String code;
+  protected int type;
+
+  // Additional info
+  // %%% Maybe encode these properties in additional types.
+  protected boolean quoted = false;
+  protected boolean freeCall = false;
+  protected boolean directEval = false;
+  protected boolean arrowFunction = false;
+  protected int slashv = -1;
+
+  protected int charno;
+  protected int lineno;
+  protected String sourceFileName;
+
   protected static Map<Node,JSExp> nodeMap;
-  // %%% Make this a Map<Node,Type>.
-  public static Map<String,String> typeMap;
+  //protected static Map<Exp,String> typeMap;
+
+  public static void jettisonNodes() {
+    for (Map.Entry<Node,JSExp> entry : nodeMap.entrySet()) {
+      Node n = entry.getKey();
+      JSExp e = entry.getValue();
+      e.clearNode();
+    }
+    nodeMap.clear();
+  }
 
   // This syncs up with Closure.
   public final static int
@@ -91,8 +122,8 @@ public class JSExp extends Exp {
     HOOK = Token.HOOK,  // conditional (?:)
     OR = Token.OR, // logical or (||)
     AND = Token.AND, // logical and (&&)
-    INC = Token.INC, // increment (++)
-    DEC = Token.DEC, // decrement (--)
+    PREINC = Token.INC, // prefix increment (++)
+    PREDEC = Token.DEC, // prefix decrement (--)
     FUNCTION = Token.FUNCTION, // function keyword
     IF = Token.IF, // if keyword
     SWITCH = Token.SWITCH, // switch keyword
@@ -140,82 +171,211 @@ public class JSExp extends Exp {
     EQUALS = Token.EQUALS,
     LB = Token.LB,  // left brackets
     LC = Token.LC,  // left curly braces
-    COLON = Token.COLON;
+    COLON = Token.COLON,
+
+    // Types that don't directly correspond to Rhino Tokens.
+    POSTINC = Token.PLACEHOLDER2 + 1,
+    POSTDEC = POSTINC + 1;
 
     // %%% Include ES6 tokens eventually.
 
   static {
-    nodeMap = new LinkedHashMap<Node,JSExp>();
+    nodeMap = new WeakHashMap<Node,JSExp>();
   }
 
-  protected static boolean isStatementNode(Node n) {
-    int t = n.getType();
-    return t == EXPR_RESULT || t == VAR || t == THROW || t == RETURN;
+  protected void clearNode() {
+    node = null;
+  }
+
+  protected void setNode(Node n) {
+    node = n;
+    nodeMap.put(n, this);
+
+    type = n.getType();
+    if (type == Token.INC) {
+      boolean post = n.getBooleanProp(Node.INCRDECR_PROP);
+      if (post) {
+        type = POSTINC;
+      } else {
+        type = PREINC;
+      }
+    } else if (type == Token.DEC) {
+      boolean post = n.getBooleanProp(Node.INCRDECR_PROP);
+      if (post) {
+        type = POSTDEC;
+      } else {
+        type = PREDEC;
+      }
+    } else if (type == Token.STRING || type == Token.STRING_KEY || type == Token.NAME || type == Token.LABEL_NAME || type == Token.GETTER_DEF || type == Token.SETTER_DEF || type == Token.MEMBER_DEF || type == Token.REST) {
+      str = n.getString();
+    } else if (type == Token.NUMBER) {
+      num = n.getDouble();
+    }
+
+    if (type == Token.STRING_KEY) {
+      quoted = n.getBooleanProp(Node.QUOTED_PROP);
+    }
+    if (type == Token.CALL) {
+      freeCall = n.getBooleanProp(Node.FREE_CALL);
+    }
+    if (type == Token.NAME) {
+      directEval = n.getBooleanProp(Node.DIRECT_EVAL);
+    }
+    if (type == Token.FUNCTION) {
+      arrowFunction = n.getBooleanProp(Node.ARROW_FN);
+    }
+    if (type == Token.STRING || type == Token.STRING_KEY) {
+      // %%% Per Node.java, this is a "total hack."
+      slashv = n.getIntProp(Node.SLASH_V);
+    }
+
+    charno = n.getCharno();
+    lineno = n.getLineno();
+    sourceFileName = n.getSourceFileName();
+  }
+
+  public JSExp(int t, Exp l, Exp c, Exp d, Exp r) {
+    assert l != null;
+    assert c != null;
+    assert d != null;
+    assert r != null;
+    assert l.getParent() == null;
+    assert c.getParent() == null;
+    assert d.getParent() == null;
+    assert r.getParent() == null;
+    sm = l.getSourceManager();
+    assert c.getSourceManager() == sm;
+    assert d.getSourceManager() == sm;
+    assert r.getSourceManager() == sm;
+
+    Node n = new Node(t);
+    setNode(n);
+
+    children = new ArrayList<Exp>();
+    addChildToBack(l);
+    addChildToBack(c);
+    addChildToBack(d);
+    addChildToBack(r);
+    // %%% Creation of INC/DEC from scratch not supported currently.
+    assert !ExpUtil.isUnOp(this);
+  }
+
+  public JSExp(int t, Exp l, Exp c, Exp r) {
+    assert l != null;
+    assert c != null;
+    assert r != null;
+    assert l.getParent() == null;
+    assert c.getParent() == null;
+    assert r.getParent() == null;
+    sm = l.getSourceManager();
+    assert c.getSourceManager() == sm;
+    assert r.getSourceManager() == sm;
+
+    Node n = new Node(t);
+    setNode(n);
+
+    children = new ArrayList<Exp>();
+    addChildToBack(l);
+    addChildToBack(c);
+    addChildToBack(r);
+    // %%% Creation of INC/DEC from scratch not supported currently.
+    assert !ExpUtil.isUnOp(this);
+  }
+
+  public JSExp(int t, Exp l, Exp r) {
+    assert l != null;
+    assert r != null;
+    assert l.getParent() == null;
+    assert r.getParent() == null;
+    sm = l.getSourceManager();
+    assert r.getSourceManager() == sm;
+
+    Node n = new Node(t);
+    setNode(n);
+
+    children = new ArrayList<Exp>();
+    addChildToBack(l);
+    addChildToBack(r);
+    // %%% Creation of INC/DEC from scratch not supported currently.
+    assert !ExpUtil.isUnOp(this);
+  }
+
+  public JSExp(int t, Exp c) {
+    assert c != null;
+    assert c.getParent() == null;
+    sm = c.getSourceManager();
+
+    Node n = new Node(t);
+    setNode(n);
+
+    children = new ArrayList<Exp>();
+    addChildToBack(c);
+    // %%% Creation of INC/DEC from scratch not supported currently.
+    assert !ExpUtil.isUnOp(this);
+  }
+
+  public JSExp(SourceManager s, int t) {
+    assert s != null;
+    sm = s;
+    Node n = new Node(t);
+    setNode(n);
+    children = new ArrayList<Exp>();
+    // %%% Creation of INC/DEC from scratch not supported currently.
+    assert !ExpUtil.isUnOp(this);
+  }
+
+  protected JSExp(SourceManager src, Node n) {
+    // This constructor is protected to prevent duplicates.
+    assert src != null;
+    assert n != null;
+    assert !nodeMap.containsKey(n) : "JSExp already created for node: " + n;
+    sm = src;
+    setNode(n);
+
+    // Recursively generate child expressions.
+    children = new ArrayList<Exp>();
+    int cnt = n.getChildCount();
+    for (int i=0; i<cnt; i++) {
+      Node c = n.getChildAtIndex(i);
+      Exp child = create(sm, c);
+      // Call the super method because the Node is already linked.
+      super.addChildToBack(child);
+    }
   }
 
   protected JSExp(SourceManager src) {
     assert src != null;
     sm = src;
-    node = new Node(EMPTY);
-  }
-
-  protected JSExp(SourceManager src, Node n, Exp parent) {
-    // %%% Make this constructor protected, and have a public one that
-    // %%% takes only the SourceManager. This will prevent duplicates.
-    assert src != null;
-    assert n != null;
-    assert !nodeMap.containsKey(n) : "JSExp already created for node: " + n;
-    node = n;
-    sm = src;
-
-    // Recursively generate child expressions.
-    children = new ArrayList<Exp>();
-    int cnt = node.getChildCount();
-    for (int i=0; i<cnt; i++) {
-      Node c = node.getChildAtIndex(i);
-      children.add(create(sm, c, this));
-    }
-    // Can't call create recursively here, or get infinite recursion.
-    this.parent = parent;
-    nodeMap.put(n, this);
-  }
-
-  protected JSExp(SourceManager src, Node n) {
-    this(src, n, null);
+    Node n = new Node(EMPTY);
+    setNode(n);
   }
 
   public static JSExp createEmpty(SourceManager src) {
     return new JSExp(src);
   }
 
+  public static JSExp createName(SourceManager src, String name) {
+    return create(src, Node.newString(NAME, name));
+  }
+
+  public static JSExp createString(SourceManager src, String s) {
+    return create(src, Node.newString(STRING, s));
+  }
+
+  public static JSExp createStringKey(SourceManager src, String s) {
+    return create(src, Node.newString(STRING_KEY, s));
+  }
+
   public static JSExp createNumber(SourceManager src, double num) {
     return create(src, Node.newNumber(num));
   }
 
+  // Get the corresponding Exp for a given Node, or create a new one.
   public static JSExp create(SourceManager src, Node n) {
     if (nodeMap.containsKey(n)) {
       return nodeMap.get(n);
     }
     return new JSExp(src, n);
-  }
-
-  protected static JSExp create(SourceManager src, Node n, Exp parent) {
-    if (nodeMap.containsKey(n)) {
-      JSExp exp = nodeMap.get(n);
-      // %%% Disable this while in transition from Node to Exp.
-      //assert exp.parent == null || exp.parent == parent : "Mismatched parent of " + n + ": " + exp.parent + " / " + parent;
-      exp.parent = parent;
-      return exp;
-    }
-    return new JSExp(src, n, parent);
-  }
-
-  // Get the corresponding Exp for a given node.
-  public static JSExp load(SourceManager src, Node n) {
-    if (nodeMap.containsKey(n)) {
-      return nodeMap.get(n);
-    }
-    return create(src, n);
   }
 
   @Override
@@ -227,7 +387,7 @@ public class JSExp extends Exp {
 
   @Override
   public int getType() {
-    return node.getType();
+    return type;
   }
 
   @Override
@@ -285,27 +445,32 @@ public class JSExp extends Exp {
 
   @Override
   public String getString() {
-    return node.getString();
+    return str;
   }
 
   @Override
-  public boolean is(int type) {
-    return getType() == type;
+  public double getDouble() {
+    return num;
+  }
+
+  @Override
+  public boolean is(int t) {
+    return getType() == t;
   }
 
   @Override
   public boolean isAnd() {
-    return node.isAnd();
+    return is(AND);
   }
 
   @Override
   public boolean isAssign() {
-    return node.isAssign();
+    return is(ASSIGN);
   }
 
   @Override
   public boolean isFunction() {
-    return node.isFunction();
+    return is(FUNCTION);
   }
 
   @Override
@@ -367,13 +532,11 @@ public class JSExp extends Exp {
       return getChild(0).clone();
     }
 
-    // %%% What about INC and DEC?
-
     if (isDeclaration()) {
       // %%% Should potentially return a list of Exps, since a
       // %%% declaration can contain several variables.
       if (isNoOp()) {
-        // Return the NAME node for a simple declaration or function,
+        // Return the NAME for a simple declaration or function,
         // since it acts like an assignment of |undefined|.
         return getChild(0).clone(); 
       }
@@ -395,23 +558,21 @@ public class JSExp extends Exp {
     }
 
     if (isAssignment()) {
-      if (is(INC) || is(DEC)) {
-        Node sub = node.getFirstChild().cloneTree();
-        Node one = Node.newNumber(1);
-        Node op = null;
-        if (is(INC)) {
-          op = new Node(ADD, sub, one);
+      if (ExpUtil.isUnOp(this)) {
+        Exp sub = getFirstChild().clone();
+        Exp one = createNumber(sm, 1);
+        Exp op = null;
+        if (is(POSTINC) || is(PREINC)) {
+          op = new JSExp(ADD, sub, one);
         } else {
-          op = new Node(SUB, sub, one);
+          op = new JSExp(SUB, sub, one);
         }
-        return create(sm, op);
+        return op;
       }
       
-      // %%% Perhaps construct the effective RHS.
+      assert getChildCount() == 2 : "Invalid children for assignment: " + this;
       return getChild(1).clone();
     }
-
-    // %%% What about INC and DEC?
 
     if (isDeclaration()) {
       if (isFunction()) {
@@ -422,11 +583,11 @@ public class JSExp extends Exp {
         // %%% declaration can contain several variables.
         // Return undefined for a simple declaration or function,
         // since it acts like an assignment of |undefined|.
-        return create(sm, Node.newString(JSExp.NAME, "#undefined"));
+        return createName(sm, "#undefined");
       }
 
       // Create a copy of the initializer components.
-      Exp lhs = getChild(0).clone();
+      Exp lhs = getChild(0);
       // Isolate the initialization value, without the variable name.
       Exp val = lhs.getChild(0);
       return val.clone();
@@ -510,77 +671,80 @@ public class JSExp extends Exp {
   public String toAST() {
     StringBuilder sb = new StringBuilder();
     // A null |nameMap| indicates that no normalization should occur.
-    toAST(node, null, sb);
+    toAST(this, null, sb);
     return sb.toString();
   }
 
   @Override
   public Exp getCondition() {
-    if (!isControl()) return null;
-    Node cond = ExpUtil.getCondition(node);
-    assert cond != null : "Null condition for control expression: " + toCode();
-    return create(sm, cond);
+    return ExpUtil.getCondition(this);
   }
 
   @Override
   public Exp clone() {
-    return create(sm, node.cloneTree());
+    Exp c = create(sm, makeNode());
+    ((JSExp)c).clonedFrom = this;
+    return c;
   }
 
-  // Return a textual representation of the node.
-  protected Node getControlQueryNode() {
+  @Override
+  public Exp getOriginal() {
+    return clonedFrom;
+  }
+
+  // Return a textual representation.
+  protected Exp getControlQueryExp() {
     assert isControl();
-    Node cond = null;
+    Exp cond = null;
     switch (getType()) {
       case IF:
         // if (cond) {}
-        cond = ExpUtil.getCondition(node).cloneTree();
-        return new Node(IF, cond, new Node(BLOCK));
+        cond = getCondition().clone();
+        return new JSExp(IF, cond, new JSExp(sm, BLOCK));
       case WHILE:
       // %%% Why not separate case for DO?
       case DO:
-        cond = ExpUtil.getCondition(node).cloneTree();
-        return new Node(WHILE, cond, new Node(BLOCK));
+        cond = getCondition().clone();
+        return new JSExp(WHILE, cond, new JSExp(sm, BLOCK));
       case FOR:
-        if (ExpUtil.isStandardFor(node)) {
-          cond = ExpUtil.getCondition(node).cloneTree();
+        if (ExpUtil.isStandardFor(this)) {
+          cond = getCondition().clone();
           // Don't include initializer and incrementor because preprocessing
           // removes them.
-          return new Node(FOR, new Node(EMPTY), cond, new Node(EMPTY), new Node(BLOCK));
+          return new JSExp(FOR, new JSExp(sm, EMPTY), cond, new JSExp(sm, EMPTY), new JSExp(sm, BLOCK));
         } else {
-          assert ExpUtil.isForIn(node);
+          assert ExpUtil.isForIn(this);
           // Return a for statement with symbolic condition
           // to allow the branch predicate to evaluate to true.
-          Node inst = node.getChildAtIndex(0);
-          Node coll = node.getChildAtIndex(1);
-          return new Node(FOR, inst.cloneTree(), coll.cloneTree(), new Node(BLOCK));
+          Exp inst = getChild(0);
+          Exp coll = getChild(1);
+          return new JSExp(FOR, inst.clone(), coll.clone(), new JSExp(sm, BLOCK));
         }
       case SWITCH:
         // Omit the block, but keep the expression.
-        return new Node(SWITCH, node.getFirstChild().cloneTree());
+        return new JSExp(SWITCH, getFirstChild().clone());
       case WITH:
         // Omit contents of the block, but keep the object.
-        return new Node(WITH, node.getFirstChild().cloneTree(), new Node(EMPTY));
+        return new JSExp(WITH, getFirstChild().clone(), new JSExp(sm, EMPTY));
       case CASE:
         // The case expression is all that's evaluated here. This is
         // different than the branch condition.
-        Node c = node.getFirstChild();
-        if (ExpUtil.isTransaction(c)) {
+        Exp c = getFirstChild();
+        if (c.isTransaction()) {
           // Strip an enclosing transaction expression.
-          c = c.getChildAtIndex(1);
+          c = c.getChild(1);
           // The block should only contain 1 statement.
-          //assert c.getChildCount() == 1 : "Unexpected transaction expression block: " + sm.codeFromNode(c) + " / " + c.getChildCount();
           c = c.getLastChild();
         }
         return c;
       case DEFAULT_CASE:
-        return new Node(TRUE);
+        return new JSExp(sm, TRUE);
       case TRY:
-        return new Node(TRY, new Node(BLOCK), new Node(BLOCK));
+        return new JSExp(TRY, new JSExp(sm, BLOCK), new JSExp(sm, BLOCK));
       case CATCH:
-        return new Node(TRY, new Node(BLOCK), new Node(CATCH, new Node(EMPTY), new Node(BLOCK)));
+        return new JSExp(TRY, new JSExp(sm, BLOCK), new JSExp(CATCH, new JSExp(sm, EMPTY), new JSExp(sm, BLOCK)));
       default:
-        Dbg.err("Unhandled control type: " + node);
+        Dbg.err("Unhandled control type: " + this);
         return null;
     }
   }
@@ -591,34 +755,37 @@ public class JSExp extends Exp {
     if (isNoOp()) {
       sb.append("['EMPTY']");
     } else if (isControl()) {
-      Node n = getControlQueryNode();
-      toAST(n, null, sb);
+      Exp e = getControlQueryExp();
+      toAST(e, null, sb);
     } else {
       // Call to the recursive AST printing function.
-      toAST(node, null, sb);
+      toAST(this, null, sb);
     }
     return sb.toString();
   }
 
-  protected void toAST(Node n, Map<String,String> nameMap, StringBuilder sb) {
+  protected String getTypeName(int t) {
+    if (t == POSTINC) {
+      return "POSTINC";
+    } else if (t == POSTDEC) {
+      return "POSTDEC";
+    } else {
+      return Token.name(t);
+    }
+  }
+
+  protected void toAST(Exp e, Map<String,String> nameMap, StringBuilder sb) {
     sb.append("[");
 
-    int t = n.getType();
-    String nodetype = Token.name(t);
-
-    if (t == INC || t == DEC) {
-      int prop = n.getIntProp(Node.INCRDECR_PROP);
-      if (prop == Node.DECR_FLAG) {
-        nodetype = "POST" + nodetype;
-      }
-    }
+    int t = e.getType();
+    String etype = getTypeName(t);
 
     sb.append("'");
-    sb.append(nodetype);
+    sb.append(etype);
     sb.append("'");
 
     if (t == NAME) {
-      String name = n.getString();
+      String name = e.getString();
       String norm = null;
       if (nameMap == null) {
         norm = name;
@@ -635,29 +802,29 @@ public class JSExp extends Exp {
       sb.append(norm);
       sb.append("\"'");
       
-      String type = sm.getType(name);
-      if (type != null
-          && ExpUtil.getEnclosingStatement(n).isExprResult()) {
-        // %%% Somewhat conservative.
-        sb.append(",'");
-        sb.append(type);
-        sb.append("'");
+      String typ = sm.getType(name);
+      if (typ != null) {
+        Exp p = ExpUtil.getEnclosingStatement(e);
+        if (p != null && p.is(EXPR_RESULT)) {
+          // %%% Somewhat conservative.
+          sb.append(",'");
+          sb.append(typ);
+          sb.append("'");
+        }
       }
 
     } else if (t == STRING || t == STRING_KEY) {
-      // Don't use |Node.getString| here since that will be the raw
-      // format with evaluated control characters.
       sb.append(",'\"");
 
       // This unescapes quotes in the body of the string also.
-      String strval = n.getString();
+      String strval = e.getString();
 
       String escval = XSBInterface.escapeString(strval);
       sb.append(escval);
       sb.append("\"'");
     } else if (t == NUMBER) {
       // %%% Kind of hacky ... we don't handle JS floats very well.
-      String num = "" + n.getDouble();
+      String num = "" + e.getDouble();
       // Convert to an int if allowable.
       if (num.endsWith(".0")) num = num.substring(0, num.length() - 2);
 
@@ -667,9 +834,9 @@ public class JSExp extends Exp {
     }
 
     // Recurse.
-    for (int i=0; i<n.getChildCount(); i++) {
+    for (int i=0; i<e.getChildCount(); i++) {
       sb.append(",");
-      Node c = n.getChildAtIndex(i);
+      Exp c = e.getChild(i);
       toAST(c, nameMap, sb);
     }
     sb.append("]");
@@ -685,15 +852,15 @@ public class JSExp extends Exp {
     // a CALL or NEW.
     // %%% This is (hopefully) temporary until callsite information is
     // %%% worked into queries.
-    if (ExpUtil.containsInvoke(node, false)) {
+    if (ExpUtil.containsInvoke(this, false)) {
       return toQueryAST();
     }
 
-    Node n = null;
+    Exp e = null;
     if (isControl()) {
-      n = getControlQueryNode();
+      e = getControlQueryExp();
     } else {
-      n = node;
+      e = this;
     }
 
     // Initialize the name map with every policy-relevant name mapped to
@@ -704,25 +871,121 @@ public class JSExp extends Exp {
     }
 
     StringBuilder sb = new StringBuilder();
-    toAST(n, nameMap, sb);
+    toAST(e, nameMap, sb);
     return sb.toString();
   }
 
   @Override
   public void replaceChild(Exp child, Exp newChild) {
-    node.replaceChild(((JSExp)child).node, ((JSExp)newChild).node);
+    if (node != null && ((JSExp)child).node != null)
+      node.replaceChild(((JSExp)child).node, ((JSExp)newChild).getNode());
     super.replaceChild(child, newChild);
   }
 
   @Override
+  public void addChildAfter(Exp newChild, Exp c) {
+    if (node != null && ((JSExp)c).node != null)
+      node.addChildAfter(((JSExp)newChild).getNode(), ((JSExp)c).node);
+    super.addChildAfter(newChild, c);
+  }
+
+  @Override
+  public void addChildBefore(Exp newChild, Exp c) {
+    if (node != null && ((JSExp)c).node != null)
+      node.addChildBefore(((JSExp)newChild).getNode(), ((JSExp)c).node);
+    super.addChildBefore(newChild, c);
+  }
+
+  @Override
+  public void addChildToFront(Exp newChild) {
+    if (node != null)
+      node.addChildToFront(((JSExp)newChild).getNode());
+    super.addChildToFront(newChild);
+  }
+
+  @Override
   public void addChildToBack(Exp newChild) {
-    node.addChildToBack(((JSExp)newChild).node);
+    if (node != null)
+      node.addChildToBack(((JSExp)newChild).getNode());
     super.addChildToBack(newChild);
+  }
+
+  @Override
+  public void removeChild(Exp child) {
+    if (node != null && ((JSExp)child).node != null)
+      node.removeChild(((JSExp)child).node);
+    super.removeChild(child);
+  }
+
+  @Override
+  public Exp detachFromParent() {
+    assert parent != null;
+    if (((JSExp)parent).node != null && node != null)
+      ((JSExp)parent).node.removeChild(node);
+    return super.detachFromParent();
   }
 
   // %%% Remove this eventually.
   public Node getNode() {
-    return node;
+    if (node != null) {
+      // %%% Temporary sanity check.
+      //Node n = makeNode();
+      //assert node.isEquivalentTo(n) : "Not equivalent: " + node.getChildCount() + " / " + n.getChildCount();
+      return node;
+    } else {
+      return makeNode();
+    }
+  }
+
+  protected int getClosureType() {
+    if (type == POSTINC) {
+      return Token.INC;
+    } else if (type == POSTDEC) {
+      return Token.DEC;
+    } else {
+      return type;
+    }
+  }
+
+  public Node makeNode() {
+    int t = getClosureType();
+
+    Node n = null;
+    if (t == Token.STRING || t == Token.STRING_KEY || t == Token.NAME || t == Token.LABEL_NAME || t == Token.GETTER_DEF || t == Token.SETTER_DEF || t == Token.MEMBER_DEF || t == Token.REST) {
+      n = Node.newString(t, str);
+    } else if (t == Token.NUMBER) {
+      n = Node.newNumber(num);
+    } else {
+      n = new Node(t);
+    }
+    for (int i=0; i<getChildCount(); i++) {
+      JSExp c = (JSExp)getChild(i);
+      n.addChildToBack(c.makeNode());
+    }
+
+    if (t == Token.INC && type == POSTINC) {
+      n.putBooleanProp(Node.INCRDECR_PROP, true);
+    } else if (t == Token.DEC && type == POSTDEC) {
+      n.putBooleanProp(Node.INCRDECR_PROP, true);
+    }
+
+    if (quoted) {
+      n.putBooleanProp(Node.QUOTED_PROP, true);
+    }
+    if (slashv > -1) {
+      n.putIntProp(Node.SLASH_V, slashv);
+    }
+
+    if (freeCall) {
+      n.putBooleanProp(Node.FREE_CALL, true);
+    }
+    if (directEval) {
+      n.putBooleanProp(Node.DIRECT_EVAL, true);
+    }
+    if (arrowFunction) {
+      n.putBooleanProp(Node.ARROW_FN, true);
+    }
+    return n;
   }
 
   @Override
@@ -732,19 +995,29 @@ public class JSExp extends Exp {
 
   @Override
   public String getSourceFileName() {
-    if (node == null) return null;
-    return node.getSourceFileName();
+    return sourceFileName;
+  }
+
+  @Override
+  public int getSourceLine() {
+    return lineno;
+  }
+
+  @Override
+  public int getSourceChar() {
+    return charno;
   }
 
   @Override
   public String toCode() {
-    return sm.codeFromNode(node);
+    if (code != null) return code;
+    return sm.codeFromNode(makeNode());
   }
 
   protected String toShortCode() {
     if (isControl()) {
       Exp cond = ExpUtil.getCondition(this);
-      switch (node.getType()) {
+      switch (getType()) {
         case IF:
           return "if (" + cond.toCode() + ") {...}";
         case WHILE:
@@ -784,7 +1057,7 @@ public class JSExp extends Exp {
     } else if (is(BLOCK)) {
       return "{...}";
     } else if (is(SCRIPT)) {
-      return "/* " + node.getSourceFileName() + " */ ...";
+      return "/* " + getSourceFileName() + " */ ...";
     } else {
       return toCode();
     }
@@ -792,7 +1065,7 @@ public class JSExp extends Exp {
 
   @Override
   public String toString() {
-    return node.toString(true, false, true) + " | " + toShortCode();
+    return makeNode().toString(true, false, true) + " | " + toShortCode();
   }
 }
 

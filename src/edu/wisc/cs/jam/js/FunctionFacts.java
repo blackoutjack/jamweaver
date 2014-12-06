@@ -1,14 +1,6 @@
 
 package edu.wisc.cs.jam.js;
 
-import com.google.javascript.jscomp.Scope;
-import com.google.javascript.jscomp.Scope.Var;
-import com.google.javascript.jscomp.NodeTraversal;
-import com.google.javascript.jscomp.NodeTraversal.Callback;
-
-import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.List;
@@ -19,6 +11,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import edu.wisc.cs.jam.SourceManager;
+import edu.wisc.cs.jam.Traversal.Traverser;
+import edu.wisc.cs.jam.Traversal;
+import edu.wisc.cs.jam.Scope;
+import edu.wisc.cs.jam.Scope.Var;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.CallGraph;
@@ -50,20 +46,7 @@ public class FunctionFacts {
   public String getFunctionPredicates() {
     if (functionPredicates == null) {
       cg = sm.getCallGraph();
-      // We copy in this funny way because modifications to the collection
-      // returned here will change the actual CallGraph!
-      Collection<Function> allFunctionsOrig = cg.getAllFunctions();
-      allFunctions = new LinkedHashSet<Function>(allFunctionsOrig);
-      /*
-      for (Function f : allFunctionsOrig) {
-        // Anonymous functions, at this point, are all getters/setters.
-        // %%% Need to figure out how to properly handle these.
-        if (f.getName() == null)
-          allFunctions.remove(f);
-        Dbg.dbg("f: " + f.getName());
-      }
-      */
-      assert allFunctions != null;
+      allFunctions = cg.getAllFunctions();
 
       Exp root = sm.getRoot();
       sm.traverse(root, new CallTargetVisitor());
@@ -107,26 +90,26 @@ public class FunctionFacts {
 
   // Finds all of the call target assignments that might take place in
   // the program. Populates callMap with the results.
-  public class CallTargetVisitor implements Callback {
+  public class CallTargetVisitor implements Traverser {
 
     @Override 
-    public boolean shouldTraverse(NodeTraversal traversal, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal t, Exp e, Exp parent) {
       return true;
     }
 
     @Override 
-    public void visit(NodeTraversal t, Node n, Node parent) {
+    public void visit(Traversal t, Exp n, Exp parent) {
 
-      if (ExpUtil.isAssignment(n) || ExpUtil.isVarInitializer(n)) {
-        String lhs = getCode(ExpUtil.getAssignLHS(n));
-        String rhs = getCode(ExpUtil.getAssignRHS(n));
+      if (n.isAssign() || ExpUtil.isVarInitializer(n)) {
+        String lhs = n.cloneAssignLHS().toCode();
+        String rhs = n.cloneAssignRHS().toCode();
 
         List<Function> targets = new ArrayList<Function>(getPossibleTargetsOfName(rhs));
-        if(targets.size() > 0) {
+        if (targets.size() > 0) {
           List<Function> targetsList = null;
-          if(callMap.containsKey(lhs))
+          if (callMap.containsKey(lhs))
             targetsList = callMap.get(lhs);
-          if(targetsList == null)
+          if (targetsList == null)
             targetsList = new ArrayList<Function>();
           targetsList.addAll(targets);
           callMap.put(lhs, targets);
@@ -149,18 +132,21 @@ public class FunctionFacts {
   }
 
   // Gets the formals associated with a function node
-  protected List<String> getFormals(Node n) {
+  protected List<String> getFormals(Exp e) {
     List<String> ret = new ArrayList<String>();
 
-    if(n == null) return ret;
+    if (e == null) return ret;
 
-    if(n.getType() != Token.FUNCTION)
-      return getFormals(n.getFirstChild());
+    if (!e.isFunction()) return ret;
 
-    Node curNode = n.getChildAtIndex(1).getFirstChild();
-    while(curNode != null) {
-      ret.add(getCode(curNode));
-      curNode = curNode.getNext();
+    Exp fmls = e.getChild(1);
+    assert fmls.is(JSExp.PARAM_LIST);
+    if (fmls.getChildCount() == 0) return ret;
+
+    Exp cur = e.getChild(1).getFirstChild();
+    while (cur != null) {
+      ret.add(cur.toCode());
+      cur = cur.getNext();
     }
 
     return ret;
@@ -191,9 +177,8 @@ public class FunctionFacts {
       if (s == null) {
         ret += "'#null'";        
       } else {
-        Node n = s.getRootNode();
-        if (n.isFunction()) {
-          Exp e = JSExp.create(sm, n);
+        Exp e = s.getRootExp();
+        if (e.isFunction()) {
           Function f = cg.getFunctionForExp(e);
           assert f != null;
           ret += "'##" + f.getName() + "'";
@@ -209,9 +194,8 @@ public class FunctionFacts {
 
   protected String getParentScope(Function func) {
     Scope parent = scopeChainMap.get(func).get(0);
-    Node n = parent.getRootNode();
-    if (n.isFunction()) {
-      Exp e = JSExp.create(sm, n);
+    Exp e = parent.getRootExp();
+    if (e.isFunction()) {
       Function f = cg.getFunctionForExp(e);
       assert f != null;
       return f.getName();
@@ -263,14 +247,14 @@ public class FunctionFacts {
       String funcname = curFunc.getName();
       // Getters/setters are not given names.
       if (funcname == null) continue;
-      Node astnode = ((JSExp)curFunc.getExp()).getNode();
+      Exp ast = curFunc.getExp();
 
       // Construct the list of formals represented as a string
       // understandable by the Datalog semantics
       StringBuilder fmls = new StringBuilder();
       fmls.append("[");
       boolean first = true;
-      List<String> formals = getFormals(astnode);
+      List<String> formals = getFormals(ast);
       for (String fml : formals) {
         if (first) {
           first = false;
@@ -494,23 +478,23 @@ public class FunctionFacts {
 
   // Traverses the function hierarchy to gather scope chain
   // information for each function.
-  public class ScopeGatherer implements Callback {
+  public class ScopeGatherer implements Traverser {
 
     // We want to traverse everything
     @Override 
-    public boolean shouldTraverse(NodeTraversal traversal, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal traversal, Exp e, Exp parent) {
       return true;    
     }
 
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
+    public void visit(Traversal t, Exp e, Exp parent) {
       if (scopeChainMap.size() == 0) {
         // Add the {main} function to the map.
         List<Scope> chain = new ArrayList<Scope>();
         chain.add(null);
         scopeChainMap.put(cg.getMainFunction(), chain);
         scopeMap.put(cg.getMainFunction(), t.getScope());
-      } else if (n.isFunction()) {
+      } else if (e.isFunction()) {
         List<Scope> chain = new ArrayList<Scope>();
 
         // The null scope will be added to the top of the chain.
@@ -521,14 +505,12 @@ public class FunctionFacts {
           chain.add(parentScope);
         }
 
-        Exp e = JSExp.create(sm, n);
         Function f = cg.getFunctionForExp(e);
         scopeChainMap.put(f, chain);
       }
 
-      Node containing = t.getScopeRoot();
-      Exp contexp = JSExp.create(sm, containing);
-      Function containingFunction = cg.getFunctionForExp(contexp);
+      Exp containing = t.getScopeRoot();
+      Function containingFunction = cg.getFunctionForExp(containing);
       if (containingFunction != null && !containingFunction.isMain()) {
         if (!scopeMap.keySet().contains(containingFunction)) {
           scopeMap.put(containingFunction, t.getScope());
@@ -539,29 +521,24 @@ public class FunctionFacts {
   }
 
   // Creates initializer predicates for all variables with explicit initializers
-  public class InitGatherer implements Callback {
+  public class InitGatherer implements Traverser {
 
     private Set<Scope> traversedScopes;
 
-    InitGatherer() {
+    public InitGatherer() {
       traversedScopes = new LinkedHashSet<Scope>();
     }
 
     // We want to traverse everything
     @Override
-    public boolean shouldTraverse(NodeTraversal traversal, Node n, Node parent) {
+    public boolean shouldTraverse(Traversal t, Exp e, Exp parent) {
       return true;
     }
 
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
+    public void visit(Traversal t, Exp e, Exp parent) {
       if (traversedScopes.contains(t.getScope())) return;
     }
-  }
-
-  // Convenience functions
-  protected String getCode(Node n) {
-    return sm.codeFromNode(n);
   }
 
   @Override

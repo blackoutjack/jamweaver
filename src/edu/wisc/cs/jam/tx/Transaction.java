@@ -2,41 +2,40 @@ package edu.wisc.cs.jam.tx;
 
 import edu.wisc.cs.automaton.State;
 
-import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
-
 import java.util.List;
 import java.util.ArrayList;
 
 import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.Predicate;
+import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
 
 import edu.wisc.cs.jam.js.ExpUtil;
+import edu.wisc.cs.jam.js.JSExp;
 
 public class Transaction {
 
   // The source file to which this transaction can be applied
   private SourceManager sm;
-  // The Node which that represents the transaction in the AST
-  private Node tx;
+  // The Exp which that represents the transaction in the AST
+  private Exp tx;
   // The introspector function for this transaction
   private Introspector introspector;
   // The statements that are enclosed by this transaction when applied
-  private List<Node> statements;
+  private List<Exp> statements;
   // Whether this transaction is currently present in the source code
   private boolean applied;
   // A locked transaction is one that has been deemed necessary by this
   // JAM process, and cannot be unapplied.
   private boolean locked;
 
-  public Transaction(SourceManager src, Introspector ispect, List<Node> stmts) {
+  public Transaction(SourceManager src, Introspector ispect, List<Exp> stmts) {
     sm = src;
 
     introspector = ispect;
 
-    statements = new ArrayList<Node>(stmts);
+    statements = new ArrayList<Exp>(stmts);
     
     applied = false;
     locked = false;
@@ -44,12 +43,12 @@ public class Transaction {
     build();
   }
 
-  public Transaction(SourceManager src, Introspector ispect, Node stmt) {
+  public Transaction(SourceManager src, Introspector ispect, Exp stmt) {
     sm = src;
 
     introspector = ispect;
 
-    statements = new ArrayList<Node>();
+    statements = new ArrayList<Exp>();
     statements.add(stmt);
     
     applied = false;
@@ -66,15 +65,15 @@ public class Transaction {
     return locked;
   }
 
-  protected Node buildIntrospector() {
+  protected Exp buildIntrospector() {
     assert introspector != null : "Null introspector when building transaction";
 
     // Build the introspector expression. Introspectors are accessed as
     // members of the JAMScript.introspectors object.
-    Node hdlrProp0 = Node.newString(Token.STRING, JAMConfig.INTROSPECTOR_LIST);
-    Node hdlrProp1 = Node.newString(Token.STRING, introspector.getName());
-    Node hdlrExpr0 = new Node(Token.GETPROP, Node.newString(Token.NAME, JAMConfig.TRANSACTION_LIBRARY), hdlrProp0);
-    Node hdlrExpr1 = new Node(Token.GETPROP, hdlrExpr0, hdlrProp1);
+    Exp hdlrProp0 = JSExp.createString(sm, JAMConfig.INTROSPECTOR_LIST);
+    Exp hdlrProp1 = JSExp.createString(sm, introspector.getName());
+    Exp hdlrExpr0 = new JSExp(JSExp.GETPROP, JSExp.createName(sm, JAMConfig.TRANSACTION_LIBRARY), hdlrProp0);
+    Exp hdlrExpr1 = new JSExp(JSExp.GETPROP, hdlrExpr0, hdlrProp1);
 
     return hdlrExpr1;
   }
@@ -82,15 +81,14 @@ public class Transaction {
   protected void build() {
     assert tx == null : "Attempting to rebuild transaction";
 
-    Node hdlrNode = buildIntrospector();
+    Exp ispect = buildIntrospector();
     // Start off with an empty block.
-    Node blk = new Node(Token.BLOCK);
-    tx = new Node(Token.TRANSACTION, hdlrNode, blk);
+    Exp blk = new JSExp(sm, JSExp.BLOCK);
+    tx = new JSExp(JSExp.TRANSACTION, ispect, blk);
   }
 
   public void setIntrospector(Introspector ispect) {
-    Node currentHdlr = tx.getFirstChild();
-    //assert sm.codeFromNode(currentHdlr).equals(introspector.getName()) : "Corruption in introspector: " + sm.codeFromNode(currentHdlr) + " != " + introspector.getName();
+    Exp currentHdlr = tx.getFirstChild();
     introspector = ispect;
     tx.replaceChild(currentHdlr, buildIntrospector());
   }
@@ -104,28 +102,28 @@ public class Transaction {
     // Don't do anything if this transaction is already applied.
     if (isApplied()) return;
 
-    Node block = tx.getLastChild();
-    Node parent = null;
-    Node next = null;
-    for (Node stmt : statements) {
-      assert !stmt.isBlock() && !stmt.isScript() : "Invalid statement for transaction: " + stmt + " / " + sm.codeFromNode(stmt);
+    Exp block = tx.getLastChild();
+    Exp parent = null;
+    Exp next = null;
+    for (Exp stmt : statements) {
+      assert !stmt.isBlock() && !stmt.isScript() : "Invalid statement for transaction: " + stmt + " / " + stmt.toCode();
       // If |stmt| is a condition for an if statement, for example, we
       // have to wrap the whole if statement in the transaction.
-      Node newstmt = ExpUtil.getEnclosingStatement(stmt);
-      assert !newstmt.isBlock() && !newstmt.isScript() : "Invalid statement for transaction: " + stmt + " / " + sm.codeFromNode(stmt);
+      Exp newstmt = ExpUtil.getEnclosingStatement(stmt);
+      assert !newstmt.isBlock() && !newstmt.isScript() : "Invalid statement for transaction: " + stmt + " / " + stmt.toCode();
       stmt = newstmt;
 
       assert next == null || stmt == next : "Attempting to enclose disjoint statements in a transaction";
-      next = stmt.getNext();
 
-      Node p = stmt.getParent();
+      Exp p = stmt.getParent();
+      next = p.getChildAfter(stmt);
       assert parent == null || p == parent : "Attempting to enclose disjoint statements in a transaction";
       parent = p;
-      if (stmt.isCase()) {
+      if (stmt.is(JSExp.CASE)) {
         parent = stmt;
         stmt = stmt.getFirstChild();
         stmt.detachFromParent();
-        stmt = new Node(Token.EXPR_RESULT, stmt);
+        stmt = new JSExp(JSExp.EXPR_RESULT, stmt);
         next = null;
         assert statements.size() == 1 : "Multiple nodes cannot be enclosed if a CASE expression is included";
       } else if (stmt.getParent() == null) {
@@ -143,12 +141,13 @@ public class Transaction {
     if (next != null) {
       parent.addChildBefore(tx, next);
     } else {
-      if (parent.isCase()) {
+      if (parent.is(JSExp.CASE)) {
         parent.addChildToFront(tx);
       } else {
         parent.addChildToBack(tx);
       }
     }
+    assert tx.getParent() == parent;
     sm.reportCodeChange();
 
     setApplied(true);
@@ -159,23 +158,23 @@ public class Transaction {
     if (!isApplied()) return;
     assert !isLocked() : "Attempting to remove locked transaction";
 
-    Node parent = tx.getParent();
-    Node next = tx.getNext();
+    Exp parent = tx.getParent();
+    Exp next = parent.getChildAfter(tx);
     parent.removeChild(tx);
 
-    Node block = tx.getLastChild();
+    Exp block = tx.getLastChild();
     for (int i=block.getChildCount()-1; i>=0; i--) {
-      Node stmt = block.getChildAtIndex(i);
+      Exp stmt = block.getChild(i);
       stmt.detachFromParent();
 
       // For some reason, an EMPTY statement is being inserted into
       // transactions that serve as CASE expressions.
-      if (stmt.isEmpty()) continue;
+      if (stmt.is(JSExp.EMPTY)) continue;
 
       if (next == null) {
         parent.addChildToBack(stmt);
       } else {
-        if (parent.isCase()) {
+        if (parent.is(JSExp.CASE)) {
           // Strip the EXPR_RESULT wrapper.
           stmt = stmt.getFirstChild().detachFromParent();
         }
@@ -206,6 +205,6 @@ public class Transaction {
 
   @Override
   public String toString() {
-    return sm.codeFromNode(tx);
+    return tx.toCode();
   }
 }

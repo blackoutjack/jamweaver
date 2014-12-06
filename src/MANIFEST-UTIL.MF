@@ -4,4 +4,7 @@ Class-Path: ../closure/build/compiler.jar
   ../commons-lang3-3.1/commons-lang3-3.1.jar
   ../closure/lib/junit.jar
   ../JavaBDD/jdd.jar
+  ../idlgen/antlr-4.4-complete.jar
+  ../idlgen/idl.jar
+  ../idlgen/webidl.jar
   ../bin/jam.jar

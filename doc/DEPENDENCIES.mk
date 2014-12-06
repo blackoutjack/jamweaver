@@ -4,6 +4,7 @@ YICESVERSION=1.0.40
 JAVABDDVERSION=1.0b2
 CLOSURECOMMIT=ce00015cf8b238f380ac679aaba39c444828d158
 XSBVERSION=340
+IDLDIR=$(JAMPKG)/idlgen
 
 all:
 	@echo -n "It's recommend you run make individually for each of the "
@@ -139,6 +140,12 @@ commons-io:
 	tar -xzf commons-io-2.4-bin.tar.gz
 	mv commons-io-2.4-bin.tar.gz packages
 
+commons-logging:
+	mkdir -p packages
+	wget http://supergsego.com/apache//commons/logging/binaries/commons-logging-1.2-bin.tar.gz
+	tar -xzf commons-logging-1.2-bin.tar.gz
+	mv commons-logging-1.2-bin.tar.gz packages
+
 # Currently unused
 wala: commons-io
 	# Retrieve IBM Wala source code and build with Maven.
@@ -149,6 +156,37 @@ wala: commons-io
 # Utility for extracting JS from HTML.
 jsunpack:
 	svn co http://jsunpack-n.googlecode.com/svn/trunk $(JAMPKG)/util/jsunpack
+
+antlr:
+	mkdir -p $(IDLDIR)
+	wget --directory-prefix $(IDLDIR)/ http://www.antlr.org/download/antlr-4.4-complete.jar
+
+idlgen: antlr
+	mkdir -p $(IDLDIR)
+	wget --directory-prefix $(IDLDIR) https://raw.githubusercontent.com/antlr/grammars-v4/master/idl/IDL.g4
+	java -jar $(IDLDIR)/antlr-4.4-complete.jar -package edu.wisc.cs.jam.env.idl -o $(IDLDIR)/edu/wisc/cs/jam/env/idl $(IDLDIR)/IDL.g4
+	javac -classpath $(IDLDIR)/antlr-4.4-complete.jar $(IDLDIR)/edu/wisc/cs/jam/env/idl/IDL*.java
+	cd $(IDLDIR) && jar cf $(IDLDIR)/idl.jar edu/wisc/cs/jam/env/idl/*.class
+	wget --directory-prefix $(IDLDIR) https://raw.githubusercontent.com/antlr/grammars-v4/master/webidl/WebIDL.g4
+	java -jar $(IDLDIR)/antlr-4.4-complete.jar -package edu.wisc.cs.jam.env.webidl -o $(IDLDIR)/edu/wisc/cs/jam/env/webidl $(IDLDIR)/WebIDL.g4
+	javac -classpath $(IDLDIR)/antlr-4.4-complete.jar $(IDLDIR)/edu/wisc/cs/jam/env/webidl/WebIDL*.java
+	cd $(IDLDIR) && jar cf $(IDLDIR)/webidl.jar edu/wisc/cs/jam/env/webidl/*.class
+
+antlr2:
+	wget http://www.java2s.com/Code/JarDownload/antlr/antlr-2.7.7.jar.zip
+	unzip antlr-2.7.7.jar.zip
+	mv antlr-2.7.7.jar.zip packages
+
+corba: antlr2 commons-logging
+	wget http://www.java2s.com/Code/JarDownload/apache-axiom/apache-axiom-api-1.2.7.jar.zip
+	unzip apache-axiom-api-1.2.7.jar.zip
+	mv apache-axiom-api-1.2.7.jar.zip packages
+	wget http://www.java2s.com/Code/JarDownload/axis2-kernel/axis2-kernel-1.6.2.jar.zip
+	unzip axis2-kernel-1.6.2.jar.zip
+	mv axis2-kernel-1.6.2.jar.zip packages
+	wget http://www.java2s.com/Code/JarDownload/axis2-corba/axis2-corba-1.6.2.jar.zip
+	unzip axis2-corba-1.6.2.jar.zip
+	mv axis2-corba-1.6.2.jar.zip packages
 
 # A sufficient boost version is now available via apt-get in Ubuntu.
 boost:

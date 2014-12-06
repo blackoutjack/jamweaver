@@ -1,13 +1,12 @@
 package edu.wisc.cs.jam;
 
 import com.google.javascript.jscomp.ControlFlowGraph;
-import com.google.javascript.jscomp.NodeTraversal.Callback;
-import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.rhino.Node;
 
 import java.util.List;
 
 import edu.wisc.cs.jam.CallGraph.Function;
+import edu.wisc.cs.jam.Traversal.Traverser;
 
 public interface SourceManager {
   public abstract void saveSources(String dirname);
@@ -30,6 +29,6 @@ public interface SourceManager {
   public abstract String codeFromNode(Node n);
   public abstract Exp getRoot();
   public abstract Exp getExterns();
-  public abstract void traverse(Exp root, Callback cb);
+  public abstract void traverse(Exp root, Traverser t);
   public abstract ControlFlowGraph<Node> getCFG(Function f);
 }

@@ -2,11 +2,6 @@ package edu.wisc.cs.jam.js;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-
-import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
 
 import edu.wisc.cs.jam.CounterExample;
 import edu.wisc.cs.jam.Predicate;
@@ -137,11 +132,15 @@ public class JSPredicateLearner implements PredicateLearner {
   }
 
   protected Predicate makeFunctionEntryPredicate(ExpSymbol sym) {
-    Exp s = sym.getExp();
-    Node n = ((JSExp)s).getNode();
-    String func = ExpUtil.funcHash(n, sym.getSourceManager());
-
-    return makeFunctionEntryPredicate(func);
+    Exp e = sym.getExp();
+    String f;
+    // The {main} dummy function has type BLOCK.
+    if (!e.isFunction()) {
+      f = "{main}";
+    } else {
+      f = e.getChild(0).toCode();
+    }
+    return makeFunctionEntryPredicate(f);
   }
 
   protected Predicate makeFunctionEntryPredicate(String func) {
@@ -161,18 +160,18 @@ public class JSPredicateLearner implements PredicateLearner {
   
   protected Predicate makeConditionPredicate(ExpSymbol sym) {
     Exp s = sym.getExp();
-    Node cond = ExpUtil.getCondition(((JSExp)s).getNode());
+    Exp cond = ExpUtil.getCondition(s);
     if (cond == null) return null;
 
     // Remove the parent NOT (!) node, for simplification.
-    if (cond.getType() == Token.NOT) {
+    if (cond.getType() == JSExp.NOT) {
       cond = cond.getFirstChild();
     }
 
     // %%% Only learn simple names currently.
     if (!cond.isName()) {
       Dbg.out("WARNING: Learning condition predicate not supported: "
-        + sym.getSourceManager().codeFromNode(cond), 2);
+        + cond.toCode(), 2);
       return null;
     }
 

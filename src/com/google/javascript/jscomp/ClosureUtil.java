@@ -1,25 +1,20 @@
 package com.google.javascript.jscomp;
 
-import com.google.javascript.jscomp.Compiler;
-import com.google.javascript.jscomp.NodeUtil;
 import com.google.javascript.rhino.Node;
+import edu.wisc.cs.jam.Exp;
+import edu.wisc.cs.jam.js.JSExp;
 
 public class ClosureUtil {
   
-  private static Compiler compiler = new Compiler();
-
   // Pass in the originating compiler to get a representation
   // of the node as it was in the source code.
   public static String codeFromNode(Node n, Compiler c) {
     return c.toSource(n);
   }
 
-  // Returns a canonical representation of the node AST.
-  public static String codeFromNode(Node n) {
-    return compiler.toSource(n);
-  }
-
-  public static Double getNumberValue(Node n) {
+  public static Double getNumberValue(Exp e) {
+    Node n = ((JSExp)e).makeNode();
+    if (n == null) return null;
     return NodeUtil.getNumberValue(n);
   }
 

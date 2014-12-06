@@ -288,7 +288,7 @@ public abstract class ControlStructure extends ControlAutomaton {
       // %%% Use Exp all the way.
       State callSource = stateMap.get(curSiteStmt);
       if (callSource == null) {
-        Dbg.warn("Callsite on line " + ((JSExp)curSiteNode).getNode().getLineno()
+        Dbg.warn("Callsite on line " + curSiteNode.getSourceLine()
           + " is unreachable (source state doesn't exist): "
           + curSiteNode.toCode());
         continue;

@@ -115,6 +115,16 @@ public class Dbg {
     FileUtil.writeToMain(sb, "dbg.txt", true);
   }
 
+  public static void trace() {
+    // Omits the current (|Dbg.trace|) frame.
+    StackTraceElement[] stes = new Throwable().getStackTrace();
+    for (int i=0; i<stes.length - 1; i++) {
+      StackTraceElement ste = stes[i];
+      System.err.println(ste.toString());
+    }
+    System.err.flush();
+  }
+
   public static void writeQueryHeader(String hdr, boolean concrete) {
     if (!JAM.Opts.debugQueries) return;
     String flname = "results-" + (concrete ? "concrete" : "symbolic");

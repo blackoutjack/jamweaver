@@ -178,6 +178,7 @@ var LOCATION_MAP = [
   "CharacterData",
   "ProcessingInstruction",
   "ImageData",
+  "Components",
  
   // Non-existent in Firefox 17.0.3.esr.
   //"DOMImplementationList",
@@ -247,6 +248,10 @@ var LOCATION_MAP = [
 
   // w3c_dom2.js
   //"HTMLIsIndexElement",
+
+  //"ZipReader",
+  //"ZipEntry",
+  //"ZipReaderCache",
 ];
 
 // Write the message to the log (for debugging/notification).

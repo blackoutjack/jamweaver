@@ -22,7 +22,7 @@ COMMONSIOVERSION=2.4
 JERICHOVERSION=3.2
 RHINOVERSION=1.7R3
 WALACLASSPATH=../commons-io-$(COMMONSIOVERSION)/commons-io-$(COMMONSIOVERSION).jar:../wala/com.ibm.wala.cast.js/lib/jericho-html-$(JERICHOVERSION).jar:../wala/com.ibm.wala.core/target/com.ibm.wala.core-$(WALAVERSION).jar:../wala/com.ibm.wala.shrike/target/com.ibm.wala.shrike-$(WALAVERSION).jar:../wala/com.ibm.wala.cast/target/com.ibm.wala.cast-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js/target/com.ibm.wala.cast.js-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js.rhino/target/com.ibm.wala.cast.js.rhino-$(WALAVERSION).jar:../wala/com.ibm.wala.util/target/com.ibm.wala.util-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js.rhino/lib/rhino-$(RHINOVERSION).jar
-JCLASSPATH=".:../closure/build/compiler.jar:../JavaBDD/javabdd-$(JAVABDDVERSION).jar:../commons-lang$(COMMONSVERSION)/commons-lang$(COMMONSVERSION).jar:../closure/lib/junit.jar:$(WALACLASSPATH):../JavaBDD/jdd.jar"
+JCLASSPATH=".:../closure/build/compiler.jar:../JavaBDD/javabdd-$(JAVABDDVERSION).jar:../commons-lang$(COMMONSVERSION)/commons-lang$(COMMONSVERSION).jar:../closure/lib/junit.jar:$(WALACLASSPATH):../JavaBDD/jdd.jar:../idlgen/antlr-4.4-complete.jar:../idlgen/idl.jar:../idlgen/webidl.jar"
   
 
 # Relative Java source directories
@@ -38,10 +38,11 @@ INTDIR=$(MAINDIR)/interpret
 UTLDIR=$(MAINDIR)/util
 WALADIR=$(MAINDIR)/wala
 HTMLDIR=$(MAINDIR)/html
+FORKDIR=$(MAINDIR)/forkcheck
 COMDIR=com/google/javascript/jscomp
 
 # Java classes in the edu.wisc.cs.jam package
-MAINBASE=JAM JAMAnalysis BackwardAnalysis BranchSymbol Clause CartesianAutomaton ControlAutomaton ControlStructure CounterExample DataState EvaluationAutomaton FileUtil FocusAutomaton FunctionEntrySymbol JAMConfig ExpSymbol OptionParser Options Policy PolicyLanguage PolicyPath Predicate PredicateLearner PredicateSymbol PredicateType PredicateValue ProgramModel Relation RelationDomain ReturnSymbol Semantics SourceManager Source StringUtil DataTransition SeedPredicates CleverCache RelationAutomaton Dbg DisjointAutomaton IncrementalAnalysis CheckManager RuntimeCheck Transform CallGraph Exp Language #BooleanAutomaton MultiAnalysis ForkCheckManager ForkCheck
+MAINBASE=JAM JAMAnalysis BackwardAnalysis BranchSymbol Clause CartesianAutomaton ControlAutomaton ControlStructure CounterExample DataState EvaluationAutomaton FileUtil FocusAutomaton FunctionEntrySymbol JAMConfig ExpSymbol OptionParser Options Policy PolicyLanguage PolicyPath Predicate PredicateLearner PredicateSymbol PredicateType PredicateValue ProgramModel Relation RelationDomain ReturnSymbol Semantics SourceManager Source StringUtil DataTransition SeedPredicates CleverCache RelationAutomaton Dbg DisjointAutomaton IncrementalAnalysis CheckManager RuntimeCheck Scope Transform Traversal CallGraph Exp Language #BooleanAutomaton MultiAnalysis
 MAINSRC=$(MAINBASE:%=$(MAINDIR)/%.java)
 MAINCLS=$(MAINSRC:%.java=%.class)
 
@@ -95,8 +96,13 @@ HTMLBASE=HTMLSource
 HTMLSRC=$(HTMLBASE:%=$(HTMLDIR)/%.java)
 HTMLCLS=$(HTMLSRC:.java=.class)
 
+# Java classes in the edu.wisc.cs.jam.html package
+FORKBASE=ForkCheckManager ForkCheck
+FORKSRC=$(FORKBASE:%=$(FORKDIR)/%.java)
+FORKCLS=$(FORKSRC:.java=.class)
+
 # Java utility classes
-UTLBASE=Main NativeIdentifier ASTPrint BDDClient Utility
+UTLBASE=Main NativeGenerator NativeIdentifier ASTPrint BDDClient Utility
 UTLSRC=$(UTLBASE:%=$(UTLDIR)/%.java)
 UTLCLS=$(UTLSRC:.java=.class)
 
@@ -108,9 +114,9 @@ WALACLS=$(WALASRC:.java=.class)
 
 jam: $(JAMJAR)
 
-$(JAMJAR): $(JSCLS) $(ENVCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(INTCLS) $(NWACLS) $(TXCLS) $(HTMLCLS) $(COMCLS) $(MAINCLS)
+$(JAMJAR): $(JSCLS) $(ENVCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(INTCLS) $(NWACLS) $(TXCLS) $(HTMLCLS) $(FORKCLS) $(COMCLS) $(MAINCLS)
 	mkdir -p ../bin
-	jar cfm $@ MANIFEST.MF $(MAINDIR)/*.class $(COMDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(ENVDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class $(INTDIR)/*.class
+	jar cfm $@ MANIFEST.MF $(MAINDIR)/*.class $(COMDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(ENVDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class $(FORKDIR)/*.class $(INTDIR)/*.class
 
 util: $(UTILJAR)
 
@@ -129,7 +135,7 @@ walaclean:
 	rm -f $(WALADIR)/*.class $(WALAJAR)
 
 clean: utilclean walaclean
-	rm -f $(COMDIR)/*.class $(MAINDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TSTDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class $(ENVDIR)/*.class
+	rm -f $(COMDIR)/*.class $(MAINDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TSTDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class $(FORKDIR)/*.class $(ENVDIR)/*.class
 
 .java.class:
 	$(JAVAC) -classpath $(JCLASSPATH) $(JFLAGS) $*.java

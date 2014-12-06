@@ -47,10 +47,7 @@ public class ASTPrint implements Utility {
     }
 
     if (options.condensed) {
-      ExpSymbol ss = new ExpSymbol(src);
-      System.out.println(ss.toAST());
-    } else {
-      System.out.println(src.toStringTree());
+      System.out.println(src.toAST());
     }
   }
 

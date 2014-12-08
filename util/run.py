@@ -164,9 +164,6 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     if poldesc != '':
       opts.append('--appsuffix')
       opts.append(poldesc)
-      exppre = '.' + poldesc
-    else:
-      exppre = ''
 
     out("Analyzing %s" % appname)
     outp, errp = run_jam([srclist], [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
@@ -176,15 +173,15 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
 
     refsuf = get_suffix(synonly, refine)
 
-    expsuf = '%s.%s.out.js' % (exppre, refsuf)
-    exppath = os.path.join(WEBSITE_DIR, appname + expsuf)
+    expfile = '%s.%s.out.js' % (appname, refsuf)
+    exppath = os.path.join(WEBSITE_DIR, expfile)
     result.js_ok = process_result(outp, exppath, overwrite)
 
     infopath = get_info_path(errp)
     if infopath is None: continue
 
-    infoexpsuf = '%s.info.txt' % refsuf
-    infoexppath = os.path.join(WEBSITE_DIR, appname + infoexpsuf)
+    infoexpfile = '%s.%s.info.txt' % (appname, refsuf)
+    infoexppath = os.path.join(WEBSITE_DIR, infoexpfile)
     result.info_ok = process_info(infopath, infoexppath, overwrite)
 
     # Repack the HTML file.
@@ -215,8 +212,8 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     rpfl.close()
     out("Saved to %s" % rpfile)
 
-    rpexpsuf = '%s.out.html' % refsuf
-    rpexppath = os.path.join(WEBSITE_DIR, appname + rpexpsuf)
+    rpexpfile = '%s.%s.out.html' % (appname, refsuf)
+    rpexppath = os.path.join(WEBSITE_DIR, rpexpfile)
     result.html_ok = process_result(rpout, rpexppath, overwrite)
 
   return results
@@ -226,9 +223,17 @@ def run_websites(debug=False, overwrite=False, refine=None, synonly=False):
   results = RunResults('websites', overwrite)
   
   sites = get_lines(WEBSITE_FILE, comment='#')
+  pidx = 0
+  pols = os.listdir(POLICY_DIR)
+  plen = len(pols)
   for site in sites:
 
-    policies = load_policies(WEBSITE_DIR, site, defwarn=False)
+    #policies = load_policies(WEBSITE_DIR, site, defwarn=False)
+    # %%% Generalize
+    polrel = pols[pidx]
+    poldesc = polrel[:-7]
+    policies = {poldesc: os.path.join(POLICY_DIR, polrel)}
+    pidx = (pidx + 1) % plen
     
     url = 'http://' + site
     res = run_website(url, policies, debug=debug, overwrite=overwrite, refine=refine, synonly=synonly)

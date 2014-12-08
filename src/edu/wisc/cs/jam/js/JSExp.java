@@ -422,6 +422,14 @@ public class JSExp extends Exp {
   }
 
   @Override
+  public boolean isAncestor(Exp desc) {
+    if (desc == null) return false;
+    Exp par = desc.getParent();
+    if (this == par) return true;
+    return isAncestor(par);
+  }
+
+  @Override
   public void findType(int t, List<Exp> out) {
     findType(t, out, true);
   }

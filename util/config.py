@@ -36,6 +36,7 @@ REPACK_SCRIPT = os.path.join(UTILDIR, 'repack.py')
 
 BENCHMARK_DIR = os.path.join(TESTS_DIR, 'bench')
 MICROBENCHMARK_DIR = os.path.join(TESTS_DIR, 'micro')
+POLICY_DIR = os.path.join(TESTS_DIR, 'policy')
 WEBSITE_DIR = os.path.join(TESTS_DIR, 'sites')
 WEBSITE_FILE = os.path.join(WEBSITE_DIR, 'sites.txt')
 INTERPRETER_TEST_DIR = os.path.join(TESTS_DIR, 'interpreter')

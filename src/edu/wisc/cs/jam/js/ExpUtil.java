@@ -338,7 +338,8 @@ public class ExpUtil {
     // %%% Test this
     str = str.replace("\\", "\\\\").replace("\"", "\\\"");
     str = str.replace("\n", "\\n");
-    // %%% What about "\r", other weird characters?
+    str = str.replace("\r", "\\r");
+    // %%% What about other weird characters?
     return str;
   }
 

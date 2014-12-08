@@ -167,6 +167,7 @@ public abstract class Exp {
   public abstract void findType(int t, List<Exp> out);
   public abstract void findNames(Set<String> out, boolean blocks);
   public abstract void findType(int t, List<Exp> out, boolean blocks);
+  public abstract boolean isAncestor(Exp desc);
 
   // Utility methods.
   public abstract String toAST();

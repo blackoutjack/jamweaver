@@ -304,6 +304,8 @@ public class JSIndirectionTransform extends JSTransform {
   // remain in the introspect block. See commaCall0.js for an example.
   // Subexpression are recursively protected also. See exfil_test.js.
   protected void indirectCallsite(Traversal t, Exp n, Exp parent, Exp ispect) {
+    Exp cs = n.isWithinType(JSExp.CASE);
+    assert cs == null || !cs.getChild(0).isAncestor(n) : "Indirecting call within case: " + n + " / " + n.toCode();
     assert n.isInvoke();
     
     // Create |JAM.call()|.
@@ -366,6 +368,8 @@ public class JSIndirectionTransform extends JSTransform {
   //   var r = JAM.call(eval, null, [arg0, ...], ispect);
   // }
   protected void indirectDirectEvalCall(Traversal t, Exp n, Exp parent, Exp ispect) {
+    Exp cs = n.isWithinType(JSExp.CASE);
+    assert cs == null || !cs.getChild(0).isAncestor(n) : "Indirecting call within case: " + n + " / " + n.toCode();
     int childCount = n.getChildCount();
     assert n.isCall() && childCount > 1;
 
@@ -416,6 +420,8 @@ public class JSIndirectionTransform extends JSTransform {
   }
 
   protected void indirectPropertyRead(Traversal t, Exp n, Exp parent, Exp ispect) {
+    Exp cs = n.isWithinType(JSExp.CASE);
+    assert cs == null || !cs.getChild(0).isAncestor(n) : "Indirecting call within case: " + n + " / " + n.toCode();
     assert n.isName() || ExpUtil.isAccessor(n);
 
     Exp obj = null;
@@ -450,6 +456,8 @@ public class JSIndirectionTransform extends JSTransform {
   // JAM.set(obj, prop, val);
   //
   protected void indirectPropertyWrite(Traversal t, Exp n, Exp parent, Exp ispect) {
+    Exp cs = n.isWithinType(JSExp.CASE);
+    assert cs == null || !cs.getChild(0).isAncestor(n) : "Indirecting call within case: " + n + " / " + n.toCode();
     // %%% Should support compound assignment too!
     assert n.isAssign() || ExpUtil.isUnOp(n);
 
@@ -481,6 +489,52 @@ public class JSIndirectionTransform extends JSTransform {
     }
 
     parent.replaceChild(n, proxCall);
+  }
+
+  // Wrap a property write that may generate dynamic code.
+  // introspect(ispect) {
+  //   n = exp;
+  // }
+  //   ==> 
+  // introspect(ispect) {
+  //   var tmp = exp;
+  // }
+  // introspect(ispect) {
+  //   n = tmp;
+  // }
+  //
+  protected void indirectNameWrite(Traversal t, Exp e, Exp parent, Exp tx) {
+    Exp cs = e.isWithinType(JSExp.CASE);
+    assert cs == null || !cs.getChild(0).isAncestor(e) : "Indirecting call within case: " + e + " / " + e.toCode();
+    boolean isVar = ExpUtil.isVarInitializer(e);
+    // %%% Should support compound assignment too!
+    assert e.isAssign() || isVar;
+
+    Exp lhs = e.cloneAssignLHS();
+    assert lhs.isName();
+    Exp rhs = ExpUtil.getAssignRHS(e);
+    rhs.detachFromParent();
+
+    Exp newName = createNameNode(sm, t.getScope());
+    Exp newNameClone = newName.clone();
+    Exp newVar = new JSExp(JSExp.VAR, newName);
+    newName.addChildToBack(rhs);
+    e.getParent().replaceChild(e, newVar);
+
+    Exp newAssign = null;
+    if (isVar) {
+      newAssign = new JSExp(JSExp.VAR, lhs);
+      newAssign.addChildToBack(newNameClone);
+    } else {
+      newAssign = new JSExp(JSExp.ASSIGN, lhs, newNameClone);
+    }
+
+    Exp txCopy = tx.clone();
+    Exp oldBlock = txCopy.getChild(1);
+    Exp newBlock = new JSExp(sm, JSExp.BLOCK);
+    newBlock.addChildToBack(newAssign);
+    txCopy.replaceChild(oldBlock, newBlock);
+    tx.getParent().addChildAfter(txCopy, tx);
   }
 
   protected Exp getCallTarget(Exp n) {
@@ -560,6 +614,14 @@ public class JSIndirectionTransform extends JSTransform {
   protected boolean shouldIndirectAssign(Exp n) {
     // %%% Should support compound assignment too!
     assert n.isAssign() || ExpUtil.isUnOp(n);
+    
+    // Running an assignment within a transaction automatically takes
+    // care of transitive enforcement on dynamically-generated scripts.
+    // %%% Leaving it in a transaction may incur a performance penalty,
+    // %%% but it may be simpler.
+    if (n.isWithinType(JSExp.TRANSACTION) != null)
+      return false;
+
     Exp lhs = n.cloneAssignLHS();
     if (!lhs.isAccessor()) return false;
 
@@ -645,14 +707,14 @@ public class JSIndirectionTransform extends JSTransform {
     }
     
     @Override
-    public void visit(Traversal t, Exp n, Exp parent) {
-      if (n.isAccessor()) {
-        if (parent.isAssignment() && parent.cloneAssignLHS().getOriginal() == n) {
+    public void visit(Traversal t, Exp e, Exp parent) {
+      if (e.isAccessor()) {
+        if (parent.isAssignment() && parent.cloneAssignLHS().getOriginal() == e) {
           // This case is handled when visiting the parent.
           return;
         }
         if (ptypes != null && ptypes.contains(JSPredicateType.READ)) {
-          indirectPropertyRead(t, n, parent, ispect);
+          indirectPropertyRead(t, e, parent, ispect);
           propertyReadTransformCnt++;
         }
         // Unfortunately we have to transform calls to the read function.
@@ -666,62 +728,76 @@ public class JSIndirectionTransform extends JSTransform {
             callsWithTransformedTargets.add(parent);
           }
         }
-      } else if (ExpUtil.isAssignment(n)) {
+      } else if (e.isAssignment()) {
         // %%% This is an assumption based on the initial
         // %%% pass with JSStatementTransform.
-        assert n.isAssign() || ExpUtil.isUnOp(n) : "Non-standard assign statement within a transaction: " + n.toCode();
+        assert e.isAssign() || ExpUtil.isUnOp(e) : "Non-standard assign statement within a transaction: " + e.toCode();
         // %%% Currently we don't handle assignments to global/with props.
-        Exp lhs = n.cloneAssignLHS();
+        Exp lhs = e.cloneAssignLHS();
+        if (ExpUtil.isUnOp(e) && ptypes != null && ptypes.contains(JSPredicateType.READ)) {
+          // We have to replace the unary operator with an equivalent
+          // assignment before rewriting.
+          // %%% Ugly.
+          Exp newn = new JSExp(JSExp.ASSIGN, e.cloneAssignLHS(), e.cloneAssignRHS());
+          parent.replaceChild(e, newn);
+          e = newn;
+          indirectPropertyRead(t, e, parent, ispect);
+          propertyReadTransformCnt++;
+        }
         if (lhs.isAccessor()) {
-          if (ExpUtil.isUnOp(n) && ptypes != null && ptypes.contains(JSPredicateType.READ)) {
-            // We have to replace the unary operator with an equivalent
-            // assignment before rewriting.
-            // %%% Ugly.
-            Exp newn = new JSExp(JSExp.ASSIGN, n.cloneAssignLHS(), n.cloneAssignRHS());
-            parent.replaceChild(n, newn);
-            n = newn;
-            indirectPropertyRead(t, n, parent, ispect);
-            propertyReadTransformCnt++;
-          }
           if (ptypes != null && ptypes.contains(JSPredicateType.WRITE)) {
-            indirectPropertyWrite(t, n, parent, ispect);
+            indirectPropertyWrite(t, e, parent, ispect);
             sm.reportCodeChange();
             propertyWriteTransformCnt++;
-          } else if (shouldIndirectAssign(n)) {
-            indirectPropertyWrite(t, n, parent, null);
+          } else if (shouldIndirectAssign(e)) {
+            indirectPropertyWrite(t, e, parent, null);
             sm.reportCodeChange();
             propertyWriteTransformCnt++;
+          }
+        } else {
+          // The LHS is a NAME or VAR node. To maintain semantics and
+          // provide complete protection while extracting calls from
+          // within the transaction, we need to make an assignment to
+          // a temporary variable and then run the real assignment in
+          // a transaction.
+          if (ptypes != null && ptypes.contains(JSPredicateType.WRITE)) {
+            if (parent.isStatement()) {
+              indirectNameWrite(t, e, parent, tx);
+              propertyWriteTransformCnt++;
+            } else {
+              Dbg.warn("Unable to indirect name write: " + e);
+            }
           }
         }
-      } else if (n.isInvoke()) {
-        if (maybeDirectEvalCall(n)) {
-          indirectDirectEvalCall(t, n, parent, null);
+      } else if (e.isInvoke()) {
+        if (maybeDirectEvalCall(e)) {
+          indirectDirectEvalCall(t, e, parent, null);
           sm.reportCodeChange();
           callTransformCnt++;
         } else if (ptypes != null && (ptypes.contains(JSPredicateType.INVOKE)
             || ptypes.contains(JSPredicateType.CONSTRUCT))) {
-          indirectCallsite(t, n, parent, ispect);
+          indirectCallsite(t, e, parent, ispect);
           sm.reportCodeChange();
           callTransformCnt++;
-        } else if (shouldIndirectCall(n)) {
-          indirectCallsite(t, n, parent, null);
+        } else if (shouldIndirectCall(e)) {
+          indirectCallsite(t, e, parent, null);
           sm.reportCodeChange();
           callTransformCnt++;
-        } else if (callsWithTransformedTargets.contains(n)) {
-          indirectCallsite(t, n, parent, null);
+        } else if (callsWithTransformedTargets.contains(e)) {
+          indirectCallsite(t, e, parent, null);
           sm.reportCodeChange();
           callTransformCnt++;
         }
       // Don't mess with transactions that aren't JAM-woven.
-      } else if (n == tx && ptypes != null) {
+      } else if (e == tx && ptypes != null) {
         // Move statements outside of the transaction.
         int stmtCnt = txBlock.getChildCount();
         for (int i=0; i<stmtCnt; i++) {
           Exp stmt = txBlock.getChild(0).detachFromParent();
-          n.getParent().addChildBefore(stmt, n);
+          e.getParent().addChildBefore(stmt, e);
         }
         // Remove the empty transaction.
-        n.detachFromParent();
+        e.detachFromParent();
         sm.reportCodeChange();
       }
     }
@@ -765,11 +841,6 @@ public class JSIndirectionTransform extends JSTransform {
       } else if (ExpUtil.isAssignment(n)) {
         boolean doTransform = shouldIndirectAssign(n);
         if (doTransform) {
-          Exp tx = n.isWithinType(JSExp.TRANSACTION);
-          if (tx != null) {
-            txsToIndirect.add(tx);
-            return;
-          }
           indirectPropertyWrite(t, n, parent, null);
           sm.reportCodeChange();
           propertyWriteTransformCnt++;

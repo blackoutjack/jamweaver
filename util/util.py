@@ -835,6 +835,7 @@ def get_protocol(url):
 def get_relative_path(url, usedomain=False, referer=None):
   urlparts = urllib.parse.urlparse(url)
   filepath = urlparts[2]
+  filepath = filepath.lstrip('/')
       
   if usedomain and is_url(url):
     # Prepend the domain

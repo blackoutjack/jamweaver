@@ -52,7 +52,7 @@ JSSRC=$(JSBASE:%=$(JSDIR)/%.java)
 JSCLS=$(JSSRC:.java=.class)
 
 # Java classes in the edu.wisc.cs.jam.env package.
-ENVBASE=NativeUtil
+ENVBASE=NativeUtil Prototype Method Field Const Param
 ENVSRC=$(ENVBASE:%=$(ENVDIR)/%.java)
 ENVCLS=$(ENVSRC:.java=.class)
 

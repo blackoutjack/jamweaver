@@ -114,7 +114,7 @@ public class EvaluatorNode {
     if (!language.isNativeLocation(nat)) return null;
 
     String natloc = nat.toCode();
-    String expr = NativeUtil.nativeLocationToExpression.get(natloc);
+    String expr = NativeUtil.getExpressionFromNativeLocation(natloc);
     if (expr == null) {
       // %%% Handle this more gracefully.
       throw new UnsupportedOperationException("Unknown native location: " + natloc);
@@ -400,7 +400,7 @@ public class EvaluatorNode {
     String opstr = op.toCode();
     if (opstr.equals("jam#regextest")) {
       String loc = "#RegExp#prototype#test";
-      String expr = NativeUtil.nativeLocationToExpression.get(loc);
+      String expr = NativeUtil.getExpressionFromNativeLocation(loc);
       if (expr == null) {
         throw new UnsupportedOperationException("Unknown native location: " + loc);
       }
@@ -450,7 +450,7 @@ public class EvaluatorNode {
     String opstr = op.toCode();
     if (opstr.equals("jam#stringcontains")) {
       String loc = "#String#prototype#indexOf";
-      String expr = NativeUtil.nativeLocationToExpression.get(loc);
+      String expr = NativeUtil.getExpressionFromNativeLocation(loc);
       if (expr == null) {
         throw new UnsupportedOperationException("Unknown native location: " + loc);
       }
@@ -472,7 +472,7 @@ public class EvaluatorNode {
     } else if (opstr.equals("jam#stringstartswith")) {
       // |startsWith| is not standard yet, but it exists in Firefox 17.
       String loc = "#String#prototype#startsWith";
-      String expr = NativeUtil.nativeLocationToExpression.get(loc);
+      String expr = NativeUtil.getExpressionFromNativeLocation(loc);
       if (expr == null) {
         throw new UnsupportedOperationException("Unknown native location: " + loc);
       }

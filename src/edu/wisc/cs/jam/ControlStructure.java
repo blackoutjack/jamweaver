@@ -159,13 +159,7 @@ public abstract class ControlStructure extends ControlAutomaton {
         targetsExtern = true;
         for (Exp ext : externTargets) {
           String expr = ext.toCode();
-          // Translate Closure natives to form matching the semantics.
-          String maybeExpr = NativeUtil.closureTranslation.get(expr);
-          if (maybeExpr != null) {
-            expr = maybeExpr;
-          }
-
-          String loc = NativeUtil.nativeExpressionToLocation.get(expr);
+          String loc = NativeUtil.getNativeLocationFromExpression(expr);
           if (loc == null) {
             // Whoops! There's a mismatch between Closure's externs and
             // JAM-generated browser model.

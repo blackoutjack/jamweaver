@@ -282,6 +282,7 @@ public class NativeUtil {
   }
 
   public static String getNativeLocationFromExpression(String exp) {
+    // Translate Closure natives to form matching the semantics.
     if (closureTranslation.containsKey(exp)) {
       exp = closureTranslation.get(exp);
     }

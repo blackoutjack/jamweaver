@@ -1,0 +1,235 @@
+--- idlgen-orig/IDL.g4	2014-12-09 17:35:48.784114689 -0600
++++ idlgen/IDL.g4	2014-12-09 12:59:19.040036760 -0600
+@@ -36,7 +36,7 @@
+ grammar IDL;
+ 
+ specification
+-    :   import_decl* definition+
++    :   import_decl* definition*
+     ;
+ 
+ definition
+@@ -50,7 +50,7 @@
+     |   type_prefix_decl SEMICOLON
+     |   event SEMICOLON
+     |   component SEMICOLON
+-    |   home_decl SEMICOLON
++    |   include_decl
+     ;
+ 
+ module
+@@ -63,13 +63,28 @@
+     ;
+ 
+ interface_decl
+-    :   interface_header LEFT_BRACE interface_body RIGHT_BRACE
++    :   interface_modifiers? interface_header LEFT_BRACE interface_body RIGHT_BRACE
+     ;
+ 
+ forward_decl
+     :   ( KW_ABSTRACT | KW_LOCAL )? KW_INTERFACE ID
+     ;
+ 
++interface_modifiers
++    :   LEFT_SQUARE_BRACKET interface_modifier ( COMA interface_modifier )* RIGHT_SQUARE_BRACKET
++    ;
++
++interface_modifier
++    :   KW_SCRIPTABLE
++    |   KW_BUILTINCLASS
++    |   KW_FUNCTION
++    |   uuid_decl
++    ;
++
++uuid_decl
++    :   ID LEFT_BRACKET UUID RIGHT_BRACKET
++    ;
++
+ interface_header
+     :   ( KW_ABSTRACT | KW_LOCAL )? KW_INTERFACE ID ( interface_inheritance_spec )?
+     ;
+@@ -229,10 +244,15 @@
+     |   struct_type
+     |   union_type
+     |   enum_type
+-    |   KW_NATIVE simple_declarator
++    |   modifiers? KW_NATIVE native_declarator
+     |   constr_forward_decl
+     ;
+ 
++native_declarator
++    :   simple_declarator
++    |   ID LEFT_BRACKET scoped_name RIGHT_BRACKET
++    ;
++
+ type_declarator
+     :   type_spec declarators
+     ;
+@@ -432,8 +452,42 @@
+     ;
+ 
+ attr_decl
+-    :   readonly_attr_spec
+-    |   attr_spec
++    :   modifiers? readonly_attr_spec
++    |   modifiers? attr_spec
++    ;
++
++modifiers
++    :   LEFT_SQUARE_BRACKET modifier ( COMA modifier )* RIGHT_SQUARE_BRACKET
++    ;
++
++modifier
++    :   KW_NOSCRIPT
++    |   KW_NOTXPCOM
++    |   KW_DEPRECATED
++    |   KW_ARRAY
++    |   KW_PTR
++    |   KW_REF
++    |   KW_CONST
++    |   KW_RETVAL
++    |   KW_SHARED
++    |   KW_IMPLICIT_JSCONTEXT
++    |   KW_OPTIONAL_ARGC
++    |   KW_OPTIONAL
++    |   binaryname_decl
++    |   size_is_decl
++    |   iid_is_decl
++    ;
++
++iid_is_decl
++    :   'iid_is' LEFT_BRACKET ( UUID | ID ) RIGHT_BRACKET
++    ;
++
++size_is_decl
++    :   KW_SIZE_IS LEFT_BRACKET ( INTEGER_LITERAL | ID ) RIGHT_BRACKET
++    ;
++
++binaryname_decl
++    :   KW_BINARYNAME LEFT_BRACKET ID RIGHT_BRACKET
+     ;
+ 
+ except_decl
+@@ -441,7 +495,7 @@
+     ;
+ 
+ op_decl
+-    :   ( op_attribute )? op_type_spec ID parameter_decls ( raises_expr )? ( context_expr )?
++    :   modifiers? ( op_attribute )? op_type_spec ID parameter_decls ( raises_expr )? ( context_expr )?
+     ;
+ 
+ op_attribute
+@@ -449,7 +503,7 @@
+     ;
+ 
+ op_type_spec
+-    :   param_type_spec
++    :   modifiers? param_type_spec
+     |   KW_VOID
+     ;
+ 
+@@ -459,7 +513,7 @@
+     ;
+ 
+ param_decl
+-    :   param_attribute param_type_spec
++    :   modifiers? param_attribute param_type_spec
+         simple_declarator
+     ;
+ 
+@@ -501,6 +555,10 @@
+     |   KW_UNION ID
+     ;
+ 
++include_decl
++    :   KW_INCLUDE STRING_LITERAL
++    ;
++
+ import_decl
+     :   KW_IMPORT imported_scope SEMICOLON
+     ;
+@@ -615,32 +673,10 @@
+     :   KW_CONSUMES scoped_name ID
+     ;
+ 
+-home_decl
+-    :   home_header home_body
+-    ;
+-
+-home_header
+-    :   KW_HOME ID ( home_inheritance_spec )? ( supported_interface_spec )? KW_MANAGES scoped_name ( primary_key_spec )?
+-    ;
+-
+-home_inheritance_spec
+-    :   COLON scoped_name
+-    ;
+-
+ primary_key_spec
+     :   KW_PRIMARYKEY scoped_name
+     ;
+ 
+-home_body
+-    :   LEFT_BRACE home_export* RIGHT_BRACE
+-    ;
+-
+-home_export
+-    :   export
+-    |   factory_decl SEMICOLON
+-    |   finder_decl SEMICOLON
+-    ;
+-
+ factory_decl
+     :   KW_FACTORY ID LEFT_BRACKET ( init_param_decls )? RIGHT_BRACKET ( raises_expr )?
+     ;
+@@ -831,7 +867,6 @@
+ KW_ENUM:                'enum';
+ KW_WSTRING:             'wstring';
+ KW_CONTEXT:             'context';
+-KW_HOME:                'home';
+ KW_FACTORY:             'factory';
+ KW_EXCEPTION:           'exception';
+ KW_GETRAISES:           'getraises';
+@@ -864,11 +899,32 @@
+ KW_MANAGES:             'manages';
+ KW_INTERFACE:           'interface';
+ KW_COMPONENT:           'component';
++KW_INCLUDE:             '#include';
++KW_SCRIPTABLE:          'scriptable';
++KW_BUILTINCLASS:        'builtinclass';
++KW_FUNCTION:            'function';
++KW_NOSCRIPT:            'noscript';
++KW_NOTXPCOM:            'notxpcom';
++KW_DEPRECATED:          'deprecated';
++KW_ARRAY:               'array';
++KW_PTR:                 'ptr';
++KW_REF:                 'ref';
++KW_BINARYNAME:          'binaryname';
++KW_SIZE_IS:             'size_is';
++KW_RETVAL:              'retval';
++KW_SHARED:              'shared';
++KW_OPTIONAL:            'optional';
++KW_IMPLICIT_JSCONTEXT:  'implicit_jscontext';
++KW_OPTIONAL_ARGC:       'optional_argc';
+ 
+ ID
+     :   LETTER (LETTER|ID_DIGIT)*
+     ;
+ 
++UUID
++    :   (ID_DIGIT | LETTER) ( ID_DIGIT | LETTER | MINUS )*
++    ;
++
+ WS
+     :   (' ' | '\r' | '\t' | '\u000C' | '\n') -> channel(HIDDEN)
+     ;
+@@ -877,6 +933,10 @@
+     :   '/*' .*? '*/' -> channel(HIDDEN)
+     ;
+ 
++CPPBLOCK
++    :   '%{' WS* 'C++' .*? '%}' -> channel(HIDDEN)
++    ;
++
+ LINE_COMMENT
+     :   '//' ~('\n' | '\r')* '\r'? '\n' -> channel(HIDDEN)
+     ;

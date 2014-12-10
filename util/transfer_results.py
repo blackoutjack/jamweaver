@@ -183,7 +183,7 @@ def insert_profile(txtin, desc, specs, extra=None):
 
 def copy_policy(app, desc, polsrc, tgtdir):
   assert os.path.isfile(polsrc)
-  if not load_dir(tgtdir):
+  if not cfg.load_dir(tgtdir):
     return False
 
   poltgt = os.path.join(tgtdir, app + '.' + desc + '.js')
@@ -196,41 +196,9 @@ def copy_policy(app, desc, polsrc, tgtdir):
   return True
 # /copy_policy
 
-def load_dir(tgtdir):
-  if not os.path.isdir(tgtdir):
-    try:
-      os.makedirs(tgtdir)
-      return True
-    except:
-      cfg.err("Unable to create target directory: %s" % tgtdir)
-      return False
-  return True
-# /load_dir
-
-def prepare_dir(tgtdir):
-  if not load_dir(tgtdir):
-    return False
-
-  # Symbolically link to various utility files.
-  for fileattrs in cfg.SYMLINK_FILES:
-    assert len(fileattrs) == 2, 'Invalid SYMLINK_FILES configuration: %r' % fileattrs
-    srcpath, linkname = fileattrs
-    cfg.symlink(srcpath, tgtdir, linkname=linkname, relative=True)
-
-  # Copy additional files for SMS2 applications.
-  tgtbase = os.path.basename(tgtdir)
-  if tgtbase.startswith('sms2-'):
-    srcpath = os.path.join(cfg.SMS2DIR, 'includes')
-    cfg.symlink(srcpath, tgtdir, relative=True)
-    srcpath = os.path.join(cfg.SMS2DIR, 'sms2.head.html')
-    linkname = tgtbase + '.head.html'
-    cfg.symlink(srcpath, tgtdir, linkname=linkname, relative=True)
-  return True
-# /prepare_dir
-
 def copy_source(app, desc, srcpath, tgtdir, respred=None, name=None):
   assert os.path.isfile(srcpath)
-  if not load_dir(tgtdir): return
+  if not cfg.load_dir(tgtdir): return
 
   if name is None:
     tgt = os.path.join(tgtdir, '%s.%s.js' % (app, desc))
@@ -297,7 +265,7 @@ def copy_sources(app, suf, srcdir, jssrc, apptgtdir, respred):
   
 def copy_files(app, infos, apppath, wrap=False):
 
-  if not prepare_dir(apppath):
+  if not cfg.prepare_dir(apppath):
     # Error printed within |prepare_dir|.
     return False
 
@@ -438,7 +406,7 @@ def update_coarse(apppath, app, wrap):
         modtxt = '%s\n%s\n%s' % (wrappre, modtxt, wrappost)
 
       if has_change(tgtpath, modtxt):
-        if load_dir(tgtdirpath):
+        if cfg.load_dir(tgtdirpath):
           write_text(tgtpath, modtxt)
           changed = True
         
@@ -529,7 +497,7 @@ def update_profile(apppath, app, wrap):
         proftxt = '%s\n%s\n%s' % (wrappre, proftxt, wrappost)
 
       if has_change(tgtpath, proftxt):
-        if load_dir(tgtdirpath):
+        if cfg.load_dir(tgtdirpath):
           write_text(tgtpath, proftxt)
           changed = True
         

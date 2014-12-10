@@ -1019,7 +1019,7 @@ public class JSExp extends Exp {
   @Override
   public String toCode() {
     if (code != null) return code;
-    return sm.codeFromNode(makeNode());
+    return sm.codeFromExp(this);
   }
 
   protected String toShortCode() {

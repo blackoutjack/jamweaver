@@ -1,6 +1,5 @@
 package edu.wisc.cs.jam;
 
-import com.google.javascript.jscomp.ControlFlowGraph;
 import com.google.javascript.rhino.Node;
 
 import java.util.List;
@@ -26,9 +25,8 @@ public interface SourceManager {
 
   // %%% Remove/modify
   public abstract Exp expFromCode(String code);
-  public abstract String codeFromNode(Node n);
+  public abstract String codeFromExp(Exp e);
   public abstract Exp getRoot();
   public abstract Exp getExterns();
   public abstract void traverse(Exp root, Traverser t);
-  public abstract ControlFlowGraph<Node> getCFG(Function f);
 }

@@ -11,10 +11,12 @@ from util import get_result_info
 from util import get_suffix_from_info
 from util import get_variant_bases
 from util import overwrite_expected
-from util import symlink
+from util import load_dir
+from util import prepare_dir
 
 microbases = get_variant_bases(MICROBENCHMARK_DIR)
 benchbases = get_variant_bases(BENCHMARK_DIR)
+exploits = get_variant_bases(EXPLOIT_DIR)
 webbases = get_variant_bases(WEBSITE_FILE)
 
 RESULTSDIR = OUTDIR
@@ -30,6 +32,10 @@ TARGETDIRS = {
   },
   WEBSITE_DIR: {
     'basenames': webbases,
+    'wrap': False,
+  },
+  EXPLOIT_DIR: {
+    'basenames': exploits,
     'wrap': False,
   }
 }

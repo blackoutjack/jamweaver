@@ -31,6 +31,12 @@ import org.kohsuke.args4j.Argument;
 import edu.wisc.cs.jam.Options;
 import edu.wisc.cs.jam.Dbg;
 
+import edu.wisc.cs.jam.env.Prototype;
+import edu.wisc.cs.jam.env.Method;
+import edu.wisc.cs.jam.env.Field;
+import edu.wisc.cs.jam.env.Const;
+import edu.wisc.cs.jam.env.Param;
+
 import edu.wisc.cs.jam.env.idl.IDLLexer;
 import edu.wisc.cs.jam.env.idl.IDLParser;
 
@@ -84,6 +90,14 @@ import edu.wisc.cs.jam.env.idl.IDLParser.Readonly_attr_declaratorContext;
 import edu.wisc.cs.jam.env.idl.IDLParser.Attr_specContext;
 import edu.wisc.cs.jam.env.idl.IDLParser.Attr_declaratorContext;
 import edu.wisc.cs.jam.env.idl.IDLParser.Attr_raises_exprContext;
+import edu.wisc.cs.jam.env.idl.IDLParser.ModifiersContext;
+import edu.wisc.cs.jam.env.idl.IDLParser.ModifierContext;
+import edu.wisc.cs.jam.env.idl.IDLParser.Binaryname_declContext;
+import edu.wisc.cs.jam.env.idl.IDLParser.Interface_modifierContext;
+import edu.wisc.cs.jam.env.idl.IDLParser.Interface_modifiersContext;
+import edu.wisc.cs.jam.env.idl.IDLParser.Uuid_declContext;
+import edu.wisc.cs.jam.env.idl.IDLParser.Const_expContext;
+import edu.wisc.cs.jam.env.idl.IDLParser.Const_typeContext;
 
 public class NativeGenerator implements Utility {
 
@@ -93,238 +107,90 @@ public class NativeGenerator implements Utility {
     options = opts;
   }
 
-  protected static Map<String,String> interfaceToNative;
-  static {
-    interfaceToNative = new HashMap<String,String>();
-    interfaceToNative.put("nsIZipEntry", "#ZipEntry#prototype");
-    interfaceToNative.put("nsIZipReader", "#ZipReader#prototype");
-    interfaceToNative.put("nsIZipReaderCache", "#ZipReaderCache#prototype");
-  }
-
-  public static String translateNativeName(String in) {
-    String nat = interfaceToNative.get(in);
-    if (nat == null) {
-      Dbg.warn("Native translation not found: " + in);
-      // %%% Heuristic translation
-      if (in.startsWith("ns")) {
-        in = in.substring(2);
-        if (in.startsWith("I")) {
-          in = in.substring(1);
-        }
-      }
-      return "#" + in;
-    }
-    return nat;
-  }
-
-  public static class Prototype {
-    private String in;
-    private String n;
-    private List<Method> ms;
-    private List<Field> fs;
-
-    public Prototype(String ifacename) {
-      in = ifacename;
-      n = translateNativeName(in);
-      ms = new ArrayList<Method>();
-      fs = new ArrayList<Field>();
-    }
-
-    public void addMethod(Method m) {
-      m.setPrototype(this);
-      ms.add(m);
-    }
-
-    public void addField(Field f) {
-      f.setPrototype(this);
-      fs.add(f);
-    }
-
-    public String getNativeName() {
-      return n;
-    }
-
-    public String toModel() {
-      StringBuilder sb = new StringBuilder();
-
-      sb.append("% Prototype ");
-      sb.append(n);
-      sb.append(" generated from ");
-      sb.append(in);
-      sb.append("\n\n");
-      for (Field f : fs) {
-        sb.append(f.toModel());
-        sb.append("\n");
-      }
-      for (Method m : ms) {
-        sb.append(m.toModel());
-        sb.append("\n");
-      }
-
-      return sb.toString();
-    }
-
-    @Override
-    public String toString() {
-      StringBuilder sb = new StringBuilder();
-      sb.append("Interface: ");
-      sb.append(in);
-      sb.append("\nNative: ");
-      sb.append(n);
-      sb.append("\n");
-      for (Field f : fs) {
-        sb.append(f.toString());
-        sb.append("\n");
-      }
-      for (Method m : ms) {
-        sb.append(m.toString());
-        sb.append("\n");
-      }
-
-      return sb.toString();
-    }
-  }
-
-  public static class Method {
-    private List<Param> ps;
-    private String n;
-    private String rt;
-    private Prototype p;
-
-    public Method(String name, String returnType, List<Param> params) {
-      n = name;
-      rt = returnType;
-      ps = params;
-    }
-
-    public void setPrototype(Prototype proto) {
-      p = proto;
-    }
-
-    public String getNativeName() {
-      return p.getNativeName() + "#" + n;
-    }
-
-    @Override
-    public String toString() {
-      StringBuilder sb = new StringBuilder();
-      sb.append(rt);
-      sb.append(" ");
-      sb.append(n);
-      sb.append("(");
-      boolean first = true;
-      for (Param p : ps) {
-        if (first) { first = false; } else { sb.append(", "); }
-        sb.append(p.toString());
-      }
-      sb.append(")");
-      return sb.toString();
-    }
-
-    public String toModel() {
-      StringBuilder sb = new StringBuilder();
-      sb.append("% Method ");
-      sb.append(n);
-      sb.append("\n");
-      sb.append("aexe(H,L,'");
-      sb.append(getNativeName());
-      sb.append("',This,Args,HP,EP) :-\n");
-      // %%% Be smarter.
-      sb.append("  always(L),always(This),always(Args),\n");
-      sb.append("  HP=H,\n");
-      sb.append("  symbolic(EP,_).\n");
-
-      return sb.toString();
-    }
-  }
-
-  public static class Field {
-    private String n;
-    private String t;
-    private Prototype p;
-    private boolean ro;
-
-    public Field(String name, String type, boolean readonly) {
-      n = name;
-      t = type;
-      ro = readonly;
-    }
-
-    public String getNativeName() {
-      return p.getNativeName() + "#" + n;
-    }
-
-    public void setPrototype(Prototype proto) {
-      p = proto;
-    }
-
-    @Override
-    public String toString() {
-      StringBuilder sb = new StringBuilder();
-      sb.append(t);
-      sb.append(" ");
-      sb.append(n);
-      return sb.toString();
-    }
-
-    public String toModel() {
-      StringBuilder sb = new StringBuilder();
-      sb.append("% Field ");
-      sb.append(n);
-      sb.append("\n");
-      sb.append("aexe(H,L,'");
-      sb.append(getNativeName());
-      sb.append("#get");
-      sb.append("',This,_,HP,EP) :-\n");
-      // %%% Be smarter.
-      sb.append("  always(L),always(This),always(Args),\n");
-      sb.append("  HP=H,\n");
-      sb.append("  symbolic(EP,_).\n");
-
-      if (!ro) {
-        sb.append("aexe(H,L,'");
-        sb.append(getNativeName());
-        sb.append("#set");
-        sb.append("',This,Args,HP,EP) :-\n");
-        // %%% Be smarter.
-        sb.append("  always(L),always(This),always(Args),\n");
-        sb.append("  HP=H,\n");
-        sb.append("  symbolic(EP,_).\n");
-      }
-
-      return sb.toString();
-    }
-  }
-
-  public static class Param {
-    private String n;
-    private String t;
-    private List<String> as;
-
-    public Param(String type, String name, List<String> attrs) {
-      n = name;
-      t = type;
-      as = attrs;
-    }
-
-    @Override
-    public String toString() {
-      StringBuilder sb = new StringBuilder();
-      for (String a : as) {
-        sb.append(a);
-        sb.append(" ");
-      }
-      sb.append(t);
-      sb.append(" ");
-      sb.append(n);
-      return sb.toString();
-    }
-  }
-
   protected class IDLFilter implements FilenameFilter {
     public boolean accept(File dir, String name) {
       return name.endsWith(".idl");
     }
+  }
+
+  protected String getTypeName(Integer_typeContext inttype) {
+    Signed_intContext sint = inttype.signed_int();
+    if (sint != null) {
+      Signed_longlong_intContext sllinttype = sint.signed_longlong_int();
+      if (sllinttype != null) {
+        return "long long";
+      }
+      Signed_long_intContext slinttype = sint.signed_long_int();
+      if (slinttype != null) {
+        return slinttype.KW_LONG().getText();
+      }
+      Signed_short_intContext ssinttype = sint.signed_short_int();
+      if (ssinttype != null) {
+        return ssinttype.KW_SHORT().getText();
+      }
+    }
+    Unsigned_intContext uint = inttype.unsigned_int();
+    if (uint != null) {
+      Unsigned_short_intContext usinttype = uint.unsigned_short_int();
+      if (usinttype != null) {
+        return "unsigned short";
+      }
+      Unsigned_long_intContext ulinttype = uint.unsigned_long_int();
+      if (ulinttype != null) {
+        return "unsigned long";
+      }
+      Unsigned_longlong_intContext ullinttype = uint.unsigned_longlong_int();
+      if (ullinttype != null) {
+        return "unsigned long long";
+      }
+    }
+    return null;
+  }
+
+  protected String getTypeName(Const_typeContext ctype) {
+    if (ctype == null) return "void";
+
+    String_typeContext strtype = ctype.string_type();
+    if (strtype != null) {
+      return strtype.KW_STRING().getText();
+    }
+
+    Wide_string_typeContext widetype = ctype.wide_string_type();
+    if (widetype != null) {
+      return widetype.KW_WSTRING().getText();
+    }
+
+    Char_typeContext chartype = ctype.char_type();
+    if (chartype != null) {
+      return "CHAR";
+    }
+
+    Floating_pt_typeContext fptype = ctype.floating_pt_type();
+    if (fptype != null) {
+      return "FLOAT";
+    }
+
+    Boolean_typeContext booltype = ctype.boolean_type();
+    if (booltype != null) {
+      return booltype.KW_BOOLEAN().getText();
+    }
+
+    Octet_typeContext octtype = ctype.octet_type();
+    if (octtype != null) {
+      return "OCTET";
+    }
+
+    Wide_char_typeContext wctype = ctype.wide_char_type();
+    if (wctype != null) {
+      return "WIDECHAR";
+    }
+
+    Integer_typeContext inttype = ctype.integer_type();
+    if (inttype != null) {
+      return getTypeName(inttype);
+    }
+
+    return null;
   }
 
   protected String getTypeName(Param_type_specContext ptype) {
@@ -372,7 +238,7 @@ public class NativeGenerator implements Utility {
       }
       Boolean_typeContext booltype = btype.boolean_type();
       if (booltype != null) {
-        return "BOOL";
+        return booltype.KW_BOOLEAN().getText();
       }
       Octet_typeContext octtype = btype.octet_type();
       if (octtype != null) {
@@ -384,36 +250,7 @@ public class NativeGenerator implements Utility {
       }
       Integer_typeContext inttype = btype.integer_type();
       if (inttype != null) {
-        Signed_intContext sint = inttype.signed_int();
-        if (sint != null) {
-          Signed_longlong_intContext sllinttype = sint.signed_longlong_int();
-          if (sllinttype != null) {
-            return "long long";
-          }
-          Signed_long_intContext slinttype = sint.signed_long_int();
-          if (slinttype != null) {
-            return slinttype.KW_LONG().getText();
-          }
-          Signed_short_intContext ssinttype = sint.signed_short_int();
-          if (ssinttype != null) {
-            return ssinttype.KW_SHORT().getText();
-          }
-        }
-        Unsigned_intContext uint = inttype.unsigned_int();
-        if (uint != null) {
-          Unsigned_short_intContext usinttype = uint.unsigned_short_int();
-          if (usinttype != null) {
-            return "unsigned short";
-          }
-          Unsigned_long_intContext ulinttype = uint.unsigned_long_int();
-          if (ulinttype != null) {
-            return "unsigned long";
-          }
-          Unsigned_longlong_intContext ullinttype = uint.unsigned_longlong_int();
-          if (ullinttype != null) {
-            return "unsigned long long";
-          }
-        }
+        return getTypeName(inttype);
       }
     }
     return null;
@@ -439,6 +276,30 @@ public class NativeGenerator implements Utility {
     Param_type_specContext ptype = otype.param_type_spec();
     String mtype = getTypeName(ptype);
 
+    List<String> ms = new ArrayList<String>();
+    ModifiersContext mods = op.modifiers();
+    if (mods != null) {
+      for (ModifierContext mod : mods.modifier()) {
+        TerminalNode kwopt = mod.KW_OPTIONAL();
+        if (kwopt != null) {
+          ms.add(kwopt.getText());
+        }
+        TerminalNode kwns = mod.KW_NOSCRIPT();
+        if (kwns != null) {
+          ms.add(kwns.getText());
+        }
+        TerminalNode kwimp = mod.KW_IMPLICIT_JSCONTEXT();
+        if (kwimp != null) {
+          ms.add(kwimp.getText());
+        }
+        Binaryname_declContext bindecl = mod.binaryname_decl();
+        if (bindecl != null) {
+          // %%% Not sure what the semantics of this are.
+          Dbg.dbg("BINDECL: " + bindecl.toStringTree());
+        }
+      }
+    }
+
     List<Param> ps = new ArrayList<Param>();
     Parameter_declsContext params = op.parameter_decls();
     for (Param_declContext param : params.param_decl()) {
@@ -459,6 +320,30 @@ public class NativeGenerator implements Utility {
         }
       }
 
+      List<String> pmods = new ArrayList<String>();
+      ModifiersContext mcs = param.modifiers();
+      if (mcs != null) {
+        for (ModifierContext mod : mcs.modifier()) {
+          TerminalNode kwopt = mod.KW_OPTIONAL();
+          if (kwopt != null) {
+            pmods.add(kwopt.getText());
+          }
+          TerminalNode kwns = mod.KW_NOSCRIPT();
+          if (kwns != null) {
+            pmods.add(kwns.getText());
+          }
+          TerminalNode kwimp = mod.KW_IMPLICIT_JSCONTEXT();
+          if (kwimp != null) {
+            pmods.add(kwimp.getText());
+          }
+          Binaryname_declContext bindecl = mod.binaryname_decl();
+          if (bindecl != null) {
+            // %%% Not sure what the semantics of this are.
+            Dbg.dbg("BINDECL: " + bindecl.toStringTree());
+          }
+        }
+      }
+
       Param_type_specContext partype = param.param_type_spec();
       String paramtype = getTypeName(partype);
 
@@ -468,10 +353,10 @@ public class NativeGenerator implements Utility {
         pname = simpdecl.ID().getText();
       }
 
-      ps.add(new Param(pname, paramtype, pattrs));
+      ps.add(new Param(pname, paramtype, pattrs, pmods));
     }
 
-    Method m = new Method(opname, mtype, ps);
+    Method m = new Method(opname, mtype, ps, ms);
     return m;
   }
 
@@ -479,6 +364,30 @@ public class NativeGenerator implements Utility {
     String aname = null;
     String atype = null;
     boolean ro = false;
+
+    List<String> ms = new ArrayList<String>();
+    ModifiersContext mods = attr.modifiers();
+    if (mods != null) {
+      for (ModifierContext mod : mods.modifier()) {
+        TerminalNode kwopt = mod.KW_OPTIONAL();
+        if (kwopt != null) {
+          ms.add(kwopt.getText());
+        }
+        TerminalNode kwns = mod.KW_NOSCRIPT();
+        if (kwns != null) {
+          ms.add(kwns.getText());
+        }
+        TerminalNode kwimp = mod.KW_IMPLICIT_JSCONTEXT();
+        if (kwimp != null) {
+          ms.add(kwimp.getText());
+        }
+        Binaryname_declContext bindecl = mod.binaryname_decl();
+        if (bindecl != null) {
+          // %%% Not sure what the semantics of this are.
+          Dbg.dbg("BINDECL: " + bindecl.toStringTree());
+        }
+      }
+    }
 
     // The two cases should be mutually exclusive.
 		Readonly_attr_specContext rospec = attr.readonly_attr_spec();
@@ -527,21 +436,63 @@ public class NativeGenerator implements Utility {
       atype = getTypeName(attrtype);
     }
 
-    Field f = new Field(aname, atype, ro);
+    Field f = new Field(aname, atype, ro, ms);
     return f;
+  }
+
+  protected Const loadConst(Const_declContext con) {
+    String cname = con.ID().getText();
+    String ctype = null;
+    String cvalue = null;
+
+    // The two cases should be mutually exclusive.
+		Const_typeContext ct = con.const_type();
+    if (ct != null) {
+      ctype = getTypeName(ct);
+    }
+
+		Const_expContext ce = con.const_exp();
+    if (ce != null) {
+      // %%% Could go deeper in parse tree.
+      cvalue = ce.getText();
+    }
+
+    Const c = new Const(cname, ctype, cvalue);
+    return c;
   }
 
   protected void generateModel(SpecificationContext tree) {
     for (DefinitionContext def : tree.definition()) {
-      //Dbg.dbg("DEF: " + def.toStringTree() + "\n");
       Interface_or_forward_declContext maybeIface = 
         def.interface_or_forward_decl();
       if (maybeIface != null) {
         Interface_declContext iface = maybeIface.interface_decl();
         if (iface != null) {
-          Interface_headerContext header = iface.interface_header();
-          String iname = header.ID().getText();
-          Prototype p = new Prototype(iname);
+          Interface_headerContext iheader = iface.interface_header();
+          if (iheader == null) {
+            Dbg.err("Null interface header: " + iheader);
+            continue;
+          }
+          String iname = iheader.ID().getText();
+
+          // Load modifiers and uuid.
+          List<String> mods = new ArrayList<String>();
+          String uuid = null;
+          Interface_modifiersContext imods = iface.interface_modifiers();
+          if (imods != null) {
+            for (Interface_modifierContext imod : imods.interface_modifier()) {
+              TerminalNode kwscriptable = imod.KW_SCRIPTABLE();
+              if (kwscriptable != null) {
+                mods.add(kwscriptable.getText());
+              }
+              Uuid_declContext uuidctxt = imod.uuid_decl();
+              if (uuidctxt != null) {
+                uuid = uuidctxt.UUID().getText();
+              }
+            }
+          }
+
+          Prototype p = new Prototype(iname, mods, uuid);
 
           List<Method> meths = new ArrayList<Method>();
           List<Field> fields = new ArrayList<Field>();
@@ -549,7 +500,7 @@ public class NativeGenerator implements Utility {
           for (ExportContext export : body.export()) {
             Const_declContext con = export.const_decl();
             if (con != null) {
-              Dbg.dbg("CONST: " + con.toStringTree());
+              p.addConst(loadConst(con));
             }
             Except_declContext exc = export.except_decl();
             if (exc != null) {
@@ -577,8 +528,8 @@ public class NativeGenerator implements Utility {
             }
           }
 
-          System.out.println(p.toString());
-          System.out.println();
+          //System.out.println(p.toString());
+          //System.out.println();
           System.out.println(p.toModel());
         }
       }
@@ -697,15 +648,21 @@ public class NativeGenerator implements Utility {
       
       List<File> idlfls = null;
       if (fl.isDirectory()) {
+        // Load IDL files from a directory.
         idlfls = scanDir(fl);
       } else {
+        // Load a single given IDL file.
         idlfls = new ArrayList<File>();
         idlfls.add(fl);
       }
 
       for (File idlfl : idlfls) {
+        // Get the parsed root "specification" found in the IDL file.
+        Dbg.out("Parsing file: " + idlfl.getAbsolutePath(), 1);
         SpecificationContext idl = parseIDLFile(idlfl, options.encoding);
         if (idl != null) {
+          // Create native models from the parse tree.
+          Dbg.out("Generating model: " + idlfl.getAbsolutePath(), 1);
           generateModel(idl);
         }
       }

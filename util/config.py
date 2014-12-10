@@ -34,8 +34,10 @@ UNPACKDIR = os.path.join(JAMPKG, 'unpacked')
 UNPACK_SCRIPT = os.path.join(UTILDIR, 'unpack.py')
 REPACK_SCRIPT = os.path.join(UTILDIR, 'repack.py')
 
+TEST_GROUPS = ['micro', 'bench', 'sites', 'exploit']
 BENCHMARK_DIR = os.path.join(TESTS_DIR, 'bench')
 MICROBENCHMARK_DIR = os.path.join(TESTS_DIR, 'micro')
+EXPLOIT_DIR = os.path.join(TESTS_DIR, 'exploit')
 POLICY_DIR = os.path.join(TESTS_DIR, 'policy')
 WEBSITE_DIR = os.path.join(TESTS_DIR, 'sites')
 WEBSITE_FILE = os.path.join(WEBSITE_DIR, 'sites.txt')

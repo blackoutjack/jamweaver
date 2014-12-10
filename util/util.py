@@ -130,6 +130,38 @@ def get_suffix_from_info(appinfo):
   return get_suffix(synonly, refine)
 # /get_suffix_from_info
 
+def load_dir(tgtdir):
+  if not os.path.isdir(tgtdir):
+    try:
+      os.makedirs(tgtdir)
+      return True
+    except:
+      err("Unable to create target directory: %s" % tgtdir)
+      return False
+  return True
+# /load_dir
+
+def prepare_dir(tgtdir):
+  if not load_dir(tgtdir):
+    return False
+
+  # Symbolically link to various utility files.
+  for fileattrs in SYMLINK_FILES:
+    assert len(fileattrs) == 2, 'Invalid SYMLINK_FILES configuration: %r' % fileattrs
+    srcpath, linkname = fileattrs
+    symlink(srcpath, tgtdir, linkname=linkname, relative=True)
+
+  # Copy additional files for SMS2 applications.
+  tgtbase = os.path.basename(tgtdir)
+  if tgtbase.startswith('sms2-'):
+    srcpath = os.path.join(SMS2DIR, 'includes')
+    symlink(srcpath, tgtdir, relative=True)
+    srcpath = os.path.join(SMS2DIR, 'sms2.head.html')
+    linkname = tgtbase + '.head.html'
+    symlink(srcpath, tgtdir, linkname=linkname, relative=True)
+  return True
+# /prepare_dir
+
 def get_unique_filename(origpath):
   dirpath, filename = os.path.split(origpath)
   if not os.path.exists(dirpath):

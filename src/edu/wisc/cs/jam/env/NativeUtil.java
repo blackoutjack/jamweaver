@@ -21,9 +21,10 @@ public class NativeUtil {
   public static final String NATIVE_LOC_TO_EXP_PATH = JAMConfig.JAMPKG + "/lib/native-le.ser";
   public static final String NATIVE_EXP_TO_LOC_PATH = JAMConfig.JAMPKG + "/lib/native-el.ser";
 
-  public static Map<String,String> nativeLocationToExpression;
-  public static Map<String,String> nativeExpressionToLocation;
-  public static Map<String,String> closureTranslation;
+  protected static Map<String,String> nativeLocationToExpression;
+  protected static Map<String,String> nativeExpressionToLocation;
+  protected static Map<String,String> closureTranslation;
+  protected static Map<String,String> interfaceToLocation;
 
   private static final String[] _PRIMITIVES = {
     "#undefined",
@@ -33,7 +34,7 @@ public class NativeUtil {
     "#NaN",
   };
   public static final Set<String> PRIMITIVES = new HashSet<String>(Arrays.asList(_PRIMITIVES));
-  
+
   static {
     
     // Map the Closure's extern.zip path to a particular native object
@@ -164,6 +165,15 @@ public class NativeUtil {
 
     */
 
+    interfaceToLocation = new HashMap<String,String>();
+    interfaceToLocation.put("nsIZipEntry", "#ZipEntry");
+    interfaceToLocation.put("nsIZipReader", "#ZipReader");
+    interfaceToLocation.put("nsIZipReaderCache", "#ZipReaderCache");
+    interfaceToLocation.put("nsIDOMWindow", "#Window");
+    interfaceToLocation.put("nsIXMLHttpRequest", "#XMLHttpRequest");
+    interfaceToLocation.put("nsIWebSocket", "#WebSocket");
+    interfaceToLocation.put("nsIArray", "#Array");
+
     // %%% Something for |arguments| object (for lack of |Arguments|)?
     
     // Load a mapping of native locations to expressions (the latter
@@ -276,6 +286,31 @@ public class NativeUtil {
       exp = closureTranslation.get(exp);
     }
     return nativeExpressionToLocation.get(exp);
+  }
+
+  public static String getExpressionFromNativeLocation(String exp) {
+    return nativeLocationToExpression.get(exp);
+  }
+
+  // Get the internal JAM reference name for the native interface.
+  public static String getNativeLocationFromInterface(String iface) {
+    String loc = interfaceToLocation.get(iface);
+    if (loc == null) {
+      // %%% Heuristic translation
+      loc = iface;
+      if (loc.startsWith("ns")) {
+        loc = loc.substring(2);
+        if (loc.startsWith("I")) {
+          loc = loc.substring(1);
+        }
+        if (loc.startsWith("DOM")) {
+          loc = loc.substring(3);
+        }
+      }
+      loc = "#" + loc;
+      Dbg.warn("Native translation not found for " + iface + ", using " + loc);
+    }
+    return loc;
   }
 
   protected static boolean isPrimitiveLocation(String loc) {

@@ -160,7 +160,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   }
 
   // Get the compiler if it needs to be used directly.
-  protected Compiler getCompiler() {
+  public Compiler getCompiler() {
     if (compiler == null) {
       boolean success = runPass(null, null, JAM.Opts.debug, false);
       if (!success) {
@@ -387,13 +387,14 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   }
 
   @Override
-  public String codeFromNode(Node n) {
+  public String codeFromExp(Exp e) {
     // The following checks became necessary after upgrading Closure to
     // a new version. There seems to be a strange bug that creates some
     // corrupted EXPR_RESULT nodes and null nodes.
-    if (n == null) return "";
-    if (n.isExprResult() && n.getChildCount() == 0) return "";
+    if (e == null) return "";
+    if (e.is(JSExp.EXPR_RESULT) && e.getChildCount() == 0) return "";
      
+    Node n = ((JSExp)e).getNode();
     String ret = ClosureUtil.codeFromNode(n, getCompiler());
     ret = ret.trim();
     if (ret.endsWith(";")) ret = ret.substring(0, ret.length() - 1);
@@ -588,14 +589,6 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     public int getCount() {
       return count;
     }
-  }
-
-  // Get the CFG for the given function.
-  @Override
-  public ControlFlowGraph<Node> getCFG(Function f) {
-    Node root = ((JSExp)f.getExp()).getNode();
-    Node externs = ((JSExp)getExterns()).getNode();
-    return ClosureUtil.getCFG(getCompiler(), externs, root);
   }
 
   @Override

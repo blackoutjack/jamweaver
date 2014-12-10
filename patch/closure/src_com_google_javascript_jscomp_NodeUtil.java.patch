@@ -1,5 +1,5 @@
 --- closure-orig/src/com/google/javascript/jscomp/NodeUtil.java	2014-10-03 11:38:06.646298474 -0500
-+++ closure/src/com/google/javascript/jscomp/NodeUtil.java	2014-10-02 17:26:11.565268678 -0500
++++ closure/src/com/google/javascript/jscomp/NodeUtil.java	2014-12-04 17:58:26.437044810 -0600
 @@ -931,6 +931,9 @@
        case Token.SWITCH:
        case Token.TRY:
@@ -10,7 +10,17 @@
          break;
  
        // Throws are by definition side effects
-@@ -1981,6 +1984,9 @@
+@@ -1390,6 +1393,9 @@
+       case Token.SUPER:
+       case Token.TRUE:
+       case Token.TEMPLATELIT:
++      // JAM begin
++      case Token.TRANSACTION:
++      // JAM end
+         return 15;
+       case Token.CAST:
+         return 16;
+@@ -1981,6 +1987,9 @@
        case Token.SWITCH:
        case Token.CASE:
        case Token.DEFAULT_CASE:
@@ -20,7 +30,7 @@
          return true;
        default:
          return false;
-@@ -2012,6 +2018,10 @@
+@@ -2012,6 +2021,10 @@
          return parent.getFirstChild() != n;
        case Token.DEFAULT_CASE:
          return true;
@@ -31,7 +41,7 @@
        default:
          Preconditions.checkState(isControlStructure(parent));
          return false;
-@@ -3686,6 +3696,10 @@
+@@ -3686,6 +3699,10 @@
          case Token.WHILE:
          case Token.DO:
            return false;

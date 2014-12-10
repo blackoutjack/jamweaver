@@ -27,6 +27,7 @@ import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
 
 import edu.wisc.cs.jam.js.JSExp;
+import edu.wisc.cs.jam.js.JSSourceManager;
 import edu.wisc.cs.jam.CallGraph.Function;
 
 // Provide an interface to package-protected Closure classes.
@@ -157,7 +158,11 @@ public class JAMControlFlowGraph {
   // @return the entry node to this function
   public void addFunction(Function f) {
     // Get the CFG for this function.
-    ControlFlowGraph<Node> cfg = sm.getCFG(f);
+    // %%% Ugly casting to avoid Closure classes in general framework.
+    Node root = ((JSExp)f.getExp()).getNode();
+    Node externs = ((JSExp)sm.getExterns()).getNode();
+    ControlFlowGraph<Node> cfg = ClosureUtil.getCFG(((JSSourceManager)sm).getCompiler(), externs, root);
+    
     DiGraphNode<Node,Branch> entryNode = cfg.getEntry(); 
 
     assert entryNode != null : "Null entry node for function " + f.getName();

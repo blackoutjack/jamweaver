@@ -41,7 +41,7 @@ closure:
 	# Get the revision that was developed against.
 	cd closure && git checkout $(CLOSURECOMMIT)
 	# Apply JAM-specific patches.
-	cat ./closure-patch/*.patch | patch -d closure -p1
+	cat ./patch/closure/*.patch | patch -d closure -p1
 	cd closure && ant jar
 
 xsb:
@@ -161,16 +161,24 @@ antlr:
 	mkdir -p $(IDLDIR)
 	wget --directory-prefix $(IDLDIR)/ http://www.antlr.org/download/antlr-4.4-complete.jar
 
-idlgen: antlr
-	mkdir -p $(IDLDIR)
-	wget --directory-prefix $(IDLDIR) https://raw.githubusercontent.com/antlr/grammars-v4/master/idl/IDL.g4
+idl:
+	cat ./patch/idlgen/IDL.g4.patch | patch -d idlgen -p1
 	java -jar $(IDLDIR)/antlr-4.4-complete.jar -package edu.wisc.cs.jam.env.idl -o $(IDLDIR)/edu/wisc/cs/jam/env/idl $(IDLDIR)/IDL.g4
 	javac -classpath $(IDLDIR)/antlr-4.4-complete.jar $(IDLDIR)/edu/wisc/cs/jam/env/idl/IDL*.java
 	cd $(IDLDIR) && jar cf $(IDLDIR)/idl.jar edu/wisc/cs/jam/env/idl/*.class
-	wget --directory-prefix $(IDLDIR) https://raw.githubusercontent.com/antlr/grammars-v4/master/webidl/WebIDL.g4
+
+webidl:
+	cat ./patch/idlgen/WebIDL.g4.patch | patch -d idlgen -p1
 	java -jar $(IDLDIR)/antlr-4.4-complete.jar -package edu.wisc.cs.jam.env.webidl -o $(IDLDIR)/edu/wisc/cs/jam/env/webidl $(IDLDIR)/WebIDL.g4
 	javac -classpath $(IDLDIR)/antlr-4.4-complete.jar $(IDLDIR)/edu/wisc/cs/jam/env/webidl/WebIDL*.java
 	cd $(IDLDIR) && jar cf $(IDLDIR)/webidl.jar edu/wisc/cs/jam/env/webidl/*.class
+
+idlgen: antlr
+	mkdir -p $(IDLDIR)
+	wget --directory-prefix $(IDLDIR) https://raw.githubusercontent.com/antlr/grammars-v4/master/idl/IDL.g4
+	make -f $(JAMPKG)/doc/DEPENDENCIES.mk idl
+	wget --directory-prefix $(IDLDIR) https://raw.githubusercontent.com/antlr/grammars-v4/master/webidl/WebIDL.g4
+	make -f $(JAMPKG)/doc/DEPENDENCIES.mk webidl
 
 antlr2:
 	wget http://www.java2s.com/Code/JarDownload/antlr/antlr-2.7.7.jar.zip

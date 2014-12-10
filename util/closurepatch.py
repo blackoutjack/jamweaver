@@ -1,7 +1,8 @@
+import os
 
-ORIGDIR = "closure-orig"
-DEVDIR = "closure"
-PATCHDIR = "closure-patch"
+ORIGDIR = 'closure-orig'
+DEVDIR = 'closure'
+PATCHDIR = os.path.join('patch', 'closure')
 EXCLUSIONS = [
   'build',
   '.git',

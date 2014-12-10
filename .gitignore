@@ -9,6 +9,8 @@ closure-orig/
 commons-lang*/
 commons-io-*/
 gperftools-*/
+idlgen/
+idlgen-orig/
 wali/
 wala/
 JavaBDD/
@@ -16,7 +18,10 @@ js-1.8.5/
 yices-*/
 XSB/
 jamscript/
+tests/
 packages/
+unpacked/
+cache-bak*/
 output-*
 *.class
 *.pyc

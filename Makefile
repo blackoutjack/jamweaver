@@ -62,6 +62,9 @@ JNIINCLUDE=-I/usr/lib/jvm/java-6-openjdk-amd64/include -I/usr/lib/jvm/java-6-ope
 LIBDIR=$(JAMPKG)/lib
 OBJDIR=$(JAMPKG)/obj
 
+# Interface parser directory
+IDLDIR=$(JAMPKG)/idlgen
+
 # OpenNWA interface library
 NWASRCDIR=$(SRCDIR)/nwa
 NWABASE=nwa
@@ -116,7 +119,7 @@ semantics: $(SEMMAINLIB)
 	# Comment out the line below to examine generated source
 	rm -f $(SEMCDAT) $(SEMSUBDAT) $(SEMMAINDAT) $(SEMNATDAT)
 
-util: jam
+util: jam idl webidl
 	make -C $(SRCDIR) util
 
 wala: jam
@@ -203,9 +206,20 @@ natives: $(NATIVE_DEP)
 	mkdir -p $(LIBDIR)
 	./src/native/generate.py
 
+$(IDLDIR)/idl.jar: $(IDLDIR)/IDL.g4
+	java -jar $(IDLDIR)/antlr-4.4-complete.jar -package edu.wisc.cs.jam.env.idl -o $(IDLDIR)/edu/wisc/cs/jam/env/idl $(IDLDIR)/IDL.g4
+	javac -classpath $(IDLDIR)/antlr-4.4-complete.jar $(IDLDIR)/edu/wisc/cs/jam/env/idl/IDL*.java
+	cd $(IDLDIR) && jar cf $(IDLDIR)/idl.jar edu/wisc/cs/jam/env/idl/*.class
 
+$(IDLDIR)/webidl.jar: $(IDLDIR)/WebIDL.g4
+	java -jar $(IDLDIR)/antlr-4.4-complete.jar -package edu.wisc.cs.jam.env.webidl -o $(IDLDIR)/edu/wisc/cs/jam/env/webidl $(IDLDIR)/WebIDL.g4
+	javac -classpath $(IDLDIR)/antlr-4.4-complete.jar $(IDLDIR)/edu/wisc/cs/jam/env/webidl/WebIDL*.java
+	cd $(IDLDIR) && jar cf $(IDLDIR)/webidl.jar edu/wisc/cs/jam/env/webidl/*.class
 
-clean: nwaclean jamclean utilclean
+idl: $(IDLDIR)/idl.jar
+webidl: $(IDLDIR)/webidl.jar
+
+clean: nwaclean jamclean utilclean idlclean
 	rm -rf $(BINDIR) $(LIBDIR) $(OBJDIR)
 
 jamclean:
@@ -222,6 +236,9 @@ nwaclean:
 
 utilclean:
 	make -C $(SRCDIR) utilclean
+
+idlclean:
+	rm -rf $(IDLDIR)/idl.jar $(IDLDIR)/webidl.jar $(IDLDIR)/edu/
 
 veryclean: clean cacheclean tmpclean
 

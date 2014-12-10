@@ -2,23 +2,24 @@ package edu.wisc.cs.jam.env;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Prototype {
   private String internal;
   private String name;
   private String constructor;
   private List<String> mods;
+  private Map<String,String> compmods;
   private List<Method> methods;
   private List<Field> fields;
   private List<Const> consts;
-  private String uuid;
 
-  public Prototype(String iname, List<String> ms, String u) {
+  public Prototype(String iname, List<String> ms, Map<String,String> cms) {
     internal = iname;
     constructor = NativeUtil.getNativeLocationFromInterface(internal);
     name = constructor + "#prototype";
     mods = ms;
-    uuid = u;
+    compmods = cms;
     methods = new ArrayList<Method>();
     fields = new ArrayList<Field>();
     consts = new ArrayList<Const>();

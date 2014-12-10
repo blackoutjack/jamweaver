@@ -8,6 +8,8 @@ EXCLUSIONS = [
   '*.class',
   '*.tokens',
   '*.java',
+  '*.swp',
+  '*.swo',
 ]
 
 

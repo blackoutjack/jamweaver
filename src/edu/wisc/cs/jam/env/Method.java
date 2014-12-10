@@ -1,6 +1,7 @@
 package edu.wisc.cs.jam.env;
 
 import java.util.List;
+import java.util.Map;
 
 import edu.wisc.cs.jam.Dbg;
 
@@ -10,12 +11,14 @@ public class Method {
   private String returnType;
   private Prototype proto;
   private List<String> mods;
+  private Map<String,String> compmods;
 
-  public Method(String n, String rt, List<Param> ps, List<String> ms) {
+  public Method(String n, String rt, List<Param> ps, List<String> ms, Map<String,String> cms) {
     name = n;
     returnType = rt;
     params = ps;
     mods = ms;
+    compmods = cms;
   }
 
   public void setPrototype(Prototype p) {
@@ -78,6 +81,21 @@ public class Method {
     }
   }
 
+  protected void loadArgumentConstraints(StringBuilder sb) {
+    int plen = params.size();
+    if (plen == 0)
+      return;
+
+    for (int idx=0; idx<plen; idx++) {
+      Param p = params.get(idx);
+      String pname = p.getVariableName();
+      // %%% Be smarter.
+      sb.append("  always(");
+      sb.append(pname);
+      sb.append("),\n");
+    }
+  }
+
   protected void loadArgumentNames(StringBuilder sb) {
     int plen = params.size();
     if (plen == 0)
@@ -85,9 +103,7 @@ public class Method {
 
     for (int idx=0; idx<plen; idx++) {
       Param p = params.get(idx);
-      String pname = p.getName();
-      // Capitalize the first letter to make it an XSB variable.
-      pname = pname.substring(0,1).toUpperCase() + pname.substring(1);
+      String pname = p.getVariableName();
       sb.append("  ");
       if (p.isOptional()) {
         sb.append("(Arglen>");
@@ -183,7 +199,7 @@ public class Method {
     loadArgumentNames(sb);
     loadReturnValue(sb);
 
-    // %%% Be smarter.
+    loadArgumentConstraints(sb);
     sb.append("  always(L),always(This),\n");
     sb.append("  HP=H).\n");
 

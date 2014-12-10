@@ -15,7 +15,7 @@ import javax.print.PrintException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.io.IOException;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -92,12 +92,10 @@ import edu.wisc.cs.jam.env.idl.IDLParser.Attr_declaratorContext;
 import edu.wisc.cs.jam.env.idl.IDLParser.Attr_raises_exprContext;
 import edu.wisc.cs.jam.env.idl.IDLParser.ModifiersContext;
 import edu.wisc.cs.jam.env.idl.IDLParser.ModifierContext;
-import edu.wisc.cs.jam.env.idl.IDLParser.Binaryname_declContext;
-import edu.wisc.cs.jam.env.idl.IDLParser.Interface_modifierContext;
-import edu.wisc.cs.jam.env.idl.IDLParser.Interface_modifiersContext;
-import edu.wisc.cs.jam.env.idl.IDLParser.Uuid_declContext;
+import edu.wisc.cs.jam.env.idl.IDLParser.Compound_modifierContext;
 import edu.wisc.cs.jam.env.idl.IDLParser.Const_expContext;
 import edu.wisc.cs.jam.env.idl.IDLParser.Const_typeContext;
+import edu.wisc.cs.jam.env.idl.IDLParser.IdContext;
 
 public class NativeGenerator implements Utility {
 
@@ -202,9 +200,9 @@ public class NativeGenerator implements Utility {
     }
     Scoped_nameContext scopetype = ptype.scoped_name();
     if (scopetype != null) {
-      List<TerminalNode> toks = scopetype.ID();
+      List<IdContext> toks = scopetype.id();
       String ret = "";
-      for (TerminalNode tok : toks) {
+      for (IdContext tok : toks) {
         if (ret.length() > 0) ret += ",";
         ret += tok.getText();
       }
@@ -257,7 +255,7 @@ public class NativeGenerator implements Utility {
   }
 
   protected Method loadMethod(Op_declContext op) {
-    String opname = op.ID().getText();
+    String opname = op.simple_declarator().id().getText();
 
     Context_exprContext ctxt = op.context_expr();
     if (ctxt != null) {
@@ -277,28 +275,9 @@ public class NativeGenerator implements Utility {
     String mtype = getTypeName(ptype);
 
     List<String> ms = new ArrayList<String>();
+    Map<String,String> cms = new LinkedHashMap<String,String>();
     ModifiersContext mods = op.modifiers();
-    if (mods != null) {
-      for (ModifierContext mod : mods.modifier()) {
-        TerminalNode kwopt = mod.KW_OPTIONAL();
-        if (kwopt != null) {
-          ms.add(kwopt.getText());
-        }
-        TerminalNode kwns = mod.KW_NOSCRIPT();
-        if (kwns != null) {
-          ms.add(kwns.getText());
-        }
-        TerminalNode kwimp = mod.KW_IMPLICIT_JSCONTEXT();
-        if (kwimp != null) {
-          ms.add(kwimp.getText());
-        }
-        Binaryname_declContext bindecl = mod.binaryname_decl();
-        if (bindecl != null) {
-          // %%% Not sure what the semantics of this are.
-          Dbg.dbg("BINDECL: " + bindecl.toStringTree());
-        }
-      }
-    }
+    loadModifiers(mods, ms, cms);
 
     List<Param> ps = new ArrayList<Param>();
     Parameter_declsContext params = op.parameter_decls();
@@ -320,29 +299,10 @@ public class NativeGenerator implements Utility {
         }
       }
 
-      List<String> pmods = new ArrayList<String>();
+      List<String> pms = new ArrayList<String>();
+      Map<String,String> pcms = new LinkedHashMap<String,String>();
       ModifiersContext mcs = param.modifiers();
-      if (mcs != null) {
-        for (ModifierContext mod : mcs.modifier()) {
-          TerminalNode kwopt = mod.KW_OPTIONAL();
-          if (kwopt != null) {
-            pmods.add(kwopt.getText());
-          }
-          TerminalNode kwns = mod.KW_NOSCRIPT();
-          if (kwns != null) {
-            pmods.add(kwns.getText());
-          }
-          TerminalNode kwimp = mod.KW_IMPLICIT_JSCONTEXT();
-          if (kwimp != null) {
-            pmods.add(kwimp.getText());
-          }
-          Binaryname_declContext bindecl = mod.binaryname_decl();
-          if (bindecl != null) {
-            // %%% Not sure what the semantics of this are.
-            Dbg.dbg("BINDECL: " + bindecl.toStringTree());
-          }
-        }
-      }
+      loadModifiers(mcs, pms, pcms);
 
       Param_type_specContext partype = param.param_type_spec();
       String paramtype = getTypeName(partype);
@@ -350,13 +310,15 @@ public class NativeGenerator implements Utility {
       Simple_declaratorContext simpdecl = param.simple_declarator();
       String pname = null;
       if (simpdecl != null) {
-        pname = simpdecl.ID().getText();
+        IdContext simpid = simpdecl.id();
+        assert simpid != null : "No text for simple id: " + simpdecl.getText();
+        pname = simpid.getText();
       }
 
-      ps.add(new Param(pname, paramtype, pattrs, pmods));
+      ps.add(new Param(pname, paramtype, pattrs, pms, pcms));
     }
 
-    Method m = new Method(opname, mtype, ps, ms);
+    Method m = new Method(opname, mtype, ps, ms, cms);
     return m;
   }
 
@@ -366,28 +328,9 @@ public class NativeGenerator implements Utility {
     boolean ro = false;
 
     List<String> ms = new ArrayList<String>();
+    Map<String,String> cms = new LinkedHashMap<String,String>();
     ModifiersContext mods = attr.modifiers();
-    if (mods != null) {
-      for (ModifierContext mod : mods.modifier()) {
-        TerminalNode kwopt = mod.KW_OPTIONAL();
-        if (kwopt != null) {
-          ms.add(kwopt.getText());
-        }
-        TerminalNode kwns = mod.KW_NOSCRIPT();
-        if (kwns != null) {
-          ms.add(kwns.getText());
-        }
-        TerminalNode kwimp = mod.KW_IMPLICIT_JSCONTEXT();
-        if (kwimp != null) {
-          ms.add(kwimp.getText());
-        }
-        Binaryname_declContext bindecl = mod.binaryname_decl();
-        if (bindecl != null) {
-          // %%% Not sure what the semantics of this are.
-          Dbg.dbg("BINDECL: " + bindecl.toStringTree());
-        }
-      }
-    }
+    loadModifiers(mods, ms, cms);
 
     // The two cases should be mutually exclusive.
 		Readonly_attr_specContext rospec = attr.readonly_attr_spec();
@@ -402,9 +345,9 @@ public class NativeGenerator implements Utility {
         List<Simple_declaratorContext> simpdecls = rodecl.simple_declarator();
         for (Simple_declaratorContext simpdecl : simpdecls) {
           if (aname == null) {
-            aname = simpdecl.ID().getText();
+            aname = simpdecl.id().getText();
           } else {
-            aname += "," + simpdecl.ID().getText();
+            aname += "," + simpdecl.id().getText();
           }
         }
       }
@@ -425,9 +368,9 @@ public class NativeGenerator implements Utility {
         List<Simple_declaratorContext> simpdecls = attrdecl.simple_declarator();
         for (Simple_declaratorContext simpdecl : simpdecls) {
           if (aname == null) {
-            aname = simpdecl.ID().getText();
+            aname = simpdecl.id().getText();
           } else {
-            aname += "," + simpdecl.ID().getText();
+            aname += "," + simpdecl.id().getText();
           }
         }
       }
@@ -436,12 +379,12 @@ public class NativeGenerator implements Utility {
       atype = getTypeName(attrtype);
     }
 
-    Field f = new Field(aname, atype, ro, ms);
+    Field f = new Field(aname, atype, ro, ms, cms);
     return f;
   }
 
   protected Const loadConst(Const_declContext con) {
-    String cname = con.ID().getText();
+    String cname = con.id().getText();
     String ctype = null;
     String cvalue = null;
 
@@ -461,6 +404,22 @@ public class NativeGenerator implements Utility {
     return c;
   }
 
+  protected void loadModifiers(ModifiersContext imods, List<String> mods, Map<String,String> compmods) {
+    if (imods == null) return;
+    for (ModifierContext imod : imods.modifier()) {
+      IdContext modtxt = imod.id();
+      if (modtxt != null) {
+        mods.add(modtxt.getText());
+      }
+      Compound_modifierContext cmod = imod.compound_modifier();
+      if (cmod != null) {
+        String modkey = cmod.id().getText();
+        String modvalue = cmod.modifier_value().getText();
+        compmods.put(modkey, modvalue);
+      }
+    }
+  }
+
   protected void generateModel(SpecificationContext tree) {
     for (DefinitionContext def : tree.definition()) {
       Interface_or_forward_declContext maybeIface = 
@@ -473,26 +432,15 @@ public class NativeGenerator implements Utility {
             Dbg.err("Null interface header: " + iheader);
             continue;
           }
-          String iname = iheader.ID().getText();
+          String iname = iheader.id().getText();
 
-          // Load modifiers and uuid.
+          // Load modifiers.
           List<String> mods = new ArrayList<String>();
-          String uuid = null;
-          Interface_modifiersContext imods = iface.interface_modifiers();
-          if (imods != null) {
-            for (Interface_modifierContext imod : imods.interface_modifier()) {
-              TerminalNode kwscriptable = imod.KW_SCRIPTABLE();
-              if (kwscriptable != null) {
-                mods.add(kwscriptable.getText());
-              }
-              Uuid_declContext uuidctxt = imod.uuid_decl();
-              if (uuidctxt != null) {
-                uuid = uuidctxt.UUID().getText();
-              }
-            }
-          }
+          Map<String,String> compmods = new LinkedHashMap<String,String>();
+          ModifiersContext imods = iface.modifiers();
+          loadModifiers(imods, mods, compmods);
 
-          Prototype p = new Prototype(iname, mods, uuid);
+          Prototype p = new Prototype(iname, mods, compmods);
 
           List<Method> meths = new ArrayList<Method>();
           List<Field> fields = new ArrayList<Field>();

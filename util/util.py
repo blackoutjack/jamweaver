@@ -487,20 +487,33 @@ def parse_info_file(infofile):
         warn('Invalid info file line: %s' % infoline)
   return info
 
+def load_source_list(dirpath):
+  listpath = os.path.join(dirpath, 'scripts.txt')
+  if os.path.isfile(listpath):
+    return listpath
+  else:
+    return None
+
 def load_app_source(apppath, appname, defwarn=False):
   if (os.path.isdir(apppath)):
     subpath = os.path.join(apppath, 'source-input')
     if not os.path.isdir(subpath):
       return None
 
-    srcs = load_sources(subpath, '.js', '.out.js')
-    if len(srcs) == 0: return None
+    opts = []
+    srclist = load_source_list(subpath)
+    if srclist is None:
+      srcs = load_sources(subpath, '.js', '.out.js')
+      if len(srcs) == 0: return None
+    else:
+      srcs = [srclist]
+      opts.append('-X')
 
     # %%% Not very nice, but still dealing with legacy junk.
     appbase = get_base(appname)
     pols = load_policies(apppath, appbase, defwarn=defwarn)
     seeds = load_seeds(apppath, appname)
-    return (srcs, pols, seeds, apppath)
+    return (srcs, pols, seeds, apppath, opts)
   else:
     # Non-directories are assumed to be utility files.
     return None

@@ -106,10 +106,6 @@ class RunResult():
   # /RunResult.__init__
 # /RunResult
 
-def load_testcases(topdir, defwarn=True):
-  return load_app_sources(topdir, defwarn=defwarn)
-# /load_testcases
-
 def process_result(outp, exppath, overwrite):
   ok = False
   if overwrite:
@@ -250,7 +246,7 @@ def run_websites(debug=False, overwrite=False, refine=None, synonly=False):
 def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False):
   results = RunResults('microbenchmarks', overwrite)
 
-  cases = load_testcases(MICROBENCHMARK_DIR, defwarn=False)
+  cases = load_app_sources(MICROBENCHMARK_DIR, defwarn=False)
   apps = list(cases.keys())
   apps.sort()
   for app in apps:
@@ -259,6 +255,7 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
     poldict = inps[1]
     seeds = inps[2]
     apppath = inps[3]
+    options = inps[4]
     base = get_base(app)
 
     # Run with each policy file separately.
@@ -266,7 +263,7 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
       result = RunResult(False, False)
       results.add(result)
 
-      opts = []
+      opts = list(options)
 
       # Differentiate the output if policy indexed by a non-numeric key.
       # For example, the policy file jsqrcode.call.policy will be
@@ -288,10 +285,6 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
           ref = 3
           if seeds is not None:
             ref = 0
-          if base.startswith('exfil_test'):
-            # These tests are to exercise the enforcement primarily,
-            # not the static analysis. Refinement takes too long.
-            ref = 0
           if base == 'timeout0':
             # This tests the query timeout mechanism.
             # Don't waste too much time waiting.
@@ -301,7 +294,6 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
 
       if synonly:
         opts.append('-z')
-
 
       # Use the union of all policy files for a particular test.
       out('Analyzing %s' % app)
@@ -331,12 +323,12 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
   results.printSummary()
 # /run_microbenchmarks
       
-def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
-  results = RunResults('benchmarks', overwrite)
+def run_exploits(debug=False, overwrite=False, refine=None, synonly=False):
+  results = RunResults('exploits', overwrite)
   if refine is None:
     refine = 0
 
-  cases = load_testcases(BENCHMARK_DIR, defwarn=True)
+  cases = load_app_sources(EXPLOIT_DIR, defwarn=True)
   apps = list(cases.keys())
   apps.sort()
   for appname in apps:
@@ -345,13 +337,77 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
     poldict = inps[1]
     seeds = inps[2]
     apppath = inps[3]
+    options = inps[4]
 
     # Run with each policy file separately.
     for poldesc, polfile in poldict.items():
       result = RunResult(False, False)
       results.add(result)
 
-      opts = []
+      opts = list(options)
+
+      # Differentiate the output if policy indexed by a non-numeric key.
+      # For example, the policy file jsqrcode.call.policy will be
+      # indexed by "call", and the output will be stored separately from
+      # the analysis using jsqrcode.get.policy. Alter the .out filename
+      # accordingly.
+      if poldesc != '':
+        opts.append('--appsuffix')
+        opts.append(poldesc)
+
+      base = get_base(appname)
+      if synonly:
+        opts.append('-z')
+
+      out('Analyzing %s' % appname)
+      outp, errp = run_jam(srcfls, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
+      
+      # Error case, message printed in |run_jam|.
+      if outp is None: continue
+
+      refsuf = get_suffix(synonly, refine)
+
+      expfile = '%s.%s.out.js' % (appname, refsuf)
+      exppath = os.path.join(apppath, expfile)
+      result.js_ok = process_result(outp, exppath, overwrite)
+
+      infopath = get_info_path(errp)
+      if infopath is None:
+        err('Could not determine info path: %s\n' % appname)
+        err('ERRP: %s' % errp)
+        continue
+
+      infoexpfile = '%s.%s.info.txt' % (appname, refsuf)
+      infoexppath = os.path.join(apppath, infoexpfile)
+      result.info_ok = process_info(infopath, infoexppath, overwrite)
+
+      sys.stderr.write('\n')
+
+  results.printSummary()
+# /run_exploits
+
+def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
+  results = RunResults('benchmarks', overwrite)
+  if refine is None:
+    refine = 0
+
+  cases = load_app_sources(BENCHMARK_DIR, defwarn=True)
+  apps = list(cases.keys())
+  apps.sort()
+  for appname in apps:
+    inps = cases[appname]
+    srcfls = inps[0]
+    poldict = inps[1]
+    seeds = inps[2]
+    apppath = inps[3]
+    options = inps[4]
+
+    # Run with each policy file separately.
+    for poldesc, polfile in poldict.items():
+      result = RunResult(False, False)
+      results.add(result)
+
+      opts = list(options)
 
       # Differentiate the output if policy indexed by a non-numeric key.
       # For example, the policy file jsqrcode.call.policy will be
@@ -429,6 +485,7 @@ def main():
   parser.add_option('-b', '--benchmarks', action='store_true', default=False, dest='benchmarks', help='analyze benchmark applications')
   parser.add_option('-w', '--websites', action='store_true', default=False, dest='websites', help='end-to-end website analysis')
   parser.add_option('-m', '--micro', action='store_true', default=False, dest='micro', help='analyze microbenchmark applications')
+  parser.add_option('-x', '--exploit', action='store_true', default=False, dest='exploit', help='analyze exploit applications')
   #parser.add_option('-i', '--interpreter', action='store_true', default=False, dest='interpreter', help='test semantics as an interpreter (currently unsupported)')
   parser.add_option('-e', '--overwrite', action='store_true', default=False, dest='overwrite', help='overwrite expected output')
   #parser.add_option('-s', '--semantics', action='store_true', default=False, dest='semantics', help='test semantics')
@@ -444,7 +501,7 @@ def main():
     parser.error("Invalid number of arguments")
 
   allmods = True
-  if opts.benchmarks or opts.micro or opts.websites or opts.url is not None:
+  if opts.benchmarks or opts.micro or opts.exploit or opts.websites or opts.url is not None:
     allmods = False
 
   ref = opts.refine
@@ -464,6 +521,8 @@ def main():
     run_website(opts.url, pol, debug=opts.debug, overwrite=opts.overwrite, refine=ref, synonly=opts.syntaxonly)
   if allmods or opts.micro:
     run_microbenchmarks(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly)
+  if allmods or opts.exploit:
+    run_exploits(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly)
   if allmods or opts.benchmarks:
     run_benchmarks(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly)
   if allmods or opts.websites:

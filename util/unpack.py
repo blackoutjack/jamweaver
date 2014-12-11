@@ -1124,10 +1124,10 @@ class Unpacker():
         self.app = re.sub('/', '-', relpath)
       else:
         self.app = app
-    elif prot == 'file':
-      self.url = os.path.abspath(infile)
-      if not self.url.startswith('file://'):
-        self.url = 'file://' + self.url
+    elif prot == 'file' or prot == '':
+      if infile.startswith('file://'):
+        infile = infile[7:]
+      self.url = 'file://' + os.path.abspath(infile)
       info = get_file_info(infile)
       self.app = info['app']
     else:

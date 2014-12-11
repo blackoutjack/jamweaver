@@ -3,6 +3,8 @@ package edu.wisc.cs.jam.env;
 import java.util.List;
 import java.util.Map;
 
+import edu.wisc.cs.jam.Dbg;
+
 public class Field {
   private String name;
   private String type;

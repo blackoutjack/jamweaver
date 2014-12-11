@@ -547,12 +547,6 @@ def process_results(resdir, tgtdir, bases, wrap, transfer, exp, coarse, prof, ge
     return
 
   for app in bases:
-    # %%% Special case
-    if app.startswith("exfil_test"):
-      w = False
-    else:
-      w = wrap
-
     appdir = os.path.join(tgtdir, app)
 
     if transfer or exp:
@@ -560,16 +554,16 @@ def process_results(resdir, tgtdir, bases, wrap, transfer, exp, coarse, prof, ge
       infos = cfg.get_result_info(resdir, app, getall)
 
     if transfer and infos is not None:
-      copy_files(app, infos, appdir, w)
+      copy_files(app, infos, appdir, wrap)
 
     if exp and infos is not None:
       update_expected(app, infos, appdir)
 
     if coarse:
-      update_coarse(appdir, app, w)
+      update_coarse(appdir, app, wrap)
 
     if prof:
-      update_profile(appdir, app, w)
+      update_profile(appdir, app, wrap)
 
 # /process_results
 

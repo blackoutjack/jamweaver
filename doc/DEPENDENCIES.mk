@@ -157,23 +157,26 @@ wala: commons-io
 jsunpack:
 	svn co http://jsunpack-n.googlecode.com/svn/trunk $(JAMPKG)/util/jsunpack
 
-antlr:
+$(IDLDIR)/antlr-4.4-complete.jar:
 	mkdir -p $(IDLDIR)
 	wget --directory-prefix $(IDLDIR)/ http://www.antlr.org/download/antlr-4.4-complete.jar
+antlr: $(IDLDIR)/antlr-4.4-complete.jar
 
-idlgen: antlr
+$(IDLDIR)/IDL.g4:
 	mkdir -p $(IDLDIR)
 	wget --directory-prefix $(IDLDIR) https://raw.githubusercontent.com/antlr/grammars-v4/master/idl/IDL.g4
-	cat ./patch/idlgen/IDL.g4.patch | patch -d idlgen -p1
-	make idl
-	wget --directory-prefix $(IDLDIR) https://raw.githubusercontent.com/antlr/grammars-v4/master/webidl/WebIDL.g4
-	make webidl
-	cat ./patch/idlgen/WebIDL.g4.patch | patch -d idlgen -p1
 
-antlr2:
+$(IDLDIR)/WebIDL.g4:
+	wget --directory-prefix $(IDLDIR) https://raw.githubusercontent.com/antlr/grammars-v4/master/webidl/WebIDL.g4
+
+idlgen: antlr $(IDLDIR)/IDL.g4 $(IDLDIR)/WebIDL.g4
+	#cat ./patch/idlgen/WebIDL.g4.patch | patch -d idlgen -p1
+
+$(JAMPKG)/antlr-2.7.7.jar:
 	wget http://www.java2s.com/Code/JarDownload/antlr/antlr-2.7.7.jar.zip
 	unzip antlr-2.7.7.jar.zip
 	mv antlr-2.7.7.jar.zip packages
+antlr2: $(JAMPKG)/antlr-2.7.7.jar
 
 corba: antlr2 commons-logging
 	wget http://www.java2s.com/Code/JarDownload/apache-axiom/apache-axiom-api-1.2.7.jar.zip

@@ -42,12 +42,18 @@ public class Main {
       util = new NativeIdentifier(nativeOptions);
     } else if (mainOptions.util.equals("wala")) {
       Dbg.fatal("WALA integration has been moved to a stand-alone utility at edu.wisc.cs.jam.wala.WalaClient");
-    } else if (mainOptions.util.equals("idlgen")) {
-      NativeGenerator.Opts nativeOptions = new NativeGenerator.Opts();
+    } else if (mainOptions.util.equals("webkit")) {
+      WebkitGenerator.Opts nativeOptions = new WebkitGenerator.Opts();
       OptionParser parser = new OptionParser(nativeOptions);
       parser.parseArgument(subArgs);
       
-      util = new NativeGenerator(nativeOptions);
+      util = new WebkitGenerator(nativeOptions);
+    } else if (mainOptions.util.equals("gecko")) {
+      GeckoGenerator.Opts nativeOptions = new GeckoGenerator.Opts();
+      OptionParser parser = new OptionParser(nativeOptions);
+      parser.parseArgument(subArgs);
+      
+      util = new GeckoGenerator(nativeOptions);
     } else if (mainOptions.util.equals("bdd")) {
       // Process the additional command line args.
       BDDClient.Opts bddOptions = new BDDClient.Opts();

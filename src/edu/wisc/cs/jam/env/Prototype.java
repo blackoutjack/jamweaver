@@ -8,11 +8,11 @@ public class Prototype {
   private String internal;
   private String name;
   private String constructor;
-  private List<String> mods;
-  private Map<String,String> compmods;
-  private List<Method> methods;
-  private List<Field> fields;
-  private List<Const> consts;
+  protected List<String> mods;
+  protected Map<String,String> compmods;
+  protected List<Method> methods;
+  protected List<Field> fields;
+  protected List<Const> consts;
 
   public Prototype(String iname, List<String> ms, Map<String,String> cms) {
     internal = iname;
@@ -52,18 +52,6 @@ public class Prototype {
 
     StringBuilder sb = new StringBuilder();
 
-    sb.append("% Prototype ");
-    sb.append(name);
-    sb.append(" generated from ");
-    sb.append(internal);
-    // Output info only if not "scriptable"
-    if (!mods.contains("scriptable")) {
-      sb.append("\n");
-      sb.append("% (not scriptable)\n");
-      return sb.toString();
-    }
-
-    sb.append("\n\n");
     for (Const c : consts) {
       sb.append(c.toModel());
       sb.append("\n");

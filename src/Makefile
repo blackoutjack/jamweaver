@@ -22,7 +22,7 @@ COMMONSIOVERSION=2.4
 JERICHOVERSION=3.2
 RHINOVERSION=1.7R3
 WALACLASSPATH=../commons-io-$(COMMONSIOVERSION)/commons-io-$(COMMONSIOVERSION).jar:../wala/com.ibm.wala.cast.js/lib/jericho-html-$(JERICHOVERSION).jar:../wala/com.ibm.wala.core/target/com.ibm.wala.core-$(WALAVERSION).jar:../wala/com.ibm.wala.shrike/target/com.ibm.wala.shrike-$(WALAVERSION).jar:../wala/com.ibm.wala.cast/target/com.ibm.wala.cast-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js/target/com.ibm.wala.cast.js-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js.rhino/target/com.ibm.wala.cast.js.rhino-$(WALAVERSION).jar:../wala/com.ibm.wala.util/target/com.ibm.wala.util-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js.rhino/lib/rhino-$(RHINOVERSION).jar
-JCLASSPATH=".:../closure/build/compiler.jar:../JavaBDD/javabdd-$(JAVABDDVERSION).jar:../commons-lang$(COMMONSVERSION)/commons-lang$(COMMONSVERSION).jar:../closure/lib/junit.jar:$(WALACLASSPATH):../JavaBDD/jdd.jar:../idlgen/antlr-4.4-complete.jar:../idlgen/idl.jar:../idlgen/webidl.jar"
+JCLASSPATH=".:../closure/build/compiler.jar:../JavaBDD/javabdd-$(JAVABDDVERSION).jar:../commons-lang$(COMMONSVERSION)/commons-lang$(COMMONSVERSION).jar:../closure/lib/junit.jar:$(WALACLASSPATH):../JavaBDD/jdd.jar:../idlgen/antlr-4.4-complete.jar:../idlgen/geckoidl.jar:../idlgen/webkitidl.jar:../idlgen/webidl.jar"
   
 
 # Relative Java source directories
@@ -30,6 +30,8 @@ MAINDIR=edu/wisc/cs/jam
 AUTDIR=edu/wisc/cs/automaton
 JSDIR=$(MAINDIR)/js
 ENVDIR=$(MAINDIR)/env
+CHROMEDIR=$(ENVDIR)/chrome
+FIREFOXDIR=$(ENVDIR)/firefox
 XSBDIR=$(MAINDIR)/xsb
 BDDDIR=$(MAINDIR)/bdd
 NWADIR=$(MAINDIR)/opennwa
@@ -52,9 +54,19 @@ JSSRC=$(JSBASE:%=$(JSDIR)/%.java)
 JSCLS=$(JSSRC:.java=.class)
 
 # Java classes in the edu.wisc.cs.jam.env package.
-ENVBASE=NativeUtil Prototype Method Field Const Param
+ENVBASE=Environment NativeUtil Prototype Method Field Const Param
 ENVSRC=$(ENVBASE:%=$(ENVDIR)/%.java)
 ENVCLS=$(ENVSRC:.java=.class)
+
+# Java classes in the edu.wisc.cs.jam.env package.
+CHROMEBASE=Chrome ChromePrototype
+CHROMESRC=$(CHROMEBASE:%=$(CHROMEDIR)/%.java)
+CHROMECLS=$(CHROMESRC:.java=.class)
+
+# Java classes in the edu.wisc.cs.jam.env package.
+FIREFOXBASE=Firefox FirefoxPrototype FirefoxMethod
+FIREFOXSRC=$(FIREFOXBASE:%=$(FIREFOXDIR)/%.java)
+FIREFOXCLS=$(FIREFOXSRC:.java=.class)
 
 # Java classes in the edu.wisc.cs.jam.xsb package.
 XSBBASE=XSBInterface XSBSingleInterface XSBMultiInterface XSBProcess QueryCache
@@ -102,7 +114,7 @@ FORKSRC=$(FORKBASE:%=$(FORKDIR)/%.java)
 FORKCLS=$(FORKSRC:.java=.class)
 
 # Java utility classes
-UTLBASE=Main NativeGenerator NativeIdentifier ASTPrint BDDClient Utility
+UTLBASE=Main WebkitGenerator GeckoGenerator NativeGenerator NativeIdentifier ASTPrint BDDClient Utility
 UTLSRC=$(UTLBASE:%=$(UTLDIR)/%.java)
 UTLCLS=$(UTLSRC:.java=.class)
 
@@ -125,11 +137,11 @@ wala: $(WALAJAR)
 $(WALAJAR): $(JAMJAR) $(WALACLS)
 	jar cfm $@ MANIFEST-WALA.MF $(WALADIR)/*.class
 
-$(UTILJAR): $(JAMJAR) $(UTLCLS)
-	jar cfm $@ MANIFEST-UTIL.MF $(UTLDIR)/*.class
+$(UTILJAR): $(JAMJAR) $(UTLCLS) $(CHROMECLS) $(FIREFOXCLS)
+	jar cfm $@ MANIFEST-UTIL.MF $(UTLDIR)/*.class $(CHROMEDIR)/*.class $(FIREFOXDIR)/*.class
 
 utilclean:
-	rm -f $(UTLDIR)/*.class $(UTILJAR)
+	rm -f $(UTLDIR)/*.class $(CHROMEDIR)/*.class $(FIREFOXDIR)/*.class $(UTILJAR)
 
 walaclean:
 	rm -f $(WALADIR)/*.class $(WALAJAR)

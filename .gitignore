@@ -9,8 +9,6 @@
 /commons-lang*/
 /commons-io-*/
 /gperftools-*/
-/idlgen/
-/idlgen-orig/
 /wali/
 /wala/
 /JavaBDD/
@@ -23,6 +21,9 @@
 /unpacked/
 /cache-bak*/
 /output-*
+/idlgen/IDL.g4
+/idlgen/edu/
+/idlgen/*.jar
 *.class
 *.pyc
 .svn/

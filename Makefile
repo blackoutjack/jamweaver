@@ -206,17 +206,25 @@ natives: $(NATIVE_DEP)
 	mkdir -p $(LIBDIR)
 	./src/native/generate.py
 
-$(IDLDIR)/idl.jar: $(IDLDIR)/IDL.g4
-	java -jar $(IDLDIR)/antlr-4.4-complete.jar -package edu.wisc.cs.jam.env.idl -o $(IDLDIR)/edu/wisc/cs/jam/env/idl $(IDLDIR)/IDL.g4
-	javac -classpath $(IDLDIR)/antlr-4.4-complete.jar $(IDLDIR)/edu/wisc/cs/jam/env/idl/IDL*.java
-	cd $(IDLDIR) && jar cf $(IDLDIR)/idl.jar edu/wisc/cs/jam/env/idl/*.class
+$(IDLDIR)/IDL.g4:
+	make -f $(JAMPKG)/doc/DEPENDENCIES.mk $@
+
+$(IDLDIR)/webkitidl.jar: $(IDLDIR)/IDL.g4 $(IDLDIR)/WebkitIDL.g4
+	java -jar $(IDLDIR)/antlr-4.4-complete.jar -package edu.wisc.cs.jam.env -o $(IDLDIR)/edu/wisc/cs/jam/env $(IDLDIR)/WebkitIDL.g4
+	javac -classpath $(IDLDIR)/antlr-4.4-complete.jar $(IDLDIR)/edu/wisc/cs/jam/env/WebkitIDL*.java
+	cd $(IDLDIR) && jar cf $@ edu/wisc/cs/jam/env/WebkitIDL*.class
+
+$(IDLDIR)/geckoidl.jar: $(IDLDIR)/IDL.g4 $(IDLDIR)/GeckoIDL.g4
+	java -jar $(IDLDIR)/antlr-4.4-complete.jar -package edu.wisc.cs.jam.env -o $(IDLDIR)/edu/wisc/cs/jam/env $(IDLDIR)/GeckoIDL.g4
+	javac -classpath $(IDLDIR)/antlr-4.4-complete.jar $(IDLDIR)/edu/wisc/cs/jam/env/GeckoIDL*.java
+	cd $(IDLDIR) && jar cf $(IDLDIR)/geckoidl.jar edu/wisc/cs/jam/env/GeckoIDL*.class
 
 $(IDLDIR)/webidl.jar: $(IDLDIR)/WebIDL.g4
 	java -jar $(IDLDIR)/antlr-4.4-complete.jar -package edu.wisc.cs.jam.env.webidl -o $(IDLDIR)/edu/wisc/cs/jam/env/webidl $(IDLDIR)/WebIDL.g4
 	javac -classpath $(IDLDIR)/antlr-4.4-complete.jar $(IDLDIR)/edu/wisc/cs/jam/env/webidl/WebIDL*.java
 	cd $(IDLDIR) && jar cf $(IDLDIR)/webidl.jar edu/wisc/cs/jam/env/webidl/*.class
 
-idl: $(IDLDIR)/idl.jar
+idl: $(IDLDIR)/geckoidl.jar $(IDLDIR)/webkitidl.jar
 webidl: $(IDLDIR)/webidl.jar
 
 clean: nwaclean jamclean utilclean idlclean
@@ -238,7 +246,7 @@ utilclean:
 	make -C $(SRCDIR) utilclean
 
 idlclean:
-	rm -rf $(IDLDIR)/idl.jar $(IDLDIR)/webidl.jar $(IDLDIR)/edu/
+	rm -rf $(IDLDIR)/geckoidl.jar $(IDLDIR)/webkitidl.jar $(IDLDIR)/webidl.jar $(IDLDIR)/edu/
 
 veryclean: clean cacheclean tmpclean
 

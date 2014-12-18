@@ -5,6 +5,7 @@ Class-Path: ../closure/build/compiler.jar
   ../closure/lib/junit.jar
   ../JavaBDD/jdd.jar
   ../idlgen/antlr-4.4-complete.jar
-  ../idlgen/idl.jar
+  ../idlgen/webkitidl.jar
+  ../idlgen/geckoidl.jar
   ../idlgen/webidl.jar
   ../bin/jam.jar

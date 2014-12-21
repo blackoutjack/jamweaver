@@ -96,7 +96,7 @@ import edu.wisc.cs.jam.env.Method;
 import edu.wisc.cs.jam.env.Field;
 import edu.wisc.cs.jam.env.Const;
 import edu.wisc.cs.jam.env.Param;
-import edu.wisc.cs.jam.env.chrome.ChromePrototype;
+import edu.wisc.cs.jam.env.chrome.WebkitPrototype;
 
 public class WebkitGenerator extends NativeGenerator implements Utility {
 
@@ -435,7 +435,7 @@ public class WebkitGenerator extends NativeGenerator implements Utility {
           ModifiersContext imods = iface.modifiers();
           loadModifiers(imods, mods, compmods);
 
-          Prototype p = new ChromePrototype(iname, mods, compmods);
+          Prototype p = new WebkitPrototype(iname, mods, compmods);
 
           List<Method> meths = new ArrayList<Method>();
           List<Field> fields = new ArrayList<Field>();

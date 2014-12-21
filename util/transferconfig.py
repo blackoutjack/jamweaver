@@ -22,22 +22,10 @@ webbases = get_variant_bases(WEBSITE_FILE)
 RESULTSDIR = OUTDIR
 
 TARGETDIRS = {
-  BENCHMARK_DIR: {
-    'basenames': benchbases,
-    'wrap': False,
-  },
   MICROBENCHMARK_DIR: {
     'basenames': microbases,
     'wrap': True,
   },
-  WEBSITE_DIR: {
-    'basenames': webbases,
-    'wrap': False,
-  },
-  EXPLOIT_DIR: {
-    'basenames': exploits,
-    'wrap': False,
-  }
 }
 
 # Profiling-related configuration

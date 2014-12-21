@@ -15,7 +15,7 @@ public class Dbg {
 
   protected static void appendHeader(StringBuilder sb) {
     sb.append(Thread.currentThread().getName());
-    if (JAM.Opts.suppressTime) {
+    if (JAMOpts.suppressTime) {
       sb.append(": ");
       return;
     }
@@ -27,7 +27,7 @@ public class Dbg {
   }
 
   public static void memory(String id) {
-    if (!JAM.Opts.debugMemory) return;
+    if (!JAMOpts.debugMemory) return;
     
     Runtime runtime = Runtime.getRuntime();
 
@@ -48,7 +48,7 @@ public class Dbg {
   }
 
   public static void out(String message, int level) {
-    if (JAM.Opts.verbosity >= level) {
+    if (JAMOpts.verbosity >= level) {
       StringBuilder sb = new StringBuilder();
       appendHeader(sb);
       sb.append(message);
@@ -56,7 +56,7 @@ public class Dbg {
       System.err.print(sb);
       System.err.flush();
 
-      if (JAM.Opts.debug)
+      if (JAMOpts.debug)
         FileUtil.writeToMain(sb, "out.txt", true);
     }
   }
@@ -70,7 +70,7 @@ public class Dbg {
     System.err.print(sb);
     System.err.flush();
 
-    if (JAM.Opts.debug)
+    if (JAMOpts.debug)
       FileUtil.writeToMain(sb, "err.txt", true);
   }
 
@@ -83,7 +83,7 @@ public class Dbg {
     System.err.print(sb);
     System.err.flush();
 
-    if (JAM.Opts.debug)
+    if (JAMOpts.debug)
       FileUtil.writeToMain(sb, "err.txt", true);
     
     System.exit(1);
@@ -98,7 +98,7 @@ public class Dbg {
     System.err.print(sb);
     System.err.flush();
 
-    if (JAM.Opts.debug)
+    if (JAMOpts.debug)
       FileUtil.writeToMain(sb, "err.txt", true);
   }
 
@@ -126,13 +126,13 @@ public class Dbg {
   }
 
   public static void writeQueryHeader(String hdr, boolean concrete) {
-    if (!JAM.Opts.debugQueries) return;
+    if (!JAMOpts.debugQueries) return;
     String flname = "results-" + (concrete ? "concrete" : "symbolic");
     FileUtil.writeToFile("[" + hdr + "]\n", flname, true);
   }
 
   public static void writeCubeToFile(List<DataState> states, String filename) {
-    if (!JAM.Opts.debug) return;
+    if (!JAMOpts.debug) return;
 
     for (DataState state : states) {
       FileUtil.writeToFile(state.toStringFull() + "\n", filename, true);
@@ -141,7 +141,7 @@ public class Dbg {
   }
 
   public static void writeCubesToFile(List<List<DataState>> states, String filename) {
-    if (!JAM.Opts.debug) return;
+    if (!JAMOpts.debug) return;
 
     for (List<DataState> subStates : states) {
       writeCubeToFile(subStates, filename);

@@ -161,7 +161,7 @@ public class CartesianAutomaton extends RelationAutomaton {
                 // Test whether the transition is possible given the
                 // semantics of the program statement represented by the 
                 // ExpSymbol.
-                if (!JAM.Opts.syntaxOnly)
+                if (!JAMOpts.syntaxOnly)
                   c = removeEdgeOrReturnClause(rel, sym, preState, postState);
               }
 
@@ -325,7 +325,7 @@ public class CartesianAutomaton extends RelationAutomaton {
 
     Dbg.out("Loading data relations", 3);
 
-    //if (JAM.Opts.queryThreads > 1) {
+    //if (JAMOpts.queryThreads > 1) {
       loadInternalRelationsBatch(preStateCube, postStateCubes);
     //} else {
     //  loadInternalRelations(preStateCube, postStateCubes);

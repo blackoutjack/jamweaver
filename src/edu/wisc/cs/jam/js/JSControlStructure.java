@@ -16,6 +16,7 @@ import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.ReturnSymbol;
+import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.CallGraph.Callsite;
@@ -50,7 +51,7 @@ public class JSControlStructure extends ControlStructure {
 
     // Unless we're debugging, there's no reason to have a separate
     // return symbol for every return edge.
-    if (!JAM.Opts.debug)
+    if (!JAMOpts.debug)
       globalReturn = new ReturnSymbol(sm, mainFunction);
 
     // Generate the control structure (without relations). This
@@ -113,7 +114,7 @@ public class JSControlStructure extends ControlStructure {
     addEdge(externCall);
     */
 
-    JSExp.jettisonNodes();
+    ((JSSourceManager)sm).jettisonNodes();
   }
 
   // Build the control-flow graph.

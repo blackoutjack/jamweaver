@@ -5,8 +5,6 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.WeakHashMap;
 
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
@@ -19,7 +17,7 @@ import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.Dbg;
 
 public class JSExp extends Exp {
-  protected SourceManager sm;
+  protected JSSourceManager sm;
   protected Node node;
 
   protected String str;
@@ -43,16 +41,51 @@ public class JSExp extends Exp {
   protected int lineno;
   protected String sourceFileName;
 
-  protected static Map<Node,JSExp> nodeMap;
-  //protected static Map<Exp,String> typeMap;
+  protected void setNode(Node n) {
+    node = n;
+    sm.mapNode(n, this);
 
-  public static void jettisonNodes() {
-    for (Map.Entry<Node,JSExp> entry : nodeMap.entrySet()) {
-      Node n = entry.getKey();
-      JSExp e = entry.getValue();
-      e.clearNode();
+    type = n.getType();
+    if (type == Token.INC) {
+      boolean post = n.getBooleanProp(Node.INCRDECR_PROP);
+      if (post) {
+        type = POSTINC;
+      } else {
+        type = PREINC;
+      }
+    } else if (type == Token.DEC) {
+      boolean post = n.getBooleanProp(Node.INCRDECR_PROP);
+      if (post) {
+        type = POSTDEC;
+      } else {
+        type = PREDEC;
+      }
+    } else if (type == Token.STRING || type == Token.STRING_KEY || type == Token.NAME || type == Token.LABEL_NAME || type == Token.GETTER_DEF || type == Token.SETTER_DEF || type == Token.MEMBER_DEF || type == Token.REST) {
+      str = n.getString();
+    } else if (type == Token.NUMBER) {
+      num = n.getDouble();
     }
-    nodeMap.clear();
+
+    if (type == Token.STRING_KEY) {
+      quoted = n.getBooleanProp(Node.QUOTED_PROP);
+    }
+    if (type == Token.CALL) {
+      freeCall = n.getBooleanProp(Node.FREE_CALL);
+    }
+    if (type == Token.NAME) {
+      directEval = n.getBooleanProp(Node.DIRECT_EVAL);
+    }
+    if (type == Token.FUNCTION) {
+      arrowFunction = n.getBooleanProp(Node.ARROW_FN);
+    }
+    if (type == Token.STRING || type == Token.STRING_KEY) {
+      // %%% Per Node.java, this is a "total hack."
+      slashv = n.getIntProp(Node.SLASH_V);
+    }
+
+    charno = n.getCharno();
+    lineno = n.getLineno();
+    sourceFileName = n.getSourceFileName();
   }
 
   // This syncs up with Closure.
@@ -179,59 +212,8 @@ public class JSExp extends Exp {
 
     // %%% Include ES6 tokens eventually.
 
-  static {
-    nodeMap = new WeakHashMap<Node,JSExp>();
-  }
-
   protected void clearNode() {
     node = null;
-  }
-
-  protected void setNode(Node n) {
-    node = n;
-    nodeMap.put(n, this);
-
-    type = n.getType();
-    if (type == Token.INC) {
-      boolean post = n.getBooleanProp(Node.INCRDECR_PROP);
-      if (post) {
-        type = POSTINC;
-      } else {
-        type = PREINC;
-      }
-    } else if (type == Token.DEC) {
-      boolean post = n.getBooleanProp(Node.INCRDECR_PROP);
-      if (post) {
-        type = POSTDEC;
-      } else {
-        type = PREDEC;
-      }
-    } else if (type == Token.STRING || type == Token.STRING_KEY || type == Token.NAME || type == Token.LABEL_NAME || type == Token.GETTER_DEF || type == Token.SETTER_DEF || type == Token.MEMBER_DEF || type == Token.REST) {
-      str = n.getString();
-    } else if (type == Token.NUMBER) {
-      num = n.getDouble();
-    }
-
-    if (type == Token.STRING_KEY) {
-      quoted = n.getBooleanProp(Node.QUOTED_PROP);
-    }
-    if (type == Token.CALL) {
-      freeCall = n.getBooleanProp(Node.FREE_CALL);
-    }
-    if (type == Token.NAME) {
-      directEval = n.getBooleanProp(Node.DIRECT_EVAL);
-    }
-    if (type == Token.FUNCTION) {
-      arrowFunction = n.getBooleanProp(Node.ARROW_FN);
-    }
-    if (type == Token.STRING || type == Token.STRING_KEY) {
-      // %%% Per Node.java, this is a "total hack."
-      slashv = n.getIntProp(Node.SLASH_V);
-    }
-
-    charno = n.getCharno();
-    lineno = n.getLineno();
-    sourceFileName = n.getSourceFileName();
   }
 
   public JSExp(int t, Exp l, Exp c, Exp d, Exp r) {
@@ -243,7 +225,11 @@ public class JSExp extends Exp {
     assert c.getParent() == null;
     assert d.getParent() == null;
     assert r.getParent() == null;
-    sm = l.getSourceManager();
+    SourceManager src = l.getSourceManager();
+    if (!(src instanceof JSSourceManager)) {
+      throw new IllegalArgumentException("Wrong type of SourceManager: " + src.getClass().getName());
+    }
+    sm = (JSSourceManager)src;
     assert c.getSourceManager() == sm;
     assert d.getSourceManager() == sm;
     assert r.getSourceManager() == sm;
@@ -267,7 +253,11 @@ public class JSExp extends Exp {
     assert l.getParent() == null;
     assert c.getParent() == null;
     assert r.getParent() == null;
-    sm = l.getSourceManager();
+    SourceManager src = l.getSourceManager();
+    if (!(src instanceof JSSourceManager)) {
+      throw new IllegalArgumentException("Wrong type of SourceManager: " + src.getClass().getName());
+    }
+    sm = (JSSourceManager)src;
     assert c.getSourceManager() == sm;
     assert r.getSourceManager() == sm;
 
@@ -287,7 +277,11 @@ public class JSExp extends Exp {
     assert r != null;
     assert l.getParent() == null;
     assert r.getParent() == null;
-    sm = l.getSourceManager();
+    SourceManager src = l.getSourceManager();
+    if (!(src instanceof JSSourceManager)) {
+      throw new IllegalArgumentException("Wrong type of SourceManager: " + src.getClass().getName());
+    }
+    sm = (JSSourceManager)src;
     assert r.getSourceManager() == sm;
 
     Node n = new Node(t);
@@ -303,7 +297,11 @@ public class JSExp extends Exp {
   public JSExp(int t, Exp c) {
     assert c != null;
     assert c.getParent() == null;
-    sm = c.getSourceManager();
+    SourceManager src = c.getSourceManager();
+    if (!(src instanceof JSSourceManager)) {
+      throw new IllegalArgumentException("Wrong type of SourceManager: " + src.getClass().getName());
+    }
+    sm = (JSSourceManager)src;
 
     Node n = new Node(t);
     setNode(n);
@@ -314,9 +312,11 @@ public class JSExp extends Exp {
     assert !ExpUtil.isUnOp(this);
   }
 
-  public JSExp(SourceManager s, int t) {
-    assert s != null;
-    sm = s;
+  public JSExp(SourceManager src, int t) {
+    if (!(src instanceof JSSourceManager)) {
+      throw new IllegalArgumentException("Wrong type of SourceManager: " + src.getClass().getName());
+    }
+    sm = (JSSourceManager)src;
     Node n = new Node(t);
     setNode(n);
     children = new ArrayList<Exp>();
@@ -324,12 +324,12 @@ public class JSExp extends Exp {
     assert !ExpUtil.isUnOp(this);
   }
 
-  protected JSExp(SourceManager src, Node n) {
+  protected JSExp(JSSourceManager src, Node n) {
     // This constructor is protected to prevent duplicates.
     assert src != null;
     assert n != null;
-    assert !nodeMap.containsKey(n) : "JSExp already created for node: " + n;
     sm = src;
+    assert !sm.containsNode(n) : "JSExp already created for node: " + n;
     setNode(n);
 
     // Recursively generate child expressions.
@@ -343,15 +343,8 @@ public class JSExp extends Exp {
     }
   }
 
-  protected JSExp(SourceManager src) {
-    assert src != null;
-    sm = src;
-    Node n = new Node(EMPTY);
-    setNode(n);
-  }
-
   public static JSExp createEmpty(SourceManager src) {
-    return new JSExp(src);
+    return create(src, new Node(EMPTY));
   }
 
   public static JSExp createName(SourceManager src, String name) {
@@ -372,10 +365,15 @@ public class JSExp extends Exp {
 
   // Get the corresponding Exp for a given Node, or create a new one.
   public static JSExp create(SourceManager src, Node n) {
-    if (nodeMap.containsKey(n)) {
-      return nodeMap.get(n);
+    if (!(src instanceof JSSourceManager)) {
+      throw new IllegalArgumentException("Wrong type of SourceManager: " + src.getClass().getName());
     }
-    return new JSExp(src, n);
+    JSSourceManager s = (JSSourceManager)src;
+    JSExp e = s.getExpForNode(n);
+    if (e != null) {
+      return e;
+    }
+    return new JSExp(s, n);
   }
 
   @Override

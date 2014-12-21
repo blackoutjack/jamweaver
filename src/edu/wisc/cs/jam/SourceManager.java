@@ -1,7 +1,5 @@
 package edu.wisc.cs.jam;
 
-import com.google.javascript.rhino.Node;
-
 import java.util.List;
 
 import edu.wisc.cs.jam.CallGraph.Function;
@@ -10,6 +8,7 @@ import edu.wisc.cs.jam.Traversal.Traverser;
 public interface SourceManager {
   public abstract void saveSources(String dirname);
   public abstract void addSource(Source fl);
+  public abstract void doneAddingSources();
   public abstract void preprocess();
   // %%% Remove the need for ControlAutomaton.
   public abstract void postprocess(CheckManager cm);
@@ -29,4 +28,5 @@ public interface SourceManager {
   public abstract Exp getRoot();
   public abstract Exp getExterns();
   public abstract void traverse(Exp root, Traverser t);
+  public abstract void close();
 }

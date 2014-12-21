@@ -56,11 +56,15 @@ JS_COMMAND = os.path.join(JAMSCRIPT_BUILDDIR, 'dist', 'bin', 'js')
 
 # The command (minus input arguments) used to invoke JAM.
 # This should be list which can be used with subprocess.
-JAMJAR = os.path.join(BINDIR, "jam.jar")
-JAMCOMMAND = os.getenv('JAMCOMMAND', 'java -ea -Xms256m -Xmx3072m -jar ' + JAMJAR).split(' ')
-JAMDBGCOMMAND = os.getenv('JAMDBGCOMMAND', 'java -ea -Xms256m -Xmx3072m -Xdebug -agentlib:jdwp=transport=dt_socket,address=localhost:9009,server=y,suspend=n -jar ' + JAMJAR).split(' ')
+JAMPROCJAR = os.path.join(BINDIR, "jam.jar")
+JAMSVCJAR = os.path.join(BINDIR, "jamsvc.jar")
+JAMCOMMAND = os.getenv('JAMCOMMAND', 'java -ea -Xms256m -Xmx3072m -jar ' + JAMPROCJAR).split(' ')
+JAMSVCCOMMAND = os.getenv('JAMSVCCOMMAND', 'java -ea -Xms256m -Xmx3072m -jar ' + JAMSVCJAR).split(' ')
+JAMDBGCOMMAND = os.getenv('JAMDBGCOMMAND', 'java -ea -Xms256m -Xmx3072m -Xdebug -agentlib:jdwp=transport=dt_socket,address=localhost:9009,server=y,suspend=n -jar ' + JAMPROCJAR).split(' ')
+JAMSVCDBGCOMMAND = os.getenv('JAMSVCDBGCOMMAND', 'java -ea -Xms256m -Xmx3072m -Xdebug -agentlib:jdwp=transport=dt_socket,address=localhost:9009,server=y,suspend=n -jar ' + JAMSVCJAR).split(' ')
 JAMUTILJAR = os.path.join(BINDIR, "util.jar")
 JAMUTILCOMMAND = os.getenv('JAMUTILCOMMAND', 'java -jar ' + JAMUTILJAR).split(' ')
+JAMPORT = 11211
 
 # Benchmark applications that will blow up interprocedural analysis.
 LARGE_BENCHMARKS = [

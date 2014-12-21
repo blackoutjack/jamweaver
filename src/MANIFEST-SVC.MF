@@ -1,0 +1,4 @@
+Main-Class: edu.wisc.cs.jam.svc.JAMService
+Class-Path: ../bin/jamcommon.jar
+  ../httpcomponents-core-4.4/lib/httpcore-4.4.jar
+

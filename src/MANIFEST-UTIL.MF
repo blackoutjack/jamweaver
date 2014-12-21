@@ -1,11 +1,8 @@
 Main-Class: edu.wisc.cs.jam.util.Main
-Class-Path: ../closure/build/compiler.jar
-  ../JavaBDD/javabdd-1.0b2.jar
-  ../commons-lang3-3.1/commons-lang3-3.1.jar
-  ../closure/lib/junit.jar
+Class-Path: ../bin/jamcommon.jar
   ../JavaBDD/jdd.jar
   ../idlgen/antlr-4.4-complete.jar
   ../idlgen/webkitidl.jar
   ../idlgen/geckoidl.jar
   ../idlgen/webidl.jar
-  ../bin/jam.jar
+

@@ -316,7 +316,7 @@ public class BooleanAutomaton extends RelationAutomaton {
     assert fullCube.size() > 1 : "Less than 2 data states are consistent";
 
     Dbg.out("Loading data relations", 3);
-    if (JAM.Opts.queryThreads > 1) {
+    if (JAMOpts.queryThreads > 1) {
       loadInternalRelationsBatch(fullCube);
     } else {
       loadInternalRelations(fullCube);

@@ -19,6 +19,10 @@ public class JSTransform implements Transform {
   private static long varUnique = 0;
   public static final String prefix = "v";
 
+  public static void resetVariableNames() {
+    varUnique = 0; 
+  }
+
   public String newVariableName() {
     return prefix + varUnique++;
   }

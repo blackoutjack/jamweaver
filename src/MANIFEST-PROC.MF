@@ -1,0 +1,3 @@
+Main-Class: edu.wisc.cs.jam.proc.JAMProcess
+Class-Path: ../bin/jamcommon.jar
+

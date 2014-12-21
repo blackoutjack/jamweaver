@@ -80,6 +80,12 @@ commons:
 	tar -xzf commons-lang3-3.1-bin.tar.gz
 	mv commons-lang3-3.1-bin.tar.gz packages
 
+httpcomponents:
+	mkdir -p packages
+	wget http://archive.apache.org/dist/httpcomponents/httpcore/binary/httpcomponents-core-4.4-bin.tar.gz
+	tar -xzf httpcomponents-core-4.4-bin.tar.gz
+	mv httpcomponents-core-4.4-bin.tar.gz packages
+
 # Needed to build nwa from source, when using tcmalloc.
 gperftools:
 	wget https://googledrive.com/host/0B6NtGsLhIcf7MWxMMF9JdTN3UVk/gperftools-2.2.1.tar.gz

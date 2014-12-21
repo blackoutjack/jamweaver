@@ -16,6 +16,7 @@ import java.util.Iterator;
 
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.Dbg;
 
 // Generates Prolog clauses regarding types in the program
@@ -64,7 +65,7 @@ public class TypeFacts {
 
         JSType reftype = n.getJSType();
 
-        if (JAM.Opts.debug) {
+        if (JAMOpts.debug) {
           FileUtil.writeToMain(n + " / " + reftype + "\n", "typeinfo.txt", true);
         }
 

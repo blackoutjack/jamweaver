@@ -104,6 +104,15 @@ public class XSBSingleInterface extends XSBInterface {
     }
     return ret;
   }
+
+  @Override
+  public void close() {
+    try {
+      xsbProcess.close();
+    } catch (IOException ex) {
+      Dbg.err("Unable to shutdown XSB process " + xsbProcess.getId());
+    }
+  }
 }
 
 

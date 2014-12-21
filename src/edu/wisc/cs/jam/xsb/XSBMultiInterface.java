@@ -18,6 +18,7 @@ import java.util.concurrent.TimeoutException;
 
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.Semantics;
 import edu.wisc.cs.jam.Clause;
 
@@ -31,7 +32,7 @@ public class XSBMultiInterface extends XSBInterface {
 
     xsbProcesses = new LinkedBlockingQueue<XSBProcess>();
     currentModes = new ConcurrentHashMap<XSBProcess,Mode>();
-    for (int i=0; i<JAM.Opts.queryThreads; i++) {
+    for (int i=0; i<JAMOpts.queryThreads; i++) {
       xsbProcesses.add(initProcess());
     }
   }
@@ -90,7 +91,7 @@ public class XSBMultiInterface extends XSBInterface {
       xsb = getProcess(clause.isConcrete());
 
       // In debug mode, only log queries that are not cached.
-      if (JAM.Opts.debugQueries) {
+      if (JAMOpts.debugQueries) {
         logQuery(clause, clause.isConcrete());
       }
 
@@ -122,7 +123,7 @@ public class XSBMultiInterface extends XSBInterface {
 
       // Flush the error stream.
       String err = getError(xsb);
-      if (JAM.Opts.debug) {
+      if (JAMOpts.debug) {
         if (err == null) {
           Dbg.err("XSB error stream is null for query " + clause.getQueryId());
         } else if (!err.equals("")) {
@@ -143,7 +144,7 @@ public class XSBMultiInterface extends XSBInterface {
       }
 
       // Generate a log string to help with debugging.
-      if (JAM.Opts.debugQueries) {
+      if (JAMOpts.debugQueries) {
         logResult(clause, ret, totalTime, clause.isConcrete());
       }
 
@@ -168,7 +169,7 @@ public class XSBMultiInterface extends XSBInterface {
   // clause is not. Therefore we just replace the clause with its prereq
   // in the list in that case.
   protected List<Clause> filterByPrerequisite(List<Clause> clauses, List<Clause> prereqs) {
-    ExecutorService pool = Executors.newFixedThreadPool(JAM.Opts.queryThreads);
+    ExecutorService pool = Executors.newFixedThreadPool(JAMOpts.queryThreads);
 
     List<Future<Boolean>> futureResults = new ArrayList<Future<Boolean>>();
     List<Querier> queriers = new ArrayList<Querier>();
@@ -211,7 +212,7 @@ public class XSBMultiInterface extends XSBInterface {
 
           // If debugQueries is on, log cached queries.
           // (Comment this out to avoid clutter in the logs.)
-          if (JAM.Opts.debugQueries) {
+          if (JAMOpts.debugQueries) {
             logQuery(c, concrete, true);
             logResult(c, cached.booleanValue(), 0L, concrete, true);
           }
@@ -287,6 +288,7 @@ public class XSBMultiInterface extends XSBInterface {
   // This version of batch query will first evaluate the satisfiability
   // of the |prereqs|, and then only evaluate the corresponding item
   // from |clauses| if the prerequisite is satisfied.
+  @Override
   public List<Boolean> query(List<Clause> clauses, List<Clause> prereqs, boolean onError) {
     if (prereqs == null || prereqs.size() == 0) {
       return query(clauses, onError);
@@ -299,8 +301,9 @@ public class XSBMultiInterface extends XSBInterface {
     return query(filtered, onError);
   }
 
+  @Override
   public List<Boolean> query(List<Clause> clauses, boolean onError) {
-    ExecutorService pool = Executors.newFixedThreadPool(JAM.Opts.queryThreads);
+    ExecutorService pool = Executors.newFixedThreadPool(JAMOpts.queryThreads);
 
     List<Querier> queriers = new ArrayList<Querier>();
     List<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
@@ -335,7 +338,7 @@ public class XSBMultiInterface extends XSBInterface {
           // %%% Make optional
           c.setQueryId(cacheCount);
           cacheCount++;
-          if (JAM.Opts.debugQueries) {
+          if (JAMOpts.debugQueries) {
             logQuery(c, concrete, true);
             logResult(c, cached.booleanValue(), 0L, concrete, true);
           }
@@ -350,5 +353,15 @@ public class XSBMultiInterface extends XSBInterface {
     return ret;
   }
 
+  @Override
+  public void close() {
+    for (XSBProcess p : xsbProcesses) {
+      try {
+        p.close();
+      } catch (IOException ex) {
+        Dbg.err("Unable to shutdown XSB process " + p.getId());
+      }
+    }
+  }
 }
 

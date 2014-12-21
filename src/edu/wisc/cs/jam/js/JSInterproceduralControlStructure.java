@@ -11,6 +11,7 @@ import edu.wisc.cs.automaton.Automaton.Edge;
 import edu.wisc.cs.automaton.State;
 
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.Traversal;
 import edu.wisc.cs.jam.Traversal.Traverser;
 import edu.wisc.cs.jam.ExpSymbol;
@@ -329,7 +330,7 @@ public class JSInterproceduralControlStructure extends JSControlStructure implem
       // information.
       callingSites.addAll(conservativeCalls); 
 
-      if (JAM.Opts.debug) {
+      if (JAMOpts.debug) {
         // Verify that there is an explicit return statement on each
         // return edge.
         List<Edge> inedges = getInEdges(returnState);

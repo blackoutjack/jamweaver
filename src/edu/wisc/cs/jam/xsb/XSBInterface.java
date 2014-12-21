@@ -10,6 +10,7 @@ import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.Semantics;
 import edu.wisc.cs.jam.Clause;
 
@@ -25,14 +26,13 @@ public abstract class XSBInterface {
   protected static final int QUERY_RESET = 100;
   // This should be high enough to allow compilation of funfacts.P
   // and typefacts.P.
-  protected static final int QUERY_TIMEOUT = JAM.Opts.queryTimeout;
+  protected static final int QUERY_TIMEOUT = JAMOpts.queryTimeout;
 
   protected QueryCache queryCache;
 
   // An ordered set of directories from which XSB modules are loaded
   protected List<String> loadDirectories;
 
-  private XSBProcess xsbProcess;
   Mode currentMode;
 
   protected int queryCount = 0;
@@ -138,6 +138,7 @@ public abstract class XSBInterface {
   }
 
   protected abstract void putProcess(XSBProcess xsb);
+
   protected abstract XSBProcess getProcess(boolean concrete);
 
   protected String readYesNo(XSBProcess xsb) throws IOException {
@@ -201,6 +202,7 @@ public abstract class XSBInterface {
 
   public abstract List<Boolean> query(List<Clause> clauses, boolean onError);
   public abstract List<Boolean> query(List<Clause> clauses, List<Clause> prereqs, boolean onError);
+  public abstract void close();
 
   public boolean query(Clause clause, Clause prereq) throws IOException {
     try {
@@ -228,7 +230,7 @@ public abstract class XSBInterface {
       // Log queries that are not cached.
       clause.setQueryId(queryCount);
       queryCount++;
-      if (JAM.Opts.debugQueries) {
+      if (JAMOpts.debugQueries) {
         logQuery(clause, concrete);
       }
 
@@ -253,7 +255,7 @@ public abstract class XSBInterface {
 
       // Flush the error stream.
       String err = getError(xsb);
-      if (JAM.Opts.debug) {
+      if (JAMOpts.debug) {
         if (err == null) {
           Dbg.err("XSB error stream is null for query " + clause.getQueryId());
         } else if (!err.equals("")) {
@@ -274,7 +276,7 @@ public abstract class XSBInterface {
       putProcess(xsb);
 
       // Generate a log string to help with debugging.
-      if (JAM.Opts.debugQueries) {
+      if (JAMOpts.debugQueries) {
         logResult(clause, ret, totalTime, concrete);
       }
 
@@ -288,7 +290,7 @@ public abstract class XSBInterface {
       // %%% Make optional
       clause.setQueryId(cacheCount);
       cacheCount++;
-      if (JAM.Opts.debugQueries) {
+      if (JAMOpts.debugQueries) {
         logQuery(clause, concrete, true);
         logResult(clause, ret, 0, concrete, true);
       }
@@ -305,11 +307,11 @@ public abstract class XSBInterface {
     // %%% re-put.
     XSBProcess xsb = getProcess(true);
 
-    if (JAM.Opts.debugQueries) {
+    if (JAMOpts.debugQueries) {
       //FileUtil.writeToFile(clause.getQuery() + ".\n", "checking", true);
       clause.setQueryId(queryCount);
       queryCount++;
-      if (JAM.Opts.debugQueries) {
+      if (JAMOpts.debugQueries) {
         logQuery(clause, true);
       }
     }
@@ -325,7 +327,7 @@ public abstract class XSBInterface {
       throw new IOException("Unable to read output from XSB: " + err);
     }
 
-    if (JAM.Opts.debugQueries) {
+    if (JAMOpts.debugQueries) {
       logResult(clause, true, totalTime, true);
     }
 
@@ -339,7 +341,7 @@ public abstract class XSBInterface {
       List<String> sentinels = xsb.readErrLines();
       putProcess(xsb);
 
-      if (JAM.Opts.debugQueries) {
+      if (JAMOpts.debugQueries) {
         StringBuilder sb = new StringBuilder();
         for (String sentinel : sentinels) {
           sb.append(sentinel);
@@ -409,7 +411,7 @@ public abstract class XSBInterface {
       sb.append(" ");
     }
 
-    if (!JAM.Opts.suppressTime) {
+    if (!JAMOpts.suppressTime) {
       sb.append(time);
       sb.append("ms");
     }

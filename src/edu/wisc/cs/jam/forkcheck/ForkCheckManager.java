@@ -10,6 +10,7 @@ import java.util.Set;
 import edu.wisc.cs.automaton.State;
 
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.ExpSymbol;
@@ -106,7 +107,7 @@ public class ForkCheckManager implements CheckManager, Traverser {
 
   @Override
   public synchronized void addCheck(RuntimeCheck c) {
-    if (JAM.Opts.debug) FileUtil.writeToFile(c + "\n", "check-" + getCheckCount(), true);
+    if (JAMOpts.debug) FileUtil.writeToFile(c + "\n", "check-" + getCheckCount(), true);
     c.apply();
     if (!activeChecks.contains(c)) activeChecks.add(c);
   }

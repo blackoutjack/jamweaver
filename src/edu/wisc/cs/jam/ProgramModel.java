@@ -18,9 +18,9 @@ public class ProgramModel {
     policyPath = p;
 
     // Build a different abstraction based on options.
-    if (JAM.Opts.disjoint) {
+    if (JAMOpts.disjoint) {
       raut = new DisjointAutomaton(jam, policyPath);
-    } else if (true || JAM.Opts.cartesian) {
+    } else if (true || JAMOpts.cartesian) {
       raut = new CartesianAutomaton(jam, policyPath);
     }/* else {
       raut = new K1Automaton(jam, policyPath);
@@ -117,7 +117,7 @@ public class ProgramModel {
     // Generate the data relations for the control automaton.
     loadRelations(learnedPredicates);
 
-    //if (JAM.Opts.debug) 
+    //if (JAMOpts.debug) 
     //  FileUtil.writeToFile(raut, "relation-control.aut");
 
     Dbg.out("Done building model", 3);

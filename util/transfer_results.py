@@ -210,22 +210,15 @@ def copy_source(app, desc, srcpath, tgtdir, respred=None, name=None):
   if not update_tgt: return False
 
   srcfl = open(srcpath, 'r')
-  if respred is not None:
-    # Enclose the source within a call to |runTest|.
-    ind = "  "
-    def indent(ln): return ind + ln
-    srctxt = "".join(map(indent, srcfl.readlines()))
-  else:
-    ind = ""
-    srctxt = srcfl.read()
+  srctxt = srcfl.read()
   srcfl.close()
 
   # Normalize the number of blank lines.
-  srctxt = ind + srctxt.strip() + "\n"
+  srctxt = srctxt.strip() + "\n"
 
   if respred is not None:
-    # Generate a version with global code wrapped in |runTest|.
-    srctxt = "function runTest() {\n" + srctxt + "\n  return " + respred + ";\n}\n"
+    # Generate a statement that checks some expected state.
+    srctxt = srctxt + '\nJAM.log("Result: " + " + respred ");\n';
 
   if has_change(tgt, srctxt):
     write_text(tgt, srctxt)
@@ -271,8 +264,7 @@ def copy_files(app, infos, apppath, wrap=False):
 
   # Optionally, a result file in the target directory can contain
   # a JavaScript expression that should evaluate to |true| (or some
-  # other value). This value will be returned by |runTest| and
-  # displayed by the JAM log.
+  # other value). This value will be checked at the end of the script.
   if wrap:
     respred = get_result_predicate(apppath, app)
   else:
@@ -380,30 +372,11 @@ def update_coarse(apppath, app, wrap):
       srctxt = srcfl.read()
       srcfl.close()
 
-      if wrap:
-        ind = '  '
-        # Remove this from the beginning
-        #
-        #   function runTest() {\n
-        #
-        # and this from the end.
-        #
-        #   \n  return " + respred + ";\n}\n
-        srclines = srctxt.split('\n')
-        wrappre = srclines[0]
-        wrappost = '\n'.join(srclines[-3:])
-        srclines = srclines[1:-3]
-        srctxt = '\n'.join(srclines)
-      else:
-        ind = ''
       # Normalize the number of blank lines.
-      srctxt = ind + srctxt.strip() + "\n"
+      srctxt = srctxt.strip() + "\n"
 
       # Generate a coarse-grained transaction version. 
-      modtxt = ind + "introspect(JAM.policy.pFull) {\n" + srctxt + "\n" + ind + "}\n"
-
-      if wrap:
-        modtxt = '%s\n%s\n%s' % (wrappre, modtxt, wrappost)
+      modtxt = "introspect(JAM.policy.pFull) {\n" + srctxt + "\n" + "}\n"
 
       if has_change(tgtpath, modtxt):
         if cfg.load_dir(tgtdirpath):
@@ -453,24 +426,8 @@ def update_profile(apppath, app, wrap):
       srctxt = srcfl.read()
       srcfl.close()
 
-      if wrap:
-        ind = '  '
-        # Remove this from the beginning
-        #
-        #   function runTest() {\n
-        #
-        # and this from the end.
-        #
-        #   \n  return " + respred + ";\n}\n
-        srclines = srctxt.split('\n')
-        wrappre = srclines[0]
-        wrappost = '\n'.join(srclines[-3:])
-        srclines = srclines[1:-3]
-        srctxt = '\n'.join(srclines)
-      else:
-        ind = ''
       # Normalize the number of blank lines.
-      srctxt = ind + srctxt.strip() + "\n"
+      srctxt = srctxt.strip() + "\n"
 
       profdesc = desc + '.profile'
 
@@ -478,7 +435,6 @@ def update_profile(apppath, app, wrap):
       profspec = {
         'beginafter': None,
         'endbefore': None,
-        'indent': len(ind)
       }
       proftxt = insert_profile(srctxt, 'load', profspec, appdesc)
 
@@ -492,9 +448,6 @@ def update_profile(apppath, app, wrap):
           if desc in extraprofspecs:
             profspec = extraprofspecs[desc]
             proftxt = insert_profile(proftxt, extraprofdesc, profspec, appdesc)
-
-      if wrap:
-        proftxt = '%s\n%s\n%s' % (wrappre, proftxt, wrappost)
 
       if has_change(tgtpath, proftxt):
         if cfg.load_dir(tgtdirpath):

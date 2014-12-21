@@ -91,7 +91,7 @@ public class DisjointAutomaton extends RelationAutomaton {
                 // Test whether the transition is possible given the
                 // semantics of the program statement represented by the 
                 // ExpSymbol.
-                if (!JAM.Opts.syntaxOnly)
+                if (!JAMOpts.syntaxOnly)
                   c = removeEdgeOrReturnClause(rel, sym, preState, postState);
               }
 
@@ -195,7 +195,7 @@ public class DisjointAutomaton extends RelationAutomaton {
                 if (hasDataDifference(preState, postState))
                   rel.removeEdges(preState, postState);
               } else {
-                if (!JAM.Opts.syntaxOnly) {
+                if (!JAMOpts.syntaxOnly) {
                   DataTransition tran = new DataTransition(rel, preState, sym, postState);
                   checkValidTransition(tran);
                 }
@@ -240,7 +240,7 @@ public class DisjointAutomaton extends RelationAutomaton {
     Dbg.writeCubesToFile(predCubes, "predicate-states");
 
     Dbg.out("Loading data relations", 3);
-    if (JAM.Opts.queryThreads > 1) {
+    if (JAMOpts.queryThreads > 1) {
       loadInternalRelationsBatch(predCubes);
     } else {
       loadInternalRelations(predCubes);

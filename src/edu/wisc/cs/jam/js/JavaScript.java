@@ -17,7 +17,7 @@ import edu.wisc.cs.jam.ControlAutomaton;
 import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.Policy;
 import edu.wisc.cs.jam.Language;
-import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.FileUtil;
 
@@ -31,7 +31,6 @@ public class JavaScript implements Language {
   // %%% Conceptually, shouldn't need the source file.
   @Override
   public Semantics newSemantics(SourceManager sm) {
-    assert sem == null;
     sem = new JSSemantics(sm);
     sem.loadFunctionFacts();
     return sem;
@@ -59,7 +58,7 @@ public class JavaScript implements Language {
   @Override
   public ControlAutomaton newControlAutomaton(SourceManager sm, CheckManager cm) {
     ControlAutomaton caut = null;
-    if (JAM.Opts.intraprocedural) {
+    if (JAMOpts.intraprocedural) {
       caut = new JSControlStructure(sm, cm);
     } else {
       caut = new JSInterproceduralControlStructure(sm, cm);
@@ -69,12 +68,74 @@ public class JavaScript implements Language {
   }
 
   @Override
+  public SourceManager newSourceManager(Map<String,String> src) {
+    JSTransform.resetVariableNames();
+    JSSourceManager jsman = new JSSourceManager();
+    // Cull duplicate source files since Closure can't handle them.
+    Set<String> sfs = new HashSet<String>();
+    for (Map.Entry<String,String> entry : src.entrySet()) {
+      String srcpath = entry.getKey();
+      String srctext = entry.getValue();
+      if (JAMOpts.sourceIsList) {
+        String[] lines = srctext.split("\n");
+        for (String line : lines) {
+          String[] parts = line.split(":");
+          if (parts.length != 3) {
+            Dbg.warn("Invalid format for source list line: " + line);
+            continue;
+          }
+          String srctype = parts[0];
+          String srcid = parts[1];
+          String relpath = parts[2];
+
+          // The path is assumed to be relative to the directory
+          // containing the list file itself (or the current directory,
+          // if the path is just a file name).
+          File listfile = new File(srcpath);
+          String srctop = listfile.getParent();
+          File absfile = new File(srctop, relpath);
+          String abspath = absfile.getAbsolutePath();
+          if (sfs.contains(abspath)) {
+            Dbg.warn("Omitting duplicate source file: " + abspath);
+            continue;
+          }
+          sfs.add(abspath);
+
+          // These must be wrapped in a function to prevent "invalid
+          // return" errors.
+          boolean wrap = srctype.startsWith("script.event.") || srctype.equals("script.href");
+          JSSource newsrc = new JSSource(abspath, wrap);
+          
+          newsrc.setRelativePath(relpath);
+          jsman.addSource(newsrc);
+        }
+      } else {
+        File sf = new File(srcpath);
+        String abspath = sf.getAbsolutePath();
+        if (sfs.contains(abspath)) {
+          Dbg.warn("Omitting duplicate source file: " + abspath);
+          continue;
+        }
+        sfs.add(abspath);
+        jsman.addSource(new JSSource(srcpath, srctext, false));
+      }
+    }
+    if (JAMOpts.htmlFile != null) {
+      jsman.addSource(new HTMLSource(JAMOpts.htmlFile));
+    }
+
+    jsman.doneAddingSources();
+    return jsman;
+  }
+
+  @Override
   public SourceManager newSourceManager(List<String> srcPaths) {
+    JSTransform.resetVariableNames();
     JSSourceManager jsman = new JSSourceManager();
     // Cull duplicate source files since Closure can't handle them.
     Set<String> sfs = new HashSet<String>();
     for (String srcpath : srcPaths) {
-      if (JAM.Opts.sourceIsList) {
+      if (JAMOpts.sourceIsList) {
         List<String> lines = null;
         try {
           lines = FileUtil.getLinesFromFile(srcpath, "#");
@@ -122,11 +183,11 @@ public class JavaScript implements Language {
         jsman.addSource(new JSSource(abspath, false));
       }
     }
-    if (JAM.Opts.htmlFile != null) {
-      jsman.addSource(new HTMLSource(JAM.Opts.htmlFile));
+    if (JAMOpts.htmlFile != null) {
+      jsman.addSource(new HTMLSource(JAMOpts.htmlFile));
     }
 
-    jsman.generate();
+    jsman.doneAddingSources();
     return jsman;
   }
 

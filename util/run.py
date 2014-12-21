@@ -14,7 +14,6 @@ from util import run_unpacker
 from util import run_repacker
 from util import validate_output
 from util import validate_value
-from util import load_policies
 from util import load_policy
 from util import load_seeds
 from util import load_app_sources
@@ -28,6 +27,9 @@ from util import get_info_path
 from util import parse_info_file
 from util import process_info
 from util import compare_info
+from util import start_jam_service
+from util import query_jam_service
+from util import close_jam_service
 
 # A collection of RunResult objects that can print a summary.
 class RunResults():
@@ -157,17 +159,16 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     if synonly:
       opts.append('-z')
 
-    if poldesc != '':
-      opts.append('--appsuffix')
-      opts.append(poldesc)
-
     out("Analyzing %s" % appname)
-    outp, errp = run_jam([srclist], [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
+    if service:
+      outp, errp = query_jam_service([srclist], [polfile], refine=refine, seeds=None, moreopts=opts)
+    else:
+      outp, errp = run_jam([srclist], [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
     
     # Error case, message printed in |run_jam|.
     if outp is None: continue
 
-    refsuf = get_suffix(synonly, refine)
+    refsuf = get_suffix(synonly, refine, poldesc)
 
     expfile = '%s.%s.out.js' % (appname, refsuf)
     exppath = os.path.join(WEBSITE_DIR, expfile)
@@ -215,7 +216,7 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
   return results
 # /run_website
 
-def run_websites(debug=False, overwrite=False, refine=None, synonly=False):
+def run_websites(debug=False, overwrite=False, refine=None, synonly=False, service=False, apps=None):
   results = RunResults('websites', overwrite)
   
   sites = get_lines(WEBSITE_FILE, comment='#')
@@ -223,8 +224,9 @@ def run_websites(debug=False, overwrite=False, refine=None, synonly=False):
   pols = os.listdir(POLICY_DIR)
   plen = len(pols)
   for site in sites:
+    # Limit to the given sites names, if provided.
+    if not apps is not None and site not in apps: continue
 
-    #policies = load_policies(WEBSITE_DIR, site, defwarn=False)
     # %%% Generalize
     polrel = pols[pidx]
     poldesc = polrel[:-7]
@@ -232,7 +234,7 @@ def run_websites(debug=False, overwrite=False, refine=None, synonly=False):
     pidx = (pidx + 1) % plen
     
     url = 'http://' + site
-    res = run_website(url, policies, debug=debug, overwrite=overwrite, refine=refine, synonly=synonly)
+    res = run_website(url, policies, debug=debug, overwrite=overwrite, refine=refine, synonly=synonly, service=service)
 
     # Track successful results
     results.add(res)
@@ -243,13 +245,16 @@ def run_websites(debug=False, overwrite=False, refine=None, synonly=False):
   results.printSummary()
 # /run_websites
 
-def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False):
+def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False, service=False, apps=None):
   results = RunResults('microbenchmarks', overwrite)
 
-  cases = load_app_sources(MICROBENCHMARK_DIR, defwarn=False)
+  cases = load_app_sources(MICROBENCHMARK_DIR, defwarn=False, apps=apps)
   apps = list(cases.keys())
   apps.sort()
   for app in apps:
+    # %%% Temporary workaround
+    if service and app == "argumentsShadow0": continue
+
     inps = cases[app]
     srcfls = inps[0]
     poldict = inps[1]
@@ -264,15 +269,6 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
       results.add(result)
 
       opts = list(options)
-
-      # Differentiate the output if policy indexed by a non-numeric key.
-      # For example, the policy file jsqrcode.call.policy will be
-      # indexed by "call", and the output will be stored separately from
-      # the analysis using jsqrcode.get.policy. Alter the .out filename
-      # accordingly.
-      if poldesc != '':
-        opts.append('--appsuffix')
-        opts.append(poldesc)
 
       # If the user provided a refinement limit (-p), use that for all
       # test cases. Otherwise, use some special logic.
@@ -297,12 +293,17 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
 
       # Use the union of all policy files for a particular test.
       out('Analyzing %s' % app)
-      outp, errp = run_jam(srcfls, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
+      if service:
+        opts.append('-N')
+        opts.append(app)
+        outp, errp = query_jam_service(srcfls, [polfile], refine=ref, seeds=seeds, moreopts=opts)
+      else:
+        outp, errp = run_jam(srcfls, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
       
       # Error case, message printed in |run_jam|.
       if outp is None: continue
 
-      refsuf = get_suffix(synonly, ref)
+      refsuf = get_suffix(synonly, ref, poldesc)
 
       expfile = '%s.%s.out.js' % (app, refsuf)
       exppath = os.path.join(apppath, expfile)
@@ -323,12 +324,12 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
   results.printSummary()
 # /run_microbenchmarks
       
-def run_exploits(debug=False, overwrite=False, refine=None, synonly=False):
+def run_exploits(debug=False, overwrite=False, refine=None, synonly=False, service=False, apps=None):
   results = RunResults('exploits', overwrite)
   if refine is None:
     refine = 0
 
-  cases = load_app_sources(EXPLOIT_DIR, defwarn=True)
+  cases = load_app_sources(EXPLOIT_DIR, defwarn=True, apps=apps)
   apps = list(cases.keys())
   apps.sort()
   for appname in apps:
@@ -346,26 +347,22 @@ def run_exploits(debug=False, overwrite=False, refine=None, synonly=False):
 
       opts = list(options)
 
-      # Differentiate the output if policy indexed by a non-numeric key.
-      # For example, the policy file jsqrcode.call.policy will be
-      # indexed by "call", and the output will be stored separately from
-      # the analysis using jsqrcode.get.policy. Alter the .out filename
-      # accordingly.
-      if poldesc != '':
-        opts.append('--appsuffix')
-        opts.append(poldesc)
-
       base = get_base(appname)
       if synonly:
         opts.append('-z')
 
       out('Analyzing %s' % appname)
-      outp, errp = run_jam(srcfls, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
+      if service:
+        opts.append('-N')
+        opts.append(appname)
+        outp, errp = query_jam_service(srcfls, [polfile], refine=refine, seeds=seeds, moreopts=opts)
+      else:
+        outp, errp = run_jam(srcfls, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
       
       # Error case, message printed in |run_jam|.
       if outp is None: continue
 
-      refsuf = get_suffix(synonly, refine)
+      refsuf = get_suffix(synonly, refine, poldesc)
 
       expfile = '%s.%s.out.js' % (appname, refsuf)
       exppath = os.path.join(apppath, expfile)
@@ -386,12 +383,12 @@ def run_exploits(debug=False, overwrite=False, refine=None, synonly=False):
   results.printSummary()
 # /run_exploits
 
-def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
+def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False, service=False, apps=None):
   results = RunResults('benchmarks', overwrite)
   if refine is None:
     refine = 0
 
-  cases = load_app_sources(BENCHMARK_DIR, defwarn=True)
+  cases = load_app_sources(BENCHMARK_DIR, defwarn=True, apps=apps)
   apps = list(cases.keys())
   apps.sort()
   for appname in apps:
@@ -409,15 +406,6 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
 
       opts = list(options)
 
-      # Differentiate the output if policy indexed by a non-numeric key.
-      # For example, the policy file jsqrcode.call.policy will be
-      # indexed by "call", and the output will be stored separately from
-      # the analysis using jsqrcode.get.policy. Alter the .out filename
-      # accordingly.
-      if poldesc != '':
-        opts.append('--appsuffix')
-        opts.append(poldesc)
-
       base = get_base(appname)
       if base in LARGE_BENCHMARKS:
         # Forgo interprocedural analysis for these benchmarks.
@@ -427,12 +415,17 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False):
         opts.append('-z')
 
       out('Analyzing %s' % appname)
-      outp, errp = run_jam(srcfls, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
+      if service:
+        opts.append('-N')
+        opts.append(appname)
+        outp, errp = query_jam_service(srcfls, [polfile], refine=refine, seeds=seeds, moreopts=opts)
+      else:
+        outp, errp = run_jam(srcfls, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
       
       # Error case, message printed in |run_jam|.
       if outp is None: continue
 
-      refsuf = get_suffix(synonly, refine)
+      refsuf = get_suffix(synonly, refine, poldesc)
 
       expfile = '%s.%s.out.js' % (appname, refsuf)
       exppath = os.path.join(apppath, expfile)
@@ -494,6 +487,8 @@ def main():
   parser.add_option('-Y', '--policy', action='store', default=None, dest='policy', help='policy file to apply to URL')
   parser.add_option('-p', '--refine', action='store', default=None, dest='refine', help='maximum of number of predicates to learn')
   parser.add_option('-z', '--syntax-only', action='store_true', default=False, dest='syntaxonly', help='use syntax-only (not semantic) analysis')
+  parser.add_option('-d', '--service', action='store_true', default=False, dest='service', help='run JAM as a service')
+  parser.add_option('-a', '--apps', action='append', default=None, dest='apps', help='limit to the given app(s)')
 
   opts, args = parser.parse_args()
     
@@ -513,20 +508,26 @@ def main():
     except:
       fatal('Invalid refinement limit: %s (should be positive integer, or -1 for unlimited)' % (opts.refine))
 
+  if opts.service:
+    start_jam_service(debug=opts.debug)
+
   #if opts.interpreter:
   #  err('Interpreter tests are currently out-of-order')
   #  run_interpreter_tests(opts.debug)
   if opts.url is not None:
     pol = load_policy(opts.policy)
-    run_website(opts.url, pol, debug=opts.debug, overwrite=opts.overwrite, refine=ref, synonly=opts.syntaxonly)
+    run_website(opts.url, pol, debug=opts.debug, overwrite=opts.overwrite, refine=ref, synonly=opts.syntaxonly, service=opts.service)
   if allmods or opts.micro:
-    run_microbenchmarks(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly)
+    run_microbenchmarks(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly, service=opts.service, apps=opts.apps)
   if allmods or opts.exploit:
-    run_exploits(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly)
+    run_exploits(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly, service=opts.service, apps=opts.apps)
   if allmods or opts.benchmarks:
-    run_benchmarks(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly)
+    run_benchmarks(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly, service=opts.service, apps=opts.apps)
   if allmods or opts.websites:
-    run_websites(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly)
+    run_websites(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly, service=opts.service, apps=opts.apps)
+
+  if opts.service:
+    close_jam_service()
 # /main
 
 

@@ -63,7 +63,7 @@ public class BackwardAnalysis extends JAMAnalysis {
   protected CounterExample determineReachability(ProgramModel model) {
     RelationAutomaton faut = model.getFocusAutomaton();
 
-    if (JAM.Opts.debug)
+    if (JAMOpts.debug)
       FileUtil.serializeToFile(faut, "faut-" + iteration + ".aut");
 
     initOpenNWA();
@@ -86,11 +86,11 @@ public class BackwardAnalysis extends JAMAnalysis {
         // Build the model with the seeded predicates.
         model.build();
 
-        if (JAM.Opts.debug)
+        if (JAMOpts.debug)
           FileUtil.serializeToFile(model.getRelationAutomaton(), "raut-" + iteration + ".aut");
 
         Set<String> seedNames = null;
-        if (JAM.Opts.seedLocal) {
+        if (JAMOpts.seedLocal) {
           // Gather names mentioned in the seed predicates.
           seedNames = new HashSet<String>();
           for (Predicate sp : seedPreds) {
@@ -105,7 +105,7 @@ public class BackwardAnalysis extends JAMAnalysis {
           // Don't try to rule out checks that are locked in.
           if (c.isLocked()) continue;
 
-          if (JAM.Opts.seedLocal) {
+          if (JAMOpts.seedLocal) {
             // In this mode, we only attempt to rule out checks on nodes
             // that involve names mentioned in the seed predicates.
             Set<String> checkNames = new HashSet<String>();
@@ -164,7 +164,7 @@ public class BackwardAnalysis extends JAMAnalysis {
         // Build the model with the current learned predicates.
         model.build();
 
-        if (JAM.Opts.debug)
+        if (JAMOpts.debug)
           FileUtil.serializeToFile(model.getRelationAutomaton(), "raut-" + iteration + ".aut");
 
         // Configure the model so that the only transition is the one
@@ -233,7 +233,7 @@ public class BackwardAnalysis extends JAMAnalysis {
       runSeeded(model);
     }
     
-    if (JAM.Opts.refinementLimit > 0) {
+    if (JAMOpts.refinementLimit > 0) {
       // Try to refine the model by learning predicates.
       runRefine(model);
     }

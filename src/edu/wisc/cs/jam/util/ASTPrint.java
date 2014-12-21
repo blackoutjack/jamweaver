@@ -13,6 +13,7 @@ import edu.wisc.cs.jam.Options;
 import edu.wisc.cs.jam.OptionParser;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.JAMOpts;
 
 import edu.wisc.cs.jam.js.JSSourceManager;
 import edu.wisc.cs.jam.js.JSSource;
@@ -29,7 +30,7 @@ public class ASTPrint implements Utility {
   public void run() {
     Exp src = null;
     SourceManager sm = new JSSourceManager();
-    JAM.Opts.noExterns = true;
+    JAMOpts.noExterns = true;
     if (options.expr) {
       sm.addSource(new JSSource("/dev/null", false));
       // Interpret the argument as a JavaScript snippet.

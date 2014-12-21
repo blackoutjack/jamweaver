@@ -37,7 +37,7 @@ public class SeedPredicates {
     try {
       lines = FileUtil.getLinesFromFile(seedFilePath, "#");
     } catch (IOException ex) {
-      System.err.println("Unable to read predicate seed file at " + JAM.Opts.seedFile + ": " + ex.getMessage());
+      System.err.println("Unable to read predicate seed file at " + JAMOpts.seedFile + ": " + ex.getMessage());
       return;
     }
       

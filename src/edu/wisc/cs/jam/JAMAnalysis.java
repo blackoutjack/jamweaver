@@ -66,14 +66,14 @@ public class JAMAnalysis implements Runnable {
     // they will be replaced with newly constructed versions if the
     // model is refined.
     seeds = parent.getSeedPredicates();
-    models = new LinkedBlockingQueue<ProgramModel>(JAM.Opts.cexThreads);
-    for (int i=0; i<JAM.Opts.cexThreads; i++) {
+    models = new LinkedBlockingQueue<ProgramModel>(JAMOpts.cexThreads);
+    for (int i=0; i<JAMOpts.cexThreads; i++) {
       ProgramModel m = new ProgramModel(parent, policyPath);
       models.add(m);
     }
 
     // Create a new directory to save output.
-    if (JAM.Opts.debug) FileUtil.newWorkingDir();
+    if (JAMOpts.debug) FileUtil.newWorkingDir();
   }
 
   public SourceManager getSourceManager() {
@@ -141,7 +141,7 @@ public class JAMAnalysis implements Runnable {
   protected void runSub(ProgramModel model) {
     
     // Do we check counterexample validity and refine the model, or not?
-    boolean validate = JAM.Opts.refinementLimit != 0;
+    boolean validate = JAMOpts.refinementLimit != 0;
 
     // During the first phase, we act like transitions that are guarded
     // for a particular policy transition cannot cause that transition
@@ -181,7 +181,7 @@ public class JAMAnalysis implements Runnable {
       // declaration of filterPreds.
       model.filterRelations(filterPred);
 
-      if (JAM.Opts.debug)
+      if (JAMOpts.debug)
         FileUtil.serializeToFile(model.getRelationAutomaton(), "raut-" + iteration + ".aut");
 
       cex = findCounterExample(model);
@@ -209,7 +209,7 @@ public class JAMAnalysis implements Runnable {
 
       // See if we need to stop checking counter-examples and learning
       // new predicates.
-      if (validate && model.getLearnedPredicateCount() >= JAM.Opts.refinementLimit)
+      if (validate && model.getLearnedPredicateCount() >= JAMOpts.refinementLimit)
         validate = false;
 
       // Check the validity of the counter-example, if appropriate, and
@@ -231,7 +231,7 @@ public class JAMAnalysis implements Runnable {
       instrumentCounterExample(cex);
 
       // Possibly save the current source code to file.
-      if (JAM.Opts.intermediateOutput || JAM.Opts.debug) {
+      if (JAMOpts.intermediateOutput || JAMOpts.debug) {
         String srcout = FileUtil.getBaseName() + "-" + iteration + ".js";
         FileUtil.writeToFile(getSourceManager(), srcout);
       }
@@ -287,7 +287,7 @@ public class JAMAnalysis implements Runnable {
     // new predicates due to the refinement limit.
     // %%% Use thread-specific learned predicates.
     boolean validate = true;
-    if (m.getLearnedPredicateCount() >= JAM.Opts.refinementLimit)
+    if (m.getLearnedPredicateCount() >= JAMOpts.refinementLimit)
       validate = false;
 
     if (validate) {
@@ -309,7 +309,7 @@ public class JAMAnalysis implements Runnable {
   protected synchronized void initOpenNWA() {
     if (openNWA != null) return;
 
-    if (JAM.Opts.linkNWA) {
+    if (JAMOpts.linkNWA) {
       openNWA = new OpenNWALibrary();
     } else {
       openNWA = new OpenNWAProcess();

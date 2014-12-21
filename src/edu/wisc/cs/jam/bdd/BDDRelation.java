@@ -26,6 +26,7 @@ import edu.wisc.cs.jam.Relation;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.JAMOpts;
 
 public class BDDRelation implements Relation {
 
@@ -368,7 +369,7 @@ public class BDDRelation implements Relation {
     String ret = sw.toString().trim();
     ret += "\n";
 
-    if (JAM.Opts.bddformat == 2) {
+    if (JAMOpts.bddformat == 2) {
       ret += "# ";
       ret += domain.toNormalizedString(bdd);
     }
@@ -436,7 +437,7 @@ public class BDDRelation implements Relation {
     */
 
     /*
-    if (JAM.Opts.printDot) {
+    if (JAMOpts.printDot) {
       File dotfl = new File(FileUtil.getWorkingDir(), "bdd-" + bdd.id() + ".dot");
       // Skip if the relation has already been printed.
       if (!dotfl.exists()) {
@@ -445,7 +446,7 @@ public class BDDRelation implements Relation {
     }
     */
 
-    if (JAM.Opts.bddformat >= 1) {
+    if (JAMOpts.bddformat >= 1) {
       /* %%% Debug
       Dbg.dbg("BDD: " + bdd);
       if (!bdd.equals(domain.getZero()) && !bdd.equals(domain.getOne())) {

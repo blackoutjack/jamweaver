@@ -57,7 +57,7 @@ public class XSBProcess {
     return id;
   }
 
-  protected void close() throws IOException {
+  public void close() throws IOException {
     if (xsb != null) {
       //Dbg.dbg("DESTROY: " + System.identityHashCode(this));
       xsb.destroy();

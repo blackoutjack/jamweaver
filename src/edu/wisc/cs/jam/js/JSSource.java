@@ -42,6 +42,19 @@ public class JSSource implements Source {
     }
   }
 
+  public JSSource(String n, String code, boolean w) {
+    name = n;
+    relativePath = name;
+    this.wrap = wrap;
+    if (wrap) {
+      // Read the contents, wrap in a function, and create from code.
+      JSTransform namer = new JSTransform();
+      wrapper = namer.newVariableName("f");
+      code = "function " + wrapper + "() {\n" + code + "\n}";
+    }
+    sourceFile = SourceFile.fromCode(getPath(), code);
+  }
+
   @Override
   public String getName() {
     if (name == null) {
@@ -52,6 +65,9 @@ public class JSSource implements Source {
 
   @Override
   public String getPath() {
+    if (path == null) {
+      return relativePath;
+    }
     return path;
   }
 
@@ -74,7 +90,7 @@ public class JSSource implements Source {
   @Override
   public void updateContents(String contents) {
     // Code that needs a wrapper is assumed to already have it.
-    sourceFile = SourceFile.fromCode(path, contents);
+    sourceFile = SourceFile.fromCode(getPath(), contents);
   }
 
   public void setRelativePath(String relpath) {

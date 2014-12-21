@@ -30,6 +30,7 @@ import edu.wisc.cs.jam.FunctionEntrySymbol;
 import edu.wisc.cs.jam.BranchSymbol;
 import edu.wisc.cs.jam.CallbackEntrySymbol;
 import edu.wisc.cs.jam.JAMConfig;
+import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.JAM;
 
 import edu.wisc.cs.jam.xsb.XSBInterface;
@@ -41,9 +42,9 @@ import edu.wisc.cs.jam.js.JSPolicyLanguage.JSPredicateType;
 public class JSSemantics implements Semantics {
 
   // A uniqueness counter for generating sentinels.
-  private static int pv = 2121;
+  private int pv = 2121;
 
-  private XSBInterface xsb;
+  protected static XSBInterface xsb;
   private SourceManager sm;
   private FunctionFacts functionFacts;
   private JSSyntaxAnalysis sa;
@@ -244,7 +245,11 @@ public class JSSemantics implements Semantics {
   }
 
   protected void loadXSB() {
-    if (JAM.Opts.queryThreads <= 1) {
+    if (xsb != null) {
+      xsb.close();
+    }
+
+    if (JAMOpts.queryThreads <= 1) {
       xsb = new XSBSingleInterface(this);
     } else {
       xsb = new XSBMultiInterface(this);
@@ -293,7 +298,7 @@ public class JSSemantics implements Semantics {
   // Furthermore, prerequisites are not used ever if the |syntaxOnly|
   // option is being used.
   public Predicate loadPrerequisite(Policy pol, Predicate pred) {
-    if (JAM.Opts.syntaxOnly) return null;
+    if (JAMOpts.syntaxOnly) return null;
     // No prerequisites yet implemented for non-event predicates.
     if (!pred.isEventPredicate()) return null;
 

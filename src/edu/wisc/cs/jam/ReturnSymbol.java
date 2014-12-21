@@ -46,7 +46,7 @@ public class ReturnSymbol extends ExpSymbol {
     StringBuilder sb = new StringBuilder();
     sb.append("[#return");
     // The function name doesn't matter except for debugging.
-    if (JAM.Opts.embedReturnIds && function != null) {
+    if (JAMOpts.embedReturnIds && function != null) {
 		  sb.append(";");
       sb.append(function.getName());
     }

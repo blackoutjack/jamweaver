@@ -10,6 +10,7 @@ import edu.wisc.cs.jam.Semantics;
 import edu.wisc.cs.jam.Exp;
 import edu.wisc.cs.jam.ExpSymbol;
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.StringUtil;
@@ -69,7 +70,7 @@ public class JSPredicateLearner implements PredicateLearner {
         // Don't collect duplicate predicates.
         if (newpred != null && !newpred.matchesAny(predicates)) {
           // We've found a new predicate.
-          if (JAM.Opts.debug) {
+          if (JAMOpts.debug) {
             FileUtil.writeToFile(newpred + "\n", "predicate", true);
           }
           // In case this learner is reused.

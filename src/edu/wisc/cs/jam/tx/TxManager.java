@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 import edu.wisc.cs.automaton.State;
 
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.Traversal;
 import edu.wisc.cs.jam.Traversal.Traverser;
 import edu.wisc.cs.jam.CheckManager;
@@ -65,7 +66,7 @@ public class TxManager implements CheckManager, Traverser {
   private Map<Policy.Edge,PolicyTransition> transitionMap;
 
   protected Map<String,Introspector> introspectorNameMap;
-  private static int NEXT_INTROSPECTOR_ID = 0;
+  private int NEXT_INTROSPECTOR_ID = 0;
 
   // Construct a TxManager for the given JAM analysis.
   public TxManager(SourceManager src, Policy pol) {
@@ -122,7 +123,7 @@ public class TxManager implements CheckManager, Traverser {
   }
 
   protected synchronized void enableTransaction(Exp n, Transaction tx) {
-    if (JAM.Opts.debug) FileUtil.writeToFile(tx + "\n", "tx-" + getTransactionCount(), true);
+    if (JAMOpts.debug) FileUtil.writeToFile(tx + "\n", "tx-" + getTransactionCount(), true);
 
     // There may be a transaction currently enclosing the statement. If
     // so, we remove it first.
@@ -197,7 +198,7 @@ public class TxManager implements CheckManager, Traverser {
 
   @Override
   public void addCheck(RuntimeCheck c) {
-    if (JAM.Opts.debug) FileUtil.writeToFile(c + "\n", "tx-" + getCheckCount(), true);
+    if (JAMOpts.debug) FileUtil.writeToFile(c + "\n", "tx-" + getCheckCount(), true);
 
     if (!activeChecks.contains(c))
       activeChecks.add(c);

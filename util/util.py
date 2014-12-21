@@ -1,6 +1,9 @@
 import sys
 import urllib.parse
 import re
+import io
+import time
+import http.client
 import subprocess
 from subprocess import PIPE
 from subprocess import STDOUT
@@ -92,16 +95,19 @@ def parse_time_output(timeout, sep1=" ", sep2=":", element=None):
     err("Invalid time key: %s" % element)
     return False
 
-def get_suffix(syn, ref):
+def get_suffix(syn, ref, pol=None):
   if syn:
     refsuf = 'syntax'
   else:
     refsuf = 'semantic%d' % ref
+  if pol is not None and pol != '':
+    refsuf = '%s.%s' % (pol, refsuf)
   return refsuf
 
 def get_suffix_from_info(appinfo):
   refine = 0
   synonly = False
+  poldesc = None
   if 'info' in appinfo:
     infopath = os.path.join(appinfo['dir'], appinfo['info'])
     info = parse_info_file(infopath)
@@ -123,11 +129,32 @@ def get_suffix_from_info(appinfo):
     else:
       warn('No syntax-only info for run: %s' % appinfo['dir'])
       return None
+
+    if 'policy-files' in info:
+      try:
+        polinfo = info['policy-files']
+        polinfo = polinfo.lstrip('[')
+        polinfo = polinfo.rstrip(']')
+        pollist = polinfo.split(',')
+        descparts = []
+        for polpath in pollist:
+          polname = os.path.split(polpath)[1]      
+          parts = polname.split('.')
+          if len(parts) > 2:
+            desc = parts[-2]
+            descparts.append(desc)
+        if len(descparts) > 0:
+          poldesc = '+'.join(descparts)
+      except:
+        warn('Unknown policy-files format (%s) for run: %s' % (info['policy-files'], appinfo['dir']))
+    else:
+      warn('No policy-files info for run: %s' % appinfo['dir'])
+      return None
   else:
     warn('No run information: %s' % appinfo['dir'])
     return None
 
-  return get_suffix(synonly, refine)
+  return get_suffix(synonly, refine, poldesc)
 # /get_suffix_from_info
 
 def load_dir(tgtdir):
@@ -328,6 +355,7 @@ def get_info_path(errp):
     if pos > -1:
       endpos = pos + len(infosearch)
       infopath = line[endpos:].strip()
+      break
   return infopath
 
 def get_result_info(resdir, app, getall=False):
@@ -509,25 +537,21 @@ def load_app_source(apppath, appname, defwarn=False):
       srcs = [srclist]
       opts.append('-X')
 
-    # %%% Not very nice, but still dealing with legacy junk.
-    appbase = get_base(appname)
-    pols = load_policies(apppath, appbase, defwarn=defwarn)
+    pols = load_policies(apppath, defwarn=defwarn)
     seeds = load_seeds(apppath, appname)
     return (srcs, pols, seeds, apppath, opts)
   else:
     # Non-directories are assumed to be utility files.
     return None
 
-SKIP = False
-def load_app_sources(topdir, defwarn=True):
+def load_app_sources(topdir, defwarn=True, apps=None):
   # Throughout, sort the files so tests are run in a consistent order.
   allapps = os.listdir(topdir)
   allapps.sort()
   appsrcs = {}
   for appname in allapps:
-    #global SKIP
-    #if not appname.startswith('sms2-') and appname != 'jsqrcode': continue
-    #if SKIP: continue
+    # Limit to the given app names, if provided.
+    if apps is not None and appname not in apps: continue
 
     apppath = os.path.join(topdir, appname)
     appsrc = load_app_source(apppath, appname, defwarn=defwarn)
@@ -584,48 +608,28 @@ def load_default_policy(dirkey=None):
   return load_policy(polpath)
 # /load_default_policy
 
-# Scan the given directory for policy filenames that match the given
-# basename. If a policy is not found, a part (delimited by '-', '.', or
-# '_') is removed from the basename and the files are scanned again.
-# This allows many similarly-named test cases use the same policy file.
-# Finally, if no policy is found, the DEFAULT_POLICY is used.
-def load_policies(fromdir, basename, polsuf='.policy', defwarn=True):
-  polfiles = []
+# Scan the given directory for policy files. If no policy is found, the
+# default policy is used.
+def load_policies(fromdir, polsuf='.policy', defwarn=True):
+  ret = {}
   for polname in os.listdir(fromdir):
     if polname.endswith(polsuf):
-      polfiles.append(polname)
-
-  ret = {}
-  curbase = basename
-  while len(ret) == 0:
-    for polname in polfiles:
-      if polname.startswith(curbase + '.'):
-        polbase = get_base(polname)
-        
-        # Strip the base, the suffix, and surrounding dots. This could
-        # result in the empty string, but that's no problem.
-        key = polname[len(curbase)+1:-len(polsuf)]
-        ret[key] = os.path.join(fromdir, polname)
-    if len(ret) == 0:
-      # Calculate the next shortest basename.
-      idx0 = curbase.rfind('_')
-      idx1 = curbase.rfind('.')
-      idx2 = curbase.rfind('-')
-      maxidx = max(idx0, idx1, idx2)
-      if maxidx <= 0:
-        if defwarn:
-          warn('Using the default policy for %s' % basename)
-        # Return this directly so we don't get into an infinite loop
-        # in case the default policy file can't be found.
-        pardir = os.path.dirname(fromdir)
-        return load_default_policy(pardir)
+      parts = polname.split('.')
+      if len(parts) > 2:
+        desc = parts[-2]
       else:
-        curbase = curbase[:maxidx]
+        desc = ''
+      ret[desc] = os.path.join(fromdir, polname)
 
+  if len(ret) == 0:
+    if defwarn:
+      warn('No policy in %s, using the default' % fromdir)
+    pardir = os.path.dirname(fromdir)
+    ret = load_default_policy(pardir)
   return ret
 # /load_policies
 
-def run_jam(jspaths, policies, refine=0, debug=False, perf=True, seeds=None, lib=True, moreopts=[]):
+def get_jam_command(service=False, debug=True, perf=True):
 
   if perf:
     cmd = ['/usr/bin/time', '-f', 'real:%Es user:%Us sys:%Ss maxrss:%MKB']
@@ -633,33 +637,30 @@ def run_jam(jspaths, policies, refine=0, debug=False, perf=True, seeds=None, lib
     cmd = []
 
   if debug:
-    cmd.extend(JAMDBGCOMMAND)
-  else:
-    cmd.extend(JAMCOMMAND)
-
-  # The refine param can specify a predicate limit or unlimited/no
-  # refinement.
-  if not refine:
-    refine = 0
-  cmd.append('-p')
-  cmd.append(str(refine))
-
-  if debug:
+    if service:
+      cmd.extend(JAMSVCDBGCOMMAND)
+    else:
+      cmd.extend(JAMDBGCOMMAND)
     cmd.append('-g')
     cmd.append('-b')
   else:
+    if service:
+      cmd.extend(JAMSVCCOMMAND)
+    else:
+      cmd.extend(JAMCOMMAND)
     # Always save a record of the queries.
-    cmd.append('-G')
+    #cmd.append('-G')
 
-  if not lib:
-    # Run in stand-alone mode
-    cmd.append('-m')
+  if service:
+    cmd.append('--port')
+    cmd.append(str(JAMPORT))
 
-  cmd.extend(moreopts)
-
-  #cmd.append('-P')
   cmd.append('-v')
   cmd.append('2')
+  cmd.append('-t')
+  cmd.append('6')
+
+  #cmd.append('-P')
   #cmd.append('-I')
   #cmd.append('-O')
   #cmd.append('-F')
@@ -669,13 +670,273 @@ def run_jam(jspaths, policies, refine=0, debug=False, perf=True, seeds=None, lib
   #cmd.append('-e')
   #cmd.append('-i')
   #cmd.append('-r')
-  cmd.append('-t')
-  cmd.append('6')
   #cmd.append('--noindirect')
   #cmd.append('-T')
   #cmd.append('3')
   #cmd.append('-R')
   #cmd.append('3')
+
+  return cmd
+
+JAM_SERVER = None
+
+def start_jam_service(debug=True, perf=True):
+  cmd = get_jam_command(True, debug, perf)
+
+  # Display the command that's being invoked.
+  sys.stdout.write(' '.join(cmd))
+  sys.stdout.write('\n')
+  sys.stdout.flush()
+
+  global JAM_SERVER
+
+  # Let the user see the debugging output, demonstrating progress.
+  JAM_SERVER = subprocess.Popen(cmd)
+  time.sleep(4)
+# /start_jam_service
+
+def query_jam_service(jspaths, policies, refine=0, seeds=None, moreopts=[]):  
+  
+  contents = []
+  for jspath in jspaths:
+    jsfl = open(jspath, 'r')
+    jscode = jsfl.read()
+    jsfl.close()
+    contents.append(jscode)
+
+  headers = {}
+  headers['PolicyFiles'] = ','.join(policies)
+  headers['Refine'] = str(refine)
+  # Use a seeded predicate file if given.
+  if seeds is None:
+    headers['Cartesian'] = '1'
+    headers['Disjoint'] = '0'
+    headers['Lazy'] = '0'
+    headers['Seedfile'] = ''
+  else:
+    headers['Cartesian'] = '0'
+    headers['Disjoint'] = '1'
+    headers['Lazy'] = '1'
+    headers['Seedfile'] = seeds
+
+  appname = 'UNKNOWN'
+  idxes = iter(range(0, len(moreopts)))
+  for idx in idxes:
+    opt = moreopts[idx]
+    if opt == '-X':
+      key = 'SourceIsList'
+      val = '1'
+    elif opt == '-P':
+      key = 'Intraprocedural'
+      val = '1'
+    elif opt == '-z':
+      key = 'SyntaxOnly'
+      val = '1'
+    elif opt == '-N':
+      key = 'AppName'
+      val = moreopts[idx+1]
+      appname = val
+      next(idxes)
+    elif opt == '-h':
+      key = 'HtmlFile'
+      val = moreopts[idx+1]
+      next(idxes)
+    elif opt == '--appsuffix':
+      key = 'AppSuffix'
+      val = moreopts[idx+1]
+      next(idxes)
+    elif opt == '--querytimeout':
+      key = 'QueryTimeout'
+      val = moreopts[idx+1]
+      next(idxes)
+    else:
+      warn('Unknown option: %s' % opt)
+      continue
+    headers[key] = val
+
+  body = "" 
+  for content in contents:
+    if len(body) > 0:
+      body += "\x03"
+    body += content
+
+  #headers['Content-length'] = str(len(body))
+  headers['Connection'] = 'Close'
+  headers['Origin'] = 'http://localhost'
+  headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+  headers['Content-type'] = 'text/javascript'
+  headers['Accept'] = '*/*'
+
+  #out("HEADERS: %r\nBODY: %s" % (headers, body))
+  conn = http.client.HTTPConnection("127.0.0.1", JAMPORT)
+  starttime = time.time()
+  try:
+    conn.request("PUT", "/jam", body, headers)  
+  except:
+    # %%%
+    err("Unable to connect to JAM service")
+    return None, None
+
+  #conn.putrequest("POST", "/jam")
+  #for key, val in headers.items():
+  #  conn.putheader(key, val)
+  #conn.endheaders()
+  #conn.send(bytes(body))
+
+  #sys.stdout.write("POST /jam HTTP/1.1\r\n")
+  #sys.stdout.write('Host: 127.0.0.1\r\n')
+  #sys.stdout.write('Accept-encoding: gzip, deflate\r\n')
+  #sys.stdout.write('Content-length: %d\r\n' % len(body))
+  #for key, val in headers.items():
+  #  sys.stdout.write('%s: %s\r\n' % (key, val))
+  #sys.stdout.write('\r\n')
+  #sys.stdout.write(body)
+
+  resp = conn.getresponse()
+
+  endtime = time.time()
+  tottime = endtime - starttime
+  out('%s: %.2fs\n' % (appname, tottime))
+
+  outp = resp.read().decode('utf-8')
+  #out("OUTP: " + outp)
+
+  # Simulate the old stderr format
+  infopath = resp.getheader("InfoPath")
+  if infopath is None:
+    warn("No info path in response")
+    errp = None
+  else:
+    errp = "main(0): Analysis information: " + infopath
+
+  return outp, errp
+# /query_jam_service
+
+def query_jam_service_stdin(jspaths, policies, refine=0, seeds=None, moreopts=[]):  
+  
+  contents = []
+  for jspath in jspaths:
+    jsfl = open(jspath, 'r')
+    jscode = jsfl.read()
+    jsfl.close()
+    contents.append(jscode)
+
+  headers = {}
+  headers['PolicyFiles'] = ','.join(policies)
+  headers['Refine'] = str(refine)
+  # Use a seeded predicate file if given.
+  if seeds is None:
+    headers['Cartesian'] = '1'
+    headers['Disjoint'] = '0'
+    headers['Lazy'] = '0'
+    headers['Seedfile'] = ''
+  else:
+    headers['Cartesian'] = '0'
+    headers['Disjoint'] = '1'
+    headers['Lazy'] = '1'
+    headers['Seedfile'] = seeds
+
+  idxes = iter(range(0, len(moreopts)))
+  for idx in idxes:
+    opt = moreopts[idx]
+    if opt == '-X':
+      key = 'SourceIsList'
+      val = '1'
+    elif opt == '-P':
+      key = 'Intraprocedural'
+      val = '1'
+    elif opt == '-z':
+      key = 'SyntaxOnly'
+      val = '1'
+    elif opt == '-N':
+      key = 'AppName'
+      val = moreopts[idx+1]
+      next(idxes)
+    elif opt == '-h':
+      key = 'HtmlFile'
+      val = moreopts[idx+1]
+      next(idxes)
+    elif opt == '--appsuffix':
+      key = 'AppSuffix'
+      val = moreopts[idx+1]
+      next(idxes)
+    elif opt == '--querytimeout':
+      key = 'QueryTimeout'
+      val = moreopts[idx+1]
+      next(idxes)
+    else:
+      warn('Unknown option: %s' % opt)
+      continue
+    headers[key] = val
+
+  request = "POST /jam HTTP/1.1\r\n"
+  for key, value in headers.items():
+    request += "%s: %s\r\n" % (key, value)
+  request += "\r\n"
+  
+  first = True
+  for content in contents:
+    if first: first = False
+    else: request += "\x03"
+    request += "%s" % content
+  request += "\x04"
+
+  JAM_SERVER.stdin.write(bytes(request, 'utf-8'))
+  JAM_SERVER.stdin.flush()
+
+  outbuf = io.BytesIO()
+  while True:
+    c = JAM_SERVER.stdout.read(1)
+    if c == b'\x03':
+      break
+    outbuf.write(c)
+  outp = outbuf.getvalue().decode(sys.stdout.encoding)
+
+  # Little hack to remove a debug message.
+  if outp.startswith("Listening for transport"):
+    endl = outp.find("\n") + 1
+    outp = outp[endl:]
+
+  errbuf = io.BytesIO()
+  while True:
+    c = JAM_SERVER.stderr.read(1)
+    if c == b'\x03':
+      break
+    errbuf.write(c)
+  errp = errbuf.getvalue().decode(sys.stderr.encoding)
+
+  sys.stderr.write(errp)
+
+  return outp, errp
+# /query_jam_service_stdin
+
+def close_jam_service():
+  headers = {}
+  headers['Connection'] = 'Close'
+  headers['Origin'] = 'http://localhost'
+  headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+  headers['Content-type'] = 'text/plain'
+  headers['Accept'] = '*/*'
+  #out("HEADERS: %r" % headers)
+  conn = http.client.HTTPConnection("127.0.0.1", JAMPORT)
+  try:
+    conn.request('POST', '/shutdown', '', headers)  
+  except:
+    # %%%
+    err("Unable to shutdown to JAM service, attempting to kill")
+    JAM_SERVER.kill()
+# /close_jam_service
+
+def run_jam(jspaths, policies, refine=0, debug=False, perf=True, seeds=None, moreopts=[]):
+
+  cmd = get_jam_command(False, debug, perf)
+
+  # The refine param can specify a predicate limit or unlimited/no
+  # refinement.
+  if not refine:
+    refine = 0
+  cmd.append('-p')
+  cmd.append(str(refine))
 
   # Use a seeded predicate file if given.
   if seeds is None:
@@ -685,6 +946,8 @@ def run_jam(jspaths, policies, refine=0, debug=False, perf=True, seeds=None, lib
     cmd.append('-l')
     cmd.append('-d')
     cmd.append(seeds)
+
+  cmd.extend(moreopts)
 
   for jspath in jspaths:
     cmd.append(jspath)
@@ -916,7 +1179,7 @@ def get_variant_bases(src):
       relpath = get_relative_path(url, usedomain=True)
       base = re.sub('/', '-', relpath)
 
-      pols = load_policies(dirpath, line, defwarn=False)
+      pols = load_policies(dirpath, defwarn=False)
       for poldesc, pol in pols.items():
         if poldesc != '':
           bases.append(base + '.' + poldesc)
@@ -999,8 +1262,8 @@ def validate_output(outp, exppath):
   if outp == exp:
     return 'match'
   else:
-    #sys.stderr.write("OUTPUT: %s" % outp)
-    #sys.stderr.write("EXPECT: %s" % exp)
+    #sys.stderr.write("OUTPUT: %s\n" % outp)
+    #sys.stderr.write("EXPECT: %s\n" % exp)
     return 'wrong'
 # /validate_output
 

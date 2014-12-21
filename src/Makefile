@@ -7,8 +7,13 @@ JAVAC=javac
 # Java compilation flags
 JFLAGS=-g #-Xlint
 
-# The JAM jar file
-JAMJAR=$(BINDIR)/jam.jar
+# Jar file to run JAM as a process
+JAMPROCJAR=$(BINDIR)/jam.jar
+# Jar file to run JAM as a service
+JAMSVCJAR=$(BINDIR)/jamsvc.jar
+# Common JAM jar
+JAMCOMMONJAR=$(BINDIR)/jamcommon.jar
+
 # The utility jar file
 UTILJAR=$(BINDIR)/util.jar
 WALAJAR=$(BINDIR)/wala.jar
@@ -22,16 +27,19 @@ COMMONSIOVERSION=2.4
 JERICHOVERSION=3.2
 RHINOVERSION=1.7R3
 WALACLASSPATH=../commons-io-$(COMMONSIOVERSION)/commons-io-$(COMMONSIOVERSION).jar:../wala/com.ibm.wala.cast.js/lib/jericho-html-$(JERICHOVERSION).jar:../wala/com.ibm.wala.core/target/com.ibm.wala.core-$(WALAVERSION).jar:../wala/com.ibm.wala.shrike/target/com.ibm.wala.shrike-$(WALAVERSION).jar:../wala/com.ibm.wala.cast/target/com.ibm.wala.cast-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js/target/com.ibm.wala.cast.js-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js.rhino/target/com.ibm.wala.cast.js.rhino-$(WALAVERSION).jar:../wala/com.ibm.wala.util/target/com.ibm.wala.util-$(WALAVERSION).jar:../wala/com.ibm.wala.cast.js.rhino/lib/rhino-$(RHINOVERSION).jar
-JCLASSPATH=".:../closure/build/compiler.jar:../JavaBDD/javabdd-$(JAVABDDVERSION).jar:../commons-lang$(COMMONSVERSION)/commons-lang$(COMMONSVERSION).jar:../closure/lib/junit.jar:$(WALACLASSPATH):../JavaBDD/jdd.jar:../idlgen/antlr-4.4-complete.jar:../idlgen/geckoidl.jar:../idlgen/webkitidl.jar:../idlgen/webidl.jar"
+JCLASSPATH=".:../closure/build/compiler.jar:../JavaBDD/javabdd-$(JAVABDDVERSION).jar:../httpcomponents-core-4.4/lib/httpcore-4.4.jar:../commons-lang$(COMMONSVERSION)/commons-lang$(COMMONSVERSION).jar:../closure/lib/junit.jar:$(WALACLASSPATH):../JavaBDD/jdd.jar:../idlgen/antlr-4.4-complete.jar:../idlgen/geckoidl.jar:../idlgen/webkitidl.jar:../idlgen/webidl.jar"
   
 
 # Relative Java source directories
 MAINDIR=edu/wisc/cs/jam
+PROCDIR=$(MAINDIR)/proc
+SVCDIR=$(MAINDIR)/svc
+COMMONDIR=$(MAINDIR)
 AUTDIR=edu/wisc/cs/automaton
 JSDIR=$(MAINDIR)/js
 ENVDIR=$(MAINDIR)/env
-CHROMEDIR=$(ENVDIR)/chrome
-FIREFOXDIR=$(ENVDIR)/firefox
+WEBKITDIR=$(ENVDIR)/webkit
+GECKODIR=$(ENVDIR)/gecko
 XSBDIR=$(MAINDIR)/xsb
 BDDDIR=$(MAINDIR)/bdd
 NWADIR=$(MAINDIR)/opennwa
@@ -41,12 +49,22 @@ UTLDIR=$(MAINDIR)/util
 WALADIR=$(MAINDIR)/wala
 HTMLDIR=$(MAINDIR)/html
 FORKDIR=$(MAINDIR)/forkcheck
-COMDIR=com/google/javascript/jscomp
+CLOSUREDIR=com/google/javascript/jscomp
 
-# Java classes in the edu.wisc.cs.jam package
-MAINBASE=JAM JAMAnalysis BackwardAnalysis BranchSymbol Clause CartesianAutomaton ControlAutomaton ControlStructure CounterExample DataState EvaluationAutomaton FileUtil FocusAutomaton FunctionEntrySymbol JAMConfig ExpSymbol OptionParser Options Policy PolicyLanguage PolicyPath Predicate PredicateLearner PredicateSymbol PredicateType PredicateValue ProgramModel Relation RelationDomain ReturnSymbol Semantics SourceManager Source StringUtil DataTransition SeedPredicates CleverCache RelationAutomaton Dbg DisjointAutomaton IncrementalAnalysis CheckManager RuntimeCheck Scope Transform Traversal CallGraph Exp Language #BooleanAutomaton MultiAnalysis
-MAINSRC=$(MAINBASE:%=$(MAINDIR)/%.java)
-MAINCLS=$(MAINSRC:%.java=%.class)
+# Class that runs JAM as a once-off process
+PROCBASE=JAMProcess
+PROCSRC=$(PROCBASE:%=$(PROCDIR)/%.java)
+PROCCLS=$(PROCSRC:%.java=%.class)
+
+# Class that runs JAM as a service
+SVCBASE=JAMService JAMStdinService JAMSocketService
+SVCSRC=$(SVCBASE:%=$(SVCDIR)/%.java)
+SVCCLS=$(SVCSRC:%.java=%.class)
+
+# Common JAM classes in the edu.wisc.cs.jam package
+COMMONBASE=JAM JAMAnalysis BackwardAnalysis BranchSymbol Clause CartesianAutomaton ControlAutomaton ControlStructure CounterExample DataState EvaluationAutomaton FileUtil FocusAutomaton FunctionEntrySymbol JAMOpts JAMConfig ExpSymbol OptionParser Options Policy PolicyLanguage PolicyPath Predicate PredicateLearner PredicateSymbol PredicateType PredicateValue ProgramModel Relation RelationDomain ReturnSymbol Semantics SourceManager Source StringUtil DataTransition SeedPredicates CleverCache RelationAutomaton Dbg DisjointAutomaton IncrementalAnalysis CheckManager RuntimeCheck Scope Transform Traversal CallGraph Exp Language #BooleanAutomaton MultiAnalysis
+COMMONSRC=$(COMMONBASE:%=$(COMMONDIR)/%.java)
+COMMONCLS=$(COMMONSRC:%.java=%.class)
 
 # Java classes in the edu.wisc.cs.jam.js package.
 JSBASE=JavaScript JSSourceManager JSSource JSSemantics JSTransform JSStatementTransform JSIndirectionTransform JSCollapseTransform JSControlStructure JSInterproceduralControlStructure JSExp JSPredicateLearner JSPolicyLanguage FunctionFacts ExpUtil TypeFacts JSCallGraph JSSyntaxAnalysis
@@ -59,14 +77,14 @@ ENVSRC=$(ENVBASE:%=$(ENVDIR)/%.java)
 ENVCLS=$(ENVSRC:.java=.class)
 
 # Java classes in the edu.wisc.cs.jam.env package.
-CHROMEBASE=Chrome ChromePrototype
-CHROMESRC=$(CHROMEBASE:%=$(CHROMEDIR)/%.java)
-CHROMECLS=$(CHROMESRC:.java=.class)
+WEBKITBASE=WebkitPrototype
+WEBKITSRC=$(WEBKITBASE:%=$(WEBKITDIR)/%.java)
+WEBKITCLS=$(WEBKITSRC:.java=.class)
 
 # Java classes in the edu.wisc.cs.jam.env package.
-FIREFOXBASE=Firefox FirefoxPrototype FirefoxMethod
-FIREFOXSRC=$(FIREFOXBASE:%=$(FIREFOXDIR)/%.java)
-FIREFOXCLS=$(FIREFOXSRC:.java=.class)
+GECKOBASE=GeckoPrototype GeckoMethod
+GECKOSRC=$(GECKOBASE:%=$(GECKODIR)/%.java)
+GECKOCLS=$(GECKOSRC:.java=.class)
 
 # Java classes in the edu.wisc.cs.jam.xsb package.
 XSBBASE=XSBInterface XSBSingleInterface XSBMultiInterface XSBProcess QueryCache
@@ -89,9 +107,9 @@ INTSRC=$(INTBASE:%=$(INTDIR)/%.java)
 INTCLS=$(INTSRC:.java=.class)
 
 # Java classes in the com.google.javascript.jscomp package
-COMBASE=JAMControlFlowGraph JAMPassConfig ClosureUtil
-COMSRC=$(COMBASE:%=$(COMDIR)/%.java)
-COMCLS=$(COMSRC:.java=.class)
+CLOSUREBASE=JAMControlFlowGraph JAMPassConfig ClosureUtil
+CLOSURESRC=$(CLOSUREBASE:%=$(CLOSUREDIR)/%.java)
+CLOSURECLS=$(CLOSURESRC:.java=.class)
 
 # Java classes in the edu.wisc.cs.jam.opennwa package
 NWABASE=OpenNWAInterface OpenNWALibrary OpenNWAProcess
@@ -124,30 +142,38 @@ WALACLS=$(WALASRC:.java=.class)
 
 .SUFFIXES: .java .class
 
-jam: $(JAMJAR)
+jam: $(JAMCOMMONJAR) $(JAMPROCJAR) $(JAMSVCJAR)
 
-$(JAMJAR): $(JSCLS) $(ENVCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(INTCLS) $(NWACLS) $(TXCLS) $(HTMLCLS) $(FORKCLS) $(COMCLS) $(MAINCLS)
+$(JAMPROCJAR): $(PROCCLS)
 	mkdir -p ../bin
-	jar cfm $@ MANIFEST.MF $(MAINDIR)/*.class $(COMDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(ENVDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class $(FORKDIR)/*.class $(INTDIR)/*.class
+	jar cfm $@ MANIFEST-PROC.MF $(PROCDIR)/*.class
+
+$(JAMSVCJAR): $(SVCCLS)
+	mkdir -p ../bin
+	jar cfm $@ MANIFEST-SVC.MF $(SVCDIR)/*.class
+
+$(JAMCOMMONJAR): $(COMMONCLS) $(JSCLS) $(ENVCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(INTCLS) $(NWACLS) $(TXCLS) $(HTMLCLS) $(FORKCLS) $(COMCLS)
+	mkdir -p ../bin
+	jar cfm $@ MANIFEST-COMMON.MF $(COMMONDIR)/*.class $(CLOSUREDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(ENVDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class $(FORKDIR)/*.class $(INTDIR)/*.class
 
 util: $(UTILJAR)
 
 wala: $(WALAJAR)
 
-$(WALAJAR): $(JAMJAR) $(WALACLS)
+$(WALAJAR): $(JAMCOMMONJAR) $(WALACLS)
 	jar cfm $@ MANIFEST-WALA.MF $(WALADIR)/*.class
 
-$(UTILJAR): $(JAMJAR) $(UTLCLS) $(CHROMECLS) $(FIREFOXCLS)
-	jar cfm $@ MANIFEST-UTIL.MF $(UTLDIR)/*.class $(CHROMEDIR)/*.class $(FIREFOXDIR)/*.class
+$(UTILJAR): $(JAMCOMMONJAR) $(UTLCLS) $(WEBKITCLS) $(GECKOCLS)
+	jar cfm $@ MANIFEST-UTIL.MF $(UTLDIR)/*.class $(WEBKITDIR)/*.class $(GECKODIR)/*.class
 
 utilclean:
-	rm -f $(UTLDIR)/*.class $(CHROMEDIR)/*.class $(FIREFOXDIR)/*.class $(UTILJAR)
+	rm -f $(UTLDIR)/*.class $(WEBKITDIR)/*.class $(GECKODIR)/*.class $(UTILJAR)
 
 walaclean:
 	rm -f $(WALADIR)/*.class $(WALAJAR)
 
 clean: utilclean walaclean
-	rm -f $(COMDIR)/*.class $(MAINDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TSTDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class $(FORKDIR)/*.class $(ENVDIR)/*.class
+	rm -f $(CLOSUREDIR)/*.class $(PROCDIR)/*.class $(SVCDIR)/*.class $(COMMONDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(TSTDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class $(FORKDIR)/*.class $(ENVDIR)/*.class
 
 .java.class:
 	$(JAVAC) -classpath $(JCLASSPATH) $(JFLAGS) $*.java

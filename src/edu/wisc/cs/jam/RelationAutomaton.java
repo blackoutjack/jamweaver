@@ -41,8 +41,7 @@ public class RelationAutomaton extends ControlAutomaton {
 
   // The clever cache holds a mapping of program statements to minimal
   // sets of pre- and post-state predicates that are known to result in
-  // failing queries. This is static so that it's a centralized
-  // database.
+  // failing queries.
   protected static CleverCache cleverCache;
 
   // The policy path with respect to which the relations are built.
@@ -84,6 +83,11 @@ public class RelationAutomaton extends ControlAutomaton {
     // Initialize the clever cache structure.
     cleverCache = new CleverCache();
     transitioningSymbols = new LinkedHashMap<PredicateValue,Set<ExpSymbol>>();
+  }
+
+  public static void clear() {
+    cleverCache = new CleverCache();
+    //transitioningSymbols = new LinkedHashMap<PredicateValue,Set<ExpSymbol>>();
   }
 
   protected RelationAutomaton(JAM j, PolicyPath pp) {
@@ -302,7 +306,7 @@ public class RelationAutomaton extends ControlAutomaton {
       // %%% possible.
       addToCleverCache(sym, d0, d1);
     } else {
-      if (JAM.Opts.syntaxOnly) {
+      if (JAMOpts.syntaxOnly) {
         // We note that this symbol can change this predicate value.
         // The post-state is guaranteed to not be empty, but the
         // pre-state may be empty.
@@ -695,7 +699,7 @@ public class RelationAutomaton extends ControlAutomaton {
       List<PredicateValue> pvsBefore = s0.getValues();
       for (PredicateValue pv : pvsBefore) {
         assert !pv.isEventValue();
-        if (JAM.Opts.debugQueries) {
+        if (JAMOpts.debugQueries) {
           if (pv.equals(pv.getPredicate().getNegative())) {
             transitionString += "-";
           } else {
@@ -709,7 +713,7 @@ public class RelationAutomaton extends ControlAutomaton {
     }
 
     if (sym != null) {
-      if (JAM.Opts.debugQueries) {
+      if (JAMOpts.debugQueries) {
         transitionString += sym.toString();
         if (sym.isPostCall()) transitionString += " [post]";
       }
@@ -727,7 +731,7 @@ public class RelationAutomaton extends ControlAutomaton {
     if (s1 != null) {
       List<PredicateValue> pvsAfter = s1.getValues();
       for (PredicateValue pv : pvsAfter) {
-        if (JAM.Opts.debugQueries) {
+        if (JAMOpts.debugQueries) {
           transitionString += " " + pv.getPredicate().getId();
           if (pv.equals(pv.getPredicate().getNegative())) {
             transitionString += "-";
@@ -745,7 +749,7 @@ public class RelationAutomaton extends ControlAutomaton {
     Clause c = new Clause(clauses);
     // %%% Ugly
     c.setPolicyPathIndex(policyPath == null ? -1 : policyPath.getId());
-    if (JAM.Opts.debugQueries) c.setDescription(transitionString);
+    if (JAMOpts.debugQueries) c.setDescription(transitionString);
     c.setConcrete(false);
 
     return c;
@@ -931,7 +935,7 @@ public class RelationAutomaton extends ControlAutomaton {
 
     Relation rel = relationDomain.getTrueRelation();
 
-    if (!JAM.Opts.unconstrainedEnvironment) {
+    if (!JAMOpts.unconstrainedEnvironment) {
       for (Predicate pred : getLearnedPredicates()) {
         // Get the truth value of the predicate in the initial
         // environment.

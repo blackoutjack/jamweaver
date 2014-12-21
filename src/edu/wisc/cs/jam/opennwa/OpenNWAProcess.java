@@ -11,6 +11,7 @@ import edu.wisc.cs.jam.RelationAutomaton;
 import edu.wisc.cs.jam.CounterExample;
 import edu.wisc.cs.jam.JAMConfig;
 import edu.wisc.cs.jam.JAM;
+import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.Dbg;
 
@@ -51,7 +52,7 @@ public class OpenNWAProcess implements OpenNWAInterface {
     }
     r.close();
 
-    if (JAM.Opts.debug) {
+    if (JAMOpts.debug) {
       // Get the debugging/statistics output.
       BufferedReader e = new BufferedReader(new InputStreamReader(p.getErrorStream()));
       StringBuilder stats = new StringBuilder();
@@ -82,7 +83,7 @@ public class OpenNWAProcess implements OpenNWAInterface {
       return null;
     }
 
-    if (JAM.Opts.debug) FileUtil.writeToFile(trace, "trace-" + ja.getIteration());
+    if (JAMOpts.debug) FileUtil.writeToFile(trace, "trace-" + ja.getIteration());
 
     if (trace.equals("no counterexamples")) return null;
 

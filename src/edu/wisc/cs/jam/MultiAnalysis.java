@@ -27,7 +27,7 @@ public class MultiAnalysis extends JAMAnalysis {
   public void run() {
     Dbg.out("Checking policy path: " + policyPath, 1);
     // %%%
-    //boolean validate = JAM.Opts.refinementLimit != 0;
+    //boolean validate = JAMOpts.refinementLimit != 0;
 
     updateChecks();
 
@@ -43,7 +43,7 @@ public class MultiAnalysis extends JAMAnalysis {
     // Reinsert the model into the queue.
     models.add(model);
 
-    ExecutorService pool = Executors.newFixedThreadPool(JAM.Opts.cexThreads);
+    ExecutorService pool = Executors.newFixedThreadPool(JAMOpts.cexThreads);
 
     List<Future<?>> results = new ArrayList<Future<?>>();
     for (int i=0; i<cmb.totalCombinations(); i++) {
@@ -109,7 +109,7 @@ public class MultiAnalysis extends JAMAnalysis {
         // counter-example sequence.
         model.loadProductEdges(openTransitions);
 
-        if (JAM.Opts.debug) {
+        if (JAMOpts.debug) {
           FileUtil.writeToFile(model.getProductAutomaton().serialize(), "paut-" + id + "-" + iter + ".aut");
           FileUtil.writeToFile(model.getRelationAutomaton().serialize(), "raut-" + id + "-" + iter + ".aut");
         }
@@ -138,7 +138,7 @@ public class MultiAnalysis extends JAMAnalysis {
           instrumentCounterExample(cex);
 
           // Possibly save the current source code to file.
-          if (JAM.Opts.intermediateOutput || JAM.Opts.debug) {
+          if (JAMOpts.intermediateOutput || JAMOpts.debug) {
             String srcout = FileUtil.getBaseName() + "-" + id + "-" + iter + ".js";
             FileUtil.writeToFile(getSourceManager(), srcout);
           }

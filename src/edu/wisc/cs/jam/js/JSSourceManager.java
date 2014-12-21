@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.io.BufferedInputStream;
@@ -54,6 +55,7 @@ import edu.wisc.cs.jam.Traversal.Traverser;
 import edu.wisc.cs.jam.ControlAutomaton;
 import edu.wisc.cs.jam.CheckManager;
 import edu.wisc.cs.jam.JAMConfig;
+import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.Dbg;
 import edu.wisc.cs.jam.Exp;
@@ -82,11 +84,16 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   protected boolean needsCallGraphUpdate;
   protected boolean needsCodeUpdate;
 
+  protected boolean noMoreSources = false;
+
+  protected Map<Node,JSExp> nodeMap;
+
   public JSSourceManager() {
+    nodeMap = new WeakHashMap<Node,JSExp>();
     sourceFiles = new ArrayList<JSSource>();
     sourceSet = new HashSet<String>();
     htmlFiles = new ArrayList<HTMLSource>();
-    boolean useExterns = !JAM.Opts.noExterns;
+    boolean useExterns = !JAMOpts.noExterns;
     needsCodeUpdate = false;
     needsCallGraphUpdate = true;
     try {
@@ -143,6 +150,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
 
   @Override
   public void addSource(Source src) {
+    assert !noMoreSources : "Source added after manager marked done.";
     // Closure will error out if there are duplicate SourceFiles.
     if (sourceSet.contains(src.getPath())) {
       Dbg.warn("Duplicate source detected: " + src.getPath());
@@ -162,7 +170,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   // Get the compiler if it needs to be used directly.
   public Compiler getCompiler() {
     if (compiler == null) {
-      boolean success = runPass(null, null, JAM.Opts.debug, false);
+      boolean success = runPass(null, null, JAMOpts.debug, false);
       if (!success) {
         // No recovery possible.
         Dbg.fatal("Unable to initialize compiler.");
@@ -417,11 +425,32 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     return JSExp.create(this, body);
   }
 
-  public void generate() {
-    JSExp.jettisonNodes();
+  public void mapNode(Node n, JSExp e) {
+    nodeMap.put(n, e);
+  }
+
+  public boolean containsNode(Node n) {
+    return nodeMap.containsKey(n);
+  }
+  
+  public JSExp getExpForNode(Node n) {
+    return nodeMap.get(n);
+  }
+
+  public void jettisonNodes() {
+    for (Map.Entry<Node,JSExp> entry : nodeMap.entrySet()) {
+      Node n = entry.getKey();
+      JSExp e = entry.getValue();
+      e.clearNode();
+    }
+    nodeMap.clear();
+  }
+
+  protected void generate() {
+    jettisonNodes();
     Compiler c = getCompiler();
     Node rootNode = c.getRoot();
-    if (JAM.Opts.noExterns) {
+    if (JAMOpts.noExterns) {
       externs = JSExp.createEmpty(this);
       root = JSExp.create(this, rootNode);
     } else {
@@ -430,6 +459,12 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
       externs = JSExp.create(this, rootNode.getFirstChild());
       root = JSExp.create(this, rootNode.getChildAtIndex(1));
     }
+  }
+
+  @Override
+  public void doneAddingSources() {
+    noMoreSources = true;
+    generate();
   }
 
   @Override
@@ -469,7 +504,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     //options.setCheckUnreachableCode(CheckLevel.WARNING);
 
     // Remove unused globals if in stand-alone mode.
-    if (JAM.Opts.standAloneMode) {
+    if (JAMOpts.standAloneMode) {
       options.inlineConstantVars = true;
       options.removeUnusedPrototypeProperties = true;
       options.removeUnusedVars = true;
@@ -494,7 +529,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     options.setRemoveAbstractMethods(false);
     options.setRemoveClosureAsserts(false);
 
-    runPass(options, null, JAM.Opts.debug, false);
+    runPass(options, null, JAMOpts.debug, false);
     generate();
 
     // Output the Closure-processed source.
@@ -513,13 +548,13 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     Dbg.out("Done normalizing: " + getNodeCount() + " nodes", 2);
 
     /*
-    if (JAM.Opts.transformEval) {
+    if (JAMOpts.transformEval) {
       Transform evalpass = new JSEvalTransform();
       evalpass.run(this);
     }
     */
 
-    if (!JAM.Opts.skipTypeInference) {
+    if (!JAMOpts.skipTypeInference) {
       // Type inference must be done after the variable renaming that
       // occurs during preprocessing.
       inferTypes();
@@ -670,12 +705,11 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   
   @Override
   public void finalize() {
-    if (!JAM.Opts.noOptimize) {
+    if (!JAMOpts.noOptimize) {
       // Output optimized code.
       optimize();
       saveSources("optimized");
     }
-    close();
   }
   
   protected void optimize() {
@@ -703,7 +737,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     options.optimizeArgumentsArray = true;
     options.setChainCalls(true);
 
-    if (JAM.Opts.standAloneMode) {
+    if (JAMOpts.standAloneMode) {
       // Remove unused globals if in stand-alone mode.
       options.smartNameRemoval = true;
       options.removeUnusedPrototypeProperties = true;
@@ -728,7 +762,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     options.setUnaliasableGlobals(JAMConfig.TRANSACTION_LIBRARY);
 
     PassConfig cfg = new DefaultPassConfig(options);
-    boolean success = runPass(options, cfg, JAM.Opts.debug, true);
+    boolean success = runPass(options, cfg, JAMOpts.debug, true);
     generate();
     if (!success) {
       Dbg.err("Optimization pass failed.");
@@ -740,11 +774,12 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
     Dbg.out("Done optimizing", 2);
   } // end optimize
 
-  protected void close() {
+  @Override
+  public void close() {
     // This is needed as of Closure revision 2112, to shutdown the
     // ExecutorService.
     // %%% Need a better way to do this, without modifying Closure.
-    if (compiler != null) Compiler.close();
+    Compiler.close();
   }
 
   // Get the current source code of the file.

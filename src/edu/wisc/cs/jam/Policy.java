@@ -32,7 +32,7 @@ public class Policy extends Automaton<State,PredicateSymbol> {
   private List<PolicyPath> paths;
 
   // Symbol to label the self-edges of this automaton.
-  public static PredicateSymbol trueSymbol;
+  public static final PredicateSymbol trueSymbol;
   
   // There should only be one initial state, even if multiple policy
   // paths are being applied.
@@ -51,6 +51,10 @@ public class Policy extends Automaton<State,PredicateSymbol> {
   private static final String EDGE_HASH = "SHA";
   private static MessageDigest hasher;
 
+  static {
+    trueSymbol = new PredicateSymbol(Predicate.TRUE);
+  }
+
   public Policy(JAM jam, PolicyLanguage lang, List<String> files) {
 
     sm = jam.getSourceManager();
@@ -66,12 +70,6 @@ public class Policy extends Automaton<State,PredicateSymbol> {
     } catch (NoSuchAlgorithmException ex) {
       System.err.println("Unable to initialize edge hasher.");
     }
-
-    // Initialize this here instead of statically since it depends on
-    // Predicate.TRUE being statically initialized, and initialization
-    // order is random.
-    if (trueSymbol == null)
-      trueSymbol = new PredicateSymbol(Predicate.TRUE);
 
     stateMap = new ArrayList<State>();
     
@@ -146,7 +144,7 @@ public class Policy extends Automaton<State,PredicateSymbol> {
     // Verify that all specified predicates are false in an initial
     // execution environment.
     // %%% This is now done in |Predicate.getInitialValue|.
-    //if (JAM.Opts.debug) checkPredicates();
+    //if (JAMOpts.debug) checkPredicates();
   }
 
   public PolicyLanguage getLanguage() {

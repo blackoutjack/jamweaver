@@ -96,8 +96,8 @@ import edu.wisc.cs.jam.env.Method;
 import edu.wisc.cs.jam.env.Field;
 import edu.wisc.cs.jam.env.Const;
 import edu.wisc.cs.jam.env.Param;
-import edu.wisc.cs.jam.env.firefox.FirefoxPrototype;
-import edu.wisc.cs.jam.env.firefox.FirefoxMethod;
+import edu.wisc.cs.jam.env.firefox.GeckoPrototype;
+import edu.wisc.cs.jam.env.firefox.GeckoMethod;
 
 public class GeckoGenerator extends NativeGenerator implements Utility {
 
@@ -312,7 +312,7 @@ public class GeckoGenerator extends NativeGenerator implements Utility {
       ps.add(new Param(pname, paramtype, pattrs, pms, pcms));
     }
 
-    Method m = new FirefoxMethod(opname, mtype, ps, ms, cms);
+    Method m = new GeckoMethod(opname, mtype, ps, ms, cms);
     return m;
   }
 
@@ -434,7 +434,7 @@ public class GeckoGenerator extends NativeGenerator implements Utility {
           ModifiersContext imods = iface.modifiers();
           loadModifiers(imods, mods, compmods);
 
-          Prototype p = new FirefoxPrototype(iname, mods, compmods);
+          Prototype p = new GeckoPrototype(iname, mods, compmods);
 
           List<Method> meths = new ArrayList<Method>();
           List<Field> fields = new ArrayList<Field>();

@@ -70,7 +70,7 @@ public class BranchSymbol extends ExpSymbol {
     StringBuilder sb = new StringBuilder();
     sb.append("[#");
     sb.append(branch ? "t" : "f");
-    if (JAM.Opts.debug) {
+    if (JAMOpts.debug) {
       sb.append(";");
       sb.append(XSBInterface.escapeString(getExp().toCode()));
     }

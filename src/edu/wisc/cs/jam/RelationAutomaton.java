@@ -42,7 +42,7 @@ public class RelationAutomaton extends ControlAutomaton {
   // The clever cache holds a mapping of program statements to minimal
   // sets of pre- and post-state predicates that are known to result in
   // failing queries.
-  protected static CleverCache cleverCache;
+  protected CleverCache cleverCache;
 
   // The policy path with respect to which the relations are built.
   protected PolicyPath policyPath;
@@ -69,7 +69,7 @@ public class RelationAutomaton extends ControlAutomaton {
 
   // This records the set of symbols that can potentially advance the
   // policy.
-  protected static Map<PredicateValue,Set<ExpSymbol>> transitioningSymbols;
+  protected Map<PredicateValue,Set<ExpSymbol>> transitioningSymbols;
 
   // The domain used to manage the relations
   protected RelationDomain relationDomain; 
@@ -79,19 +79,12 @@ public class RelationAutomaton extends ControlAutomaton {
 
   protected Map<String,ComboSymbol<PredicateSymbol,ExpSymbol>> serialSymbolMap;
 
-  static {
+  protected RelationAutomaton(JAM j, PolicyPath pp) {
+    super(j.getControlAutomaton());
+
     // Initialize the clever cache structure.
     cleverCache = new CleverCache();
     transitioningSymbols = new LinkedHashMap<PredicateValue,Set<ExpSymbol>>();
-  }
-
-  public static void clear() {
-    cleverCache = new CleverCache();
-    //transitioningSymbols = new LinkedHashMap<PredicateValue,Set<ExpSymbol>>();
-  }
-
-  protected RelationAutomaton(JAM j, PolicyPath pp) {
-    super(j.getControlAutomaton());
 
     semantics = j.getSemantics();
     cm = j.getCheckManager();
@@ -111,24 +104,21 @@ public class RelationAutomaton extends ControlAutomaton {
     }
 
     // Initialize the |transitioningSymbols| collection.
-    // Synchronize modifications to the static collection.
     if (policyPath != null) {
-      synchronized (getClass()) {
-        for (Predicate p : policyPath.getPredicates()) {
-          // Events can't be undone, so don't track symbols causing such
-          // a transition.
-          // %%% Does this imbalance cause inconsistencies in the
-          // %%% BDDRelationDomain?
-          if (!p.isEventPredicate()) {
-            PredicateValue pvpre = p.getNegative();
-            if (!transitioningSymbols.containsKey(pvpre)) {
-              transitioningSymbols.put(pvpre, new LinkedHashSet<ExpSymbol>());
-            }
+      for (Predicate p : policyPath.getPredicates()) {
+        // Events can't be undone, so don't track symbols causing such
+        // a transition.
+        // %%% Does this imbalance cause inconsistencies in the
+        // %%% BDDRelationDomain?
+        if (!p.isEventPredicate()) {
+          PredicateValue pvpre = p.getNegative();
+          if (!transitioningSymbols.containsKey(pvpre)) {
+            transitioningSymbols.put(pvpre, new LinkedHashSet<ExpSymbol>());
           }
-          PredicateValue pvpost = p.getPositive();
-          if (!transitioningSymbols.containsKey(pvpost)) {
-            transitioningSymbols.put(pvpost, new LinkedHashSet<ExpSymbol>());
-          }
+        }
+        PredicateValue pvpost = p.getPositive();
+        if (!transitioningSymbols.containsKey(pvpost)) {
+          transitioningSymbols.put(pvpost, new LinkedHashSet<ExpSymbol>());
         }
       }
     }

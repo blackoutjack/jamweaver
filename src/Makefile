@@ -62,7 +62,7 @@ SVCSRC=$(SVCBASE:%=$(SVCDIR)/%.java)
 SVCCLS=$(SVCSRC:%.java=%.class)
 
 # Common JAM classes in the edu.wisc.cs.jam package
-COMMONBASE=JAM JAMAnalysis BackwardAnalysis BranchSymbol Clause CartesianAutomaton ControlAutomaton ControlStructure CounterExample DataState EvaluationAutomaton FileUtil FocusAutomaton FunctionEntrySymbol JAMOpts JAMConfig ExpSymbol OptionParser Options Policy PolicyLanguage PolicyPath Predicate PredicateLearner PredicateSymbol PredicateType PredicateValue ProgramModel Relation RelationDomain ReturnSymbol Semantics SourceManager Source StringUtil DataTransition SeedPredicates CleverCache RelationAutomaton Dbg DisjointAutomaton IncrementalAnalysis CheckManager RuntimeCheck Scope Transform Traversal CallGraph Exp Language #BooleanAutomaton MultiAnalysis
+COMMONBASE=JAM JAMAnalysis BackwardAnalysis BranchSymbol Clause CartesianAutomaton ControlAutomaton ControlStructure CounterExample DataState EvaluationAutomaton FatalJAMException FileUtil FocusAutomaton FunctionEntrySymbol JAMOpts JAMConfig ExpSymbol OptionParser Options Policy PolicyLanguage PolicyPath Predicate PredicateLearner PredicateSymbol PredicateType PredicateValue ProgramModel Relation RelationDomain ReturnSymbol Semantics SourceManager Source StringUtil DataTransition SeedPredicates CleverCache RelationAutomaton Dbg DisjointAutomaton IncrementalAnalysis CheckManager RuntimeCheck Scope Transform Traversal CallGraph Exp Language #BooleanAutomaton MultiAnalysis
 COMMONSRC=$(COMMONBASE:%=$(COMMONDIR)/%.java)
 COMMONCLS=$(COMMONSRC:%.java=%.class)
 

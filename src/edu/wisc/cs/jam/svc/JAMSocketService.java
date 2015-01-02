@@ -78,6 +78,7 @@ import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.OptionParser;
 import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.Language;
+import edu.wisc.cs.jam.FatalJAMException;
 import edu.wisc.cs.jam.RelationAutomaton;
 
 public class JAMSocketService extends JAMService {
@@ -105,7 +106,10 @@ public class JAMSocketService extends JAMService {
       String target = reqline.getUri();
       if (target.equals("/shutdown")) {
         Dbg.err("Shutdown signal received");
-        getSourceManager().close();
+        SourceManager sm = getSourceManager();
+        if (sm != null) {
+          sm.close();
+        }
         System.exit(0);
       }
 
@@ -189,14 +193,21 @@ public class JAMSocketService extends JAMService {
       }
 
       // Run the analysis.
-      String output = analyze(content);
-
-      // %%% Put this somewhere else or eliminate it.
-      RelationAutomaton.clear();
+      String output = null;
+      String error = null;
+      try {
+        output = analyze(content);
+      } catch (FatalJAMException ex) {
+        output = "";
+        error = ex.getMessage();
+      }
 
       HttpEntity responseEntity = new StringEntity(output);
       response.setEntity(responseEntity);
       response.setHeader("InfoPath", new File(FileUtil.getMainDir(), JAMConfig.INFO_FILENAME).getAbsolutePath());
+      if (error != null) {
+        response.setHeader("AnalysisError", error);
+      }
     }
   }
 

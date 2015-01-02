@@ -86,7 +86,7 @@ public class Dbg {
     if (JAMOpts.debug)
       FileUtil.writeToMain(sb, "err.txt", true);
     
-    System.exit(1);
+    throw new FatalJAMException(message);
   }
 
   public static void warn(String message) {

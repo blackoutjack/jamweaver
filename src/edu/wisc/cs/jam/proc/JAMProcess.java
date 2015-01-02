@@ -29,6 +29,7 @@ import edu.wisc.cs.jam.FileUtil;
 import edu.wisc.cs.jam.SourceManager;
 import edu.wisc.cs.jam.JAMOpts;
 import edu.wisc.cs.jam.Language;
+import edu.wisc.cs.jam.FatalJAMException;
 
 public class JAMProcess extends JAM {
 
@@ -71,38 +72,55 @@ public class JAMProcess extends JAM {
     src.saveSources("original");
   }
 
-  public static void main(String[] args) {
-    loadOptions(args);
-
+  protected static void analyze() {
     // Generate a new JAMProcess instance based on the options given.
     Language lang = new JavaScript();
     JAMProcess jam = new JAMProcess(lang);
 
-    jam.prepare();
+    try {
 
-    jam.preanalyze();
+      jam.prepare();
 
-    if (!Opts.skipAnalysis) {
-      // Apply all policies to the input program.
-      if (Opts.pathThreads > 1) {
-        jam.runMulti();
-      } else {
-        jam.run();
+      jam.preanalyze();
+
+      if (!Opts.skipAnalysis) {
+        // Apply all policies to the input program.
+        if (Opts.pathThreads > 1) {
+          jam.runMulti();
+        } else {
+          jam.run();
+        }
+        // Output the instrumented source.
+        jam.getSourceManager().saveSources("instrumented");
+        Dbg.out("Summary: " + jam.getCounterExampleCount() + " counterexamples found; "
+          + jam.getCheckManager().getCheckCount() + " runtime checks inserted", 1);
       }
-      // Output the instrumented source.
-      jam.getSourceManager().saveSources("instrumented");
-      Dbg.out("Summary: " + jam.getCounterExampleCount() + " counterexamples found; "
-        + jam.getCheckManager().getCheckCount() + " runtime checks inserted", 1);
+
+      String output = jam.postanalyze();
+
+      if (!JAMOpts.noOut) {
+        System.out.println(output);
+        System.out.flush();
+      }
+    } catch (FatalJAMException ex) {
+      Dbg.err("Fatal error during analysis: " + ex.getMessage());
+      ex.printStackTrace();
+    } catch (RuntimeException ex) {
+      Dbg.err("Uncaught runtime exception: " + ex.getMessage());
+      ex.printStackTrace();
+    } finally {
+      SourceManager sm = jam.getSourceManager();
+      if (sm != null) {
+        sm.close();
+      }
     }
+  }
 
-    String output = jam.postanalyze();
 
-    if (!JAMOpts.noOut) {
-      System.out.println(output);
-      System.out.flush();
-    }
-
-    jam.getSourceManager().close();
+  public static void main(String[] args) {
+    loadOptions(args);
+    analyze();
+    System.exit(0);
   }
 
   protected static void loadOptions(String[] args) {

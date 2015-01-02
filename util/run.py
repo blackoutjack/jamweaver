@@ -252,8 +252,6 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
   apps = list(cases.keys())
   apps.sort()
   for app in apps:
-    # %%% Temporary workaround
-    if service and app == "argumentsShadow0": continue
 
     inps = cases[app]
     srcfls = inps[0]

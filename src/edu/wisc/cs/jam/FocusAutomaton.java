@@ -31,6 +31,8 @@ public class FocusAutomaton extends RelationAutomaton {
 
   public FocusAutomaton(JAM j, RelationAutomaton r) {
     super(j, r.policyPath);
+    this.cleverCache = r.cleverCache;
+    this.transitioningSymbols = r.transitioningSymbols;
 
     assert r.loaded;
 

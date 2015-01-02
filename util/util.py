@@ -792,14 +792,20 @@ def query_jam_service(jspaths, policies, refine=0, seeds=None, moreopts=[]):
   #sys.stdout.write('\r\n')
   #sys.stdout.write(body)
 
-  resp = conn.getresponse()
+  try:
+    resp = conn.getresponse()
+    outp = resp.read().decode('utf-8')
+  except http.client.HTTPException as e: 
+    err('HTTP exception: %s' % str(e))
+    outp = ''
+  except ConnectionResetError as e:
+    err('Connection reset: %s' % str(e))
+    outp = ''
+  #out("OUTP: " + outp)
 
   endtime = time.time()
   tottime = endtime - starttime
-  out('%s: %.2fs\n' % (appname, tottime))
-
-  outp = resp.read().decode('utf-8')
-  #out("OUTP: " + outp)
+  out('%s: %.2fs' % (appname, tottime))
 
   # Simulate the old stderr format
   infopath = resp.getheader("InfoPath")

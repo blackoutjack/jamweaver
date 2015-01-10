@@ -24,6 +24,9 @@ sudo apt-get -y install openjdk-7-jdk ant ocaml-nox curl maven
 # Runtime dependencies
 sudo apt-get -y install libgmp3-dev libnewmat10-dev libunwind8-dev libboost-all-dev
 
+# Evercookie test case support
+sudo apt-get -y install php5-gd
+
 # Choose version 7 of Java; you will be presented with a list of
 # options; choose openjdk 7.
 sudo update-alternatives --config javac

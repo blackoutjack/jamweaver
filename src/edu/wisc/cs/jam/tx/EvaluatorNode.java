@@ -89,6 +89,7 @@ public class EvaluatorNode {
     } else {
       // %%% This could get ugly, or potentially have collisions.
       closedExpr = "_" + expr.replace('.', '_');
+      closedExpr = closedExpr.replace('-', '_');
       closedExpr = closedExpr.replace('(', '_');
       closedExpr = closedExpr.replace(')', '_');
       // Communicate back to the Evaluator about use of the native.
@@ -111,10 +112,21 @@ public class EvaluatorNode {
   }
 
   protected String parseNativeLocation(Exp nat) {
+    // %%% This is more complicated than it needs to be because of
+    // %%% inconsistencies between NativeUtil and JSPolicyLanguage.
     if (!language.isNativeLocation(nat)) return null;
 
     String natloc = nat.toCode();
-    String expr = NativeUtil.getExpressionFromNativeLocation(natloc);
+    return parseNativeLocation(natloc);
+  }
+
+  protected String parseNativeLocation(String natloc) {
+    String expr = null;
+    if (NativeUtil.isPrimitiveLocation(natloc)) {
+      expr = natloc.substring(1);
+    } else {
+      expr = NativeUtil.getExpressionFromNativeLocation(natloc);
+    }
     if (expr == null) {
       // %%% Handle this more gracefully.
       throw new UnsupportedOperationException("Unknown native location: " + natloc);
@@ -185,6 +197,8 @@ public class EvaluatorNode {
   protected String parseAccessorClause(Exp clause) {
     if (!clause.isAccessor()) return null;
 
+    StringBuilder sb = new StringBuilder();
+
     Exp obj = clause.getFirstChild();
     Exp prop = clause.getChild(1);
 
@@ -193,6 +207,21 @@ public class EvaluatorNode {
       // |objid| gets the value unified to the wildcard.
     } else if ((objid = parseNativeLocation(obj)) != null) {
       // |objid| gets the native value.
+    } else if ((objid = parseArgClause(obj, sb)) != null) {
+      // |objid| get the argument value and an argument count check is
+      // appended. We also want ensure the value is not |undefined| or
+      // |null|.
+      sb.append(objid);
+      sb.append(" !== ");
+      // Use a private reference for |undefined|.
+      sb.append(parseNativeLocation("#undefined"));
+      sb.append(" && ");
+      sb.append(objid);
+      // Null is a keyword that can't be overwritten or shadowed, so it
+      // doesn't need a private reference.
+      sb.append(" !== null &&");
+      // Any string, number, boolean, function or object can be accessed
+      // with bracket notation, so our cases are covered.
     } else {
       // %%% Output code that compares |varname === native| where
       // %%% |native| is the native object corresponding to the
@@ -222,17 +251,16 @@ public class EvaluatorNode {
       }
     }
    
-    String ret = null;
     if (isSetProp) {
-      ret = "node.value";
+      sb.append("node.value");
     } else {
       // Get the value directly from the object.
       // %%% What if this value had been overwritten by a previous
       // %%% write within the transaction? Need to track updates to
       // %%% this value throughout evaluation.
-      ret = objid + "[" + propid + "]";
+      sb.append(objid + "[" + propid + "]");
     }
-    return ret;  
+    return sb.toString();
   }
 
   protected void makeBinaryConjunct(StringBuilder sb) {

@@ -45,6 +45,7 @@ var LOCATION_MAP = [
   "screen",
   "Storage",
   "localStorage",
+  "sessionStorage",
   "Location",
   "location",
 

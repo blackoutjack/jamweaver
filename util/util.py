@@ -96,15 +96,30 @@ def parse_time_output(timeout, sep1=" ", sep2=":", element=None):
     return False
 
 def get_suffix(syn, ref, pol=None):
+  refsuf = None
   if syn:
     refsuf = 'syntax'
-  else:
+  elif ref is not None:
     refsuf = 'semantic%d' % ref
   if pol is not None and pol != '':
-    refsuf = '%s.%s' % (pol, refsuf)
+    if refsuf == '':
+      refsuf = pol
+    else:
+      refsuf = '%s.%s' % (pol, refsuf)
   return refsuf
 
-def get_suffix_from_info(appinfo):
+def get_policy_desc(pollist):
+  descparts = []
+  for polpath in pollist:
+    polname = os.path.split(polpath)[1]      
+    parts = polname.split('.')
+    if len(parts) > 2:
+      desc = parts[-2]
+      descparts.append(desc)
+  poldesc = '+'.join(descparts)
+  return poldesc
+
+def get_suffixes_from_info(appinfo):
   refine = 0
   synonly = False
   poldesc = None
@@ -136,15 +151,7 @@ def get_suffix_from_info(appinfo):
         polinfo = polinfo.lstrip('[')
         polinfo = polinfo.rstrip(']')
         pollist = polinfo.split(',')
-        descparts = []
-        for polpath in pollist:
-          polname = os.path.split(polpath)[1]      
-          parts = polname.split('.')
-          if len(parts) > 2:
-            desc = parts[-2]
-            descparts.append(desc)
-        if len(descparts) > 0:
-          poldesc = '+'.join(descparts)
+        poldesc = get_policy_desc(pollist)
       except:
         warn('Unknown policy-files format (%s) for run: %s' % (info['policy-files'], appinfo['dir']))
     else:
@@ -154,8 +161,11 @@ def get_suffix_from_info(appinfo):
     warn('No run information: %s' % appinfo['dir'])
     return None
 
-  return get_suffix(synonly, refine, poldesc)
-# /get_suffix_from_info
+  # Return a suffix for the fine-grained and coarse-grained variants.
+  refsuf = get_suffix(synonly, refine, poldesc) 
+  crssuf = get_suffix(False, None, poldesc)
+  return (refsuf, crssuf)
+# /get_suffixes_from_info
 
 def load_dir(tgtdir):
   if not os.path.isdir(tgtdir):
@@ -543,6 +553,7 @@ def load_app_source(apppath, appname, defwarn=False):
   else:
     # Non-directories are assumed to be utility files.
     return None
+# /load_app_source
 
 def load_app_sources(topdir, defwarn=True, apps=None):
   # Throughout, sort the files so tests are run in a consistent order.
@@ -558,6 +569,7 @@ def load_app_sources(topdir, defwarn=True, apps=None):
     if appsrc is not None:
       appsrcs[appname] = appsrc
   return appsrcs
+# /load_app_sources
 
 def load_sources(topdir, srcsuf='.js', excludesuf='.out.js'):
   allsubs = os.listdir(topdir)
@@ -595,7 +607,7 @@ def load_policy(polpath):
     err("Unable to find policy file: %s" % (polpath))
     pols = {}
   else:
-    pols = {'': polpath}
+    pols = {'': [polpath]}
 
   return pols
 # /load_policy
@@ -612,20 +624,30 @@ def load_default_policy(dirkey=None):
 # default policy is used.
 def load_policies(fromdir, polsuf='.policy', defwarn=True):
   ret = {}
-  for polname in os.listdir(fromdir):
-    if polname.endswith(polsuf):
-      parts = polname.split('.')
-      if len(parts) > 2:
-        desc = parts[-2]
-      else:
-        desc = ''
-      ret[desc] = os.path.join(fromdir, polname)
 
-  if len(ret) == 0:
-    if defwarn:
-      warn('No policy in %s, using the default' % fromdir)
-    pardir = os.path.dirname(fromdir)
-    ret = load_default_policy(pardir)
+  polindex = os.path.join(fromdir, POLICY_INDEX_FILE)
+  if os.path.isfile(polindex):
+    polidx = get_lines(polindex, '#')
+    for polln in polidx:
+      polfiles = polln.split(';')
+      poldesc = get_policy_desc(polfiles)
+      polpaths = [os.path.join(fromdir, polfl) for polfl in polfiles]
+      ret[poldesc] = polpaths 
+  else:
+    for polname in os.listdir(fromdir):
+      if polname.endswith(polsuf):
+        parts = polname.split('.')
+        if len(parts) > 2:
+          desc = parts[-2]
+        else:
+          desc = ''
+        ret[desc] = [os.path.join(fromdir, polname)]
+
+    if len(ret) == 0:
+      if defwarn:
+        warn('No policy in %s, using the default' % fromdir)
+      pardir = os.path.dirname(fromdir)
+      ret = load_default_policy(pardir)
   return ret
 # /load_policies
 

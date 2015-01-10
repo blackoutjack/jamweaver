@@ -1,60 +1,66 @@
-% This file lists properties that should be modeled as having symbolic
-% values, even in the initial environment. This goes for values such
-% a document.URL, which depends on the URL of the loaded page.
+% This file lists properties that should be modeled as having a symbolic
+% value in the initial environment (such as |document.URL|, which
+% depends on the URL of the loaded page), and those that have a known
+% value that overrides the environment scan.
 %
 % Format:
-% #ObjectLocation propertyName Type
-%
+% s #ObjectLocation propertyName ValueType [ValuePrototype]
+% -- or --
+% c #ObjectLocation propertyName value
 
-#Global#__proto__ defaultStatus String
-#Global#__proto__ defaultstatus String
-#Global#__proto__ devicePixelRatio Number
-#Global#__proto__ frameElement Object
-#Global#__proto__ innerHeight Number
-#Global#__proto__ innerWidth Number
-#Global#__proto__ length Number
-#Global#__proto__ name String
-#Global#__proto__ opener Object
-#Global#__proto__ outerHeight Number
-#Global#__proto__ outerWidth Number
-#Global#__proto__ pageXOffset Number
-#Global#__proto__ pageYOffset Number
-#Global#__proto__ screenLeft Number
-#Global#__proto__ screenTop Number
-#Global#__proto__ screenX Number
-#Global#__proto__ screenY Number
-#Global#__proto__ scrollX Number
-#Global#__proto__ scrollY Number
-#Global#__proto__ status String
-#Global#__proto__ webkitIntent Object
+s #Global defaultStatus String
+s #Global defaultstatus String
+s #Global devicePixelRatio Number
+s #Global frameElement Object
+s #Global innerHeight Number
+s #Global innerWidth Number
+s #Global length Number
+s #Global name String
+s #Global opener Object #Window#prototype
+s #Global outerHeight Number
+s #Global outerWidth Number
+s #Global pageXOffset Number
+s #Global pageYOffset Number
+s #Global screenLeft Number
+s #Global screenTop Number
+s #Global screenX Number
+s #Global screenY Number
+s #Global scrollX Number
+s #Global scrollY Number
+s #Global status String
+c #Global localStorage #localStorage
+s #Global sessionStorage #sessionStorage
+% Maybe we can assume the current window is the top.
+s #Global top Object #window
+c #Global window #Global
 
-#HTMLDocument#prototype URL String
-#HTMLDocument#prototype alinkColor String
-#HTMLDocument#prototype attributes Object
-#HTMLDocument#prototype baseURI String
-#HTMLDocument#prototype bgColor String
-#HTMLDocument#prototype characterSet String
-#HTMLDocument#prototype charset String
-#HTMLDocument#prototype compatMode String
-#HTMLDocument#prototype cookie String
-#HTMLDocument#prototype defaultCharset String
-#HTMLDocument#prototype designMode String
-#HTMLDocument#prototype dir String
-#HTMLDocument#prototype doctype Object
-#HTMLDocument#prototype documentURI String
-#HTMLDocument#prototype domain String
-#HTMLDocument#prototype fgColor String
-#HTMLDocument#prototype height Number
-#HTMLDocument#prototype inputEncoding String
-#HTMLDocument#prototype lastModified String
-#HTMLDocument#prototype linkColor String
+s #HTMLDocument#prototype URL String
+s #HTMLDocument#prototype alinkColor String
+s #HTMLDocument#prototype attributes Object
+s #HTMLDocument#prototype baseURI String
+s #HTMLDocument#prototype bgColor String
+s #HTMLDocument#prototype characterSet String
+s #HTMLDocument#prototype charset String
+s #HTMLDocument#prototype compatMode String
+s #HTMLDocument#prototype cookie String
+s #HTMLDocument#prototype defaultCharset String
+s #HTMLDocument#prototype designMode String
+s #HTMLDocument#prototype dir String
+s #HTMLDocument#prototype doctype Object
+s #HTMLDocument#prototype documentURI String
+s #HTMLDocument#prototype domain String
+s #HTMLDocument#prototype fgColor String
+s #HTMLDocument#prototype height Number
+s #HTMLDocument#prototype inputEncoding String
+s #HTMLDocument#prototype lastModified String
+s #HTMLDocument#prototype linkColor String
 
-#Element#prototype scrollHeight Number
-#Element#prototype scrollLeft Number
-#Element#prototype scrollLeftMax Number
-#Element#prototype scrollTop Number
-#Element#prototype scrollTopMax Number
-#Element#prototype scrollWidth Number
-#Element#prototype tagName String
-#Element#prototype textContent String
+s #Element#prototype scrollHeight Number
+s #Element#prototype scrollLeft Number
+s #Element#prototype scrollLeftMax Number
+s #Element#prototype scrollTop Number
+s #Element#prototype scrollTopMax Number
+s #Element#prototype scrollWidth Number
+s #Element#prototype tagName String
+s #Element#prototype textContent String
 

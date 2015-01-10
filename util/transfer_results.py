@@ -271,9 +271,9 @@ def copy_files(app, infos, apppath, wrap=False):
     respred = None
 
   for info in infos:
-    refsuf = cfg.get_suffix_from_info(info)
+    refsuf, crssuf = cfg.get_suffixes_from_info(info)
     if refsuf is None:
-      # Error printed within |get_suffix_from_info|.
+      # Error printed within |get_suffixes_from_info|.
       continue
 
     srcdir = info['dir']
@@ -312,6 +312,8 @@ def copy_files(app, infos, apppath, wrap=False):
           # The refinement indicator isn't meaningful for the
           # coarse-grained policy.
           suf = 'coarse.policy'
+          if crssuf is not None:
+            suf = '%s.%s' % (crssuf, suf)
         else:
           suf = '%s.%s' % (refsuf, desc)
         if copy_policy(app, suf, polsrc, apppath):
@@ -463,9 +465,9 @@ def update_profile(apppath, app, wrap):
 
 def update_expected(app, infos, tgtpath):
   for appinfo in infos:
-    refsuf = cfg.get_suffix_from_info(appinfo)
+    refsuf, crssuf = cfg.get_suffixes_from_info(appinfo)
     if refsuf is None:
-      # Error printed within |get_suffix_from_info|.
+      # Error printed within |get_suffixes_from_info|.
       continue
 
     if 'out' in appinfo:

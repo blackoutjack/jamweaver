@@ -314,7 +314,7 @@ public class NativeUtil {
     return loc;
   }
 
-  protected static boolean isPrimitiveLocation(String loc) {
+  public static boolean isPrimitiveLocation(String loc) {
     return PRIMITIVES.contains(loc);
   }
   protected static boolean isNativeLocation(String loc) {

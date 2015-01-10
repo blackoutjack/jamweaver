@@ -79,6 +79,7 @@ varlen_functions = []
 # value in the initial environment.
 # objaddr => { property => type }
 symbolic_properties = {}
+concrete_properties = {}
 # A simple list of JavaScript types
 types = []
 # A map of native object locations to objects.
@@ -110,6 +111,14 @@ def load_types():
   types.extend(get_lines(typfl))
   typfl.close()
 
+def load_object_dict(locmap, loc):
+  if loc in locmap:
+    outer = locmap[loc]
+  else:
+    outer = {}
+    locmap[loc] = outer
+  return outer
+
 # Populate the list of properties that should be modeled as having
 # symbolic values.
 def load_symbolic_props():
@@ -119,25 +128,51 @@ def load_symbolic_props():
 
     specs = ln.split(" ")
 
-    assert len(specs) >= 2, "Invalid symbolic property specification: %s" % ln
-    try: assert len(specs) == 3
-    except: print >> sys.stderr, "Symbolic property %s is missing type" % ln
+    assert len(specs) >= 3, "Invalid symbolic property specification: %s" % ln
+    if len(specs) == 3:
+      print >> sys.stderr, "Symbolic property %s is missing type" % ln
 
-    objloc = specs[0]
-    propname = specs[1]
-    if len(specs) > 2: typ = specs[2]
-    else: typ = "?"
+    
+    flag = specs[0]
+    objloc = specs[1]
+    propname = specs[2]
 
-    if objloc in symbolic_properties:
-      outer = symbolic_properties[objloc]
-    else:
-      outer = {}
-      symbolic_properties[objloc] = outer
+    if flag == 's':
+      if len(specs) > 3: typ = specs[3]
+      else: typ = "?"
 
-    try: assert propname not in outer
-    except: print >> sys.stderr, "Duplicate symbolic property specification: %s" % ln
+      outer = load_object_dict(symbolic_properties, objloc)
+
+      if propname in outer:
+        print >> sys.stderr, "Duplicate symbolic property specification: %s" % ln
+        
+      outer[propname] = typ
+
+      if len(specs) > 4:
+        proto = specs[4]
+        if typ == 'Object':
+          proploc = objloc + '#' + propname
+          inner = load_object_dict(concrete_properties, proploc)
+          inner['__proto__'] = proto
+        else:
+          print >> sys.stderr, "Prototype given for non-Object value: %s" % ln
+      else:
+        proto = "?"
+
+    elif flag == 'c':
+      if len(specs) > 3:
+        val = specs[3]
+        
+        objrec = load_object_dict(concrete_properties, objloc)
+        if propname in objrec:
+          print >> sys.stderr, "Duplicate concrete property specification: %s" % ln
+          
+        objrec[propname] = typ
+      else:
+        print >> sys.stderr, "No value given: %s" % ln
       
-    outer[propname] = typ
+    else:
+      print >> sys.stderr, "Unknown flag: %s" % ln
 
   symfl.close()
   
@@ -351,6 +386,11 @@ def load_props_from_file(propfile, outfl):
         if prop in symprops:
           proptyp = symprops[prop]
           value = '?/' + proptyp
+
+      if locid in concrete_properties:
+        conprops = concrete_properties[locid]
+        if prop in conprops:
+          value = conprops[prop]
 
       isobj = value.startswith("#") and value not in PRIMITIVES
       if isobj:

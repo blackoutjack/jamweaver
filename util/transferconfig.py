@@ -8,7 +8,7 @@ from util import out
 from util import warn
 from util import process_info
 from util import get_result_info
-from util import get_suffix_from_info
+from util import get_suffixes_from_info
 from util import get_variant_bases
 from util import overwrite_expected
 from util import load_dir
@@ -22,9 +22,21 @@ webbases = get_variant_bases(WEBSITE_FILE)
 RESULTSDIR = OUTDIR
 
 TARGETDIRS = {
+  BENCHMARK_DIR: {
+    'basenames': benchbases,
+    'wrap': False,
+  },
   MICROBENCHMARK_DIR: {
     'basenames': microbases,
     'wrap': True,
+  },
+  EXPLOIT_DIR: {
+    'basenames': exploits,
+    'wrap': False,
+  },
+  WEBSITE_DIR: {
+    'basenames': webbases,
+    'wrap': False,
   },
 }
 

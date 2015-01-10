@@ -2,7 +2,7 @@
 % JavaScript natives
 
 
-% Generated: Thu Oct 16 2014 11:28:38 GMT-0500 (CDT)
+% Generated: Fri Jan 09 2015 13:25:07 GMT-0600 (CST)
 % User agent: Mozilla/5.0 (X11; Linux x86_64; rv:17.0) Gecko/20140807 Firefox/17.0
 
 @Object@prototype
@@ -489,6 +489,7 @@ Attr DontEnum #Attr Attr
 Audio DontEnum #Audio Audio
 Blob DontEnum #Blob Blob
 Boolean DontEnum #Boolean Boolean
+CSS2Properties DontEnum #Global#CSS2Properties window.CSS2Properties
 CSSCharsetRule DontEnum #CSSCharsetRule CSSCharsetRule
 CSSFontFaceRule DontEnum #CSSFontFaceRule CSSFontFaceRule
 CSSImportRule DontEnum #CSSImportRule CSSImportRule
@@ -506,7 +507,7 @@ CanvasGradient DontEnum #CanvasGradient CanvasGradient
 CanvasRenderingContext2D DontEnum #CanvasRenderingContext2D CanvasRenderingContext2D
 CharacterData DontEnum #CharacterData CharacterData
 ClientRectList DontEnum #ClientRectList ClientRectList
-Components ReadOnly,DontEnum,DontDelete #Global#Components window.Components
+Components ReadOnly,DontEnum,DontDelete #Components Components
 CustomEvent DontEnum #CustomEvent CustomEvent
 DOMException DontEnum #DOMException DOMException
 DOMImplementation DontEnum #DOMImplementation DOMImplementation
@@ -662,6 +663,12 @@ uneval DontEnum #Global#uneval window.uneval
 window ReadOnly,DontDelete #Global window
 
 
+@Components
+
+% Components properties
+__proto__ DontEnum #undefined Components.__proto__
+
+
 @HTMLDocument
 
 % HTMLDocument properties
@@ -803,6 +810,27 @@ prototype ReadOnly,DontEnum,DontDelete #HTMLCollection#prototype HTMLCollection.
 % NodeList properties
 __proto__ DontEnum #NodeList#__proto__ NodeList.__proto__
 prototype ReadOnly,DontEnum,DontDelete #NodeList#prototype NodeList.prototype
+
+
+@CSSStyleDeclaration
+
+% CSSStyleDeclaration properties
+__proto__ DontEnum #Function#prototype Object.__proto__
+prototype ReadOnly,DontEnum,DontDelete #CSSStyleDeclaration#prototype CSSStyleDeclaration.prototype
+
+
+@HTMLBodyElement
+
+% HTMLBodyElement properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #HTMLBodyElement#prototype HTMLBodyElement.prototype
+
+
+@HTMLHtmlElement
+
+% HTMLHtmlElement properties
+__proto__ DontEnum #Window#__proto__ Window.__proto__
+prototype ReadOnly,DontEnum,DontDelete #HTMLHtmlElement#prototype HTMLHtmlElement.prototype
 
 
 @Event
@@ -1065,13 +1093,6 @@ __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #HTMLAudioElement#prototype#__proto__ HTMLMediaElement.prototype
 
 
-@HTMLBodyElement
-
-% HTMLBodyElement properties
-__proto__ DontEnum #Window#__proto__ Window.__proto__
-prototype ReadOnly,DontEnum,DontDelete #HTMLBodyElement#prototype HTMLBodyElement.prototype
-
-
 @HTMLBRElement
 
 % HTMLBRElement properties
@@ -1112,13 +1133,6 @@ prototype ReadOnly,DontEnum,DontDelete #HTMLFrameElement#prototype HTMLFrameElem
 % HTMLHeadElement properties
 __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #HTMLHeadElement#prototype HTMLHeadElement.prototype
-
-
-@HTMLHtmlElement
-
-% HTMLHtmlElement properties
-__proto__ DontEnum #Window#__proto__ Window.__proto__
-prototype ReadOnly,DontEnum,DontDelete #HTMLHtmlElement#prototype HTMLHtmlElement.prototype
 
 
 @HTMLIFrameElement
@@ -1484,13 +1498,6 @@ prototype ReadOnly,DontEnum,DontDelete #CSSPrimitiveValue#prototype#__proto__ CS
 % CSSRuleList properties
 __proto__ DontEnum #Window#__proto__ Window.__proto__
 prototype ReadOnly,DontEnum,DontDelete #CSSRuleList#prototype CSSRuleList.prototype
-
-
-@CSSStyleDeclaration
-
-% CSSStyleDeclaration properties
-__proto__ DontEnum #Function#prototype Object.__proto__
-prototype ReadOnly,DontEnum,DontDelete #CSSStyleDeclaration#prototype CSSStyleDeclaration.prototype
 
 
 @CSSStyleSheet
@@ -2395,12 +2402,6 @@ state ReadOnly #undefined History.prototype.state
 0 - ?/? history.0
 %%% Unable to get descriptor info for history.1
 1 - ?/? history.1
-%%% Unable to get descriptor info for history.2
-2 - ?/? history.2
-%%% Unable to get descriptor info for history.3
-3 - ?/? history.3
-%%% Unable to get descriptor info for history.4
-4 - ?/? history.4
 __proto__ DontEnum #History#prototype History.prototype
 
 
@@ -2548,6 +2549,12 @@ setItem DontEnum #Storage#prototype#setItem Storage.prototype.setItem
 @localStorage
 
 % localStorage properties
+__proto__ DontEnum #Storage#prototype Storage.prototype
+
+
+@sessionStorage
+
+% sessionStorage properties
 __proto__ DontEnum #Storage#prototype Storage.prototype
 
 
@@ -17943,6 +17950,5 @@ data - ?/? ImageData.prototype.data
 height - ?/? ImageData.prototype.height
 %%% Unable to get descriptor info for ImageData.prototype.width
 width - ?/? ImageData.prototype.width
-
 
 

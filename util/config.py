@@ -44,6 +44,8 @@ WEBSITE_FILE = os.path.join(WEBSITE_DIR, 'sites.txt')
 INTERPRETER_TEST_DIR = os.path.join(TESTS_DIR, 'interpreter')
 
 DEFAULT_POLICY = os.path.join(BENCHMARK_DIR, 'default.policy')
+SCRIPT_INDEX_FILE = 'scripts.txt'
+POLICY_INDEX_FILE = 'policies.txt'
 
 JAMSCRIPT_DOCDIR = os.path.join(JAMSCRIPT_DIR, 'doc')
 JSLIBDIR = os.path.join(JAMSCRIPT_DIR, 'txjs')

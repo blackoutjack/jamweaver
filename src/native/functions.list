@@ -115,6 +115,7 @@
 #Audio "Audio" 0 c
 #Blob "Blob" 0 c
 #Boolean "Boolean" 1 c
+#Global#CSS2Properties "CSS2Properties" 0 c
 #CSSCharsetRule "CSSCharsetRule" 0 c
 #CSSFontFaceRule "CSSFontFaceRule" 0 c
 #CSSImportRule "CSSImportRule" 0 c
@@ -305,6 +306,10 @@
 #NodeList#__proto__ "__proto__" 0
 
 
+% CSSStyleDeclaration methods
+#Function#prototype "" 0
+
+
 % Event methods
 #Option#__proto__ "__proto__" 0
 
@@ -480,10 +485,6 @@
 % ArrayBuffer methods
 #Function#prototype "" 0
 #ArrayBuffer#slice "slice" 3
-
-
-% CSSStyleDeclaration methods
-#Function#prototype "" 0
 
 
 % XMLHttpRequest methods

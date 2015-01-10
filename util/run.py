@@ -123,7 +123,7 @@ def process_result(outp, exppath, overwrite):
   return ok
 # /process_result
 
-def run_website(url, policies, debug=False, overwrite=False, refine=None, synonly=False):
+def run_website(url, policies, debug=False, overwrite=False, refine=None, synonly=False, service=False):
   if refine is None:
     refine = 0
   results = RunResults()
@@ -148,22 +148,22 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     results.add(RunResult(False, False, False))
     return results
 
+  opts = ['-X', '-P', '-N', appname, '-h', htmlfile]
+
+  if synonly:
+    opts.append('-z')
+
   # Run with each policy file separately.
-  for poldesc, polfile in policies.items():
+  for poldesc, polfiles in policies.items():
     # Generate a new RunResult for each policy.
     result = RunResult(False, False, False)
     results.add(result)
 
-    opts = ['-X', '-P', '-N', appname, '-h', htmlfile]
-
-    if synonly:
-      opts.append('-z')
-
     out("Analyzing %s" % appname)
     if service:
-      outp, errp = query_jam_service([srclist], [polfile], refine=refine, seeds=None, moreopts=opts)
+      outp, errp = query_jam_service([srclist], polfiles, refine=refine, seeds=None, moreopts=opts)
     else:
-      outp, errp = run_jam([srclist], [polfile], refine=refine, debug=debug, seeds=None, moreopts=opts)
+      outp, errp = run_jam([srclist], polfiles, refine=refine, debug=debug, seeds=None, moreopts=opts)
     
     # Error case, message printed in |run_jam|.
     if outp is None: continue
@@ -251,69 +251,68 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
   cases = load_app_sources(MICROBENCHMARK_DIR, defwarn=False, apps=apps)
   apps = list(cases.keys())
   apps.sort()
-  for app in apps:
+  for appname in apps:
+    # Skip some disabled tests.
+    if appname == 'tester': continue
 
-    inps = cases[app]
+    inps = cases[appname]
     srcfls = inps[0]
     poldict = inps[1]
     seeds = inps[2]
     apppath = inps[3]
-    options = inps[4]
-    base = get_base(app)
+    opts = inps[4]
+
+    opts.append('-N')
+    opts.append(appname)
+    if synonly:
+      opts.append('-z')
+
+    # If the user provided a refinement limit (-p), use that for all
+    # test cases. Otherwise, use some special logic.
+    ref = refine
+    if ref is None:
+      if synonly:
+        # Refinement is not likely to help without semantic modeling.
+        ref = 0
+      else:
+        ref = 3
+        if seeds is not None:
+          ref = 0
+        if appname == 'timeout0':
+          # This tests the query timeout mechanism.
+          # Don't waste too much time waiting.
+          opts.append('--querytimeout')
+          opts.append('5')
+          ref = 0
 
     # Run with each policy file separately.
-    for poldesc, polfile in poldict.items():
+    for poldesc, polfiles in poldict.items():
       result = RunResult(False, False)
       results.add(result)
 
-      opts = list(options)
-
-      # If the user provided a refinement limit (-p), use that for all
-      # test cases. Otherwise, use some special logic.
-      ref = refine
-      if ref is None:
-        if synonly:
-          # Refinement is not likely to help without semantic modeling.
-          ref = 0
-        else:
-          ref = 3
-          if seeds is not None:
-            ref = 0
-          if base == 'timeout0':
-            # This tests the query timeout mechanism.
-            # Don't waste too much time waiting.
-            opts.append('--querytimeout')
-            opts.append('5')
-            ref = 0
-
-      if synonly:
-        opts.append('-z')
-
       # Use the union of all policy files for a particular test.
-      out('Analyzing %s' % app)
+      out('Analyzing %s' % appname)
       if service:
-        opts.append('-N')
-        opts.append(app)
-        outp, errp = query_jam_service(srcfls, [polfile], refine=ref, seeds=seeds, moreopts=opts)
+        outp, errp = query_jam_service(srcfls, polfiles, refine=ref, seeds=seeds, moreopts=opts)
       else:
-        outp, errp = run_jam(srcfls, [polfile], refine=ref, debug=debug, seeds=seeds, moreopts=opts)
+        outp, errp = run_jam(srcfls, polfiles, refine=ref, debug=debug, seeds=seeds, moreopts=opts)
       
       # Error case, message printed in |run_jam|.
       if outp is None: continue
 
       refsuf = get_suffix(synonly, ref, poldesc)
 
-      expfile = '%s.%s.out.js' % (app, refsuf)
+      expfile = '%s.%s.out.js' % (appname, refsuf)
       exppath = os.path.join(apppath, expfile)
         
       result.js_ok = process_result(outp, exppath, overwrite)
 
       infopath = get_info_path(errp)
       if infopath is None:
-        err('Could not determine info path: %s\n' % app)
+        err('Could not determine info path: %s\n' % appname)
         continue
 
-      infoexpfile = '%s.%s.info.txt' % (app, refsuf)
+      infoexpfile = '%s.%s.info.txt' % (appname, refsuf)
       infoexppath = os.path.join(apppath, infoexpfile)
       result.info_ok = process_info(infopath, infoexppath, overwrite)
 
@@ -331,31 +330,33 @@ def run_exploits(debug=False, overwrite=False, refine=None, synonly=False, servi
   apps = list(cases.keys())
   apps.sort()
   for appname in apps:
+    # Skip some disabled tests.
+    if appname == 'metasploit-shell-reverse-tcp': continue
+    if appname == 'samy-myspace': continue
+    if appname == 'yamanner': continue
+
     inps = cases[appname]
     srcfls = inps[0]
     poldict = inps[1]
     seeds = inps[2]
     apppath = inps[3]
-    options = inps[4]
+    opts = inps[4]
+
+    opts.append('-N')
+    opts.append(appname)
+    if synonly:
+      opts.append('-z')
 
     # Run with each policy file separately.
-    for poldesc, polfile in poldict.items():
+    for poldesc, polfiles in poldict.items():
       result = RunResult(False, False)
       results.add(result)
 
-      opts = list(options)
-
-      base = get_base(appname)
-      if synonly:
-        opts.append('-z')
-
       out('Analyzing %s' % appname)
       if service:
-        opts.append('-N')
-        opts.append(appname)
-        outp, errp = query_jam_service(srcfls, [polfile], refine=refine, seeds=seeds, moreopts=opts)
+        outp, errp = query_jam_service(srcfls, polfiles, refine=refine, seeds=seeds, moreopts=opts)
       else:
-        outp, errp = run_jam(srcfls, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
+        outp, errp = run_jam(srcfls, polfiles, refine=refine, debug=debug, seeds=seeds, moreopts=opts)
       
       # Error case, message printed in |run_jam|.
       if outp is None: continue
@@ -395,30 +396,27 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False, ser
     poldict = inps[1]
     seeds = inps[2]
     apppath = inps[3]
-    options = inps[4]
+    opts = inps[4]
+
+    opts.append('-N')
+    opts.append(appname)
+    if synonly:
+      opts.append('-z')
+
+    if appname in LARGE_BENCHMARKS:
+      # Forgo interprocedural analysis for these benchmarks.
+      opts.append('-P')
 
     # Run with each policy file separately.
-    for poldesc, polfile in poldict.items():
+    for poldesc, polfiles in poldict.items():
       result = RunResult(False, False)
       results.add(result)
 
-      opts = list(options)
-
-      base = get_base(appname)
-      if base in LARGE_BENCHMARKS:
-        # Forgo interprocedural analysis for these benchmarks.
-        opts.append('-P')
-
-      if synonly:
-        opts.append('-z')
-
       out('Analyzing %s' % appname)
       if service:
-        opts.append('-N')
-        opts.append(appname)
-        outp, errp = query_jam_service(srcfls, [polfile], refine=refine, seeds=seeds, moreopts=opts)
+        outp, errp = query_jam_service(srcfls, polfiles, refine=refine, seeds=seeds, moreopts=opts)
       else:
-        outp, errp = run_jam(srcfls, [polfile], refine=refine, debug=debug, seeds=seeds, moreopts=opts)
+        outp, errp = run_jam(srcfls, polfiles, refine=refine, debug=debug, seeds=seeds, moreopts=opts)
       
       # Error case, message printed in |run_jam|.
       if outp is None: continue

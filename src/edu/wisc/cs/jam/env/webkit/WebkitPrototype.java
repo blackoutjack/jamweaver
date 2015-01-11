@@ -1,4 +1,4 @@
-package edu.wisc.cs.jam.env.chrome;
+package edu.wisc.cs.jam.env.webkit;
 
 import java.util.List;
 import java.util.Map;

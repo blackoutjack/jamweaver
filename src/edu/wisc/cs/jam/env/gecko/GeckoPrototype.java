@@ -1,4 +1,4 @@
-package edu.wisc.cs.jam.env.firefox;
+package edu.wisc.cs.jam.env.gecko;
 
 import java.util.List;
 import java.util.Map;

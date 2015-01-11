@@ -96,8 +96,8 @@ import edu.wisc.cs.jam.env.Method;
 import edu.wisc.cs.jam.env.Field;
 import edu.wisc.cs.jam.env.Const;
 import edu.wisc.cs.jam.env.Param;
-import edu.wisc.cs.jam.env.firefox.GeckoPrototype;
-import edu.wisc.cs.jam.env.firefox.GeckoMethod;
+import edu.wisc.cs.jam.env.gecko.GeckoPrototype;
+import edu.wisc.cs.jam.env.gecko.GeckoMethod;
 
 public class GeckoGenerator extends NativeGenerator implements Utility {
 

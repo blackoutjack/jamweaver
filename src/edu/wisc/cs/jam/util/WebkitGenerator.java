@@ -96,7 +96,7 @@ import edu.wisc.cs.jam.env.Method;
 import edu.wisc.cs.jam.env.Field;
 import edu.wisc.cs.jam.env.Const;
 import edu.wisc.cs.jam.env.Param;
-import edu.wisc.cs.jam.env.chrome.WebkitPrototype;
+import edu.wisc.cs.jam.env.webkit.WebkitPrototype;
 
 public class WebkitGenerator extends NativeGenerator implements Utility {
 

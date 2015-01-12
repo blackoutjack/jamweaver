@@ -131,13 +131,19 @@ jam#construct(#object#location): Returns true if the pointed-to native
   This is an event predicate, so negation of this type of predicate is
   not supported.
 
-jam#set(#object,"member"): Returns true if the specified object member was
-  assigned to in the course of evaluation. This is an event predicate, so
+jam#set([#object[,"member"[,value]]]): Returns true if the specified
+  object member was assigned to in the course of evaluation with the
+  given value. All parameters are optional, and that aspect of the event
+  is ignored if not provided. (With no arguments, this predicate is true
+  whenever any property write occurs.) As this is an event predicate,
   negation of this type of predicate is not supported.
 
-jam#get(#object,"member"): Returns true if the specified object member
-  was read during the course of evaluation. This is an event predicate,
-  so negation of this type of predicate is not supported.
+jam#get([#object[,"member"[,value]]]): Returns true if the specified
+  object member was read during the course of evaluation, resulting in
+  the given value. All parameters are optional, and that aspect of the
+  event is ignored if not provided. (With no arguments, this predicate
+  is true whenever any property read occurs.) This is an event
+  predicate, so negation of this type of predicate is not supported.
 
 jam#arg(i): Retrieves the value of the actual argument(s) at position i
   of any invoked functions. This function returns a value, and should be

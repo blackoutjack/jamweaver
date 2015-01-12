@@ -563,11 +563,15 @@ public class JSSyntaxAnalysis {
   protected String getAccessProperty(Exp conj) {
     assert conj.isCall();
     String cname = conj.getChild(0).getString();
-    assert cname.equals("jam#get") || cname.equals("jam#set") : "Invalid predicate conjunct provided: " + cname;
-    assert conj.getChildCount() == 3;
-    Exp propexp = conj.getChild(2);
-    if (propexp.isString()) {
-      return propexp.getString();
+    assert cname.equals("jam#get") || cname.equals("jam#set") || cname.equals("jam#delete")
+        : "Invalid predicate conjunct provided: " + cname;
+    int cnt = conj.getChildCount() - 1;
+    assert cnt >= 0;
+    if (cnt >= 1) {
+      Exp propexp = conj.getChild(2);
+      if (propexp.isString()) {
+        return propexp.getString();
+      }
     }
     return null;
   }

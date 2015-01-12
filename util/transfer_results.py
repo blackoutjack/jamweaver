@@ -164,7 +164,7 @@ def insert_profile(txtin, desc, specs, extra=None):
 
   if not found0 or not found1:
     warndesc = desc
-    if extra is not None: warndesc = extra + "." + warndesc
+    if extra is not None: warndesc = extra + "/" + warndesc
     warning0 = ''
     warning1 = ''
     if not found0:

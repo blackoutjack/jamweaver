@@ -41,8 +41,6 @@ public class EvaluatorNode {
   // Native locations that have been referenced. Shared in the same way
   // as |wilds|.
   private Map<String,String> natives;
-  // Collect object/property pairs that are checked in WRITE predicates.
-  private List<String[]> setProperties;
 
   public EvaluatorNode(PolicyLanguage pl, Exp e) {
     language = pl;
@@ -66,11 +64,6 @@ public class EvaluatorNode {
   public void setNatives(Map<String,String> natives) {
     // Don't copy so that it can be shared.
     this.natives = natives;
-  }
-
-  public void setSetProperties(List<String[]> props) {
-    // Don't copy so that it can be shared.
-    this.setProperties = props;
   }
   
   public Map<String,String> getWilds() {
@@ -240,26 +233,12 @@ public class EvaluatorNode {
       propid = propstr;
     }
 
-    // If the object/property pair is found in |setProperties|, then
-    // we want the value |node.value| rather than |node.obj[prop]|.
-    boolean isSetProp = false;
-    for (String[] objprop : setProperties) {
-      assert objprop.length == 2;
-      if (objprop[0].equals(objstr) && objprop[1].equals(propstr)) {
-        isSetProp = true;
-        break;
-      }
-    }
-   
-    if (isSetProp) {
-      sb.append("node.value");
-    } else {
-      // Get the value directly from the object.
-      // %%% What if this value had been overwritten by a previous
-      // %%% write within the transaction? Need to track updates to
-      // %%% this value throughout evaluation.
-      sb.append(objid + "[" + propid + "]");
-    }
+    // Get the value directly from the object.
+    // %%% What if this value had been overwritten by a previous
+    // %%% write within the transaction? Need to track updates to
+    // %%% this value throughout evaluation.
+    sb.append(objid + "[" + propid + "]");
+
     return sb.toString();
   }
 
@@ -414,7 +393,9 @@ public class EvaluatorNode {
     }
 
     String arg1 = null;
-    if ((arg1 = parseArgClause(val, sb)) != null) {
+    if ((arg1 = parseWild(val, null)) != null) {
+      // |arg1| gets the value unified to the wildcard.
+    } else if ((arg1 = parseArgClause(val, sb)) != null) {
       // |arg1| gets the specified argument.
     } else if ((arg1 = parseArgLenClause(val)) != null) {
       // |arg1| gets |node.argc|.
@@ -463,7 +444,9 @@ public class EvaluatorNode {
     Exp sub = exp.getChild(2);
 
     String arg0 = null;
-    if ((arg0 = parseArgClause(full, sb)) != null) {
+    if ((arg0 = parseWild(full, null)) != null) {
+      // |arg0| gets the value unified to the wildcard.
+    } else if ((arg0 = parseArgClause(full, sb)) != null) {
       // Short-circuit if the argument is not a string.
       sb.append("typeof " + arg0 + " === \"string\" && ");
     } else if ((arg0 = parseArgLenClause(full)) != null) {
@@ -597,57 +580,78 @@ public class EvaluatorNode {
   }
 
   protected void makeAccessConjunct(StringBuilder sb) {
-    // There should be 1 call name and 2 arguments.
-    assert exp.getChildCount() == 3 : "Invalid number of children for access conjunct: " + exp.getChildCount() + " children for " + exp.toCode();
+    // There should be 1 call name, and 0 to 3 arguments for READ,
+    // WRITE and DELETE.
+    int cnt = exp.getChildCount() - 1;
+    assert cnt >= 0 && cnt <= 3 : "Invalid number of children for access conjunct: " + cnt + " children for " + exp.toCode();
 
-    // %%% Maybe change format back to |set(obj.prop)| and with a wild
-    // %%% |set(%x.%y)|.
-    // %%% Someday maybe allow |set(%x.%v.%y)|, but won't work at the
-    // %%% moment.
-    // Currently the format is |set(obj, "prop")|.
-    Exp obj = exp.getChild(1);
-    Exp prop = exp.getChild(2);
-    
-    boolean hasObjClause = false;
-    String objid = null;
-    String objstr = obj.toCode();
-    if ((objid = parseWild(obj, "node.obj")) != null) {
-      // |objid| gets the value unified with the wildcard.
-    } else if ((objid = parseNativeLocation(obj)) != null) {
-      sb.append("JAM.identical(node.obj,");
-      sb.append(objid);
-      sb.append(")");
-      hasObjClause = true;
-    } else {
-      // Output code that compares |varname === native| where |native|
-      // is the native object corresponding to the location cited in the
-      // policy predicate.
-      throw new UnsupportedOperationException("Unknown access object name: " + obj.toCode());
-    }
+    // The format is as follows. For delete |value| refers to the
+    // true/false return value of the delete operation.
+    //
+    //   jam#[get|set|delete](object,property,value)
+    //
 
-    String propname = null;
-    String propstr = prop.toCode();
-    if ((propname = parseWild(prop, "node.id")) != null) {
-      // |propname| gets the value unified with the wildcard.
-    } else {
-      if (hasObjClause) {
-        sb.append(" && ");
+    boolean hasClause = false;
+    if (cnt > 0) {
+      Exp obj = exp.getChild(1);
+      
+      String objid = null;
+      String objstr = obj.toCode();
+      if ((objid = parseWild(obj, "node.obj")) != null) {
+        // |objid| gets the value unified with the wildcard.
+      } else if ((objid = parseNativeLocation(obj)) != null) {
+        sb.append("JAM.identical(node.obj,");
+        sb.append(objid);
+        sb.append(")");
+        hasClause = true;
+      } else {
+        // Output code that compares |varname === native| where |native|
+        // is the native object corresponding to the location cited in the
+        // policy predicate.
+        throw new UnsupportedOperationException("Unknown access object name: " + obj.toCode());
       }
-      sb.append("node.id === ");
-      // Assumed to be already quoted.
-      sb.append(prop.toCode());
+
+      if (cnt > 1) {
+        Exp prop = exp.getChild(2);
+        String propname = null;
+        String propstr = prop.toCode();
+        if ((propname = parseWild(prop, "node.id")) != null) {
+          // |propname| gets the value unified with the wildcard.
+        } else {
+          if (hasClause) {
+            sb.append(" && ");
+          }
+          sb.append("node.id === ");
+          // Assumed to be already quoted.
+          sb.append(prop.toCode());
+          hasClause = true;
+        }
+ 
+        if (cnt > 2) {
+          Exp val = exp.getChild(3);
+          String valname = null;
+          String valstr = val.toCode();
+          if ((valname = parseWild(val, "node.value")) != null) {
+            // |propname| gets the value unified with the wildcard.
+          } else if ((valname = parseNativeLocation(val)) != null) {
+            sb.append("JAM.identical(node.value,");
+            sb.append(valname);
+            sb.append(")");
+            hasClause = true;
+          } else {
+            if (hasClause) {
+              sb.append(" && ");
+            }
+            sb.append("node.value === ");
+            sb.append(val.toCode());
+          }
+        }
+      }
     }
 
-    if (language.isWild(obj) && language.isWild(prop)) {
+    if (!hasClause) {
       // Gotta add something.
       sb.append("true");
-    }
-
-    if (type == JSPredicateType.WRITE) {
-      // Let subsequent nodes know to use |node.value| rather than
-      // |node.obj.prop| to test the value.
-      String[] objprop = { objstr, propstr };
-      setProperties.add(objprop);
     }
   }
 

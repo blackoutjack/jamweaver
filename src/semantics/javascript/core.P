@@ -2196,9 +2196,10 @@ agetvalue(H,L,E,HP,L,EP) :-
   (isnull(L1)->
   new_native_error('"Reference with null base"','#ReferenceError#prototype',Err),
   alloc(H,Err,HP,EP);
+  aget(H,L1,M,EP,HP),
   % Only call add_read if the receiver is not a scope.
-  (isscope(H,L1)->true;add_read(L1,M)),
-  aget(H,L1,M,EP,HP));
+  % Use |H| or |HP|, shouldn't matter.
+  (isscope(H,L1)->true;add_read(L1,M,EP)));
   % Not a reference.
   true).
 
@@ -2370,9 +2371,10 @@ aputvalue(H,L,V,VA,HP,LP,EP) :-
   type(V,T),T='Reference',
   ref(V,LN,M),
   notnull(LN),
+  aput(H,L,LN,M,VA,HP,LP,EP),
   % Only add_assign if the receiver is not a scope.
-  (isscope(H,LN)->true;add_assign(LN,M)),
-  aput(H,L,LN,M,VA,HP,LP,EP).
+  % Use |H| or |HP|, shouldn't matter.
+  (isscope(H,LN)->true;add_assign(LN,M,VA)).
 
 % the rules for @Put
 % I-Put-create and I-Put-replace

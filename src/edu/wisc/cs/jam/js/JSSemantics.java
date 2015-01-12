@@ -325,9 +325,11 @@ public class JSSemantics implements Semantics {
     } else if (pt == JSPredicateType.CONSTRUCT) {
       prereq = getConditionPredicate("jam#construct(`x)");
     } else if (pt == JSPredicateType.READ) {
-      prereq = getConditionPredicate("jam#get(`x,`y)");
+      prereq = getConditionPredicate("jam#get()");
     } else if (pt == JSPredicateType.WRITE) {
-      prereq = getConditionPredicate("jam#set(`x,`y)");
+      prereq = getConditionPredicate("jam#set()");
+    } else if (pt == JSPredicateType.DELETE) {
+      prereq = getConditionPredicate("jam#delete()");
     }
     pred.setPrerequisite(prereq);
     return prereq;

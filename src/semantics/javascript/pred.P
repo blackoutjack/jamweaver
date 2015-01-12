@@ -95,8 +95,22 @@ predexp(H,L,E,HP,LP,EP) :-
   (FuncName='"jam#construct"'->predconstr(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#retval"'->predretval(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#arg"'->predarg(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#set"'->predseto(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#get"'->predgeto(H,L,Arg,HP,LP,EP);
+  %(FuncName='"jam#delete"'->preddelo(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#stringupper"'->predstringupper(H,L,Arg,HP,LP,EP);
-  false))))).
+  false))))))).
+
+% Special extension functions.
+predexp(H,L,E,HP,LP,EP) :- 
+	is_call(E,Func,Args),
+	length(Args,3),
+	is_id(Func,FuncName),
+  % Dispatch based on the extension being called.
+  (FuncName='"jam#set"'->predsetv(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#get"'->predgetv(H,L,Args,HP,LP,EP);
+  %(FuncName='"jam#delete"'->preddelv(H,L,Args,HP,LP,EP);
+  false)).
 
 % Special extension functions.
 predexp(H,L,E,HP,LP,EP) :- 
@@ -105,8 +119,9 @@ predexp(H,L,E,HP,LP,EP) :-
 	is_id(Func,FuncName),
   % Dispatch based on the extension being called.
   (FuncName='"jam#type"'->predtype(H,L,Args,HP,LP,EP);
-  (FuncName='"jam#set"'->predset(H,L,Args,HP,LP,EP);
-  (FuncName='"jam#get"'->predget(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#set"'->predsetp(H,L,Args,HP,LP,EP);
+  (FuncName='"jam#get"'->predgetp(H,L,Args,HP,LP,EP);
+  %(FuncName='"jam#delete"'->preddelp(H,L,Args,HP,LP,EP);
   (FuncName='"jam#regextest"'->predregextest(H,L,Args,HP,LP,EP);
   (FuncName='"jam#stringcontains"'->predstringcontains(H,L,Args,HP,LP,EP);
   (FuncName='"jam#stringstartswith"'->predstringstartswith(H,L,Args,HP,LP,EP);
@@ -119,7 +134,10 @@ predexp(H,L,E,HP,LP,EP) :-
 	length(Args,0),
 	is_id(Func,FuncName),
   % Dispatch based on the extension being called.
-  (FuncName='"jam#arglen"'->predarglen(H,L,HP,LP,EP)).
+  (FuncName='"jam#set"'->predset(H,L,HP,LP,EP);
+  (FuncName='"jam#get"'->predget(H,L,HP,LP,EP);
+  %(FuncName='"jam#delete"'->preddel(H,L,HP,LP,EP);
+  (FuncName='"jam#arglen"'->predarglen(H,L,HP,LP,EP)))).
 
 % Assert that the return value has a certain value.
 predretval(H,L,ValExp,HP,LP,EP) :-
@@ -203,8 +221,30 @@ predgetval(H,L,Args,HP,LP,EP) :-
 	(getprop(ProtObj,MembStr,EP)->HP=H7,LP=L6;
 	symbolic(EP,_),heapprop(H7,ProtPtr,MembStr,EP,HP,_),LP=L6).
 
-% Test whether an object member has been assigned to.
-predset(H,L,Args,HP,LP,EP) :- 
+% Test whether an object member has been assigned to with a given value.
+predsetv(H,L,Args,HP,LP,EP) :- 
+	length(Args,3),
+  Args=[ObjExp,MembExp,ValExp],
+	predexp(H,L,ObjExp,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+  ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
+	predexp(H3,L3,MembExp,H4,L4,MembRef),
+	ecgv(H4,L4,MembRef,H5,L5,MembVal),
+  ects(H5,L5,MembVal,H6,L6,MembStr),
+	predexp(H6,L6,ValExp,H7,L7,ValRef),
+	ecgv(H7,L7,ValRef,H8,L8,ValVal),
+  get_next_assign(0,AssnPtr,AssnMemb,AssnVal),
+  binary_fn('=',ObjPtr,AssnPtr,ObjEq),
+  binary_fn('=',MembStr,AssnMemb,MembEq),
+  binary_fn('=',ValVal,AssnVal,ValEq),
+  binary_fn('and',ObjEq,MembEq,PartEq),
+  binary_fn('and',ValEq,PartEq,MainEq),
+  fnextra(H8,ObjPtr,AssnPtr,H9,ExtraEq),
+  binary_fn('and',MainEq,ExtraEq,EP),
+  HP=H9,LP=L8.
+
+% Test whether an object property has been assigned to.
+predsetp(H,L,Args,HP,LP,EP) :- 
 	length(Args,2),
   Args=[ObjExp,MembExp],
 	predexp(H,L,ObjExp,H1,L1,ObjRef),
@@ -213,7 +253,7 @@ predset(H,L,Args,HP,LP,EP) :-
 	predexp(H3,L3,MembExp,H4,L4,MembRef),
 	ecgv(H4,L4,MembRef,H5,L5,MembVal),
   ects(H5,L5,MembVal,H6,L6,MembStr),
-  get_next_assign(0,AssnPtr,AssnMemb),
+  get_next_assign(0,AssnPtr,AssnMemb,_),
   binary_fn('=',ObjPtr,AssnPtr,ObjEq),
   binary_fn('=',MembStr,AssnMemb,MembEq),
   binary_fn('and',ObjEq,MembEq,MainEq),
@@ -221,16 +261,70 @@ predset(H,L,Args,HP,LP,EP) :-
   binary_fn('and',MainEq,ExtraEq,EP),
   HP=H7,LP=L6.
 
-get_next_assign(Idx,Obj,Memb) :-
-  get_assign(Idx,Obj0,Memb0)->
-  ((NextIdx is Idx + 1,
-  get_next_assign(NextIdx,Obj1,Memb1),
-  Obj=Obj1,Memb=Memb1);
-  Obj=Obj0,Memb=Memb0);
-  fail.
+% Test whether anything has been assigned to.
+predset(H,L,HP,LP,EP) :- 
+  get_next_assign(0,_,_,_),
+  EP=true,HP=H,LP=L.
+
+% Test whether an object has been assigned to.
+predseto(H,L,ObjExp,HP,LP,EP) :- 
+	predexp(H,L,ObjExp,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+  ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
+  get_next_assign(0,AssnPtr,_,_),
+  binary_fn('=',ObjPtr,AssnPtr,MainEq),
+  fnextra(H3,ObjPtr,AssnPtr,H4,ExtraEq),
+  binary_fn('and',MainEq,ExtraEq,EP),
+  HP=H4,LP=L3.
 
 % Test whether an object member is being read.
-predget(H,L,Args,HP,LP,EP) :- 
+predgetv(H,L,Args,HP,LP,EP) :- 
+  length(Args,3),
+  Args=[ObjExp,MembExp,ValExp],
+	predexp(H,L,ObjExp,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+  ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
+	predexp(H3,L3,MembExp,H4,L4,MembRef),
+	ecgv(H4,L4,MembRef,H5,L5,MembVal),
+  ects(H5,L5,MembVal,H6,L6,MembStr),
+	predexp(H6,L6,ValExp,H7,L7,ValRef),
+	ecgv(H7,L7,ValRef,H8,L8,ValVal),
+  get_next_read(0,ReadPtr,ReadMemb,ReadVal),
+  binary_fn('=',ObjPtr,ReadPtr,ObjEq),
+  binary_fn('=',MembStr,ReadMemb,MembEq),
+  binary_fn('=',ValVal,ReadVal,ValEq),
+  binary_fn('and',ObjEq,MembEq,PartEq),
+  binary_fn('and',ValEq,PartEq,MainEq),
+  fnextra(H8,ObjPtr,ReadPtr,H9,ExtraEq),
+  binary_fn('and',MainEq,ExtraEq,EP),
+  HP=H9,LP=L8.
+
+get_next_assign(Idx,Obj,Memb,Val) :-
+  get_assign(Idx,Obj0,Memb0,Val0)->
+  ((NextIdx is Idx + 1,
+  get_next_assign(NextIdx,Obj1,Memb1,Val1),
+  Obj=Obj1,Memb=Memb1,Val=Val1);
+  Obj=Obj0,Memb=Memb0,Val=Val0);
+  fail.
+
+% Test whether anything has been assigned to.
+predget(H,L,HP,LP,EP) :- 
+  get_next_read(0,_,_,_),
+  EP=true,HP=H,LP=L.
+
+% Test whether an object is being read.
+predgeto(H,L,ObjExp,HP,LP,EP) :- 
+	predexp(H,L,ObjExp,H1,L1,ObjRef),
+  ecgv(H1,L1,ObjRef,H2,L2,ObjVal),
+  ecto(H2,L2,ObjVal,H3,L3,ObjPtr),
+  get_next_read(0,ReadPtr,_,_),
+  binary_fn('=',ObjPtr,ReadPtr,MainEq),
+  fnextra(H3,ObjPtr,ReadPtr,H4,ExtraEq),
+  binary_fn('and',MainEq,ExtraEq,EP),
+  HP=H4,LP=L3.
+
+% Test whether an object property is being read.
+predgetp(H,L,Args,HP,LP,EP) :- 
   length(Args,2),
   Args=[ObjExp,MembExp],
 	predexp(H,L,ObjExp,H1,L1,ObjRef),
@@ -239,7 +333,7 @@ predget(H,L,Args,HP,LP,EP) :-
 	predexp(H3,L3,MembExp,H4,L4,MembRef),
 	ecgv(H4,L4,MembRef,H5,L5,MembVal),
   ects(H5,L5,MembVal,H6,L6,MembStr),
-  get_next_read(0,ReadPtr,ReadMemb),
+  get_next_read(0,ReadPtr,ReadMemb,_),
   binary_fn('=',ObjPtr,ReadPtr,ObjEq),
   binary_fn('=',MembStr,ReadMemb,MembEq),
   binary_fn('and',ObjEq,MembEq,MainEq),
@@ -247,12 +341,12 @@ predget(H,L,Args,HP,LP,EP) :-
   binary_fn('and',MainEq,ExtraEq,EP),
   HP=H7,LP=L6.
 
-get_next_read(Idx,Obj,Memb) :-
-  get_read(Idx,Obj0,Memb0)->
+get_next_read(Idx,Obj,Memb,Val) :-
+  get_read(Idx,Obj0,Memb0,Val0)->
   ((NextIdx is Idx + 1,
-  get_next_read(NextIdx,Obj1,Memb1),
-  Obj=Obj1,Memb=Memb1);
-  Obj=Obj0,Memb=Memb0);
+  get_next_read(NextIdx,Obj1,Memb1,Val1),
+  Obj=Obj1,Memb=Memb1,Val=Val1);
+  Obj=Obj0,Memb=Memb0,Val=Val0);
   fail.
 
 % Check the type of the referenced value.

@@ -47,10 +47,10 @@
 :- export trinary_fn/5.
 :- export satisfiable/1.
 :- export rbb/0.
-:- export add_assign/2.
-:- export get_assign/3.
-:- export add_read/2.
-:- export get_read/3.
+:- export add_assign/3.
+:- export get_assign/4.
+:- export add_read/3.
+:- export get_read/4.
 :- export add_call/1.
 :- export get_call/2.
 :- export add_constr/1.

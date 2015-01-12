@@ -69,13 +69,11 @@ public class Evaluator {
   protected void nodesToString(StringBuilder sb) {
 
     Map<String,String> wilds = new LinkedHashMap<String,String>();
-    List<String[]> setProps = new ArrayList<String[]>(); 
     boolean first = true;
     for (EvaluatorNode enode : nodes) {
       // Facilitate coordination between the nodes.
       enode.setWilds(wilds);
       enode.setNatives(natives);
-      enode.setSetProperties(setProps);
       //enode.setUserValues(userValues);
 
       if (first) {

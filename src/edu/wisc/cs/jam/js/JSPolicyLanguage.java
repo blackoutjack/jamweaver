@@ -57,23 +57,23 @@ public class JSPolicyLanguage extends PolicyLanguage {
       if (callName.equals("jam#invoke")) {
         type = JSPredicateType.INVOKE;
         if (not)
-          throw new UnsupportedOperationException("Negated jam#invoke predicates not supported: " + e.toCode());
+          throw new UnsupportedOperationException("Negative " + callName + " predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#construct")) {
         type = JSPredicateType.CONSTRUCT;
         if (not)
-          throw new UnsupportedOperationException("Negative jam#construct predicates not supported: " + e.toCode());
+          throw new UnsupportedOperationException("Negative " + callName + " predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#set")) {
         type = JSPredicateType.WRITE;
         if (not)
-          throw new UnsupportedOperationException("Negative jam#set predicates not supported: " + e.toCode());
+          throw new UnsupportedOperationException("Negative " + callName + " predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#get")) {
         type = JSPredicateType.READ;
         if (not)
-          throw new UnsupportedOperationException("Negative jam#get predicates not supported: " + e.toCode());
+          throw new UnsupportedOperationException("Negative " + callName + " predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#delete")) {
         type = JSPredicateType.DELETE;
         if (not)
-          throw new UnsupportedOperationException("Negative jam#delete predicates not supported: " + e.toCode());
+          throw new UnsupportedOperationException("Negative " + callName + " predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#type")) {
         type = JSPredicateType.TYPE;
       } else if (callName.equals("jam#stringcontains")) {
@@ -153,10 +153,10 @@ public class JSPolicyLanguage extends PolicyLanguage {
         String memb = e.getString();
         props.add(memb);
         ret = true;
-      } else if (parent.is(JSExp.CALL) && parent.getChildCount() == 3
+      } else if (parent.is(JSExp.CALL) && parent.getChildCount() >= 2
           && parent.getChild(2) == e) {
         String callName = parent.getFirstChild().toCode();
-        if (callName.equals("jam#get") || callName.equals("jam#set")) {
+        if (callName.equals("jam#get") || callName.equals("jam#set") || callName.equals("jam#delete")) {
           String memb = e.getString();
           props.add(memb);
           ret = true;

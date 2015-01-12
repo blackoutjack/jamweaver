@@ -102,7 +102,7 @@ def get_suffix(syn, ref, pol=None):
   elif ref is not None:
     refsuf = 'semantic%d' % ref
   if pol is not None and pol != '':
-    if refsuf == '':
+    if refsuf is None:
       refsuf = pol
     else:
       refsuf = '%s.%s' % (pol, refsuf)

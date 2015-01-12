@@ -252,9 +252,9 @@ set<string> newarg_mem;
 // Collection of object properties to iterate.
 set<string> iterate_mem;
 
-vector< pair<string,string> > assigns;
+vector< vector<string> > assigns;
 int assignidx = 0;
-vector< pair<string,string> > reads;
+vector< vector<string> > reads;
 int readidx = 0;
 vector< vector<string> > args;
 vector< pair<string,string> > assertargs;
@@ -3388,6 +3388,7 @@ extern "C" int get_arg(CTXTdecl) {
 extern "C" int add_assign(CTXTdecl) {
   REQ_STRING(1);
   REQ_STRING(2);
+  REQ_STRING(3);
   
   if (native_mode) return TRUE;
 
@@ -3400,8 +3401,12 @@ extern "C" int add_assign(CTXTdecl) {
 
   string assobj(extern_ptoc_string(1));
   string assmemb(extern_ptoc_string(2));
+  string assval(extern_ptoc_string(3));
   //cerr << "ASSNOBJ: " << assobj << " ASSNMEMB: " << assmemb << endl;
-  pair<string,string> newass(assobj, assmemb);
+  vector<string> newass;
+  newass.push_back(assobj);
+  newass.push_back(assmemb);
+  newass.push_back(assval);
 
   assigns.push_back(newass);
   return TRUE;
@@ -3411,6 +3416,7 @@ extern "C" int get_assign(CTXTdecl) {
   REQ_INT(1);
   REQ_VAR(2);
   REQ_VAR(3);
+  REQ_VAR(4);
 
   int idx = extern_ptoc_int(1);
 
@@ -3419,10 +3425,11 @@ extern "C" int get_assign(CTXTdecl) {
     return FALSE;
   }
 
-  pair<string,string> asspair = assigns.at(idx);
+  vector<string> assparts = assigns.at(idx);
   
-  extern_ctop_string(2, asspair.first.c_str());
-  extern_ctop_string(3, asspair.second.c_str());
+  extern_ctop_string(2, assparts.at(0).c_str());
+  extern_ctop_string(3, assparts.at(1).c_str());
+  extern_ctop_string(4, assparts.at(2).c_str());
 
   return TRUE;
 }
@@ -3430,6 +3437,7 @@ extern "C" int get_assign(CTXTdecl) {
 extern "C" int add_read(CTXTdecl) {
   REQ_STRING(1);
   REQ_STRING(2);
+  REQ_STRING(3);
   
   if (native_mode) return TRUE;
 
@@ -3442,7 +3450,11 @@ extern "C" int add_read(CTXTdecl) {
 
   string readobj(extern_ptoc_string(1));
   string readmemb(extern_ptoc_string(2));
-  pair<string,string> newread(readobj, readmemb);
+  string readval(extern_ptoc_string(3));
+  vector<string> newread;
+  newread.push_back(readobj);
+  newread.push_back(readmemb);
+  newread.push_back(readval);
 
   reads.push_back(newread);
   return TRUE;
@@ -3452,6 +3464,7 @@ extern "C" int get_read(CTXTdecl) {
   REQ_INT(1);
   REQ_VAR(2);
   REQ_VAR(3);
+  REQ_VAR(4);
 
   int idx = extern_ptoc_int(1);
 
@@ -3460,10 +3473,11 @@ extern "C" int get_read(CTXTdecl) {
     return FALSE;
   }
 
-  pair<string,string> rdpair = reads.at(idx);
+  vector<string> rdparts = reads.at(idx);
   
-  extern_ctop_string(2, rdpair.first.c_str());
-  extern_ctop_string(3, rdpair.second.c_str());
+  extern_ctop_string(2, rdparts.at(0).c_str());
+  extern_ctop_string(3, rdparts.at(1).c_str());
+  extern_ctop_string(4, rdparts.at(2).c_str());
 
   return TRUE;
 }

@@ -1,9 +1,15 @@
 import sys
-import urllib.parse
+try:
+  import urllib.parse
+except:
+  import urlparse as parse
 import re
 import io
 import time
-import http.client
+try:
+  import http.client
+except:
+  import httplib as client
 import subprocess
 from subprocess import PIPE
 from subprocess import STDOUT
@@ -306,7 +312,10 @@ def env_error(varname):
 def make(target, workingdir=JAMPKG):
   cmd = ['make', '-C', workingdir, target]
   mk = subprocess.Popen(cmd, stdout=PIPE, stderr=STDOUT)
-  mkout = mk.communicate()[0].decode(sys.stdout.encoding)
+
+  enc = sys.stdout.encoding
+  if enc is None: enc = 'utf-8'
+  mkout = mk.communicate()[0].decode(enc)
   mkret = mk.returncode
 
   if mkret != 0:
@@ -516,10 +525,17 @@ def parse_info_file(infofile):
     infofl = open(infofile, 'r')
     infolines = infofl.readlines()
     infofl.close()
+
     for infoline in infolines:
       infoline = infoline.strip()
       infoparts = infoline.split(':', 1)
       if len(infoparts) == 2:
+        if infoparts[0] == 'policy-files':
+          polparts = infoparts[1].lstrip('[').rstrip(']').split(',')
+          for i in range(0,len(polparts)):
+            polparts[i] = os.path.relpath(JAMPKG, polparts[i])
+          infoparts[1] = '[' + ','.join(polparts) + ']'
+            
         info[infoparts[0]] = infoparts[1]
       else:
         warn('Invalid info file line: %s' % infoline)
@@ -790,7 +806,7 @@ def query_jam_service(jspaths, policies, refine=0, seeds=None, moreopts=[]):
   headers['Accept'] = '*/*'
 
   #out("HEADERS: %r\nBODY: %s" % (headers, body))
-  conn = http.client.HTTPConnection("127.0.0.1", JAMPORT)
+  conn = client.HTTPConnection("127.0.0.1", JAMPORT)
   starttime = time.time()
   try:
     conn.request("PUT", "/jam", body, headers)  
@@ -817,7 +833,7 @@ def query_jam_service(jspaths, policies, refine=0, seeds=None, moreopts=[]):
   try:
     resp = conn.getresponse()
     outp = resp.read().decode('utf-8')
-  except http.client.HTTPException as e: 
+  except client.HTTPException as e: 
     err('HTTP exception: %s' % str(e))
     outp = ''
   except ConnectionResetError as e:
@@ -918,7 +934,10 @@ def query_jam_service_stdin(jspaths, policies, refine=0, seeds=None, moreopts=[]
     if c == b'\x03':
       break
     outbuf.write(c)
-  outp = outbuf.getvalue().decode(sys.stdout.encoding)
+
+  outenc = sys.stdout.encoding
+  if outenc is None: outenc = 'utf-8'
+  outp = outbuf.getvalue().decode(outenc)
 
   # Little hack to remove a debug message.
   if outp.startswith("Listening for transport"):
@@ -931,7 +950,10 @@ def query_jam_service_stdin(jspaths, policies, refine=0, seeds=None, moreopts=[]
     if c == b'\x03':
       break
     errbuf.write(c)
-  errp = errbuf.getvalue().decode(sys.stderr.encoding)
+
+  errenc = sys.stderr.encoding
+  if errenc is None: errenc = 'utf-8'
+  errp = errbuf.getvalue().decode(errenc)
 
   sys.stderr.write(errp)
 
@@ -946,7 +968,7 @@ def close_jam_service():
   headers['Content-type'] = 'text/plain'
   headers['Accept'] = '*/*'
   #out("HEADERS: %r" % headers)
-  conn = http.client.HTTPConnection("127.0.0.1", JAMPORT)
+  conn = client.HTTPConnection("127.0.0.1", JAMPORT)
   try:
     conn.request('POST', '/shutdown', '', headers)  
   except:
@@ -1006,7 +1028,9 @@ def run_jam(jspaths, policies, refine=0, debug=False, perf=True, seeds=None, mor
   tmp.close()
   os.unlink(tmpname)
 
-  outp = outp.decode(sys.stdout.encoding)
+  enc = sys.stdout.encoding
+  if enc is None: enc = 'utf-8'
+  outp = outp.decode(enc)
   code = jam.returncode
   if code != 0:
     err('JAM process returned non-zero error code: %d' % code)
@@ -1029,8 +1053,13 @@ def run_repacker(htmlfile, srclist, outdir, polpath=None, debug=False):
 
   repacker = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
   outp, errp = repacker.communicate()
-  outp = outp.decode(sys.stdout.encoding)
-  errp = errp.decode(sys.stdout.encoding)
+
+  outenc = sys.stdout.encoding
+  if outenc is None: outenc = 'utf-8'
+  outp = outp.decode(outenc)
+  errenc = sys.stderr.encoding
+  if errenc is None: errenc = 'utf-8'
+  errp = errp.decode(errenc)
   code = repacker.returncode
   if code != 0:
     out("OUTPUT: %s" % outp)
@@ -1057,8 +1086,11 @@ def run_unpacker(url, debug=False, saveall=False):
  
   unpacker = subprocess.Popen(cmd, stdout=PIPE, stderr=STDOUT)
   outp, errp = unpacker.communicate()
-  outp = outp.decode(sys.stdout.encoding)
-  #errp = errp.decode(sys.stderr.encoding)
+
+  enc = sys.stdout.encoding
+  if enc is None: enc = 'utf-8'
+  outp = outp.decode(enc)
+
   code = unpacker.returncode
   if code != 0:
     out(outp)
@@ -1163,13 +1195,13 @@ def is_url(uri):
 # end isURL
 
 def get_protocol(url):
-  urlparts = urllib.parse.urlparse(url)
+  urlparts = parse.urlparse(url)
   prot = urlparts[0]
   return prot
 # end getProtocol
 
 def get_relative_path(url, usedomain=False, referer=None):
-  urlparts = urllib.parse.urlparse(url)
+  urlparts = parse.urlparse(url)
   filepath = urlparts[2]
   filepath = filepath.lstrip('/')
       
@@ -1179,7 +1211,7 @@ def get_relative_path(url, usedomain=False, referer=None):
 
   if referer is not None:
     # Get the path relative to the referer.
-    refparts = urllib.parse.urlparse(referer)
+    refparts = parse.urlparse(referer)
     refpath = refparts[2]
     # Assume the referer is a file, and remove the filename.
     refpath = os.path.split(refpath)[0]
@@ -1229,8 +1261,13 @@ def get_ast(filename):
 
   util = subprocess.Popen(cmd, stdout=PIPE, stderr=PIPE)
   astout, asterr = util.communicate()  
-  astout = astout.decode(sys.stderr.encoding)
-  asterr = asterr.decode(sys.stderr.encoding)
+
+  outenc = sys.stdout.encoding
+  if outenc is None: outenc = 'utf-8'
+  astout = astout.decode(outenc)
+  errenc = sys.stderr.encoding
+  if errenc is None: errenc = 'utf-8'
+  asterr = asterr.decode(errenc)
   return astout.strip()
 # /get_ast
 
@@ -1254,8 +1291,11 @@ def run_query(query):
   query = qbase + query
   xsb = subprocess.Popen([XSBEXE, "--quietload", "--noprompt", "--nobanner"], stdout=PIPE, stderr=PIPE, stdin=PIPE)
   xsbout, xsberr = xsb.communicate(query)  
-  xsbout = xsbout.decode(sys.stdout.encoding)
-  xsberr = xsberr.decode(sys.stdout.encoding)
+
+  enc = sys.stdout.encoding
+  if enc is None: enc = 'utf-8'
+  xsbout = xsbout.decode(enc)
+  xsberr = xsberr.decode(enc)
   return xsbout
 # /run_query
 
@@ -1368,8 +1408,11 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
   jam = subprocess.Popen(cmd, stdout=PIPE, stderr=errstrm)
 
   outp, errp = jam.communicate()
-  outp = outp.decode(sys.stdout.encoding)
-  errp = errp.decode(sys.stdout.encoding)
+
+  enc = sys.stdout.encoding
+  if enc is None: enc = 'utf-8'
+  outp = outp.decode(enc)
+  errp = errp.decode(enc)
   outp = outp.strip()
   if perf:
     outlines = outp.split("\n")

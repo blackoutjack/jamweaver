@@ -22,7 +22,7 @@ all:
 # steps needed, and the script outputs directions for these.
 # %%% Make boost (eventually all of these) externally linkable
 # %%% so that JAM can reuse already installed versions.
-everything: yices wali closure xsb spidermonkey javabdd commons gperftools
+everything: yices wali closure xsb spidermonkey javabdd commons httpcomponents gperftools
 
 yices:
 	mkdir -p packages

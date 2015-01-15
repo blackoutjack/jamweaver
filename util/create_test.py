@@ -1,9 +1,19 @@
-#!/usr/bin/python3.4
+#!/usr/bin/python
+#
+# This script takes a file (or, without the -f option, stdin content)
+# and creates a new test case in the jamtests repository (which is
+# referenced by the TESTS_DIR setting in config.py). Provide a group
+# (e.g. micro, bench, or exploit) to specify the subdirectory it
+# should be placed in.
+#
+# Python 2 and 3 are both tested and supported.
+#
 import sys
+MAJOR = sys.version_info[0]
+
 import os
 import time
 from optparse import OptionParser
-import tempfile
 from config import *
 from util import err
 from util import out
@@ -41,7 +51,7 @@ def create_test_from_file(fl, name, group, policy):
   tgtfl.close()
 
 def create_test_for_url(url, name, policy):
-  fatal("URL creation not yet implemented")
+  fatal("URL test case creation not yet implemented")
 
 def main():
   parser = OptionParser(usage="%prog")

@@ -1,5 +1,12 @@
-#!/usr/bin/python3.4
+#!/usr/bin/python
+#
+# This is a test-case-maintenance script that updates the jamtests
+# repository with output that was created by the JAM policy weaver.
+#
+
 import sys
+MAJOR = sys.version_info[0]
+
 import os
 import re
 import subprocess
@@ -8,7 +15,6 @@ import shutil
 import time
 import imp
 from optparse import OptionParser
-import tempfile
 import filecmp
 import fnmatch
 

@@ -1,30 +1,4 @@
-#!/usr/bin/python3.4
-import sys
-import os
-import re
-import shutil
-import time
-import imp
-from optparse import OptionParser
-import tempfile
-import filecmp
-import fnmatch
-import traceback
-import urllib.parse
-import urllib.request
-import urllib.error
-import http.cookiejar
-import socket
-import codecs
-import gzip
-import cssutils
-import logging
-
-#
-# TODO:
-# Further testing
-#
-
+#!/usr/bin/python
 #
 # This script was based loosely on the jsunpack utility, which can be
 # accessed via SVN at this URL:
@@ -41,8 +15,41 @@ import logging
 # because of complications introduced by the jsunpack interface.
 #
 
+import sys
+MAJOR = sys.version_info[0]
+if MAJOR == 3:
+  import urllib.parse as urlparse
+  import urllib.request as urlrequest
+  import urllib.error as urlerror
+  import http.cookiejar
+  import cssutils
+  CSS_SUPPORT = True
+else:
+  import urlparse
+  # This module was split across two in Python 3.
+  import urllib2 as urlrequest
+  import urllib2 as urlerror
+  import cookielib as cookiejar
+  CSS_SUPPORT = False
+
+try:
+  import bs4
+except ImportError as e:
+  if MAJOR == 3: aptget = "apt-get install python3-bs4"
+  else: aptget = "apt-get install python-bs4"
+  fatal("Unable to import BeautifulSoup 4: %s.\nFor Ubuntu, use ``%s''" % (str(e), aptget))
+
+import os
+import re
+import shutil
+import time
+import imp
+from optparse import OptionParser
+import tempfile
+import gzip
+import logging
+
 from config import *
-from util import get_base
 from util import get_file_info
 from util import get_output_dir
 from util import get_unique_filename
@@ -54,10 +61,9 @@ from util import warn
 from util import out
 from util import symlink
 
-try:
-  import bs4
-except ImportError as e:
-  fatal("Unable to import BeautifulSoup 4: %s.\nFor Ubuntu, use ``apt-get install python3-bs4''" % str(e))
+
+if not CSS_SUPPORT:
+  warn("CSS analysis is not supported on Python 2")
 
 #JSUNPACKPKG = os.path.join(JAMPKG, 'util', 'jsunpack')
 #sys.path.append(JSUNPACKPKG)
@@ -196,9 +202,9 @@ OBJECT_RESOURCE_TYPES = [
 ]
 
 class Resource:
-  COOKIE_POLICY = http.cookiejar.DefaultCookiePolicy(blocked_domains=None, allowed_domains=None, netscape=True, rfc2965=False, rfc2109_as_netscape=None, hide_cookie2=False, strict_domain=False, strict_rfc2965_unverifiable=True, strict_ns_unverifiable=False, strict_ns_domain=http.cookiejar.DefaultCookiePolicy.DomainLiberal, strict_ns_set_initial_dollar=False, strict_ns_set_path=False)
-  COOKIES = http.cookiejar.CookieJar(policy=COOKIE_POLICY)
-  OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(COOKIES))
+  COOKIE_POLICY = cookiejar.DefaultCookiePolicy(blocked_domains=None, allowed_domains=None, netscape=True, rfc2965=False, rfc2109_as_netscape=None, hide_cookie2=False, strict_domain=False, strict_rfc2965_unverifiable=True, strict_ns_unverifiable=False, strict_ns_domain=cookiejar.DefaultCookiePolicy.DomainLiberal, strict_ns_set_initial_dollar=False, strict_ns_set_path=False)
+  COOKIES = cookiejar.CookieJar(policy=COOKIE_POLICY)
+  OPENER = urlrequest.build_opener(urlrequest.HTTPCookieProcessor(COOKIES))
   
   def __init__(self, type, url=None, element=None, status=None, ctype=None, data=None, encoding=None, filepath=None):
     self.type = type
@@ -346,7 +352,7 @@ class Resource:
     elif self.filename is not None:
       relpath = self.filename
     elif self.url is not None:
-      urlparts = urllib.parse.urlparse(self.url)
+      urlparts = urlparse.urlparse(self.url)
       relpath = urlparts[2]
       if relpath.startswith('/'):
         relpath = relpath[1:]
@@ -417,7 +423,7 @@ class Resource:
       out('Fetching %s' % url)
 
     try:
-      request = urllib.request.Request(url)
+      request = urlrequest.Request(url)
       if referer is not None:
         request.add_header('Referer', referer)
       request.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:17.0) Gecko/20140807 Firefox/17.0')
@@ -433,7 +439,7 @@ class Resource:
 
     try:
       resp = Resource.OPENER.open(request, timeout=10)
-    except urllib.error.HTTPError as e:
+    except urlerror.HTTPError as e:
       # Don't load 404 error pages.
       # See http://www.jspell.com/ajax-spell-checker.html
       status = e.getcode()
@@ -459,7 +465,18 @@ class Resource:
     if compression is not None:
       compression = compression.lower()
       if compression == 'gzip':
-        content = gzip.decompress(content)
+        if MAJOR >= 3:
+          content = gzip.decompress(content)
+        else:
+          # Lots more rigamarole in Python 2.
+          tmpfl = tempfile.NamedTemporaryFile('w', delete=False)
+          tmpname = tmpfl.name
+          tmpfl.write(content)
+          tmpfl.close()
+          gzfl = gzip.open(tmpname, 'rb')
+          content = gzfl.read()
+          gzfl.close()
+          os.unlink(tmpname)
       else:
         warn('Unsupported Content-Encoding header: %s' % encoding)
 
@@ -496,122 +513,123 @@ class Resource:
     return True
   # /fetch
 
-class CSSParser(cssutils.CSSParser):
-  # Suppress all but the worst errors.
-  cssutils.log.setLevel(logging.FATAL)
+if CSS_SUPPORT:
+  class CSSParser(cssutils.CSSParser):
+    # Suppress all but the worst errors.
+    cssutils.log.setLevel(logging.FATAL)
 
-  def __init__(self):
-    # Don't automatically fetch @import URLs.
-    def fetcher(url): return None, None
-    super().__init__(log=None, loglevel=None, raiseExceptions=None, fetcher=fetcher, parseComments=True, validate=True)
+    def __init__(self):
+      # Don't automatically fetch @import URLs.
+      def fetcher(url): return None, None
+      super().__init__(log=None, loglevel=None, raiseExceptions=None, fetcher=fetcher, parseComments=True, validate=True)
 
-  def extractResources(self, data, encoding, url):
-    text = data.decode(encoding, errors='replace')
-    stylesheet = self.parseString(text, href=url)
+    def extractResources(self, data, encoding, url):
+      text = data.decode(encoding, errors='replace')
+      stylesheet = self.parseString(text, href=url)
 
-    images = []
-    imports = []
-    for rule in stylesheet.cssRules:
-      if rule.type == cssutils.css.CSSRule.IMPORT_RULE:
-        href = rule.href
-        impurl = combineURLs(url, href)
-        imports.append(impurl)
+      images = []
+      imports = []
+      for rule in stylesheet.cssRules:
+        if rule.type == cssutils.css.CSSRule.IMPORT_RULE:
+          href = rule.href
+          impurl = combineURLs(url, href)
+          imports.append(impurl)
 
-        impfilename = get_relative_path(impurl, referer=url)
-        rule.href = impfilename
-        if VERBOSE:
-          out('Replaced css.import: %s -> %s' % (href, impfilename))
+          impfilename = get_relative_path(impurl, referer=url)
+          rule.href = impfilename
+          if VERBOSE:
+            out('Replaced css.import: %s -> %s' % (href, impfilename))
 
-      if rule.type == cssutils.css.CSSRule.STYLE_RULE:
-        decl = rule.style
-        for prop in decl.getProperties():
-          replaced = False
-          origvals = []
-          if prop.name == 'background-image':
-            propvals = prop.propertyValue
-            newvals = []
-            for propval in propvals:
-              propvalstr = str(propval.value)
-              origvals.append(propvalstr)
-              image = None
-              if propval.type == cssutils.css.Value.URI:
-                absuri = propval.absoluteUri
-                # %%% Generalize
-                if absuri.startswith('data:'):
-                  # %%% Extract the data
-                  warn('Unsupported %s URI for %s property' % ('data', prop.name))
+        if rule.type == cssutils.css.CSSRule.STYLE_RULE:
+          decl = rule.style
+          for prop in decl.getProperties():
+            replaced = False
+            origvals = []
+            if prop.name == 'background-image':
+              propvals = prop.propertyValue
+              newvals = []
+              for propval in propvals:
+                propvalstr = str(propval.value)
+                origvals.append(propvalstr)
+                image = None
+                if propval.type == cssutils.css.Value.URI:
+                  absuri = propval.absoluteUri
+                  # %%% Generalize
+                  if absuri.startswith('data:'):
+                    # %%% Extract the data
+                    warn('Unsupported %s URI for %s property' % ('data', prop.name))
+                  else:
+                    image = absuri
+                elif propval.type == cssutils.css.Value.COLOR_VALUE:
+                  pass
+                elif propval.type == cssutils.css.Value.NUMBER:
+                  pass
+                elif propval.type == cssutils.css.Value.DIMENSION:
+                  pass
+                elif propval.type == cssutils.css.Value.PERCENTAGE:
+                  pass
+                elif propval.type == cssutils.css.Value.IDENT:
+                  # Things like "bottom" and "linear".
+                  pass
+                elif propval.type == cssutils.css.Value.FUNCTION:
+                  # This covers linear-gradient(...) stuff.
+                  pass
+                elif propvalstr == 'none':
+                  # Do nothing
+                  pass
                 else:
-                  image = absuri
-              elif propval.type == cssutils.css.Value.COLOR_VALUE:
-                pass
-              elif propval.type == cssutils.css.Value.NUMBER:
-                pass
-              elif propval.type == cssutils.css.Value.DIMENSION:
-                pass
-              elif propval.type == cssutils.css.Value.PERCENTAGE:
-                pass
-              elif propval.type == cssutils.css.Value.IDENT:
-                # Things like "bottom" and "linear".
-                pass
-              elif propval.type == cssutils.css.Value.FUNCTION:
-                # This covers linear-gradient(...) stuff.
-                pass
-              elif propvalstr == 'none':
-                # Do nothing
-                pass
-              else:
-                if propval.type == cssutils.css.Value.IDENT:
-                  warn('Maybe-supported CSS ident value: %s' % propval.cssText)
-                  
-                image = combineURLs(url, propvalstr) 
+                  if propval.type == cssutils.css.Value.IDENT:
+                    warn('Maybe-supported CSS ident value: %s' % propval.cssText)
+                    
+                  image = combineURLs(url, propvalstr) 
 
-              if image is not None:
-                images.append(image)
-                filename = get_relative_path(image, referer=url)
-                newtext = 'url(' + filename + ')'
-                newvals.append(newtext)
-                replaced = True
-              else:
-                newvals.append(propvalstr)
-            if replaced:
-              newval = ' '.join(newvals)
-              decl.setProperty(prop.name, value=newval, replace=True)
-          elif prop.name == 'background':
-            propvals = prop.propertyValue
-            newvals = []
-            for propval in propvals:
-              propvalstr = str(propval.value)
-              origvals.append(propvalstr)
-              if propval.type == cssutils.css.Value.URI:
-                absuri = propval.absoluteUri
-                # %%% Generalize
-                if absuri.startswith('data:'):
-                  # %%% Extract the data
-                  warn('Unsupported %s URI for %s property' % ('data', prop.name))
-                else:
-                  image = absuri
+                if image is not None:
                   images.append(image)
                   filename = get_relative_path(image, referer=url)
                   newtext = 'url(' + filename + ')'
                   newvals.append(newtext)
                   replaced = True
-              else:
-                newvals.append(propvalstr)
-            if replaced:
-              newval = ' '.join(newvals)
-              decl.setProperty(prop.name, value=newval, replace=True)
+                else:
+                  newvals.append(propvalstr)
+              if replaced:
+                newval = ' '.join(newvals)
+                decl.setProperty(prop.name, value=newval, replace=True)
+            elif prop.name == 'background':
+              propvals = prop.propertyValue
+              newvals = []
+              for propval in propvals:
+                propvalstr = str(propval.value)
+                origvals.append(propvalstr)
+                if propval.type == cssutils.css.Value.URI:
+                  absuri = propval.absoluteUri
+                  # %%% Generalize
+                  if absuri.startswith('data:'):
+                    # %%% Extract the data
+                    warn('Unsupported %s URI for %s property' % ('data', prop.name))
+                  else:
+                    image = absuri
+                    images.append(image)
+                    filename = get_relative_path(image, referer=url)
+                    newtext = 'url(' + filename + ')'
+                    newvals.append(newtext)
+                    replaced = True
+                else:
+                  newvals.append(propvalstr)
+              if replaced:
+                newval = ' '.join(newvals)
+                decl.setProperty(prop.name, value=newval, replace=True)
 
-          if replaced and VERBOSE:
-            origval = ' '.join(origvals)
-            out('Replaced css.%s: %s -> %s' % (prop.name, origval, newval))
+            if replaced and VERBOSE:
+              origval = ' '.join(origvals)
+              out('Replaced css.%s: %s -> %s' % (prop.name, origval, newval))
 
-    encoding = stylesheet.encoding
-    if encoding is None:
-      encoding = 'utf-8'
-    newcss = stylesheet.cssText.decode(encoding, errors='replace')
-    return newcss, images, imports
-  # /extractResources
-# /CSSParser
+      encoding = stylesheet.encoding
+      if encoding is None:
+        encoding = 'utf-8'
+      newcss = stylesheet.cssText.decode(encoding, errors='replace')
+      return newcss, images, imports
+    # /extractResources
+  # /CSSParser
 
 class HTMLParser():
   # Static counter for id attribute generation.
@@ -798,7 +816,7 @@ class HTMLParser():
         encoding = resource.getEncoding()
         data = resource.getData()
 
-        if data is not None:
+        if CSS_SUPPORT and data is not None:
           cssparser = CSSParser()
           newdata, imgs, imports = cssparser.extractResources(data, encoding, ssurl)
           # Transitively follow imports.
@@ -1317,7 +1335,7 @@ def createFile(relpath, content):
 # /createFile
 
 def getDomain(url):
-  urlparts = urllib.parse.urlparse(url)
+  urlparts = urlparse.urlparse(url)
   domain = urlparts[1]
   return domain
 # end getDomain
@@ -1362,7 +1380,7 @@ def getExtension(url, ctype=None):
 # /getExtension
 
 def getFileName(url):
-  urlparts = urllib.parse.urlparse(url)
+  urlparts = urlparse.urlparse(url)
   filepath = urlparts[2]
   # Split the path component and return the filename.
   filename = filepath.split('/')[-1]
@@ -1376,16 +1394,16 @@ def loadFile(infile, app, outdir):
 # end loadFile
 
 def combineURLs(baseurl, relurl):
-  url = urllib.parse.urljoin(baseurl, relurl)
+  url = urlparse.urljoin(baseurl, relurl)
 
   # Remove leading ../'s from the path, since the server typically does.
-  urlparts = urllib.parse.urlparse(url)
+  urlparts = urlparse.urlparse(url)
   relpart = urlparts[2]
   while relpart.startswith('/..'):
     relpart = relpart[3:]
   # Can't assign directly to |urlparts[2]| for some reason.
   newparts = (urlparts[0], urlparts[1], relpart, urlparts[3], urlparts[4], urlparts[5])
-  url = urllib.parse.urlunparse(newparts)
+  url = urlparse.urlunparse(newparts)
 
   return url
 

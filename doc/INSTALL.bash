@@ -15,8 +15,9 @@
 export JAMPKG=${JAMPKG-$PWD}
  
 
-# Install some baseline apps.
-sudo apt-get -y install git vim emacs23-nox lynx unzip zip scons screen openssh-server g++ python-dev zlib1g-dev libbz2-dev make
+# Install some baseline apps. Python 3 is recommended, but the latest
+# version 2 is supported also.
+sudo apt-get -y install git vim emacs23-nox lynx unzip zip scons screen openssh-server g++ python3-dev zlib1g-dev libbz2-dev make
 
 # Closure/WALi/WALA build dependencies
 sudo apt-get -y install openjdk-7-jdk ant ocaml-nox curl maven

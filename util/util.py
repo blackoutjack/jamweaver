@@ -1,25 +1,24 @@
+
+#
+# This file contains some general-purpose utility functions that can be
+# used by other Python scripts. It is not meant to be run on its own.
+#
+
 import sys
-try:
-  import urllib.parse
-except:
-  import urlparse as parse
+MAJOR = sys.version_info[0]
+if MAJOR >= 3:
+  import urllib.parse as urlparse
+  import http.client as httpclient
+else:
+  import urlparse
+  import httplib as httpclient
 import re
 import io
 import time
-try:
-  import http.client
-except:
-  import httplib as client
 import subprocess
 from subprocess import PIPE
 from subprocess import STDOUT
 from config import *
-
-#
-# This file contains some general-purpose
-# utility functions that can be used by other 
-# Python scripts.
-#
 
 # Parse an individual time value of the form "123m45.678s" and return
 # the total number of seconds as a float.
@@ -696,7 +695,7 @@ def get_jam_command(service=False, debug=True, perf=True):
   cmd.append('-v')
   cmd.append('2')
   cmd.append('-t')
-  cmd.append('6')
+  cmd.append('3')
 
   #cmd.append('-P')
   #cmd.append('-I')
@@ -806,7 +805,7 @@ def query_jam_service(jspaths, policies, refine=0, seeds=None, moreopts=[]):
   headers['Accept'] = '*/*'
 
   #out("HEADERS: %r\nBODY: %s" % (headers, body))
-  conn = client.HTTPConnection("127.0.0.1", JAMPORT)
+  conn = httpclient.HTTPConnection("127.0.0.1", JAMPORT)
   starttime = time.time()
   try:
     conn.request("PUT", "/jam", body, headers)  
@@ -833,7 +832,7 @@ def query_jam_service(jspaths, policies, refine=0, seeds=None, moreopts=[]):
   try:
     resp = conn.getresponse()
     outp = resp.read().decode('utf-8')
-  except client.HTTPException as e: 
+  except httpclient.HTTPException as e: 
     err('HTTP exception: %s' % str(e))
     outp = ''
   except ConnectionResetError as e:
@@ -968,7 +967,7 @@ def close_jam_service():
   headers['Content-type'] = 'text/plain'
   headers['Accept'] = '*/*'
   #out("HEADERS: %r" % headers)
-  conn = client.HTTPConnection("127.0.0.1", JAMPORT)
+  conn = httpclient.HTTPConnection("127.0.0.1", JAMPORT)
   try:
     conn.request('POST', '/shutdown', '', headers)  
   except:
@@ -1195,13 +1194,13 @@ def is_url(uri):
 # end isURL
 
 def get_protocol(url):
-  urlparts = parse.urlparse(url)
+  urlparts = urlparse.urlparse(url)
   prot = urlparts[0]
   return prot
 # end getProtocol
 
 def get_relative_path(url, usedomain=False, referer=None):
-  urlparts = parse.urlparse(url)
+  urlparts = urlparse.urlparse(url)
   filepath = urlparts[2]
   filepath = filepath.lstrip('/')
       
@@ -1211,7 +1210,7 @@ def get_relative_path(url, usedomain=False, referer=None):
 
   if referer is not None:
     # Get the path relative to the referer.
-    refparts = parse.urlparse(referer)
+    refparts = urlparse.urlparse(referer)
     refpath = refparts[2]
     # Assume the referer is a file, and remove the filename.
     refpath = os.path.split(refpath)[0]

@@ -7,6 +7,11 @@ from subprocess import PIPE
 from optparse import OptionParser
 import imp
 
+from util import out
+from util import err
+from util import warn
+from util import fatal
+
 def parseDiffOutput(diffout):
   files = []
   for ln in diffout.split("\n"):
@@ -15,7 +20,7 @@ def parseDiffOutput(diffout):
     if match:
       files.append(match.group(1, 2))
     else:
-      print >> sys.stderr, "Unsupported output pattern:", ln
+      warn("Unsupported output pattern: %s" % ln)
 
   return files
 
@@ -27,8 +32,10 @@ def getDiffFiles(origdir, newdir, exclusions):
   cmd.append(origdir)
   cmd.append(newdir)
 
+  enc = sys.stdout.encoding
+  if enc is None: enc = 'utf-8'
   diff = subprocess.Popen(cmd, stdout=PIPE) 
-  diffout = diff.communicate()[0]
+  diffout = diff.communicate()[0].decode(enc)
 
   return parseDiffOutput(diffout)
 
@@ -36,14 +43,14 @@ def preparePatchDirectory(patchdir):
   # Check validity of or create patch directory.
   if os.path.exists(patchdir):
     if not os.path.isdir(patchdir):
-      print >> sys.stderr, "Unable to create output directory", patchdir + "; file exists"
+      err("Unable to create output directory %s; file exists" % patchdir)
       return False
     toRemove = [];
     for fl in os.listdir(patchdir):
         if fl == ".svn": continue
         flpath = os.path.join(patchdir, fl)
         if os.path.isdir(flpath):
-          print >> sys.stderr, "Can't clear patch directory; it contains a directory:", flpath
+          err("Can't clear patch directory; it contains a directory: %s" % flpath)
           return False
         toRemove.append(flpath)
     for flpath in toRemove:
@@ -56,13 +63,16 @@ def makePatch(oldfl, newfl, patchdir):
   cmd = ['diff', '-Nua', oldfl, newfl]
   outfile = '_'.join(newfl.split('/')[1:]) + ".patch"
   outpath = os.path.join(patchdir, outfile)
-  print "Saving to", outpath
+  out("Saving to %s" % outpath)
 
+  enc = sys.stdout.encoding
+  if enc is None: enc = 'utf-8'
   proc = subprocess.Popen(cmd, stdout=PIPE)
-  out = proc.communicate()[0]
+  diffout = proc.communicate()[0].decode(enc)
 
-  outfl = open(outpath, 'w', 0)
-  print >> outfl, out,
+  outfl = open(outpath, 'w')
+  outfl.write(diffout)
+  outfl.write("\n")
   outfl.flush()
   outfl.close()
 
@@ -79,13 +89,13 @@ def main():
 
   cfg = imp.load_source("cfg", args[0]) 
 
-  print "Identifying differing files"
+  out("Identifying differing files")
   exclusions = getattr(cfg, 'EXCLUSIONS', [])
   diffFiles = getDiffFiles(cfg.ORIGDIR, cfg.DEVDIR, exclusions)
 
   preparePatchDirectory(cfg.PATCHDIR)
   for oldfl, newfl in diffFiles:
-    print "Generating patch for", newfl
+    out("Generating patch for %s" % newfl)
     makePatch(oldfl, newfl, cfg.PATCHDIR)
 
 if __name__ == "__main__":

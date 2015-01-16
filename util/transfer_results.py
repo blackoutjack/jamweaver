@@ -376,7 +376,10 @@ def update_coarse(apppath, app, wrap):
         cfg.warn("Profile source file doesn't exist: %s" % srcpath)
         continue
       
-      srcfl = open(srcpath, 'r', errors='ignore')
+      if MAJOR >= 3:
+        srcfl = open(srcpath, 'r', errors='ignore')
+      else:
+        srcfl = open(srcpath, 'r')
       srctxt = srcfl.read()
       srcfl.close()
 
@@ -430,7 +433,11 @@ def update_profile(apppath, app, wrap):
       elif not os.path.isfile(srcpath):
         cfg.warn("Profile source file doesn't exist: %s" % srcpath)
         continue
-      srcfl = open(srcpath, 'r', errors='ignore')
+
+      if MAJOR >= 3:
+        srcfl = open(srcpath, 'r', errors='ignore')
+      else:
+        srcfl = open(srcpath, 'r')
       srctxt = srcfl.read()
       srcfl.close()
 
@@ -540,6 +547,7 @@ def main():
   parser.add_option('-l', '--loadall', action='store_true', default=False, dest='loadall', help='load all results, not just the latest')
   parser.add_option('-T', '--nodifftime', action='store_true', default=False, dest='nodifftime', help='update even if source file timestamp is older')
   parser.add_option('-c', '--config', action='store', default=os.path.join(os.path.dirname(__file__), 'transferconfig.py'), dest='config', help='configuration.py file')
+  parser.add_option('-g', '--group', action='store', default=None, dest='group', help='test group to transfer (default: all)')
 
   opts, args = parser.parse_args()
 
@@ -557,6 +565,11 @@ def main():
   tgtkeys = list(cfg.TARGETDIRS.keys())
   tgtkeys.sort()
   for destdir in tgtkeys:
+    if opts.group is not None:
+      if opts.group not in cfg.TEST_GROUPS:
+        fatal("Invalid test group: %s" % opts.group)
+      if not destdir.endswith('/' + opts.group):
+        continue
     props = cfg.TARGETDIRS[destdir]
     wrap = props['wrap']
     bases = props['basenames']

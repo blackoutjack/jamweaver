@@ -220,8 +220,8 @@ public class Policy extends Automaton<State,PredicateSymbol> {
       // learned or seeded).
       PredicateType pt = getLanguage().getPredicateType(pred);
       if (pt == JSPredicateType.WRITE || pt == JSPredicateType.READ
-          || pt == JSPredicateType.INVOKE || pt == JSPredicateType.DELETE
-          || pt == JSPredicateType.CONSTRUCT) {
+          || pt == JSPredicateType.CALL || pt == JSPredicateType.CONSTRUCT
+          || pt == JSPredicateType.INVOKE || pt == JSPredicateType.DELETE) {
         pred.setEventPredicate();
       }
       pred.setPolicyPredicate();

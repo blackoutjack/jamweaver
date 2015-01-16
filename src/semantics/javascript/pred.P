@@ -91,7 +91,9 @@ predexp(H,L,E,HP,LP,EP) :-
 	Args=[Arg],
 	is_id(Func,FuncName),
   % Dispatch based on the extension being called.
-  (FuncName='"jam#invoke"'->predcall(H,L,Arg,HP,LP,EP);
+  (FuncName='"jam#invoke"'->
+    (predcall(H,L,Arg,HP,LP,EP);predconstr(H,L,Arg,HP,LP,EP));
+  (FuncName='"jam#call"'->predcall(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#construct"'->predconstr(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#retval"'->predretval(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#arg"'->predarg(H,L,Arg,HP,LP,EP);
@@ -99,7 +101,7 @@ predexp(H,L,E,HP,LP,EP) :-
   (FuncName='"jam#get"'->predgeto(H,L,Arg,HP,LP,EP);
   %(FuncName='"jam#delete"'->preddelo(H,L,Arg,HP,LP,EP);
   (FuncName='"jam#stringupper"'->predstringupper(H,L,Arg,HP,LP,EP);
-  false))))))).
+  false)))))))).
 
 % Special extension functions.
 predexp(H,L,E,HP,LP,EP) :- 
@@ -169,6 +171,14 @@ predstringupper(H,L,E,HP,LP,EP) :-
   (is_symbolic(S)->symbolic(EP,'String');
   evaljs(format('String.prototype.toUpperCase.call(~a)',S),EP)).
 
+get_next_call(Idx,Fun) :-
+  get_call(Idx,Fun0)->
+  ((NextIdx is Idx + 1,
+  get_next_call(NextIdx,Fun1),
+  Fun=Fun1);
+  Fun=Fun0);
+  fail.
+
 % Test whether a function could have been called.
 predcall(H,L,E,HP,LP,EP) :-
   predexp(H,L,E,H1,L1,FunRef),
@@ -179,14 +189,6 @@ predcall(H,L,E,HP,LP,EP) :-
   fnextra(H3,FunPtr,CallPtr,H4,ExtraEq),
   binary_fn('and',FunEq,ExtraEq,EP),
   HP=H4,LP=L3.
-
-get_next_call(Idx,Fun) :-
-  get_call(Idx,Fun0)->
-  ((NextIdx is Idx + 1,
-  get_next_call(NextIdx,Fun1),
-  Fun=Fun1);
-  Fun=Fun0);
-  fail.
 
 % Test whether a function could have been called as a constructor.
 predconstr(H,L,E,HP,LP,EP) :-

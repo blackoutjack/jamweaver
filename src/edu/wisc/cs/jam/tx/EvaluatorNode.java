@@ -508,26 +508,9 @@ public class EvaluatorNode {
 
   }
 
-  protected void makeConstructConjunct(StringBuilder sb) {
+  protected void makeInvokeConjunct(StringBuilder sb) {
     // There should be 1 call name and 1 argument.
-    assert exp.getChildCount() == 2 : "Invalid child count for construct conjunct: " + exp.toCode();
-
-    // %%% The enforcement mechanism will catch calls to this function
-    // %%% in addition to constructor invocations.
-    Exp fn = exp.getChild(1);
-    String loc = null;
-    if ((loc = parseNativeLocation(fn)) != null) {
-      sb.append("JAM.identical(node.value,");
-      sb.append(loc);
-      sb.append(")");
-    } else {
-      throw new UnsupportedOperationException();  
-    }
-  }
-
-  protected void makeCallConjunct(StringBuilder sb) {
-    // There should be 1 call name and 1 argument.
-    assert exp.getChildCount() == 2 : "Invalid child count for call conjunct: " + exp.toCode();
+    assert exp.getChildCount() == 2 : "Invalid child count for invoke conjunct: " + exp.toCode();
 
     Exp fn = exp.getChild(1);
     String loc = null;
@@ -539,7 +522,7 @@ public class EvaluatorNode {
       sb.append(loc);
       sb.append(")");
     } else {
-      throw new UnsupportedOperationException("Unable to parse native: " + fn.toCode());  
+      throw new UnsupportedOperationException("Unable to parse invocation target: " + fn.toCode());  
     }
   }
 
@@ -672,10 +655,9 @@ public class EvaluatorNode {
         makeAccessConjunct(sb);
         break;
       case INVOKE:
-        makeCallConjunct(sb);
-        break;
+      case CALL:
       case CONSTRUCT:
-        makeConstructConjunct(sb);
+        makeInvokeConjunct(sb);
         break;
       case TYPE:
         makeTypeConjunct(sb);

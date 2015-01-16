@@ -54,6 +54,8 @@ public class Evaluator {
       return JSPredicateType.READ;
     } else if (typ == JSPredicateType.DELETE) {
       return JSPredicateType.DELETE;
+    } else if (typ == JSPredicateType.CALL) {
+      return JSPredicateType.CALL;
     } else if (typ == JSPredicateType.INVOKE) {
       return JSPredicateType.INVOKE;
     } else if (typ == JSPredicateType.CONSTRUCT) {

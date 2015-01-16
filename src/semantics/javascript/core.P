@@ -1863,8 +1863,8 @@ gettype(_,PV,M) :-
 acall(H,L,L1,L2,ArgsList,HP,LP,EP) :-
   % This clause is for calls to user-defined functions only.
   not isnativefun(L1),is_user_fun(L1),
-  % Update the callee meta-variable.
-  add_call(L1),
+  % Add a called function, if it's not being called as a constructor.
+  (is_construct_mode->true;add_call(L1)),
   % Update the arguments structure.
   updateargs(H,ArgsList,H1),
   % Get the length of the arguments list (as int and string).
@@ -1901,8 +1901,8 @@ acall(H,L,L1,L2,ArgsList,HP,LP,EP) :-
 acall(H,L,L1,L2,A,HP,L,EP) :-
   isnativefun(L1),
   not isvarlen(L1),
-  % Update the called function metavariable.
-  add_call(L1),
+  % Add a called function, if it's not being called as a constructor.
+  (is_construct_mode->true;add_call(L1)),
   maps(H,L1,O1),
   hasprop(O1,'"length"',N),
   (is_concrete(N)->
@@ -1926,9 +1926,8 @@ acall(H,L,L1,L2,A,HP,L,EP) :-
 acall(H,L,L1,L2,A,HP,L,EP) :-
   isnativefun(L1),
   isvarlen(L1),
-  % Update metavariables as soon as possible (at least before aexe) in
-  % case the native function isn't modeled.
-  add_call(L1),
+  % Add a called function, if it's not being called as a constructor.
+  (is_construct_mode->true;add_call(L1)),
   updateargs(H,A,H1),
   maps(H1,L1,_),
   length(A,I1),inttostr(I1,N1),

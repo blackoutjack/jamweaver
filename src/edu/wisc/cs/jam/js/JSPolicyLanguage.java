@@ -15,8 +15,9 @@ public class JSPolicyLanguage extends PolicyLanguage {
   public enum JSPredicateType implements PredicateType {
     WRITE,
     READ,
-    INVOKE,
+    CALL,
     CONSTRUCT,
+    INVOKE,
     DELETE,
     TYPE,
     STRINGCONTAINS,
@@ -56,6 +57,10 @@ public class JSPolicyLanguage extends PolicyLanguage {
       String callName = e.getFirstChild().toCode();
       if (callName.equals("jam#invoke")) {
         type = JSPredicateType.INVOKE;
+        if (not)
+          throw new UnsupportedOperationException("Negative " + callName + " predicates not supported: " + e.toCode());
+      } else if (callName.equals("jam#call")) {
+        type = JSPredicateType.CALL;
         if (not)
           throw new UnsupportedOperationException("Negative " + callName + " predicates not supported: " + e.toCode());
       } else if (callName.equals("jam#construct")) {

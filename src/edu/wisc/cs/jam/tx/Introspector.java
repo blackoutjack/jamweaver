@@ -131,9 +131,14 @@ public class Introspector {
     }
 
     if (checkType) {
-      sb.append("node.type === \"");
-      sb.append(nodetype);
-      sb.append("\" && ");
+      sb.append("(node.type === \"");
+      if (nodetype.equals("invoke")) {
+        // "invoke" is the join of "call" and "construct".
+        sb.append("call\" || node.type === \"construct");
+      } else {
+        sb.append(nodetype);
+      }
+      sb.append("\") && ");
     }
 
     sb.append("((");

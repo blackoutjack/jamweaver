@@ -721,7 +721,8 @@ public class JSIndirectionTransform extends JSTransform {
         // If the following condition is not true, the callsite will be
         // visited and transformed anyway.
         if (ptypes == null || (!ptypes.contains(JSPredicateType.INVOKE)
-            && !ptypes.contains(JSPredicateType.CONSTRUCT))) {
+            && !ptypes.contains(JSPredicateType.CONSTRUCT)
+            && !ptypes.contains(JSPredicateType.CALL))) {
           // Presumably a NEW expression will work fine without
           // transformation since it doesn't use the receiver.
           if (parent.isCall()) {
@@ -775,7 +776,10 @@ public class JSIndirectionTransform extends JSTransform {
           sm.reportCodeChange();
           callTransformCnt++;
         } else if (ptypes != null && (ptypes.contains(JSPredicateType.INVOKE)
-            || ptypes.contains(JSPredicateType.CONSTRUCT))) {
+            || ptypes.contains(JSPredicateType.CONSTRUCT)
+            || ptypes.contains(JSPredicateType.CALL))) {
+          // %%% This can be targeted better. E.g. if the predicate type
+          // %%% is CALL, we don't need to indirect "new" invocations.
           indirectCallsite(t, e, parent, ispect);
           sm.reportCodeChange();
           callTransformCnt++;

@@ -42,7 +42,10 @@ public class PolicyTransition {
         return "write";
       case READ:
         return "read";
+      case CALL:
+        return "call";
       case INVOKE:
+        // Should be interpreted as either "call" or "construct".
         return "invoke";
       case CONSTRUCT:
         return "construct";

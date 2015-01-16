@@ -39,6 +39,7 @@ public class JSSyntaxAnalysis {
     if (ExpUtil.containsInvoke(exp, false)) {
       /*
       // %%% Not sound currently.
+      // %%% When this is employed, use it for CALL and CONSTRUCT too.
       if (tgt != null) {
         List<String> tgts = sm.getPossibleCallTargets(exp);
         if (tgts != null) {
@@ -49,6 +50,15 @@ public class JSSyntaxAnalysis {
       return false;
     }
     // %%% Are there other node types of interest?
+    return true;
+  }
+
+  protected boolean definitelyNoCall(Exp exp) {
+    // Don't descend into blocks for control statements.
+    if (ExpUtil.isStatementBlock(exp))
+      return false;
+    if (ExpUtil.containsType(exp, JSExp.CALL, false))
+      return false;
     return true;
   }
 
@@ -608,6 +618,9 @@ public class JSSyntaxAnalysis {
           Exp conj = conjs.get(0);
           String tgt = getPolicyCallTarget(conj);
           if (definitelyNoInvoke(progexp, tgt))
+            return Boolean.FALSE;
+        } else if (pt == JSPredicateType.CALL) {
+          if (definitelyNoCall(progexp))
             return Boolean.FALSE;
         } else if (pt == JSPredicateType.CONSTRUCT) {
           if (definitelyNoConstruct(progexp))

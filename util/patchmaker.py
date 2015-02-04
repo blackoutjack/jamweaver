@@ -1,5 +1,7 @@
 #!/usr/bin/python
 import sys
+MAJOR = sys.version_info[0]
+
 import os
 import re
 import subprocess
@@ -25,7 +27,9 @@ def parseDiffOutput(diffout):
   return files
 
 def getDiffFiles(origdir, newdir, exclusions):
-  cmd = ['diff', '-Narq'] 
+  cmd = ['diff', '-Nrq'] 
+  if not cfg.IGNORE_BINARY:
+    cmd.append('-a')
   for excl in exclusions:
     cmd.append('-x')
     cmd.append(excl)
@@ -58,18 +62,33 @@ def preparePatchDirectory(patchdir):
   else:
     os.makedirs(patchdir)
 
-def makePatch(oldfl, newfl, patchdir):
+def makePatch(oldfl, newfl, patchdir, ignorebin=False):
     
-  cmd = ['diff', '-Nua', oldfl, newfl]
-  outfile = '_'.join(newfl.split('/')[1:]) + ".patch"
+  cmd = ['diff', '-Nu', oldfl, newfl]
+  if not ignorebin:
+    cmd.append('-a')
+
+  # No patches for symbolic links.
+  if os.path.islink(newfl):
+    return False
+
+  assert newfl.startswith(cfg.DEVDIR + '/')
+  patchpath = newfl[len(cfg.DEVDIR)+1:]
+  outfile = '_'.join(patchpath.split('/')) + ".patch"
   outpath = os.path.join(patchdir, outfile)
-  out("Saving to %s" % outpath)
 
-  enc = sys.stdout.encoding
-  if enc is None: enc = 'utf-8'
   proc = subprocess.Popen(cmd, stdout=PIPE)
-  diffout = proc.communicate()[0].decode(enc)
+  diffout = proc.communicate()[0]
+  
+  if MAJOR >= 3:
+    enc = sys.stdout.encoding
+    if enc is None: enc = 'utf-8'
+    diffout = diffout.decode(enc)
 
+  if ignorebin and diffout.startswith('Binary files '):
+    return False
+
+  out("Saving patch for %s to %s" % (newfl, outpath))
   outfl = open(outpath, 'w')
   outfl.write(diffout)
   outfl.write("\n")
@@ -87,16 +106,17 @@ def main():
   if len(args) != 1:
     parser.error("Invalid number of arguments")
 
+  global cfg
   cfg = imp.load_source("cfg", args[0]) 
 
   out("Identifying differing files")
   exclusions = getattr(cfg, 'EXCLUSIONS', [])
+  ignorebin = getattr(cfg, 'IGNORE_BINARY', False)
   diffFiles = getDiffFiles(cfg.ORIGDIR, cfg.DEVDIR, exclusions)
 
   preparePatchDirectory(cfg.PATCHDIR)
   for oldfl, newfl in diffFiles:
-    out("Generating patch for %s" % newfl)
-    makePatch(oldfl, newfl, cfg.PATCHDIR)
+    makePatch(oldfl, newfl, cfg.PATCHDIR, ignorebin=ignorebin)
 
 if __name__ == "__main__":
   main()

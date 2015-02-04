@@ -1,5 +1,7 @@
 #!/usr/bin/python
 import sys
+MAJOR = sys.version_info[0]
+
 import os
 import time
 from optparse import OptionParser
@@ -154,7 +156,9 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     opts.append('-z')
 
   # Run with each policy file separately.
-  for poldesc, polfiles in policies.items():
+  if MAJOR >= 3: politems = policies.items()
+  else: politems = policies.iteritems()
+  for poldesc, polfiles in politems:
     # Generate a new RunResult for each policy.
     result = RunResult(False, False, False)
     results.add(result)
@@ -286,11 +290,12 @@ def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False
           ref = 0
 
     # Run with each policy file separately.
-    for poldesc, polfiles in poldict.items():
+    if MAJOR >= 3: politems = poldict.items()
+    else: politems = poldict.iteritems()
+    for poldesc, polfiles in politems:
       result = RunResult(False, False)
       results.add(result)
 
-      # Use the union of all policy files for a particular test.
       out('Analyzing %s' % appname)
       if service:
         outp, errp = query_jam_service(srcfls, polfiles, refine=ref, seeds=seeds, moreopts=opts)
@@ -348,7 +353,9 @@ def run_exploits(debug=False, overwrite=False, refine=None, synonly=False, servi
       opts.append('-z')
 
     # Run with each policy file separately.
-    for poldesc, polfiles in poldict.items():
+    if MAJOR >= 3: politems = poldict.items()
+    else: politems = poldict.iteritems()
+    for poldesc, polfiles in politems:
       result = RunResult(False, False)
       results.add(result)
 
@@ -408,7 +415,9 @@ def run_benchmarks(debug=False, overwrite=False, refine=None, synonly=False, ser
       opts.append('-P')
 
     # Run with each policy file separately.
-    for poldesc, polfiles in poldict.items():
+    if MAJOR >= 3: politems = poldict.items()
+    else: politems = poldict.iteritems()
+    for poldesc, polfiles in politems:
       result = RunResult(False, False)
       results.add(result)
 

@@ -53,8 +53,8 @@ JAMSCRIPT_LIB = os.path.join(JSLIBDIR, 'libTx.js')
 JAMSCRIPT_DBGLIB = os.path.join(JSLIBDIR, 'libTxDbg.js')
 JAMSCRIPT_TESTDIR = os.path.join(JAMSCRIPT_DIR, 'tests', 'js')
 SMS2DIR = os.path.join(TESTS_DIR, 'bench', 'sms2')
-JAMSCRIPT_BUILDDIR = os.path.join(JAMSCRIPT_DIR, 'mozilla-esr17', 'obj-release', 'browser')
-JS_COMMAND = os.path.join(JAMSCRIPT_BUILDDIR, 'dist', 'bin', 'js')
+JAMSCRIPT_BUILDDIR = os.path.join(JAMSCRIPT_DIR, 'ff-dev', 'mozilla-17.0.3esr')
+JS_COMMAND = os.path.join(JAMSCRIPT_BUILDDIR, 'obj-release', 'browser', 'dist', 'bin', 'js')
 
 # The command (minus input arguments) used to invoke JAM.
 # This should be list which can be used with subprocess.

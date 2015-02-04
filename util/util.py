@@ -488,7 +488,9 @@ def process_info(infopath, exppath, overwrite, quiet=False):
       ok = True
       stat = 'match'
     else:
-      for k, m in diff.items():
+      if MAJOR >= 3: diffitems = diff.items()
+      else: diffitems = diff.iteritems()
+      for k, m in diffitems:
         stat = 'wrong'
         if quiet:
           break
@@ -532,7 +534,7 @@ def parse_info_file(infofile):
         if infoparts[0] == 'policy-files':
           polparts = infoparts[1].lstrip('[').rstrip(']').split(',')
           for i in range(0,len(polparts)):
-            polparts[i] = os.path.relpath(JAMPKG, polparts[i])
+            polparts[i] = os.path.relpath(polparts[i], JAMPKG)
           infoparts[1] = '[' + ','.join(polparts) + ']'
             
         info[infoparts[0]] = infoparts[1]
@@ -913,7 +915,10 @@ def query_jam_service_stdin(jspaths, policies, refine=0, seeds=None, moreopts=[]
     headers[key] = val
 
   request = "POST /jam HTTP/1.1\r\n"
-  for key, value in headers.items():
+
+  if MAJOR >= 3: headitems = headers.items()
+  else: headitems = headers.iteritems()
+  for key, value in headitems:
     request += "%s: %s\r\n" % (key, value)
   request += "\r\n"
   
@@ -1239,7 +1244,9 @@ def get_variant_bases(src):
       base = re.sub('/', '-', relpath)
 
       pols = load_policies(dirpath, defwarn=False)
-      for poldesc, pol in pols.items():
+      if MAJOR >= 3: politems = pols.items()
+      else: politems = pols.iteritems()
+      for poldesc, pol in politems:
         if poldesc != '':
           bases.append(base + '.' + poldesc)
         else:
@@ -1361,8 +1368,7 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
   # Print the name of the file being analyzed.
   if debug:
     jsname = os.path.basename(jspath)
-    sys.stdout.write('%s\n' % jsname)
-    sys.stdout.flush()
+    out(jsname)
 
   if perf:
     # Use --quiet flag since some test cases expect exceptions and
@@ -1373,6 +1379,11 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
     cmd = [jscmd]
   cmd.extend(moreopts)
 
+  # Load the files containing the policy.
+  for pol in policies:
+    cmd.append('-f')
+    cmd.append(pol)
+
   # Load the JAMScript library
   cmd.append('-f')
   cmd.append(JAMSCRIPT_LIB)
@@ -1382,17 +1393,12 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
     cmd.append('-f')
     cmd.append(JAMSCRIPT_DBGLIB)
 
-  # Load the files containing the policy iBlocks.
-  for pol in policies:
-    cmd.append('-f')
-    cmd.append(pol)
-
   cmd.append('-f')
   cmd.append(jspath)
 
   if (debug):
     # Display the command that's being invoked.
-    sys.stdout.write('%s\n' % ' '.join(cmd))
+    out(' '.join(cmd))
 
   # Combine stderr and stdout so that exception output is collected.
 #  if perf:
@@ -1406,18 +1412,17 @@ def run_tx(jspath, policies, jscmd, perf=True, debug=False, moreopts=[]):
   # Let the user see the debugging output, demonstrating progress.
   jam = subprocess.Popen(cmd, stdout=PIPE, stderr=errstrm)
 
-  outp, errp = jam.communicate()
+  outp = jam.communicate()[0]
 
   enc = sys.stdout.encoding
   if enc is None: enc = 'utf-8'
   outp = outp.decode(enc)
-  errp = errp.decode(enc)
   outp = outp.strip()
   if perf:
     outlines = outp.split("\n")
     timeline = outlines[-1].strip("\"")
     outp = "\n".join(outlines[:-1])
-    sys.stdout.write("cpu: %ss" % str(parse_time_output(timeline, element="cpu")))
+    out("cpu: %ss" % str(parse_time_output(timeline, element="cpu")))
   
   # To portably analyze exception output, make absolute paths relative.
   outp = outp.replace(JAMSCRIPT_DIR + "/", "")

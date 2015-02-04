@@ -18,12 +18,16 @@ from optparse import OptionParser
 import filecmp
 import fnmatch
 
+def read_file(filepath):
+  fl = open(filepath, 'r')
+  txt = fl.read().replace('\r\n','\n').strip()
+  fl.close()
+  return txt
+
 def get_result_predicate(srcdir, app):
   respath = os.path.join(srcdir, app + '.result')
   if os.path.isfile(respath):
-    resfl = open(respath, 'r')
-    respred = resfl.read()
-    resfl.close()
+    respred = read_file(respath)
     respred = respred.strip()
     respred = respred.rstrip(";")
   else:
@@ -53,10 +57,8 @@ def should_update(src, tgt, diff=False):
 def has_change(tgtfile, txt):
   if not os.path.exists(tgtfile):
     return True
-  tgtfl = open(tgtfile, 'r')
-  tgttxt = tgtfl.read().strip()
+  tgttxt = read_file(tgtfile)
   chg = tgttxt != txt.strip()
-  tgtfl.close()
   return chg
 
 def write_text(tgtfile, txt):
@@ -215,9 +217,7 @@ def copy_source(app, desc, srcpath, tgtdir, respred=None, name=None):
   update_tgt = should_update(srcpath, tgt)
   if not update_tgt: return False
 
-  srcfl = open(srcpath, 'r')
-  srctxt = srcfl.read()
-  srcfl.close()
+  srctxt = read_file(srcpath)
 
   # Normalize the number of blank lines.
   srctxt = srctxt.strip() + "\n"
@@ -283,7 +283,9 @@ def copy_files(app, infos, apppath, wrap=False):
       continue
 
     srcdir = info['dir']
-    for desc, jssrc in info.items():
+    if MAJOR >= 3: infoitems = info.items()
+    else: infoitems = info.iteritems()
+    for desc, jssrc in infoitems:
       if desc == 'dir': continue
       if desc == 'version': continue
       if desc == 'policy': continue
@@ -376,12 +378,7 @@ def update_coarse(apppath, app, wrap):
         cfg.warn("Profile source file doesn't exist: %s" % srcpath)
         continue
       
-      if MAJOR >= 3:
-        srcfl = open(srcpath, 'r', errors='ignore')
-      else:
-        srcfl = open(srcpath, 'r')
-      srctxt = srcfl.read()
-      srcfl.close()
+      srctxt = read_file(srcpath)
 
       # Normalize the number of blank lines.
       srctxt = srctxt.strip() + "\n"
@@ -434,12 +431,7 @@ def update_profile(apppath, app, wrap):
         cfg.warn("Profile source file doesn't exist: %s" % srcpath)
         continue
 
-      if MAJOR >= 3:
-        srcfl = open(srcpath, 'r', errors='ignore')
-      else:
-        srcfl = open(srcpath, 'r')
-      srctxt = srcfl.read()
-      srcfl.close()
+      srctxt = read_file(srcpath)
 
       # Normalize the number of blank lines.
       srctxt = srctxt.strip() + "\n"
@@ -485,9 +477,7 @@ def update_expected(app, infos, tgtpath):
 
     if 'out' in appinfo:
       respath = os.path.join(appinfo['dir'], appinfo['out'])
-      resfl = open(respath, 'r')
-      res = resfl.read()
-      resfl.close()
+      res = read_file(respath)
       
       outfile = '%s.%s.out.js' % (app, refsuf)
       outpath = os.path.join(tgtpath, outfile)

@@ -26,7 +26,7 @@ public class SpiderMonkey {
 
   static {
     // %%% Generalize, link with persist.cpp
-    String INTERP_EXE = JAMConfig.JAMPKG + "/jamscript/mozilla-esr17/obj-release/browser/dist/bin/js";
+    String INTERP_EXE = JAMConfig.JAMPKG + "/jamscript/ff-dev/mozilla-31.4.0esr/obj-release/dist/bin/js";
 
     String[] _INTERP_COMMAND = {
       INTERP_EXE,

@@ -3,6 +3,7 @@ import os
 ORIGDIR = 'closure-orig'
 DEVDIR = 'closure'
 PATCHDIR = os.path.join('patch', 'closure')
+IGNORE_BINARY = False
 EXCLUSIONS = [
   'build',
   '.git',

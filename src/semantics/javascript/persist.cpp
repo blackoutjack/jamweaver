@@ -135,7 +135,7 @@ bool yices_initted = false;
 string d8(jamdir + "/v8/out/native/d8");
 #endif
 // %%% Generalize!
-string spidermonkey(jamdir + "/jamscript/mozilla-esr17/obj-release/browser/dist/bin/js");
+string spidermonkey(jamdir + "/jamscript/ff-dev/mozilla-31.4.0esr/obj-release/dist/bin/js");
 #endif
 
 #ifdef USE_V8

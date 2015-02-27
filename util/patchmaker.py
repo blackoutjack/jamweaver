@@ -26,7 +26,7 @@ def parseDiffOutput(diffout):
 
   return files
 
-def getDiffFiles(origdir, newdir, exclusions):
+def getDiffFiles(origdir, newdir, exclusions, ignorebin=False):
   cmd = ['diff', '-Nrq'] 
   if not cfg.IGNORE_BINARY:
     cmd.append('-a')
@@ -112,7 +112,7 @@ def main():
   out("Identifying differing files")
   exclusions = getattr(cfg, 'EXCLUSIONS', [])
   ignorebin = getattr(cfg, 'IGNORE_BINARY', False)
-  diffFiles = getDiffFiles(cfg.ORIGDIR, cfg.DEVDIR, exclusions)
+  diffFiles = getDiffFiles(cfg.ORIGDIR, cfg.DEVDIR, exclusions, ignorebin=ignorebin)
 
   preparePatchDirectory(cfg.PATCHDIR)
   for oldfl, newfl in diffFiles:

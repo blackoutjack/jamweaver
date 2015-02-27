@@ -52,3 +52,4 @@
          case Token.TRY:
            // Consider all code under a try/catch to be conditionally executed.
            if (!hasFinally(parent) || parent.getLastChild() != n) {
+

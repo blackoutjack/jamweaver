@@ -20,3 +20,4 @@
  
            case ARRAY_PATTERN:   return "ARRAY_PATTERN";
            case OBJECT_PATTERN:  return "OBJECT_PATTERN";
+

@@ -10,3 +10,4 @@
  
      //7.8 Literals
      NULL("null", TokenType.NULL),
+

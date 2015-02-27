@@ -39,3 +39,4 @@
    private void handleIf(Node node) {
      Node thenBlock = node.getFirstChild().getNext();
      Node elseBlock = thenBlock.getNext();
+

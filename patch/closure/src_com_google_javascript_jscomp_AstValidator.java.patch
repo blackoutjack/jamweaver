@@ -41,3 +41,4 @@
    private void validateExprStmt(Node n) {
      validateNodeType(Token.EXPR_RESULT, n);
      validateChildCount(n, Token.arity(Token.EXPR_RESULT));
+

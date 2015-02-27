@@ -20,3 +20,4 @@
              return Ref.Type.DIRECT_GET;
            case Token.HOOK:
              if (anc.getFirstChild() == prev) {
+

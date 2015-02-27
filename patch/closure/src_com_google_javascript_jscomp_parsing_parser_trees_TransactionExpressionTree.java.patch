@@ -1,5 +1,5 @@
---- closure-orig/src/com/google/javascript/jscomp/parsing/parser/trees/TransactionStatementTree.java	1969-12-31 18:00:00.000000000 -0600
-+++ closure/src/com/google/javascript/jscomp/parsing/parser/trees/TransactionStatementTree.java	2014-10-02 18:44:24.261151407 -0500
+--- closure-orig/src/com/google/javascript/jscomp/parsing/parser/trees/TransactionExpressionTree.java	1969-12-31 18:00:00.000000000 -0600
++++ closure/src/com/google/javascript/jscomp/parsing/parser/trees/TransactionExpressionTree.java	2014-12-21 14:21:17.698977173 -0600
 @@ -0,0 +1,33 @@
 +/*
 + * Copyright 2011 The Closure Compiler Authors.
@@ -21,12 +21,12 @@
 +
 +import com.google.javascript.jscomp.parsing.parser.util.SourceRange;
 +
-+public class TransactionStatementTree extends ParseTree {
++public class TransactionExpressionTree extends ParseTree {
 +
 +  public final ParseTree introspector;
-+  public final ParseTree body;
++  public final BlockTree body;
 +
-+  public TransactionStatementTree(SourceRange location, ParseTree ispect, ParseTree body) {
++  public TransactionExpressionTree(SourceRange location, ParseTree ispect, BlockTree body) {
 +    super(ParseTreeType.TRANSACTION, location);
 +
 +    this.introspector = ispect;

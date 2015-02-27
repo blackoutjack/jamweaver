@@ -224,7 +224,7 @@ def copy_source(app, desc, srcpath, tgtdir, respred=None, name=None):
 
   if respred is not None:
     # Generate a statement that checks some expected state.
-    srctxt = srctxt + '\nJAM.log("Result: " + " + respred ");\n';
+    srctxt = srctxt + '\nJAM.log("Result: " + (%s));\n' % respred;
 
   if has_change(tgt, srctxt):
     write_text(tgt, srctxt)

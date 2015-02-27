@@ -11,3 +11,4 @@
            "JSC_CONSTANT_REASSIGNED_VALUE_ERROR",
            "constant {0} assigned a value more than once.\n" +
            "Original definition at {1}");
+

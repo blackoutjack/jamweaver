@@ -1,6 +1,6 @@
 --- closure-orig/src/com/google/javascript/jscomp/CodeGenerator.java	2014-10-03 11:38:06.618298474 -0500
-+++ closure/src/com/google/javascript/jscomp/CodeGenerator.java	2014-10-02 17:14:38.897285988 -0500
-@@ -334,6 +334,16 @@
++++ closure/src/com/google/javascript/jscomp/CodeGenerator.java	2014-12-21 14:58:09.666952312 -0600
+@@ -334,6 +334,22 @@
          }
          break;
  
@@ -9,7 +9,13 @@
 +        add("introspect(");
 +        add(first);
 +        add(")");
-+        addNonEmptyStatement(last, Context.OTHER, false);
++        if (context == Context.STATEMENT) {
++          addNonEmptyStatement(last, Context.OTHER, false);
++        } else {
++          cc.beginBlock();
++          add(last, Context.STATEMENT);
++          cc.endBlock();
++        }
 +        Preconditions.checkState(childCount == 2);
 +        break;
 +      // JAM end
@@ -17,3 +23,4 @@
        case Token.FUNCTION:
          if (n.getClass() != Node.class) {
            throw new Error("Unexpected Node subclass.");
+

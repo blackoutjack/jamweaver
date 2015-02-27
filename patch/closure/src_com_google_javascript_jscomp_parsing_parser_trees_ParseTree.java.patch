@@ -1,12 +1,14 @@
 --- closure-orig/src/com/google/javascript/jscomp/parsing/parser/trees/ParseTree.java	2014-10-03 11:38:06.686298473 -0500
-+++ closure/src/com/google/javascript/jscomp/parsing/parser/trees/ParseTree.java	2014-10-02 17:50:43.821231886 -0500
-@@ -122,6 +122,9 @@
++++ closure/src/com/google/javascript/jscomp/parsing/parser/trees/ParseTree.java	2014-12-21 14:23:15.890975844 -0600
+@@ -122,6 +122,10 @@
      return (TemplateSubstitutionTree) this; }
    public ThisExpressionTree asThisExpression() { return (ThisExpressionTree) this; }
    public ThrowStatementTree asThrowStatement() { return (ThrowStatementTree) this; }
 +  // JAM begin
 +  public TransactionStatementTree asTransactionStatement() { return (TransactionStatementTree) this; }
++  public TransactionExpressionTree asTransactionExpression() { return (TransactionExpressionTree) this; }
 +  // JAM end
    public TryStatementTree asTryStatement() { return (TryStatementTree) this; }
    public UnaryExpressionTree asUnaryExpression() { return (UnaryExpressionTree) this; }
    public VariableDeclarationListTree asVariableDeclarationList() {
+

@@ -11,3 +11,4 @@
        "JSC_VIOLATED_MODULE_DEPENDENCY",
        "module {0} cannot reference {2}, defined in " +
        "module {1}, since {1} loads after {0}");
+

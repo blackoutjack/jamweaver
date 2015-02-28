@@ -60,7 +60,7 @@ public class JSExp extends Exp {
       } else {
         type = PREDEC;
       }
-    } else if (type == Token.STRING || type == Token.STRING_KEY || type == Token.NAME || type == Token.LABEL_NAME || type == Token.GETTER_DEF || type == Token.SETTER_DEF || type == Token.MEMBER_DEF || type == Token.REST) {
+    } else if (type == Token.STRING || type == Token.STRING_KEY || type == Token.NAME || type == Token.LABEL_NAME || type == Token.GETTER_DEF || type == Token.SETTER_DEF || type == Token.MEMBER_FUNCTION_DEF || type == Token.MEMBER_VARIABLE_DEF || type == Token.REST) {
       str = n.getString();
     } else if (type == Token.NUMBER) {
       num = n.getDouble();
@@ -415,7 +415,7 @@ public class JSExp extends Exp {
     for (Exp c : getChildren()) {
       if (!blocks && ExpUtil.isStatementBlock(c))
         continue;
-      ((Exp)c).findType(t, out);
+      c.findType(t, out);
     }
   }
 
@@ -440,7 +440,7 @@ public class JSExp extends Exp {
     for (Exp c : getChildren()) {
       if (!blocks && ExpUtil.isStatementBlock(c))
         continue;
-      ((Exp)c).findNames(out);
+      c.findNames(out);
     }
   }
 
@@ -957,7 +957,7 @@ public class JSExp extends Exp {
     int t = getClosureType();
 
     Node n = null;
-    if (t == Token.STRING || t == Token.STRING_KEY || t == Token.NAME || t == Token.LABEL_NAME || t == Token.GETTER_DEF || t == Token.SETTER_DEF || t == Token.MEMBER_DEF || t == Token.REST) {
+    if (t == Token.STRING || t == Token.STRING_KEY || t == Token.NAME || t == Token.LABEL_NAME || t == Token.GETTER_DEF || t == Token.SETTER_DEF || t == Token.MEMBER_FUNCTION_DEF || t == Token.MEMBER_VARIABLE_DEF || t == Token.REST) {
       n = Node.newString(t, str);
     } else if (t == Token.NUMBER) {
       n = Node.newNumber(num);

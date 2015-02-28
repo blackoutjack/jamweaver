@@ -27,17 +27,17 @@ public class JAMPassConfig extends DefaultPassConfig {
 
     // Remove several passes that are unnecessary.
     if (!revert) {
-      passes.remove(invertContextualRenaming);
+      replacePassFactory(passes, createEmptyPass("invertContextualRenaming"));
     }
-    passes.remove(stripSideEffectProtection);
-    passes.remove(markUnnormalized);
-    passes.remove(denormalize);
-    passes.remove(sanityCheckAst);
-    passes.remove(sanityCheckVars);
-    passes.remove(optimizeCallsAndRemoveUnusedVars);
-    passes.remove(removeUnusedVars);
-    passes.remove(removeUnusedPrototypeProperties);
-    passes.remove(garbageCollectChecks);
+    //replacePassFactory(passes, createEmptyPass("stripSideEffectProtection"));
+    replacePassFactory(passes, createEmptyPass("markUnnormalized"));
+    replacePassFactory(passes, createEmptyPass("denormalize"));
+    replacePassFactory(passes, createEmptyPass("sanityCheckAst"));
+    replacePassFactory(passes, createEmptyPass("sanityCheckVars"));
+    //replacePassFactory(passes, createEmptyPass("optimizeCalls_and_removeUnusedVars"));
+    //replacePassFactory(passes, createEmptyPass("removeUnusedVars"));
+    //replacePassFactory(passes, createEmptyPass("removeUnusedPrototypeProperties"));
+    replacePassFactory(passes, createEmptyPass("garbageCollectChecks"));
 
     /*
     System.err.println("PASSES:");

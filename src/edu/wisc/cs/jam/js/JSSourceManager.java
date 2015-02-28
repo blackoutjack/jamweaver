@@ -43,6 +43,7 @@ import java.io.PrintStream;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.File;
+import java.nio.charset.Charset;
 
 import com.google.javascript.jscomp.JAMPassConfig;
 import com.google.javascript.jscomp.ClosureUtil;
@@ -87,6 +88,8 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   protected boolean noMoreSources = false;
 
   protected Map<Node,JSExp> nodeMap;
+
+  static Charset externCharset = Charset.forName("UTF-8");
 
   public JSSourceManager() {
     nodeMap = new WeakHashMap<Node,JSExp>();
@@ -276,7 +279,7 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
               // Give the files an odd prefix, so that they do not conflict
               // with the user's files.
               "externs.zip//" + entry.getName(),
-              entryStream));
+              entryStream, externCharset));
       //System.err.println("extern: " + entry.getName());
     }
 
@@ -298,7 +301,6 @@ public class JSSourceManager implements edu.wisc.cs.jam.SourceManager {
   // Create a vanilla CompilerOptions object.
   protected CompilerOptions initCompilerOptions() {
       CompilerOptions opts = new CompilerOptions();
-      opts.customPasses = HashMultimap.create();
       opts.setSummaryDetailLevel(1);
       opts.prettyPrint = true;
 

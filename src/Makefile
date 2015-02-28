@@ -152,7 +152,7 @@ $(JAMSVCJAR): $(SVCCLS)
 	mkdir -p ../bin
 	jar cfm $@ MANIFEST-SVC.MF $(SVCDIR)/*.class
 
-$(JAMCOMMONJAR): $(COMMONCLS) $(JSCLS) $(ENVCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(INTCLS) $(NWACLS) $(TXCLS) $(HTMLCLS) $(FORKCLS) $(COMCLS)
+$(JAMCOMMONJAR): $(COMMONCLS) $(CLOSURECLS) $(JSCLS) $(ENVCLS) $(AUTCLS) $(XSBCLS) $(BDDCLS) $(INTCLS) $(NWACLS) $(TXCLS) $(HTMLCLS) $(FORKCLS) $(COMCLS)
 	mkdir -p ../bin
 	jar cfm $@ MANIFEST-COMMON.MF $(COMMONDIR)/*.class $(CLOSUREDIR)/*.class $(AUTDIR)/*.class $(BDDDIR)/*.class $(NWADIR)/*.class $(ENVDIR)/*.class $(TXDIR)/*.class $(JSDIR)/*.class $(XSBDIR)/*.class $(HTMLDIR)/*.class $(FORKDIR)/*.class $(INTDIR)/*.class
 

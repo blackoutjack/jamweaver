@@ -534,7 +534,7 @@ def main():
   parser.add_option('-u', '--updateprof', action='store_true', default=False, dest='updateprof', help='update profile sources')
   parser.add_option('-e', '--updateexp', action='store_true', default=False, dest='updateexp', help='update expected results')
   parser.add_option('-t', '--transfer', action='store_true', default=False, dest='transfer', help='transfer results')
-  parser.add_option('-l', '--loadall', action='store_true', default=False, dest='loadall', help='load all results, not just the latest')
+  parser.add_option('-l', '--lastonly', action='store_true', default=False, dest='lastonly', help='only load the latest result for an app')
   parser.add_option('-T', '--nodifftime', action='store_true', default=False, dest='nodifftime', help='update even if source file timestamp is older')
   parser.add_option('-c', '--config', action='store', default=os.path.join(os.path.dirname(__file__), 'transferconfig.py'), dest='config', help='configuration.py file')
   parser.add_option('-g', '--group', action='store', default=None, dest='group', help='test group to transfer (default: all)')
@@ -566,7 +566,7 @@ def main():
     if opts.app is not None:
       bases = [base for base in bases if fnmatch.fnmatch(base, opts.app)]
     resdir = cfg.RESULTSDIR
-    process_results(resdir, destdir, bases, wrap, opts.transfer, opts.updateexp, opts.updatecoarse, opts.updateprof, opts.loadall)
+    process_results(resdir, destdir, bases, wrap, opts.transfer, opts.updateexp, opts.updatecoarse, opts.updateprof, not opts.lastonly)
 
 if __name__ == "__main__":
   main()

@@ -1,6 +1,6 @@
---- closure-orig/src/com/google/javascript/jscomp/ControlFlowAnalysis.java	2014-10-03 11:38:06.622298474 -0500
-+++ closure/src/com/google/javascript/jscomp/ControlFlowAnalysis.java	2014-10-02 21:15:28.800924881 -0500
-@@ -256,6 +256,9 @@
+--- closure-orig/src/com/google/javascript/jscomp/ControlFlowAnalysis.java	2015-02-27 11:55:33.525744051 -0600
++++ closure/src/com/google/javascript/jscomp/ControlFlowAnalysis.java	2015-02-27 11:55:37.809744003 -0600
+@@ -254,6 +254,9 @@
          case Token.IF:
          case Token.WHILE:
          case Token.WITH:
@@ -10,7 +10,7 @@
            return n != parent.getFirstChild();
          case Token.DO:
            return n != parent.getFirstChild().getNext();
-@@ -347,12 +350,28 @@
+@@ -345,12 +348,28 @@
          return;
        case Token.LABEL:
          return;

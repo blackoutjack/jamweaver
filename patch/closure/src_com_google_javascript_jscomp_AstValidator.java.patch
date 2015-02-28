@@ -1,5 +1,5 @@
---- closure-orig/src/com/google/javascript/jscomp/AstValidator.java	2014-10-03 11:38:06.614298474 -0500
-+++ closure/src/com/google/javascript/jscomp/AstValidator.java	2014-10-02 17:12:47.653288768 -0500
+--- closure-orig/src/com/google/javascript/jscomp/AstValidator.java	2015-02-27 11:55:33.521744051 -0600
++++ closure/src/com/google/javascript/jscomp/AstValidator.java	2015-02-27 11:55:37.805744003 -0600
 @@ -162,6 +162,11 @@
        case Token.EXPORT:
          validateExport(n);
@@ -25,7 +25,7 @@
        default:
          violation("Expected expression but was "
              + Token.name(n.getType()), n);
-@@ -827,6 +838,15 @@
+@@ -826,6 +837,15 @@
      }
    }
  
@@ -40,5 +40,5 @@
 +
    private void validateExprStmt(Node n) {
      validateNodeType(Token.EXPR_RESULT, n);
-     validateChildCount(n, Token.arity(Token.EXPR_RESULT));
+     validateChildCount(n);
 

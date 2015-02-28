@@ -1,5 +1,5 @@
---- closure-orig/src/com/google/javascript/rhino/Token.java	2014-10-03 11:38:06.694298472 -0500
-+++ closure/src/com/google/javascript/rhino/Token.java	2014-10-02 15:57:58.265400960 -0500
+--- closure-orig/src/com/google/javascript/rhino/Token.java	2015-02-27 11:55:33.533744051 -0600
++++ closure/src/com/google/javascript/rhino/Token.java	2015-02-27 12:12:10.221732849 -0600
 @@ -144,6 +144,9 @@
          LABEL          = 126, // label
          EXPR_RESULT    = 130, // expression statement in scripts
@@ -10,14 +10,14 @@
  
          GETTER_DEF     = 147,
          SETTER_DEF     = 148,
-@@ -313,6 +316,9 @@
+@@ -335,6 +338,9 @@
            case LB:              return "LB";
            case LC:              return "LC";
            case COLON:           return "COLON";
 +          // JAM begin
 +          case TRANSACTION:     return "TRANSACTION";
 +          // JAM end
- 
-           case ARRAY_PATTERN:   return "ARRAY_PATTERN";
-           case OBJECT_PATTERN:  return "OBJECT_PATTERN";
+           case STRING_TYPE:     return "STRING_TYPE";
+           case ANY_TYPE:        return "ANY_TYPE";
+           case NULLABLE_TYPE:   return "NULLABLE_TYPE";
 

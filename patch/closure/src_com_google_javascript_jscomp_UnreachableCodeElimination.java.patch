@@ -1,5 +1,5 @@
---- closure-orig/src/com/google/javascript/jscomp/UnreachableCodeElimination.java	2014-10-03 11:38:06.666298473 -0500
-+++ closure/src/com/google/javascript/jscomp/UnreachableCodeElimination.java	2014-10-02 18:50:51.805141722 -0500
+--- closure-orig/src/com/google/javascript/jscomp/UnreachableCodeElimination.java	2015-02-27 11:55:33.525744051 -0600
++++ closure/src/com/google/javascript/jscomp/UnreachableCodeElimination.java	2015-02-27 12:02:32.261739345 -0600
 @@ -209,6 +209,27 @@
          return;
        }

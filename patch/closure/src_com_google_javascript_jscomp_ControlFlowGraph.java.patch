@@ -1,6 +1,6 @@
---- closure-orig/src/com/google/javascript/jscomp/ControlFlowGraph.java	2014-10-03 11:38:06.622298474 -0500
-+++ closure/src/com/google/javascript/jscomp/ControlFlowGraph.java	2014-10-02 20:41:39.944975583 -0500
-@@ -172,6 +172,13 @@
+--- closure-orig/src/com/google/javascript/jscomp/ControlFlowGraph.java	2015-02-27 11:55:33.521744051 -0600
++++ closure/src/com/google/javascript/jscomp/ControlFlowGraph.java	2015-02-27 11:55:37.809744003 -0600
+@@ -162,6 +162,13 @@
          // control is going into the function's body, represented by the second
          // child.
          return n != parent.getFirstChild().getNext();

@@ -1,6 +1,6 @@
---- closure-orig/src/com/google/javascript/jscomp/GlobalNamespace.java	2014-10-03 11:38:06.634298474 -0500
-+++ closure/src/com/google/javascript/jscomp/GlobalNamespace.java	2014-10-02 17:22:20.957274441 -0500
-@@ -649,6 +649,9 @@
+--- closure-orig/src/com/google/javascript/jscomp/GlobalNamespace.java	2015-02-27 11:55:33.529744051 -0600
++++ closure/src/com/google/javascript/jscomp/GlobalNamespace.java	2015-02-27 11:55:37.809744003 -0600
+@@ -651,6 +651,9 @@
            case Token.BITNOT:
            case Token.POS:
            case Token.NEG:
@@ -10,7 +10,7 @@
              break;
            case Token.CALL:
              if (n == parent.getFirstChild()) {
-@@ -740,6 +743,9 @@
+@@ -739,6 +742,9 @@
            case Token.BITNOT:
            case Token.POS:
            case Token.NEG:

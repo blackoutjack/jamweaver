@@ -1,11 +1,13 @@
---- closure-orig/src/com/google/javascript/jscomp/parsing/parser/trees/ParseTreeType.java	2014-10-03 11:38:06.686298473 -0500
-+++ closure/src/com/google/javascript/jscomp/parsing/parser/trees/ParseTreeType.java	2014-10-02 16:37:02.357342380 -0500
-@@ -96,4 +96,7 @@
+--- closure-orig/src/com/google/javascript/jscomp/parsing/parser/trees/ParseTreeType.java	2015-02-27 11:55:33.529744051 -0600
++++ closure/src/com/google/javascript/jscomp/parsing/parser/trees/ParseTreeType.java	2015-02-27 12:11:09.253733535 -0600
+@@ -96,6 +96,9 @@
    TEMPLATE_LITERAL_EXPRESSION,
    TEMPLATE_LITERAL_PORTION,
    TEMPLATE_SUBSTITUTION,
 +  // JAM begin
 +  TRANSACTION,
 +  // JAM end
- }
+   TYPE_NAME,
+   TYPE_ANNOTATION,
+   PARAMETERIZED_TYPE_TREE,
 

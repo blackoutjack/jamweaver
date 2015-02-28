@@ -1,6 +1,6 @@
---- closure-orig/src/com/google/javascript/jscomp/NodeUtil.java	2014-10-03 11:38:06.646298474 -0500
-+++ closure/src/com/google/javascript/jscomp/NodeUtil.java	2014-12-04 17:58:26.437044810 -0600
-@@ -931,6 +931,9 @@
+--- closure-orig/src/com/google/javascript/jscomp/NodeUtil.java	2015-02-27 11:55:33.513744052 -0600
++++ closure/src/com/google/javascript/jscomp/NodeUtil.java	2015-02-27 12:04:41.537737892 -0600
+@@ -970,6 +970,9 @@
        case Token.SWITCH:
        case Token.TRY:
        case Token.EMPTY:
@@ -9,18 +9,18 @@
 +      // JAM end
          break;
  
-       // Throws are by definition side effects
-@@ -1390,6 +1393,9 @@
+       // Throws are by definition side effects, and yields are similar.
+@@ -1422,6 +1425,9 @@
        case Token.SUPER:
        case Token.TRUE:
        case Token.TEMPLATELIT:
 +      // JAM begin
 +      case Token.TRANSACTION:
 +      // JAM end
-         return 15;
-       case Token.CAST:
-         return 16;
-@@ -1981,6 +1987,9 @@
+       // Tokens from the type declaration AST
+       case Token.STRING_TYPE:
+       case Token.NUMBER_TYPE:
+@@ -2002,6 +2008,9 @@
        case Token.SWITCH:
        case Token.CASE:
        case Token.DEFAULT_CASE:
@@ -30,7 +30,7 @@
          return true;
        default:
          return false;
-@@ -2012,6 +2021,10 @@
+@@ -2033,6 +2042,10 @@
          return parent.getFirstChild() != n;
        case Token.DEFAULT_CASE:
          return true;
@@ -41,7 +41,7 @@
        default:
          Preconditions.checkState(isControlStructure(parent));
          return false;
-@@ -3686,6 +3699,10 @@
+@@ -3748,6 +3761,10 @@
          case Token.WHILE:
          case Token.DO:
            return false;

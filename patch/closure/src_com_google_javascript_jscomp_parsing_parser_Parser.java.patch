@@ -1,6 +1,6 @@
---- closure-orig/src/com/google/javascript/jscomp/parsing/parser/Parser.java	2014-10-23 11:43:01.883685919 -0500
-+++ closure/src/com/google/javascript/jscomp/parsing/parser/Parser.java	2014-12-21 14:19:48.674978173 -0600
-@@ -546,6 +546,12 @@
+--- closure-orig/src/com/google/javascript/jscomp/parsing/parser/Parser.java	2015-02-27 11:55:33.525744051 -0600
++++ closure/src/com/google/javascript/jscomp/parsing/parser/Parser.java	2015-02-27 12:02:32.257739345 -0600
+@@ -562,6 +562,12 @@
      return peek(index, TokenType.FUNCTION);
    }
  
@@ -13,7 +13,7 @@
    private ParseTree parseArrowFunction(Expression expressionIn) {
      SourcePosition start = getTreeStartLocation();
  
-@@ -617,6 +623,38 @@
+@@ -645,6 +651,38 @@
          FunctionDeclarationTree.Kind.EXPRESSION);
    }
  
@@ -52,7 +52,7 @@
    private FormalParameterListTree parseFormalParameterList() {
      SourcePosition listStart = getTreeStartLocation();
      eat(TokenType.OPEN_PAREN);
-@@ -746,6 +784,10 @@
+@@ -859,6 +897,10 @@
        return parseTryStatement();
      case DEBUGGER:
        return parseDebuggerStatement();
@@ -63,7 +63,7 @@
      default:
        if (peekLabelledStatement()) {
          return parseLabelledStatement();
-@@ -808,6 +850,9 @@
+@@ -921,6 +963,9 @@
      case MINUS:
      case TILDE:
      case BANG:
@@ -73,7 +73,7 @@
        return true;
      default:
        return false;
-@@ -1312,6 +1357,10 @@
+@@ -1433,6 +1478,10 @@
      case SLASH:
      case SLASH_EQUAL:
        return parseRegularExpressionLiteral();

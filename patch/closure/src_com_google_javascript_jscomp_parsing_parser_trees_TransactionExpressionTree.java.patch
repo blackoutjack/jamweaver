@@ -1,5 +1,5 @@
 --- closure-orig/src/com/google/javascript/jscomp/parsing/parser/trees/TransactionExpressionTree.java	1969-12-31 18:00:00.000000000 -0600
-+++ closure/src/com/google/javascript/jscomp/parsing/parser/trees/TransactionExpressionTree.java	2014-12-21 14:21:17.698977173 -0600
++++ closure/src/com/google/javascript/jscomp/parsing/parser/trees/TransactionExpressionTree.java	2015-02-27 12:02:32.261739345 -0600
 @@ -0,0 +1,33 @@
 +/*
 + * Copyright 2011 The Closure Compiler Authors.

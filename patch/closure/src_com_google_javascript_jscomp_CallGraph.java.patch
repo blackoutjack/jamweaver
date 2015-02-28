@@ -1,6 +1,6 @@
---- closure-orig/src/com/google/javascript/jscomp/CallGraph.java	2014-10-03 11:38:06.614298474 -0500
-+++ closure/src/com/google/javascript/jscomp/CallGraph.java	2014-10-15 20:54:53.878198577 -0500
-@@ -309,6 +309,18 @@
+--- closure-orig/src/com/google/javascript/jscomp/CallGraph.java	2015-02-27 11:55:33.521744051 -0600
++++ closure/src/com/google/javascript/jscomp/CallGraph.java	2015-02-27 11:55:37.805744003 -0600
+@@ -308,6 +308,18 @@
        for (Definition definition : definitions) {
          if (definition.isExtern()) {
            callsite.hasExternTarget = true;
@@ -19,7 +19,7 @@
          } else {
            Node target = definition.getRValue();
  
-@@ -679,6 +691,10 @@
+@@ -678,6 +690,10 @@
  
      private Collection<Function> possibleTargets;
  
@@ -30,7 +30,7 @@
      private Callsite(Node callsiteAstNode) {
        astNode = callsiteAstNode;
      }
-@@ -728,6 +744,31 @@
+@@ -727,6 +743,31 @@
        possibleTargets.add(target);
      }
  

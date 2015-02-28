@@ -1,5 +1,5 @@
---- closure-orig/src/com/google/javascript/jscomp/parsing/parser/Scanner.java	2014-10-03 11:38:06.682298473 -0500
-+++ closure/src/com/google/javascript/jscomp/parsing/parser/Scanner.java	2014-10-02 18:32:34.293169149 -0500
+--- closure-orig/src/com/google/javascript/jscomp/parsing/parser/Scanner.java	2015-02-27 11:55:33.525744051 -0600
++++ closure/src/com/google/javascript/jscomp/parsing/parser/Scanner.java	2015-02-27 12:02:32.257739345 -0600
 @@ -552,8 +552,11 @@
          default:
            return createToken(TokenType.BAR, beginToken);

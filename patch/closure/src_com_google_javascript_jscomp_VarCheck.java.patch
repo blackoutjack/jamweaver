@@ -1,6 +1,6 @@
---- closure-orig/src/com/google/javascript/jscomp/VarCheck.java	2014-10-03 11:38:06.666298473 -0500
-+++ closure/src/com/google/javascript/jscomp/VarCheck.java	2014-10-02 17:39:03.489249388 -0500
-@@ -41,7 +41,9 @@
+--- closure-orig/src/com/google/javascript/jscomp/VarCheck.java	2015-02-27 11:55:33.521744051 -0600
++++ closure/src/com/google/javascript/jscomp/VarCheck.java	2015-02-27 12:02:32.261739345 -0600
+@@ -40,7 +40,9 @@
        "JSC_UNDEFINED_VARIABLE",
        "variable {0} is undeclared");
  

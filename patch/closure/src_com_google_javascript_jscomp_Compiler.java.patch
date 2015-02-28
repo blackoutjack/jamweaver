@@ -1,6 +1,6 @@
---- closure-orig/src/com/google/javascript/jscomp/Compiler.java	2014-10-23 11:43:01.851685920 -0500
-+++ closure/src/com/google/javascript/jscomp/Compiler.java	2014-10-02 15:52:29.441409177 -0500
-@@ -2742,4 +2742,10 @@
+--- closure-orig/src/com/google/javascript/jscomp/Compiler.java	2015-02-27 11:55:33.513744052 -0600
++++ closure/src/com/google/javascript/jscomp/Compiler.java	2015-02-27 11:55:37.805744003 -0600
+@@ -2671,4 +2671,10 @@
    ImmutableMap<String, Node> getDefaultDefineValues() {
      return this.defaultDefineValues;
    }

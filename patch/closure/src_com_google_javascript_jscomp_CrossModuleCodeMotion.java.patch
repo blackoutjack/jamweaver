@@ -1,6 +1,6 @@
---- closure-orig/src/com/google/javascript/jscomp/CrossModuleCodeMotion.java	2014-10-03 11:38:06.622298474 -0500
-+++ closure/src/com/google/javascript/jscomp/CrossModuleCodeMotion.java	2014-10-02 17:21:03.097276387 -0500
-@@ -233,6 +233,9 @@
+--- closure-orig/src/com/google/javascript/jscomp/CrossModuleCodeMotion.java	2015-02-27 11:55:33.517744051 -0600
++++ closure/src/com/google/javascript/jscomp/CrossModuleCodeMotion.java	2015-02-27 11:55:37.809744003 -0600
+@@ -232,6 +232,9 @@
          case Token.SWITCH:
          case Token.WHILE:
          case Token.FUNCTION:

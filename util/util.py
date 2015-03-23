@@ -61,6 +61,7 @@ def parse_time_value(timestr):
     total += val
       
   return total
+# /parse_time_value
 
 # Parse the output of the bash time utility.
 # The element param can be one of ["real","user","sys","cpu"]
@@ -99,6 +100,7 @@ def parse_time_output(timeout, sep1=" ", sep2=":", element=None):
   else:
     err("Invalid time key: %s" % element)
     return False
+# /parse_time_output
 
 def get_suffix(syn, ref, pol=None):
   refsuf = None
@@ -112,6 +114,7 @@ def get_suffix(syn, ref, pol=None):
     else:
       refsuf = '%s.%s' % (pol, refsuf)
   return refsuf
+# /get_suffix
 
 def get_policy_desc(pollist):
   descparts = []
@@ -123,6 +126,7 @@ def get_policy_desc(pollist):
       descparts.append(desc)
   poldesc = '+'.join(descparts)
   return poldesc
+# /get_policy_desc
 
 def get_suffixes_from_info(appinfo):
   refine = 0
@@ -204,109 +208,30 @@ def prepare_dir(tgtdir):
   return True
 # /prepare_dir
 
-def get_unique_filename(origpath):
-  dirpath, filename = os.path.split(origpath)
-  if not os.path.exists(dirpath):
-    # Easy case: the original path is available.
-    return origpath
-
-  if not os.path.isdir(dirpath):
-    dirparts = []
-    # Climb the directory structure to see if there are conflicts.
-    dirpart = dirpath
-    while dirpart != '':
-      # %%% Maybe need special handling for symlinks?
-      if os.path.isdir(dirpart):
-        break
-      if os.path.isfile(dirpart):
-        # Rename the directory.
-        pathprefix = dirpart
-        dirpart, lastpart = os.path.split(dirpart)
-        dirparts.insert(0, lastpart)
-        idx = 0
-        while os.path.isfile(pathprefix):
-          # Make an altered directory name.
-          newlastpart = lastpart + '-' + str(idx)
-          pathprefix = os.path.join(dirpart, newlastpart)
-          idx += 1
-
-        newfilepath = pathprefix
-        for suffixpart in dirparts:
-          newfilepath = os.path.join(newfilepath, suffixpart)
-
-        if os.path.isdir(pathprefix):
-          # Need to make sure the new path is available.
-          return get_unique_filename(newfilepath)
-        origpath = newfilepath
-        break
-
-      dirpart, lastpart = os.path.split(dirpart)
-      dirparts.insert(0, lastpart)
-
-    # Getting here means the original path is available.
-    return origpath
-
-  filebase, fileext = os.path.splitext(filename)
-  newfilepath = origpath
-  idx = 0
-  while os.path.exists(newfilepath):
-    # Make an altered filename.
-    newfilebase = filebase + '-' + str(idx)
-    newfilename = newfilebase + fileext
-    newfilepath = os.path.join(dirpath, newfilename)
-    idx += 1
-
-  return newfilepath
-
-def get_output_dir(top, base):
-  parts = base.split('/')
-  dirparts = parts[:-1]
-
-  parent = top
-  for dirpart in dirparts:  
-    parent = os.path.join(parent, dirpart)
-
-  lastpart = parts[-1]
-  nextId = 0
-  if os.path.isdir(parent):
-    for curdir in os.listdir(parent):
-      if curdir.startswith(lastpart + '-'):
-        idx = curdir[len(lastpart)+1:]
-        try:
-          idxnum = int(idx)
-          if idxnum >= nextId:
-            nextId = idxnum + 1
-        except:
-          warn('Non-numeric suffix, ignoring: %s' % idx)
-  dirparts.append(lastpart + '-' + str(nextId))
-
-  ret = top
-  for dirpart in dirparts:
-    ret = os.path.join(ret, dirpart)
-  return ret
-
 def fatal(txt, code=1):
   sys.stderr.write("FATAL: %s\n" % txt)
   sys.exit(code)
+# /fatal
 
 def err(txt):
   sys.stderr.write("ERROR: %s\n" % txt)
   sys.stderr.flush()
+# /err
 
 def out(txt):
   sys.stderr.write("INFO: %s\n" % txt)
   sys.stderr.flush()
+# /out
 
 def warn(txt):
   sys.stderr.write("WARNING: %s\n" % txt)
   sys.stderr.flush()
+# /warn
 
 def nl():
   sys.stderr.write("\n")
   sys.stderr.flush()
-
-def env_error(varname):
-  err(varname + "is not a valid directory: " + eval(varname))
+# /nl
 
 def make(target, workingdir=JAMPKG):
   cmd = ['make', '-C', workingdir, target]
@@ -320,6 +245,7 @@ def make(target, workingdir=JAMPKG):
   if mkret != 0:
     err("There was an problem making " + target + ".")
     err(mkout)
+# /make
 
 def get_dir_parts(dirfile):  
   dirparts = dirfile.rsplit('-', 1)
@@ -330,6 +256,7 @@ def get_dir_parts(dirfile):
     warn("Non-integer version part of directory: %s" % dirfile)
     version = None
   return {'app': app, 'version': version, 'dir': dirfile}
+# /get_dir_parts
 
 # Sort so that a particular app's results are in order.
 # %%% This needs simplifying!
@@ -375,6 +302,7 @@ def get_info_path(errp):
       infopath = line[endpos:].strip()
       break
   return infopath
+# /get_info_path
 
 def get_result_info(resdir, app, getall=False):
   # Assumes that directories within |resdir| are of the form "app-iter",
@@ -475,6 +403,7 @@ def compare_info(actinfo, expinfo):
     elif actinfo[key] != expinfo[key]:
       disparities[key] = 'differ'
   return disparities 
+# /compare_info
 
 def process_info(infopath, exppath, overwrite, quiet=False):
   ok = False
@@ -541,6 +470,7 @@ def parse_info_file(infofile):
       else:
         warn('Invalid info file line: %s' % infoline)
   return info
+# /parse_info_file
 
 def load_source_list(dirpath):
   listpath = os.path.join(dirpath, 'scripts.txt')
@@ -548,6 +478,7 @@ def load_source_list(dirpath):
     return listpath
   else:
     return None
+# /load_source_list
 
 def load_app_source(apppath, appname, defwarn=False):
   if (os.path.isdir(apppath)):
@@ -608,12 +539,14 @@ def load_sources(topdir, srcsuf='.js', excludesuf='.out.js'):
     srcpaths.append(srcpath)
 
   return srcpaths
+# /load_sources
 
 def load_seeds(topdir, base):
   seedfile = os.path.join(topdir, base + ".seeds")
   if os.path.isfile(seedfile):
     return seedfile
   return None
+# /load_seeds
 
 def load_policy(polpath):
   if polpath is None:
@@ -716,6 +649,7 @@ def get_jam_command(service=False, debug=True, perf=True):
   #cmd.append('3')
 
   return cmd
+# /get_jam_command
 
 JAM_SERVER = None
 
@@ -1079,6 +1013,7 @@ def run_repacker(htmlfile, srclist, outdir, polpath=None, debug=False):
           # Just print, since the output type is already prepended.
           print(line)
   return outp
+# /run_repacker
 
 def run_unpacker(url, debug=False, saveall=False):
   
@@ -1134,6 +1069,7 @@ def get_lines(filename, comment=None):
       continue
     ret.append(line)
   return ret
+# /get_lines
 
 def get_file_info(filepath):
   return {
@@ -1141,10 +1077,12 @@ def get_file_info(filepath):
     'desc': get_descriptors(filepath),
     'ext': get_ext(filepath)
   }
+# /get_file_info
 
 def get_ext(filepath):
   parts = os.path.splitext(filepath)
   return parts[1]
+# /get_ext
 
 # Get the internal dot-separated components of the filepath.
 # E.g. "path/app.jam.more.extra.js" => ['jam', 'more', 'extra'].
@@ -1162,6 +1100,7 @@ def get_descriptors(filepath):
       for i in range(1, len(fileparts) - 1):
         desc.append(fileparts[i])
   return desc
+# /get_descriptors
 
 # Get the first dot-separated component of a filename or filepath.
 def get_base(filepath):
@@ -1169,6 +1108,7 @@ def get_base(filepath):
   fileparts = filename.split('.', 1)
   base = fileparts[0]
   return base
+# /get_base
 
 def get_exp_path(testcase, suf='.exp'):
   base = get_base(testcase)
@@ -1176,6 +1116,7 @@ def get_exp_path(testcase, suf='.exp'):
   basepath = os.path.join(path, base)
   expfile = basepath + suf
   return expfile
+# /get_exp_path
 
 def symlink(srcpath, linkdir, linkname=None, relative=False): 
   srcdir, srcname = os.path.split(srcpath)
@@ -1193,16 +1134,17 @@ def symlink(srcpath, linkdir, linkname=None, relative=False):
       src = os.path.abspath(srcpath)
     os.symlink(src, linkpath)
   return linkpath
+# /symlink
 
 def is_url(uri):
   return get_protocol(uri) in ['http', 'https']
-# end isURL
+# /is_url
 
 def get_protocol(url):
   urlparts = urlparse.urlparse(url)
   prot = urlparts[0]
   return prot
-# end getProtocol
+# /get_protocol
 
 def get_relative_path(url, usedomain=False, referer=None):
   urlparts = urlparse.urlparse(url)
@@ -1255,7 +1197,6 @@ def get_variant_bases(src):
   else:
     warn('Unable to load variants: %s' % src)
     return []
-
 # /get_variant_bases
 
 def get_ast(filename):

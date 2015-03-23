@@ -31,8 +31,9 @@ WALIDIR = os.path.join(JAMPKG,'wali')
 UTILDIR = os.path.join(JAMPKG, 'util')
 PERFDIR = os.path.join(JAMPKG, 'perf')
 UNPACKDIR = os.path.join(JAMPKG, 'unpacked')
-UNPACK_SCRIPT = os.path.join(UTILDIR, 'unpack.py')
-REPACK_SCRIPT = os.path.join(UTILDIR, 'repack.py')
+ExTRADIR = os.path.join(UTILDIR, 'ExTRA')
+UNPACK_SCRIPT = os.path.join(ExTRADIR, 'unpack.py')
+REPACK_SCRIPT = os.path.join(ExTRADIR, 'repack.py')
 
 TEST_GROUPS = ['micro', 'bench', 'sites', 'exploit']
 BENCHMARK_DIR = os.path.join(TESTS_DIR, 'bench')

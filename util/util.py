@@ -1015,13 +1015,16 @@ def run_repacker(htmlfile, srclist, outdir, polpath=None, debug=False):
   return outp
 # /run_repacker
 
-def run_unpacker(url, debug=False, saveall=False):
+def run_unpacker(url, debug=False, saveall=False, appname=None):
   
   cmd = [UNPACK_SCRIPT, url]
   if debug:
     cmd.append('-v')
   if saveall:
     cmd.append('-s')
+  if appname is not None:
+    cmd.append('-a')
+    cmd.append(appname)
  
   unpacker = subprocess.Popen(cmd, stdout=PIPE, stderr=STDOUT)
   outp, errp = unpacker.communicate()

@@ -19,10 +19,11 @@
 /XSB/
 /jamscript/
 /tests/
+/attacks/
+/extension/
+/util/ExTRA/
 /packages/
 /unpacked/
-/cache-bak*/
-/output-*
 /idlgen/IDL.g4
 /idlgen/edu/
 /idlgen/*.jar

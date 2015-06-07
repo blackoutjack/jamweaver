@@ -1,4 +1,13 @@
 
+
+
+% Q: What if a bound function is called as a method to a different
+%    object?
+% A: It seems that a function that is bound to a receiver will use that
+% receiver as its |this| value forevermore. This is the case when
+% calling it as a method of another object, and after trying to
+% re-bind by calling |bind| with another object as the argument.
+
 % Function constructor
 aexe(H,L,'#Function',This,Args,H,This) :-
   %%% Really need to add clauses to funfacts.P somehow.

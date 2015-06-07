@@ -61,6 +61,13 @@ public class Main {
       parser.parseArgument(subArgs);
       
       util = new BDDClient();
+    } else if (mainOptions.util.equals("policy")) {
+      // Process the additional command line args.
+      PolicyGenerator.Opts polOptions = new PolicyGenerator.Opts();
+      OptionParser parser = new OptionParser(polOptions);
+      parser.parseArgument(subArgs);
+      
+      util = new PolicyGenerator();
     } else {
       Dbg.fatal("Invalid utility: " + mainOptions.util);
     }

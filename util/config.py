@@ -42,6 +42,7 @@ EXPLOIT_DIR = os.path.join(TESTS_DIR, 'exploit')
 POLICY_DIR = os.path.join(TESTS_DIR, 'policy')
 WEBSITE_DIR = os.path.join(TESTS_DIR, 'sites')
 WEBSITE_FILE = os.path.join(WEBSITE_DIR, 'sites.txt')
+TARGETPAGE_FILE = os.path.join(EXPLOIT_DIR, 'sites.txt')
 INTERPRETER_TEST_DIR = os.path.join(TESTS_DIR, 'interpreter')
 
 DEFAULT_POLICY = os.path.join(BENCHMARK_DIR, 'default.policy')
@@ -54,7 +55,7 @@ JAMSCRIPT_LIB = os.path.join(JSLIBDIR, 'libTx.js')
 JAMSCRIPT_DBGLIB = os.path.join(JSLIBDIR, 'libTxDbg.js')
 JAMSCRIPT_TESTDIR = os.path.join(JAMSCRIPT_DIR, 'tests', 'js')
 SMS2DIR = os.path.join(TESTS_DIR, 'bench', 'sms2')
-JAMSCRIPT_BUILDDIR = os.path.join(JAMSCRIPT_DIR, 'ff-dev', 'mozilla-17.0.3esr')
+JAMSCRIPT_BUILDDIR = os.path.join(JAMSCRIPT_DIR, 'ff-dev', 'mozilla-31.4.0esr')
 JS_COMMAND = os.path.join(JAMSCRIPT_BUILDDIR, 'obj-release', 'dist', 'bin', 'js')
 
 # The command (minus input arguments) used to invoke JAM.

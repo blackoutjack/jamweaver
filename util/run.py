@@ -125,14 +125,14 @@ def process_result(outp, exppath, overwrite):
   return ok
 # /process_result
 
-def run_website(url, policies, debug=False, overwrite=False, refine=None, synonly=False, service=False):
+def run_website(url, policies, debug=False, overwrite=False, refine=None, synonly=False, service=False, appname=None):
   if refine is None:
     refine = 0
   results = RunResults()
 
   # Run the unpacker.
   out("Unpacking %s" % url)
-  appname, unpackdir = run_unpacker(url, debug=debug, saveall=True)
+  appname, unpackdir = run_unpacker(url, debug=debug, saveall=True, appname=appname)
   if unpackdir is None:
     warn('Unable to retrieve unpack directory: %s' % (url))
     results.add(RunResult(False, False, False))
@@ -205,7 +205,8 @@ def run_website(url, policies, debug=False, overwrite=False, refine=None, synonl
     genpol = os.path.join(outdir, 'policy.js')
 
     out("Repacking %s" % htmlfile)
-    rpout = run_repacker(htmlfile, srclist, unpackdir, polpath=genpol, debug=debug)
+    scriptdir = os.path.join(outdir, 'source-collapsed')
+    rpout = run_repacker(htmlfile, srclist, scriptdir, polpath=genpol, debug=debug)
 
     rpfile = os.path.splitext(htmlfile)[0] + '.repack.html'
     rpfl = open(rpfile, 'w')
@@ -229,12 +230,12 @@ def run_websites(debug=False, overwrite=False, refine=None, synonly=False, servi
   plen = len(pols)
   for site in sites:
     # Limit to the given sites names, if provided.
-    if not apps is not None and site not in apps: continue
+    if apps is not None and site not in apps: continue
 
     # %%% Generalize
     polrel = pols[pidx]
     poldesc = polrel[:-7]
-    policies = {poldesc: os.path.join(POLICY_DIR, polrel)}
+    policies = {poldesc: [os.path.join(POLICY_DIR, polrel)]}
     pidx = (pidx + 1) % plen
     
     url = 'http://' + site
@@ -248,6 +249,38 @@ def run_websites(debug=False, overwrite=False, refine=None, synonly=False, servi
 
   results.printSummary()
 # /run_websites
+
+def run_targetpages(debug=False, overwrite=False, refine=None, synonly=False, service=False, apps=None):
+  results = RunResults('targetpages', overwrite)
+  
+  sites = get_lines(TARGETPAGE_FILE, comment='#')
+  polnet = os.path.join(POLICY_DIR, 'network-isolation.policy')
+  policies = {'network-isolation': [polnet]}
+  for site in sites:
+    # Limit to the given sites names, if provided.
+    if apps is not None and site not in apps: continue
+
+    # Extract the application name from the URL.
+    app = None
+    paramidx = site.find("?payload=")
+    if paramidx > -1:
+      plidx = paramidx + 9
+      endidx = site.find("&", plidx)
+      if endidx == -1: endidx = len(site)
+      app = site[plidx:endidx]
+      warn("Appname: %s" % app)
+    
+    url = 'http://' + site
+    res = run_website(url, policies, debug=debug, overwrite=overwrite, refine=refine, synonly=synonly, service=service, appname=app)
+
+    # Track successful results
+    results.add(res)
+
+    # Space the output.
+    sys.stderr.write('\n')
+
+  results.printSummary()
+# /run_targetpages
 
 def run_microbenchmarks(debug=False, overwrite=False, refine=None, synonly=False, service=False, apps=None):
   results = RunResults('microbenchmarks', overwrite)
@@ -482,6 +515,7 @@ def main():
   parser = OptionParser(usage="%prog")
   parser.add_option('-b', '--benchmarks', action='store_true', default=False, dest='benchmarks', help='analyze benchmark applications')
   parser.add_option('-w', '--websites', action='store_true', default=False, dest='websites', help='end-to-end website analysis')
+  parser.add_option('-y', '--targetpages', action='store_true', default=False, dest='targetpages', help='prototype target website analysis')
   parser.add_option('-m', '--micro', action='store_true', default=False, dest='micro', help='analyze microbenchmark applications')
   parser.add_option('-x', '--exploit', action='store_true', default=False, dest='exploit', help='analyze exploit applications')
   #parser.add_option('-i', '--interpreter', action='store_true', default=False, dest='interpreter', help='test semantics as an interpreter (currently unsupported)')
@@ -501,7 +535,7 @@ def main():
     parser.error("Invalid number of arguments")
 
   allmods = True
-  if opts.benchmarks or opts.micro or opts.exploit or opts.websites or opts.url is not None:
+  if opts.benchmarks or opts.micro or opts.exploit or opts.websites or opts.targetpages or opts.url is not None:
     allmods = False
 
   ref = opts.refine
@@ -530,6 +564,8 @@ def main():
     run_benchmarks(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly, service=opts.service, apps=opts.apps)
   if allmods or opts.websites:
     run_websites(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly, service=opts.service, apps=opts.apps)
+  if allmods or opts.targetpages:
+    run_targetpages(opts.debug, opts.overwrite, refine=ref, synonly=opts.syntaxonly, service=opts.service, apps=opts.apps)
 
   if opts.service:
     close_jam_service()

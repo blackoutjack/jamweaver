@@ -132,7 +132,7 @@ FORKSRC=$(FORKBASE:%=$(FORKDIR)/%.java)
 FORKCLS=$(FORKSRC:.java=.class)
 
 # Java utility classes
-UTLBASE=Main WebkitGenerator GeckoGenerator NativeGenerator NativeIdentifier ASTPrint BDDClient Utility
+UTLBASE=Main WebkitGenerator GeckoGenerator NativeGenerator NativeIdentifier ASTPrint BDDClient Utility PolicyGenerator
 UTLSRC=$(UTLBASE:%=$(UTLDIR)/%.java)
 UTLCLS=$(UTLSRC:.java=.class)
 

@@ -71,12 +71,23 @@ public class JavaScript implements Language {
   public SourceManager newSourceManager(Map<String,String> src) {
     JSTransform.resetVariableNames();
     JSSourceManager jsman = new JSSourceManager();
+
+    // Closure doesn't like it when there are no sources, so add a dummy
+    // if needed.
+    if (src == null) src = new HashMap<String,String>();
+    if (src.size() == 0) {
+      src.put(null, null);
+    }
+
     // Cull duplicate source files since Closure can't handle them.
     Set<String> sfs = new HashSet<String>();
     for (Map.Entry<String,String> entry : src.entrySet()) {
       String srcpath = entry.getKey();
       String srctext = entry.getValue();
-      if (JAMOpts.sourceIsList) {
+      if (srctext == null) srctext = "";
+      if (srcpath == null) {
+        jsman.addSource(new JSSource("dummy.js", "", false));
+      } else if (JAMOpts.sourceIsList) {
         String[] lines = srctext.split("\n");
         for (String line : lines) {
           String[] parts = line.split(":");

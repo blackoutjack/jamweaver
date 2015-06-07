@@ -559,7 +559,7 @@ public class TxManager implements CheckManager, Traverser {
       comprehensive.setName(JAMConfig.COMPREHENSIVE_INTROSPECTOR);
       introspectorNameMap.put(JAMConfig.COMPREHENSIVE_INTROSPECTOR, comprehensive);
       // Remove this from the general introspectors list, so another
-      // introspector checking all predicates can be generated use
+      // introspector checking all predicates can be generated for use
       // with woven transactions.
       introspectors.clear();
     }
